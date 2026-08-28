@@ -1,0 +1,12 @@
+{
+    "visitingSlip": {
+        "visitorToSee": "Visitor to see",
+        "comfortableMessage": "Please make yourself comfortable",
+        "nameLabel": "NAME :",
+        "timeLabel": "TIME :",
+        "appointmentLabel": "APPT.",
+        "arrivalLabel": "ARRIVAL :",
+        "dateLabel": "DATE :",
+        "poweredBy": "Powered by Healync Technologies Pvt Ltd"
+    }
+}

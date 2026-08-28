@@ -1,0 +1,16 @@
+{
+  "validPatientData": {
+    "title": "Mr",
+    "mobileNumber": "9876543210",
+    "referralBy": "TD",
+    "email": "test@gmail.com",
+    "gender": "Male",
+    "address": "Chennai",
+    "additionalDetails": {
+      "treatingDoctor": "Dr. Orthopedic",
+      "medicalCondition": "None",
+      "pincode": "600001",
+      "patientCategory": "General"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "patientData": {
+    "title": "Mr",
+    "phoneNumber": "1234567890",
+    "notes": "Healync",
+    "email": "test@gmail.com",
+    "age": "21",
+    "gender": "Male",
+    "address": "Chennai"
+  },
+ 
+   "bookingData": {
+    "bookingDate": "29"
+  },
+
+   "invoiceData": {
+    "adjustmentAmount": "10",
+    "adjustmentName": "Discount",
+    "adjustmentReason": "Consult Discount"
+  }
+}

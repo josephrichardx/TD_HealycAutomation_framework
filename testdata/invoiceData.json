@@ -1,0 +1,7 @@
+{
+  "invoiceData": {
+    "adjustmentAmount": "10",
+    "adjustmentName": "Discount",
+    "adjustmentReason": "Consult Discount"
+  }
+}

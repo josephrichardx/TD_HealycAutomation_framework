@@ -1,0 +1,11 @@
+{
+  "cancellationData": {
+    "cancellationReason": "Emergency or unexpected issue",
+    "refundAmount": 300,
+    "refundPaymentMethod": "Cash",
+    "expectedStatus": "Cancelled"
+  },
+  "cancelReasonData": {
+  "cancelReason": "Emergency or unexpected issue"
+  }
+}

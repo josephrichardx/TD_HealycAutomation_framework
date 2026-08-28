@@ -1,0 +1,22 @@
+{
+  "appoinmentData": {
+    "doctorName": "Dr. Orthopedic",
+    "typeDropdownLabel": "Type: All"
+  },
+ 
+  "addNewMenuItems": [
+    "Add Consult",
+    "Add Service",
+    "Add Test",
+    "Add Consumable",
+    "Add Day Care",
+    "Add Package",
+    "Add Surgery",
+    "Add Admission"
+  ],
+ 
+  "waitlistBookingData": {
+    "standardBookingDate": "28",
+    "extendedBookingDate": "28"
+  }
+}

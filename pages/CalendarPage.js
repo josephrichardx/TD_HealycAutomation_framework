@@ -1,0 +1,514 @@
+const { expect } = require('@playwright/test');
+const { StepHelper } = require('../utils/StepHelper');
+const { CalendarLocator } = require('../Locators/CalendarLocator');
+const { Keywords } = require('../utils/Keywords');
+
+class CalendarPage {
+
+    constructor(page) {
+        this.page = page;
+        this.locator = new CalendarLocator(page);
+        this.keywords = new Keywords();
+    }
+
+
+    async navigateToBookingDate(bookingDate) {
+
+        await StepHelper.step(
+            this.page,
+            `Navigate To Booking Date - ${bookingDate}`,
+            async () => {
+
+                for (let i = 0; i < 31; i++) {
+
+                    const dateText = (
+                        await this.keywords.getText(
+                            this.locator.calendarDate
+                        )
+                    ).trim();
+
+                    console.log(`Calendar Date: ${dateText}`);
+
+                    const match = dateText.match(/\d+/);
+
+                    if (!match) {
+                        throw new Error(
+                            `Unable to read calendar date: ${dateText}`
+                        );
+                    }
+
+                    const currentDate = Number(match[0]);
+                    const targetDate = Number(bookingDate);
+
+                    if (currentDate === targetDate) {
+                        console.log(
+                            `Booking date reached: ${bookingDate}`
+                        );
+                        return;
+                    }
+
+                    if (currentDate < targetDate) {
+
+                        await this.keywords.click(
+                            this.locator.nextDayBtn
+                        );
+
+                    } else {
+
+                        await this.keywords.click(
+                            this.locator.previousDayBtn
+                        );
+                    }
+
+                    await this.keywords.wait(
+                        this.page,
+                        500
+                    );
+                }
+
+                throw new Error(
+                    `Unable to reach booking date: ${bookingDate}`
+                );
+            }
+        );
+    }
+
+
+    async searchPatient(patientName) {
+
+        await StepHelper.step(
+            this.page,
+            `Search Patient From Calendar - ${patientName}`,
+            async () => {
+
+                
+                await this.keywords.waitForElement(
+                    this.locator.patientSearch,
+                    10000
+                );
+
+                await this.keywords.click(
+                    this.locator.patientSearch
+                );
+
+                await this.keywords.clear(
+                    this.locator.patientSearch
+                );
+
+                await this.keywords.fill(
+                    this.locator.patientSearch,
+                    patientName
+                );
+
+                console.log(
+                    `Searching Patient: ${patientName}`
+                );
+
+                await this.keywords.wait(
+                    this.page,
+                    1500
+                );
+            }
+        );
+    }
+
+
+    async hoverPatient(patientName) {
+
+        await StepHelper.step(
+            this.page,
+            `Hover Patient - ${patientName}`,
+            async () => {
+
+                // const patientResult =
+                //     this.locator.patientResults
+                //         .filter({
+                //             hasText: patientName
+                //         })
+                //         .first();
+
+                const patientResult =
+                this.locator.patientResult(patientName);
+
+                await this.keywords.waitForElement(
+                    patientResult,
+                    30000
+                );
+
+                await this.keywords.scrollIntoViewIfNeeded(
+                    patientResult
+                );
+
+                await this.keywords.hover(
+                    patientResult
+                );
+
+                console.log(
+                    `Hovered Patient: ${patientName}`
+                );
+            }
+        );
+    }
+
+    async clickPatient(patientName) {
+
+    await StepHelper.step(
+        this.page,
+        `Click Patient - ${patientName}`,
+        async () => {
+
+            // const patientResult =
+            //     this.locator.patientResults
+            //         .filter({
+            //             hasText: patientName
+            //         })
+            //         .first();
+
+            const patientResult =
+            this.locator.patientResult(patientName);
+
+            await this.keywords.waitForElement(
+                patientResult,
+                30000
+            );
+
+            await this.keywords.scrollIntoViewIfNeeded(
+                patientResult
+            );
+
+            await this.keywords.click(
+                patientResult
+            );
+
+            console.log(
+                `Clicked Patient: ${patientName}`
+            );
+        }
+    );
+}
+
+async dismissOpenAppointmentDetailsPanel() {
+    await StepHelper.step(
+        this.page,
+        'Dismiss any leftover open Appointment Details panel',
+        async () => {
+            const detailsPanel = this.page.locator(
+                'app-appointment-details'
+            );
+            const isOpen = await detailsPanel
+                .isVisible()
+                .catch(() => false);
+            if (isOpen) {
+                await this.page.keyboard.press('Escape');
+                await detailsPanel
+                    .waitFor({ state: 'hidden', timeout: 5000 })
+                    .catch(() => {});
+            }
+        }
+    );
+}
+ 
+    async openPatientAppointmentForceHover(patientName) {
+ 
+ 
+        await StepHelper.step(
+
+            this.page,
+
+            `Open Patient Appointment (force hover) - ${patientName}`,
+
+            async () => {
+ 
+ 
+                const patientResult =
+
+                    this.locator.patientResult(patientName);
+ 
+ 
+                await this.keywords.waitForElement(
+
+                    patientResult,
+
+                    10000
+
+                );
+ 
+ 
+                await patientResult.scrollIntoViewIfNeeded();
+ 
+ 
+                // A transient app-appointment-details panel can render mid-flight
+
+                // and intercept pointer events, so force the hover through it.
+
+                await patientResult.hover({ force: true });
+ 
+ 
+                const viewAppointmentBtn =
+
+                    this.locator.viewAppointmentBtn;
+ 
+ 
+                await viewAppointmentBtn.waitFor({
+
+                    state: 'attached',
+
+                    timeout: 10000
+
+                });
+ 
+ 
+                await viewAppointmentBtn.evaluate(
+
+                    button => button.click()
+
+                );
+ 
+ 
+                console.log(
+
+                    `View Appointment clicked: ${patientName}`
+
+                );
+
+            }
+
+        );
+
+    }
+ 
+ 
+    async selectPatientFromCalendarForceHover(
+    patientName,
+    bookingDate
+) {
+    await this.navigateToBookingDate(
+        bookingDate
+    );
+    await this.dismissOpenAppointmentDetailsPanel();
+    await this.searchPatient(
+        patientName
+    );
+    await this.hoverPatient(
+        patientName
+    );
+
+    await this.openPatientAppointmentForceHover(
+        patientName
+    );
+}    
+
+     
+      async clickSidebarCalendarIcon() {
+ 
+ 
+        await StepHelper.step(
+            this.page,
+            'Click Calendar icon on the left sidebar to return to the dashboard',
+            async () => {
+ 
+ 
+                await this.keywords.waitForElement(
+                    this.locator.sidebarCalendarIcon,
+                    10000
+                );
+ 
+ 
+                await this.keywords.click(
+                    this.locator.sidebarCalendarIcon
+                );
+ 
+ 
+                await this.page
+                    .waitForURL(
+                        (url) => url.pathname.includes('/dashboard'),
+                        { timeout: 15000 }
+                    )
+                    .catch(() => {});
+ 
+ 
+                console.log('Navigated back to the Calendar (dashboard) via sidebar icon');
+            }
+        );
+    }
+  
+ 
+    async openPatientAppointment(patientName) {
+
+        await StepHelper.step(
+            this.page,
+            `Open Patient Appointment - ${patientName}`,
+            async () => {
+
+                const patientResult =
+                this.locator.patientResult(patientName);
+
+                await this.keywords.waitForElement(
+                    patientResult,
+                    10000
+                );
+
+                await this.keywords.hover(
+                    patientResult
+                );
+
+
+                const viewAppointmentBtn =
+                        this.locator.viewAppointmentBtn;
+
+                    await viewAppointmentBtn.waitFor({
+                        state: 'attached',
+                        timeout: 10000
+                    });
+
+                // Avoid hover animation stability issue
+                await viewAppointmentBtn.evaluate(
+                    button => button.click()
+                );
+
+                console.log(
+                    `View Appointment clicked: ${patientName}`
+                );
+            }
+        );
+    }
+
+    async BookAppointment(patientName) {
+
+    await StepHelper.step(
+            this.page,
+            `Click Book Appointment - ${patientName}`,
+            async () => {
+
+             const patientResult =
+                this.locator.patientResult(patientName);
+
+                await this.keywords.waitForElement(
+                    patientResult,
+                    10000
+                );
+
+                await this.keywords.hover(
+                    patientResult
+                );
+
+            const bookAppointmentBtn =
+                this.locator.bookAppointmentBtn;
+
+            await bookAppointmentBtn.waitFor({
+                state: 'attached',
+                timeout: 10000
+            });
+
+            // Avoid animation stability issue
+            await bookAppointmentBtn.evaluate(
+                button => button.click()
+            );
+
+            console.log(
+                'Book Appointment clicked'
+            );
+        }
+    );
+}
+
+
+    async selectPatientFromCalendar(
+        patientName,
+        bookingDate
+    ) {
+
+        await this.navigateToBookingDate(
+            bookingDate
+        );
+
+        await this.searchPatient(
+            patientName
+        );
+
+        await this.hoverPatient(
+            patientName
+        );
+
+        await this.openPatientAppointment(
+            patientName
+        );
+    }
+
+async verifyStatus(expectedStatus) {
+
+    await StepHelper.step(
+        this.page,
+        `Verify Status - ${expectedStatus}`,
+        async () => {
+
+            const status =
+                this.locator.getStatus(
+                    expectedStatus
+                );
+
+            await this.keywords.waitForElement(
+                status,
+                10000
+            );
+
+            await expect(
+                status
+            ).toBeVisible();
+        }
+    );
+}
+
+    async PatientFromCalendarBookPackage(
+        patientName,
+        bookingDate
+    ) {
+
+        await this.searchPatient(
+            patientName
+        );
+
+        await this.BookAppointment(
+            patientName
+        );
+    }
+
+     async PatientFromCalendarView(
+        patientName,expectedStatus
+    ) {
+        await this.searchPatient(
+            patientName
+        );
+
+        await this.openPatientAppointment(
+            patientName
+        );
+
+        await this.verifyStatus(
+        expectedStatus
+        );
+    }
+
+    async selectPatientAddAdmission(
+        patientName,
+        bookingDate
+    ) {
+
+        await this.navigateToBookingDate(
+            bookingDate
+        );
+
+        await this.searchPatient(
+            patientName
+        );
+
+        await this.clickPatient(
+            patientName
+        );
+    
+
+    }
+}
+
+
+module.exports = { CalendarPage };

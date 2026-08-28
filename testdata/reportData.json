@@ -1,0 +1,9 @@
+{
+  "reportData": {
+    "fromDate": "4/24/2026",
+    "toDate": "6/30/2026",
+    "invoiceStatus": "Paid",
+    "invoiceType": "OPD",
+    "patientName": "Mr akash test"
+  }
+}

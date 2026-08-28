@@ -1,0 +1,10 @@
+{
+  "serviceData": {
+    "serviceName": "Advance Robotics",
+    "appointmentType": "Service",
+    "doctorName": "Dr. Physiotherapy"
+  },
+  "DateData": {
+    "bookingDate": "28"
+  }
+}
