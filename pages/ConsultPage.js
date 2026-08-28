@@ -167,60 +167,82 @@ class ConsultPage {
             this.page,
             'Close Provider Dropdown',
             async () => {
-                await this.keywords.keyboardPress(
-                    this.page,
-                    'Escape'
-                );
-            }
-        );
-
-        await StepHelper.step(
-            this.page,
-            'Open Booking Date',
-            async () => {
                 await this.keywords.click(
-                    this.locator.bookingDateContainer
+                    this.locator.providerDropdown
                 );
             }
         );
 
-        await StepHelper.step(
-            this.page,
-            `Select Booking Date - ${bookingDate}`,
-            async () => {
+        // await StepHelper.step(
+        //     this.page,
+        //     'Open Booking Date',
+        //     async () => {
+        //         await this.keywords.click(
+        //             this.locator.bookingDateContainer
+        //         );
+        //     }
+        // );
 
-                await this.keywords.click(
-                    this.locator.currentMonth.getByText(
-                        bookingDate,
-                        {
-                            exact: true
-                        }
-                    )
-                );
-            }
-        );
+        // await StepHelper.step(
+        //     this.page,
+        //     `Select Booking Date - ${bookingDate}`,
+        //     async () => {
 
-        await StepHelper.step(
-            this.page,
-            'Apply Booking Date',
-            async () => {
-                await this.keywords.click(
-                    this.locator.applyBtn
-                );
-            }
-        );
+        //         await this.keywords.click(
+        //             this.locator.currentMonth.getByText(
+        //                 bookingDate,
+        //                 {
+        //                     exact: true
+        //                 }
+        //             )
+        //         );
+        //     }
+        // );
 
-        await StepHelper.step(
-            this.page,
-            'Select First Available Slot',
-            async () => {
-                await this.keywords.click(
-                    this.locator.slotButton.first()
-                );
-            }
-        );
+        // await StepHelper.step(
+        //     this.page,
+        //     'Apply Booking Date',
+        //     async () => {
+        //         await this.keywords.click(
+        //             this.locator.applyBtn
+        //         );
+        //     }
+        // );
+
+        // await StepHelper.step(
+        //     this.page,
+        //     'Select First Available Slot',
+        //     async () => {
+        //         await this.keywords.click(
+        //             this.locator.slotButton.first()
+        //         );
+        //     }
+        // );
     }
 
+
+async selectFirstAvailableSlot() {
+    await StepHelper.step(
+        this.page,
+        'Select First Available Slot',
+        async () => {
+            while (true) {
+                const slotCount = await this.locator.slotButton.count();
+
+                if (slotCount > 0) {
+                    await this.keywords.click(
+                        this.locator.slotButton.first()
+                    );
+                    break;
+                }
+
+                await this.keywords.click(
+                    this.locator.nextDateBtn
+                );
+            }
+        }
+    );
+}
 
     async selectDoctor(doctorName) {
 
@@ -296,8 +318,21 @@ class ConsultPage {
                 );
             }
         );
+    }
 
-        await this.keywords.waitForLoadState(
+     async verifyBookingConfirmation() {
+
+    await StepHelper.step(
+        this.page,
+        'Verify Consult Booking Confirmation Message is Visible',
+        async () => {
+            await expect(
+                this.locator.bookingConfirmMsg
+            ).toBeVisible();
+        }
+    );
+
+    await this.keywords.waitForLoadState(
             this.page,
             'networkidle'
         );
@@ -328,7 +363,11 @@ class ConsultPage {
             bookingDate
         );
 
+        await this.selectFirstAvailableSlot();
+
         await this.confirmConsultBooking();
+
+        await this.verifyBookingConfirmation();
 
         await StepHelper.step(
             this.page,
@@ -365,6 +404,8 @@ class ConsultPage {
             consultSlot,
             bookingDate
         );
+
+        await this.selectFirstAvailableSlot();
 
         await this.confirmConsultBooking();
     }

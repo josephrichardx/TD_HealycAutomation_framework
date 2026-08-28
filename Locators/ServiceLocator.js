@@ -103,6 +103,8 @@ class ServiceLocator {
         this.slotButton = page.locator(
             '.slotButton'
         );
+
+         this.nextDateBtn = page.locator('div.NextListButton').first();
     }
 
 

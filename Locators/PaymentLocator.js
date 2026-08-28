@@ -22,6 +22,10 @@ class PaymentLocator {
             }
         );
 
+        // this.makePaymentBtn = page.getByRole('button', {
+        //     name: 'Make payment'
+        // }).first();
+
         this.recordPaymentBtn = page.getByRole(
             'button',
             {

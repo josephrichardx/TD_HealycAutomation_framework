@@ -556,9 +556,9 @@ class PaymentPage {
             await StepHelper.step(
                 this.page,
                 `Calculate Remaining Amount | ₹${totalAmount} - ₹${expectedPaidAmount} = ₹${expectedRemainingAmount}`,
-                async () => {
-                    // Calculation is already performed above.
-                }
+                // async () => {
+                //     // Calculation is already performed above.
+                // }
             );
 
 

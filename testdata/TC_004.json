@@ -32,7 +32,8 @@
    "invoiceData": {
     "adjustmentAmount": "10",
     "adjustmentName": "Discount",
-    "adjustmentReason": "Consult Discount"
+    "adjustmentReason": "Consult Discount",
+    "paidAmount": "0.00"
   },
   "paymentData": {
     "paymentMethod": "UPI",

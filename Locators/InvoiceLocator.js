@@ -263,7 +263,6 @@ class InvoiceLocator
             "//app-appointment-details//*[normalize-space()='Paid amount']/parent::*//div[contains(@class,'amount-wrapper')]"
         ).first();
 
-
         this.appointmentTotalAmount =
         page.locator(
             "//app-appointment-details//*[normalize-space()='Total amount']/parent::*//div[contains(@class,'amount-wrapper')]"

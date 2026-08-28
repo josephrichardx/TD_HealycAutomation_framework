@@ -175,11 +175,11 @@ class ConsultLocator {
         ).first();
 
         this.customSlotUpdateBtn = page.locator(
-            'button.activeButon:visible'
+            'button.activeButton:visible'
         ).first();
 
+        this.nextDateBtn = page.locator('div.NextListButton').first();
 
-        
         
     }
 

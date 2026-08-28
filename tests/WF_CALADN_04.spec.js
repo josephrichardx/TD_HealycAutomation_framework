@@ -9,13 +9,13 @@ const { InvoicePage } = require('../pages/InvoicePage');
 const { PaymentPage } = require('../pages/PaymentPage');
 const { CalendarPage } = require('../pages/CalendarPage');
  
-const { patientData,appoinmentData,consultData,bookingData,serviceData,DateData,invoiceData } = require('../testdata/TC_003.json');
-const { generatePatientName } = require('../utils/RandomData');
+const { patientData,appoinmentData,consultData,bookingData,serviceData,DateData,invoiceData,paymentData } = require('../testdata/TC_004.json');
+const { generateUniquePatientFullName } = require('../utils/RandomData');
  
+
+test('Make Payment', async ({ page }) => {
  
-test('Generate Invoice', async ({ page }) => {
- 
-    const patientName = generatePatientName();
+    const patientName = generateUniquePatientFullName();
     const patientPage = new PatientPage(page);
     const consultPage = new ConsultPage(page);
     const servicePage = new ServicePage(page);
@@ -65,6 +65,20 @@ test('Generate Invoice', async ({ page }) => {
         patientData,
         invoiceData,
         summaryAmount
+    );
+
+    await paymentPage.openFinancials(
+        patientName
+    );
+
+    await paymentPage.makePayment(
+    paymentData.paymentMethod,
+    paymentData.amount,
+    paymentData.transactionId
+    );
+    
+    await paymentPage.verifyPayment(
+    paymentData.amount
     );
  
 });
