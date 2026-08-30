@@ -15,19 +15,48 @@ class InvoicePage {
 
     async selectInvoiceServices() {
 
-        await StepHelper.step(
+    await StepHelper.step(
         this.page,
-        'Select All Checkboxes',
+        'Select All Services',
         async () => {
-            const count = await this.locator.serviceCheckbox.count();
+
+            const count =
+                await this.locator.serviceCheckbox.count();
+
+            console.log(`Service Checkbox Count: ${count}`);
 
             for (let i = 0; i < count; i++) {
+
+                console.log(
+                    `Checkbox ${i} visible:`,
+                    await this.locator.serviceCheckbox.nth(i).isVisible()
+                );
+
+                console.log(
+                    `Checkbox ${i} enabled:`,
+                    await this.locator.serviceCheckbox.nth(i).isEnabled()
+                );
+
                 await this.keywords.click(
                     this.locator.serviceCheckbox.nth(i)
                 );
             }
         }
     );
+
+    //     await StepHelper.step(
+    //     this.page,
+    //     'Select All Checkboxes',
+    //     async () => {
+    //         const count = await this.locator.serviceCheckbox.count();
+
+    //         for (let i = 0; i < count; i++) {
+    //             await this.keywords.click(
+    //                 this.locator.serviceCheckbox.nth(i)
+    //             );
+    //         }
+    //     }
+    // );
 
         // await StepHelper.step(
         //     this.page,
@@ -60,6 +89,20 @@ class InvoicePage {
         // );
     }
 
+    async selectServices() {
+
+
+        await StepHelper.step(
+            this.page,
+            'Select Service',
+            async () => {
+                await this.keywords.click(
+                    this.locator.servicebox
+                );
+            }
+        );
+
+    }
 
     async addAdjustment(
         amount,
@@ -873,7 +916,7 @@ if (discountCount > 0) {
         }
     );
 }
-            async InvoiceDetailsAddAdmission() {
+            async InvoiceDetailsAddAdmission(invoiceData) {
 
             let invoiceNumber;
             let totalAmount;
@@ -893,7 +936,10 @@ if (discountCount > 0) {
                         `Invoice Number: ${invoiceNumber}`
                     );
 
-                    expect(invoiceNumber).toContain('INV-');
+                    // expect(invoiceNumber).toContain('INV-');
+                    expect(invoiceNumber).toContain(
+                        invoiceData.invoicePrefix
+                    );
                 }
             );
 
@@ -1786,7 +1832,7 @@ async verifyVisitingSlipContent(
     
             await this.invoiceGenerate(); 
 
-            await this.selectInvoiceServices();
+            await this.selectServices();
 
             await this.Adjustmentaddadmission(
                 invoiceData.adjustmentAmount,

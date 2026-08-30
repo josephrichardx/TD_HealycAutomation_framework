@@ -1,5 +1,6 @@
 {
   "patientData": {
+    "patientName": "Test Gvxkoh",
     "title": "Mr",
     "phoneNumber": "1234567890",
     "notes": "Healync",
@@ -8,27 +9,18 @@
     "gender": "Male",
     "address": "Chennai"
   },
- 
- "appoinmentData": {
+
+  "appoinmentData": {
     "doctorName": "Dr. Orthopedic"
   },
  
   "consultData": {
     "consultSlot": "First Consult"
   },
- 
-   "bookingData": {
-    "bookingDate": "29"
-  },
- 
    "serviceData": {
     "serviceName": "Clear Aligners"
   },
- 
-  "DateData": {
-    "bookingDate": "29"
-  },
- 
+
    "invoiceData": {
     "adjustmentAmount": "10",
     "adjustmentName": "Discount",

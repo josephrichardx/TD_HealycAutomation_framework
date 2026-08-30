@@ -1,5 +1,6 @@
 {
   "patientData": {
+    "patientName": "Test Lrffoa",
     "title": "Mr",
     "phoneNumber": "1234567890",
     "notes": "Healync",
@@ -16,6 +17,7 @@
    "invoiceData": {
     "adjustmentAmount": "10",
     "adjustmentName": "Discount",
-    "adjustmentReason": "Consult Discount"
+    "adjustmentReason": "Consult Discount",
+    "invoicePrefix": "INV-"
   }
 }

@@ -93,9 +93,12 @@ class IPDPage {
             );
 
             // Click Apply
+            // await this.keywords.click(
+            //     this.locator.applyBtn.nth(1)
+            // );
             await this.keywords.click(
-                this.locator.applyBtn.nth(1)
-            );
+                     this.locator.applyBtn
+);
         }
     );
 }
@@ -289,6 +292,272 @@ return summaryAmount;
 }
 
 
+// async IPDVerifyInvoicePDF(
+//     patientName,
+//     patientData,
+//     invoiceData,
+//     summaryAmount
+// ) {
+
+//     const invoiceNumber = this.currentInvoiceNumber;
+
+//     // =========================================================
+//     // OPEN INVOICE PDF
+//     // =========================================================
+
+//     await StepHelper.step(
+//         this.page,
+//         `Open Invoice PDF - ${invoiceNumber}`,
+//         async () => {
+
+//             await this.locator.invoiceNumber.waitFor({
+//                 state: 'visible',
+//                 timeout: 30000
+//             });
+
+//             await this.locator.invoiceNumber.click();
+//         }
+//     );
+
+//     // =========================================================
+//     // WAIT FOR PDF PREVIEW
+//     // =========================================================
+
+//     await StepHelper.step(
+//         this.page,
+//         'Wait for Invoice PDF to Load',
+//         async () => {
+
+//             await this.page.locator(
+//                 'app-document-preview'
+//             ).waitFor({
+//                 state: 'visible',
+//                 timeout: 30000
+//             });
+
+//             await this.page.locator(
+//                 'app-document-preview .textLayer'
+//             ).last().waitFor({
+//                 state: 'visible',
+//                 timeout: 30000
+//             });
+//         }
+//     );//update
+
+
+//     // =========================================================
+//     // GET PDF TEXT
+//     // =========================================================
+
+//     const pdfText =
+//         await this.page.locator(
+//             'app-document-preview .textLayer'
+//         ).last().innerText();
+
+
+//     // =========================================================
+//     // BILL NUMBER
+//     // =========================================================
+
+//     const actualBillNumber =
+//         pdfText.match(
+//             /Bill No\s*:\s*([A-Z0-9-]+)/i
+//         )?.[1]?.trim() || '';
+
+
+//     await Verify.equals(
+//         this.page,
+//         'Verify Bill Number',
+//         invoiceNumber.replace(/^#/, ''),
+//         actualBillNumber,
+//         {
+//             soft: false
+//         }
+//     );
+
+
+//     // =========================================================
+//     // PATIENT NAME - BILL TO
+//     // =========================================================
+
+//     const actualPatientName =
+//         pdfText.match(
+//             /Bill To\s*:\s*(.+?)(?=\s+Age\s*:)/i
+//         )?.[1]?.trim() || '';
+
+
+//     await Verify.equals(
+//         this.page,
+//         'Verify Patient Name',
+//         patientName,
+//         actualPatientName,
+//         {
+//             soft: false
+//         }
+//     );
+
+
+//     // =========================================================
+//     // AGE
+//     // =========================================================
+
+//     const actualAge =
+//         pdfText.match(
+//             /Age\s*:\s*(\d+)/i
+//         )?.[1]?.trim() || '';
+
+
+//     await Verify.equals(
+//         this.page,
+//         'Verify Age',
+//         patientData.age,
+//         actualAge,
+//         {
+//             soft: false
+//         }
+//     );
+
+
+//     // // =========================================================
+//     // // GENDER
+//     // // =========================================================
+
+//     // const actualGender =
+//     //     pdfText.match(
+//     //         /Gender\s*:\s*([A-Za-z]+)/i
+//     //     )?.[1]?.trim() || '';
+
+
+//     // await Verify.equalsIgnoreCase(
+//     //     this.page,
+//     //     'Verify Gender',
+//     //     patientData.gender,
+//     //     actualGender,
+//     //     {
+//     //         soft: false
+//     //     }
+//     // );
+
+//     // =========================================================
+// // GENDER
+// // =========================================================
+
+// const actualGender =
+//     pdfText.match(
+//         /Gender\s*:\s*([A-Za-z]+)/i
+//     )?.[1]?.trim() || '';
+
+
+// await StepHelper.step(
+//     this.page,
+//     `Verify Gender | Expected: ${patientData.gender} | Actual: ${actualGender}`,
+//     async () => {
+
+//         await Verify.equalsIgnoreCase(
+//             this.page,
+//             'Gender',
+//             patientData.gender,
+//             actualGender,
+//             {
+//                 soft: false
+//             }
+//         );
+
+//     }
+// );
+
+// // =========================================================
+// // PDF BALANCE
+// // =========================================================
+
+// // Get all PDF text
+// const invoiceText =
+//     await this.page.locator('.textLayer').allInnerTexts();
+
+// const invoiceContent =
+//     invoiceText.join(' ');
+
+// // console.log('PDF Invoice Content:', invoiceContent);
+
+// // Get Balance from PDF
+// const balanceMatch =
+//     invoiceContent.match(
+//         /Balance\s*:\s*([\d,]+(?:\.\d{1,2})?)/
+//     );
+
+// const actualBalanceAmount =
+//     balanceMatch
+//         ? parseFloat(
+//             balanceMatch[1].replace(/,/g, '')
+//         )
+//         : NaN;
+
+// console.log('Expected - UI Invoice Amount:', summaryAmount);
+// console.log('Actual - PDF Balance:', actualBalanceAmount);
+
+// // Compare UI Invoice Amount with PDF Balance
+// await Verify.equals(
+//     this.page,
+//     'Verify Invoice Amount vs PDF Balance',
+//     Number(summaryAmount).toFixed(2),
+//     Number(actualBalanceAmount).toFixed(2),
+//     {
+//         soft: false
+//     }
+// );
+
+//     // =========================================================
+//     // ADJUSTMENT
+//     // =========================================================
+
+//     const actualAdjustment =
+//         pdfText.match(
+//             /Adjustment\s*:\s*([\d,]+(?:\.\d{1,2})?)/i
+//         )?.[1]
+//             ?.replace(/,/g, '')
+//             ?.trim() || '';
+
+
+//     const expectedAdjustment =
+//         Number(
+//             invoiceData.adjustmentAmount ?? 0
+//         ).toFixed(2);
+
+
+//     await Verify.equals(
+//         this.page,
+//         'Verify Adjustment',
+//         expectedAdjustment,
+//         Number(actualAdjustment || 0).toFixed(2),
+//         {
+//             soft: false
+//         }
+//     );
+
+//     // =========================================================
+//     // CLOSE INVOICE PDF
+//     // =========================================================
+
+//     await StepHelper.step(
+//     this.page,
+//     'Close Invoice PDF Preview',
+//     async () => {
+
+//         const closeButton =
+//             this.locator.pdfCloseButton;
+
+//         await closeButton.waitFor({
+//             state: 'attached',
+//             timeout: 30000
+//         });
+
+//         await closeButton.click({
+//             timeout: 30000
+//         });
+//     }    
+// );
+// }
+
 async IPDVerifyInvoicePDF(
     patientName,
     patientData,
@@ -296,7 +565,8 @@ async IPDVerifyInvoicePDF(
     summaryAmount
 ) {
 
-    const invoiceNumber = this.currentInvoiceNumber;
+    const invoiceNumber =
+        this.currentInvoiceNumber;
 
     // =========================================================
     // OPEN INVOICE PDF
@@ -316,6 +586,7 @@ async IPDVerifyInvoicePDF(
         }
     );
 
+
     // =========================================================
     // WAIT FOR PDF PREVIEW
     // =========================================================
@@ -325,16 +596,12 @@ async IPDVerifyInvoicePDF(
         'Wait for Invoice PDF to Load',
         async () => {
 
-            await this.page.locator(
-                'app-document-preview'
-            ).waitFor({
+            await this.locator.invoicePdfPreview.waitFor({
                 state: 'visible',
                 timeout: 30000
             });
 
-            await this.page.locator(
-                'app-document-preview .textLayer'
-            ).last().waitFor({
+            await this.locator.pdfTextLayer.waitFor({
                 state: 'visible',
                 timeout: 30000
             });
@@ -347,9 +614,7 @@ async IPDVerifyInvoicePDF(
     // =========================================================
 
     const pdfText =
-        await this.page.locator(
-            'app-document-preview .textLayer'
-        ).last().innerText();
+        await this.locator.pdfTextLayer.innerText();
 
 
     // =========================================================
@@ -361,14 +626,23 @@ async IPDVerifyInvoicePDF(
             /Bill No\s*:\s*([A-Z0-9-]+)/i
         )?.[1]?.trim() || '';
 
+    const expectedBillNumber =
+        invoiceNumber.replace(/^#/, '');
 
-    await Verify.equals(
+    await StepHelper.step(
         this.page,
-        'Verify Bill Number',
-        invoiceNumber.replace(/^#/, ''),
-        actualBillNumber,
-        {
-            soft: false
+        `Verify Bill Number | Expected: ${expectedBillNumber} | Actual: ${actualBillNumber}`,
+        async () => {
+
+            await Verify.equals(
+                this.page,
+                'Bill Number',
+                expectedBillNumber,
+                actualBillNumber,
+                {
+                    soft: false
+                }
+            );
         }
     );
 
@@ -382,14 +656,23 @@ async IPDVerifyInvoicePDF(
             /Bill To\s*:\s*(.+?)(?=\s+Age\s*:)/i
         )?.[1]?.trim() || '';
 
+    const expectedPatientName =
+        patientName;
 
-    await Verify.equals(
+    await StepHelper.step(
         this.page,
-        'Verify Patient Name',
-        patientName,
-        actualPatientName,
-        {
-            soft: false
+        `Verify Patient Name | Expected: ${expectedPatientName} | Actual: ${actualPatientName}`,
+        async () => {
+
+            await Verify.equals(
+                this.page,
+                'Patient Name',
+                expectedPatientName,
+                actualPatientName,
+                {
+                    soft: false
+                }
+            );
         }
     );
 
@@ -403,14 +686,23 @@ async IPDVerifyInvoicePDF(
             /Age\s*:\s*(\d+)/i
         )?.[1]?.trim() || '';
 
+    const expectedAge =
+        patientData.age;
 
-    await Verify.equals(
+    await StepHelper.step(
         this.page,
-        'Verify Age',
-        patientData.age,
-        actualAge,
-        {
-            soft: false
+        `Verify Age | Expected: ${expectedAge} | Actual: ${actualAge}`,
+        async () => {
+
+            await Verify.equals(
+                this.page,
+                'Age',
+                expectedAge,
+                actualAge,
+                {
+                    soft: false
+                }
+            );
         }
     );
 
@@ -424,56 +716,76 @@ async IPDVerifyInvoicePDF(
             /Gender\s*:\s*([A-Za-z]+)/i
         )?.[1]?.trim() || '';
 
+    const expectedGender =
+        patientData.gender;
 
-    await Verify.equalsIgnoreCase(
+    await StepHelper.step(
         this.page,
-        'Verify Gender',
-        patientData.gender,
-        actualGender,
-        {
-            soft: false
+        `Verify Gender | Expected: ${expectedGender} | Actual: ${actualGender}`,
+        async () => {
+
+            await Verify.equalsIgnoreCase(
+                this.page,
+                'Gender',
+                expectedGender,
+                actualGender,
+                {
+                    soft: false
+                }
+            );
         }
     );
 
-// =========================================================
-// PDF BALANCE
-// =========================================================
 
-// Get all PDF text
-const invoiceText =
-    await this.page.locator('.textLayer').allInnerTexts();
+    // =========================================================
+    // PDF BALANCE
+    // =========================================================
 
-const invoiceContent =
-    invoiceText.join(' ');
+    const balanceMatch =
+        pdfText.match(
+            /Balance\s*:\s*([\d,]+(?:\.\d{1,2})?)/i
+        );
 
-// console.log('PDF Invoice Content:', invoiceContent);
+    const actualBalanceAmount =
+        balanceMatch
+            ? parseFloat(
+                balanceMatch[1].replace(/,/g, '')
+            )
+            : NaN;
 
-// Get Balance from PDF
-const balanceMatch =
-    invoiceContent.match(
-        /Balance\s*:\s*([\d,]+(?:\.\d{1,2})?)/
+    const expectedBalanceAmount =
+        Number(summaryAmount).toFixed(2);
+
+    const actualBalance =
+        Number(actualBalanceAmount).toFixed(2);
+
+    console.log(
+        'Expected - UI Invoice Amount:',
+        expectedBalanceAmount
     );
 
-const actualBalanceAmount =
-    balanceMatch
-        ? parseFloat(
-            balanceMatch[1].replace(/,/g, '')
-        )
-        : NaN;
+    console.log(
+        'Actual - PDF Balance:',
+        actualBalance
+    );
 
-console.log('Expected - UI Invoice Amount:', summaryAmount);
-console.log('Actual - PDF Balance:', actualBalanceAmount);
+    await StepHelper.step(
+        this.page,
+        `Verify Invoice Amount vs PDF Balance | Expected: ${expectedBalanceAmount} | Actual: ${actualBalance}`,
+        async () => {
 
-// Compare UI Invoice Amount with PDF Balance
-await Verify.equals(
-    this.page,
-    'Verify Invoice Amount vs PDF Balance',
-    Number(summaryAmount).toFixed(2),
-    Number(actualBalanceAmount).toFixed(2),
-    {
-        soft: false
-    }
-);
+            await Verify.equals(
+                this.page,
+                'Invoice Amount vs PDF Balance',
+                expectedBalanceAmount,
+                actualBalance,
+                {
+                    soft: false
+                }
+            );
+        }
+    );
+
 
     // =========================================================
     // ADJUSTMENT
@@ -486,46 +798,52 @@ await Verify.equals(
             ?.replace(/,/g, '')
             ?.trim() || '';
 
-
     const expectedAdjustment =
         Number(
             invoiceData.adjustmentAmount ?? 0
         ).toFixed(2);
 
+    const actualAdjustmentAmount =
+        Number(
+            actualAdjustment || 0
+        ).toFixed(2);
 
-    await Verify.equals(
+    await StepHelper.step(
         this.page,
-        'Verify Adjustment',
-        expectedAdjustment,
-        Number(actualAdjustment || 0).toFixed(2),
-        {
-            soft: false
+        `Verify Adjustment | Expected: ${expectedAdjustment} | Actual: ${actualAdjustmentAmount}`,
+        async () => {
+
+            await Verify.equals(
+                this.page,
+                'Adjustment',
+                expectedAdjustment,
+                actualAdjustmentAmount,
+                {
+                    soft: false
+                }
+            );
         }
     );
+
 
     // =========================================================
     // CLOSE INVOICE PDF
     // =========================================================
 
     await StepHelper.step(
-    this.page,
-    'Close Invoice PDF Preview',
-    async () => {
+        this.page,
+        'Close Invoice PDF Preview',
+        async () => {
 
-        const closeButton =
-            this.locator.pdfCloseButton;
+            await this.locator.pdfCloseButton.waitFor({
+                state: 'visible',
+                timeout: 30000
+            });
 
-        await closeButton.waitFor({
-            state: 'attached',
-            timeout: 30000
-        });
-
-        await closeButton.click({
-            timeout: 30000
-        });
-    }
-);
-}
+            await this.locator.pdfCloseButton.click();
+        }
+    );
+}//update
 
 async IPDInvoicePayment(patientName,admissionDate) {
 
@@ -535,7 +853,7 @@ async IPDInvoicePayment(patientName,admissionDate) {
 
     await this.selectAdmissionDate(
         admissionDate
-    );
+    );//update 
 
     await this.searchPatient(
         patientName

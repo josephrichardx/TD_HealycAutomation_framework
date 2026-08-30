@@ -12,67 +12,209 @@ class CalendarPage {
     }
 
 
-    async navigateToBookingDate(bookingDate) {
+    // async navigateToBookingDate(bookingDate) {
 
-        await StepHelper.step(
-            this.page,
-            `Navigate To Booking Date - ${bookingDate}`,
-            async () => {
+    //     await StepHelper.step(
+    //         this.page,
+    //         `Navigate To Booking Date - ${bookingDate}`,
+    //         async () => {
 
-                for (let i = 0; i < 31; i++) {
+    //             for (let i = 0; i < 31; i++) {
 
-                    const dateText = (
-                        await this.keywords.getText(
-                            this.locator.calendarDate
-                        )
-                    ).trim();
+    //                 const dateText = (
+    //                     await this.keywords.getText(
+    //                         this.locator.calendarDate
+    //                     )
+    //                 ).trim();
 
-                    console.log(`Calendar Date: ${dateText}`);
+    //                 console.log(`Calendar Date: ${dateText}`);
 
-                    const match = dateText.match(/\d+/);
+    //                 const match = dateText.match(/\d+/);
 
-                    if (!match) {
-                        throw new Error(
-                            `Unable to read calendar date: ${dateText}`
-                        );
-                    }
+    //                 if (!match) {
+    //                     throw new Error(
+    //                         `Unable to read calendar date: ${dateText}`
+    //                     );
+    //                 }
 
-                    const currentDate = Number(match[0]);
-                    const targetDate = Number(bookingDate);
+    //                 const currentDate = Number(match[0]);
+    //                 const targetDate = Number(bookingDate);
 
-                    if (currentDate === targetDate) {
-                        console.log(
-                            `Booking date reached: ${bookingDate}`
-                        );
-                        return;
-                    }
+    //                 if (currentDate === targetDate) {
+    //                     console.log(
+    //                         `Booking date reached: ${bookingDate}`
+    //                     );
+    //                     return;
+    //                 }
 
-                    if (currentDate < targetDate) {
+    //                 if (currentDate > targetDate) {
 
-                        await this.keywords.click(
-                            this.locator.nextDayBtn
-                        );
+    //                     await this.keywords.click(
+    //                         this.locator.nextDayBtn
+    //                     );//update
 
-                    } else {
+    //                 } else {
 
-                        await this.keywords.click(
-                            this.locator.previousDayBtn
-                        );
-                    }
+    //                     await this.keywords.click(
+    //                         this.locator.previousDayBtn
+    //                     );
+    //                 }
 
-                    await this.keywords.wait(
-                        this.page,
-                        500
+    //                 await this.keywords.wait(
+    //                     this.page,
+    //                     500
+    //                 );
+    //             }
+
+    //             throw new Error(
+    //                 `Unable to reach booking date: ${bookingDate}`
+    //             );
+    //         }
+    //     );
+    // }
+
+// async navigateToBookingDate(bookingDate) {
+
+//     await StepHelper.step(
+//         this.page,
+//         `Navigate To Booking Date - ${bookingDate}`,
+//         async () => {
+
+//             for (let i = 0; i < 31; i++) {
+
+//                 const dateText =
+//                     (
+//                         await this.keywords.getText(
+//                             this.locator.calendarDate
+//                         )
+//                     ).trim();
+
+//                 console.log(
+//                     `Calendar Date: ${dateText}`
+//                 );
+
+//                 const match =
+//                     dateText.match(/\d+/);
+
+//                 if (!match) {
+//                     throw new Error(
+//                         `Unable to read current date: ${dateText}`
+//                     );
+//                 }
+
+//                 const currentDate =
+//                     Number(match[0]);
+
+//                 const targetDate =
+//                     Number(bookingDate);
+
+//                 if (currentDate === targetDate) {
+
+//                     console.log(
+//                         `Booking date reached: ${bookingDate}`
+//                     );
+
+//                     return;
+//                 }
+
+//                 if (currentDate < targetDate) {
+
+//                     await this.keywords.click(
+//                         this.locator.nextDayBtn
+//                     );
+
+//                 } else {
+
+//                     await this.keywords.click(
+//                         this.locator.previousDayBtn
+//                     );
+//                 }
+
+//                 await this.keywords.wait(
+//                     this.page,
+//                     500
+//                 );
+//             }
+
+//             throw new Error(
+//                 `Unable to reach booking date: ${bookingDate}`
+//             );
+//         }
+//     );
+// }
+async navigateToBookingDate(bookingDate) {
+
+    await StepHelper.step(
+        this.page,
+        `Navigate To Booking Date - ${bookingDate}`,
+        async () => {
+
+            // Calendar starts from today's date
+            let currentDate = new Date();
+
+            // Convert booking date: "01 Sep, 2026"
+            const targetDate = new Date(bookingDate);
+
+            for (let i = 0; i < 31; i++) {
+
+                console.log(
+                    `Current Calendar Date: ${currentDate.toDateString()}`
+                );
+
+                console.log(
+                    `Target Booking Date: ${targetDate.toDateString()}`
+                );
+
+                // Date reached
+                if (
+                    currentDate.toDateString() ===
+                    targetDate.toDateString()
+                ) {
+
+                    console.log(
+                        `Booking date reached: ${bookingDate}`
+                    );
+
+                    return;
+                }
+
+                // Target is after current → NEXT
+                if (currentDate < targetDate) {
+
+                    await this.keywords.click(
+                        this.locator.nextDayBtn
+                    );
+
+                    // Move current date +1
+                    currentDate.setDate(
+                        currentDate.getDate() + 1
+                    );
+
+                } else {
+
+                    // Target is before current → PREVIOUS
+                    await this.keywords.click(
+                        this.locator.previousDayBtn
+                    );
+
+                    // Move current date -1
+                    currentDate.setDate(
+                        currentDate.getDate() - 1
                     );
                 }
 
-                throw new Error(
-                    `Unable to reach booking date: ${bookingDate}`
+                await this.keywords.wait(
+                    this.page,
+                    500
                 );
             }
-        );
-    }
 
+            throw new Error(
+                `Unable to reach booking date: ${bookingDate}`
+            );
+        }
+    );
+}
 
     async searchPatient(patientName) {
 
@@ -494,9 +636,9 @@ async verifyStatus(expectedStatus) {
         bookingDate
     ) {
 
-        await this.navigateToBookingDate(
-            bookingDate
-        );
+        // await this.navigateToBookingDate(
+        //     bookingDate
+        // );
 
         await this.searchPatient(
             patientName

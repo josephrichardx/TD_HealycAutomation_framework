@@ -15,7 +15,8 @@ const { generateUniquePatientFullName } = require('../utils/RandomData');
 
 test('Make Payment', async ({ page }) => {
  
-    const patientName = generateUniquePatientFullName();
+    // const patientName = generateUniquePatientFullName();
+    const patientName = patientData.patientName;
     const patientPage = new PatientPage(page);
     const consultPage = new ConsultPage(page);
     const servicePage = new ServicePage(page);
@@ -23,30 +24,27 @@ test('Make Payment', async ({ page }) => {
     const paymentPage = new PaymentPage(page);
     const calendarPage = new CalendarPage(page);
  
-    await patientPage.createPatient(
-        patientName,
-        patientData
-    );
+    // await patientPage.createPatient(
+    //     patientName,
+    //     patientData
+    // );
  
+    const bookingDate =
     await consultPage.addConsult(
         patientName,
         appoinmentData.doctorName,
-        consultData.consultSlot,
-        bookingData.bookingDate
+        consultData.consultSlot
     );
- 
+
     await servicePage.addService(
     patientName,
     serviceData.serviceName,
-    DateData.bookingDate
     );
- 
  
     await calendarPage.selectPatientFromCalendar(
     patientName,
-    bookingData.bookingDate
+    bookingDate
     );
- 
  
     await invoicePage.generateInvoice(
     patientName,

@@ -144,9 +144,12 @@ class ConsultPage {
             }
         );
 
-        const serviceOption = this.page.locator(
-            `xpath=(//div[normalize-space()='${consultSlot}'])[1]`
-        );
+        // const serviceOption = this.page.locator(
+        //     `xpath=(//div[normalize-space()='${consultSlot}'])[1]`
+        // );
+
+         const serviceOption = this.locator.serviceOption(consultSlot);
+
 
         await serviceOption.waitFor({
             state: 'visible',
@@ -221,27 +224,178 @@ class ConsultPage {
     }
 
 
+// async selectFirstAvailableSlot() {
+//     await StepHelper.step(
+//         this.page,
+//         'Select First Available Slot',
+//         async () => {
+//             while (true) {
+//                 const slotCount = await this.locator.slotButton.count();
+
+//                 if (slotCount > 0) {
+//                     await this.keywords.click(
+//                         this.locator.slotButton.first()
+//                     );
+//                     break;
+//                 }
+
+//                 await this.keywords.click(
+//                     this.locator.nextDateBtn
+//                 );
+//             }
+//         }
+//     );
+// }
+
+// async selectFirstAvailableSlot() {
+
+//     await StepHelper.step(
+//         this.page,
+//         'Select First Available Slot',
+//         async () => {
+
+//             while (true) {
+
+//                 const slotCount =
+//                     await this.locator.slotButton.count();
+
+//                 console.log(
+//                     `Available Slots: ${slotCount}`
+//                 );
+
+//                 if (slotCount > 0) {
+
+//                     // Get full date from UI
+//                     const selectedDate =
+//                         (
+//                             await this.keywords.getText(
+//                                 this.locator.calendarDate
+//                             )
+//                         ).trim();
+
+//                     // Example: "Mon 01"
+//                     const dateMatch =
+//                         selectedDate.match(/\d+/);
+
+//                     if (!dateMatch) {
+//                         throw new Error(
+//                             `Unable to read selected slot date: ${selectedDate}`
+//                         );
+//                     }
+
+//                     // Store only day
+//                     this.selectedSlotDate =
+//                         dateMatch[0];
+
+//                     console.log(
+//                         `Selected Slot Date: ${this.selectedSlotDate}`
+//                     );
+
+//                     // Click FIRST available slot
+//                     await this.keywords.click(
+//                         this.locator.slotButton.first()
+//                     );
+
+//                     break;
+//                 }
+
+//                 // No slot → next date
+//                 await this.keywords.click(
+//                     this.locator.nextDateBtn
+//                 );
+
+//                 await this.keywords.wait(
+//                     this.page,
+//                     1000
+//                 );
+//             }
+//         }
+//     );
+
+//     return this.selectedSlotDate;
+// }
 async selectFirstAvailableSlot() {
+
     await StepHelper.step(
         this.page,
         'Select First Available Slot',
         async () => {
+
             while (true) {
-                const slotCount = await this.locator.slotButton.count();
+
+                const slotCount =
+                    await this.locator.slotButton.count();
+
+                console.log(
+                    `Available Slots: ${slotCount}`
+                );
 
                 if (slotCount > 0) {
-                    await this.keywords.click(
-                        this.locator.slotButton.first()
+
+                    // First available slot
+                    const firstSlot =
+                        this.locator.slotButton.first();
+
+                    // Get the appointment card containing the slot
+                    // const appointmentCard =
+                    //     firstSlot.locator(
+                    //         'xpath=ancestor::div[contains(@class,"bookappointmentBodyCard")]'
+                    //     );
+
+                    const appointmentCard =
+                     this.locator.slotAppointmentCard(firstSlot);
+                     
+                    // Get complete text from the same card
+                    const cardText =
+                        await this.keywords.getText(
+                            appointmentCard
+                        );
+
+                    console.log(
+                        `Appointment Card Text: ${cardText}`
                     );
+
+                    // Example: 01 Sep, 2026
+                    const dateMatch =
+                        cardText.match(
+                            /\d{1,2}\s+[A-Za-z]{3},\s+\d{4}/
+                        );
+
+                    if (!dateMatch) {
+                        throw new Error(
+                            `Unable to read slot date from appointment card: ${cardText}`
+                        );
+                    }
+
+                    this.selectedSlotDate =
+                        dateMatch[0];
+
+                    console.log(
+                        `Selected Slot Date: ${this.selectedSlotDate}`
+                    );
+
+                    // Click FIRST available slot
+                    await this.keywords.click(
+                        firstSlot
+                    );
+
                     break;
                 }
 
+                // No slot → move to next date
                 await this.keywords.click(
                     this.locator.nextDateBtn
+                );
+
+                await this.keywords.wait(
+                    this.page,
+                    1000
                 );
             }
         }
     );
+
+    return this.selectedSlotDate;
 }
 
     async selectDoctor(doctorName) {
@@ -354,7 +508,7 @@ async selectFirstAvailableSlot() {
 
         await this.selectDoctor(
             doctorName
-        );
+        );//update
 
         await this.selectProvider();
 
@@ -363,7 +517,10 @@ async selectFirstAvailableSlot() {
             bookingDate
         );
 
-        await this.selectFirstAvailableSlot();
+        // await this.selectFirstAvailableSlot();//update
+
+        const selectedSlotDate =
+             await this.selectFirstAvailableSlot();
 
         await this.confirmConsultBooking();
 
@@ -378,6 +535,8 @@ async selectFirstAvailableSlot() {
                 });
             }
         );
+        // return this.selectedSlotDate;
+        return selectedSlotDate;
     }
 
 

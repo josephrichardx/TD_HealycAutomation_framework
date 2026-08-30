@@ -1,5 +1,6 @@
 {
   "patientData": {
+    "patientName": "Test Zydshz",
     "title": "Mr",
     "phoneNumber": "1234567890",
     "notes": "Healync",
@@ -12,7 +13,8 @@
    "invoiceData": {
     "adjustmentAmount": "10",
     "adjustmentName": "Discount",
-    "adjustmentReason": "Consult Discount"
+    "adjustmentReason": "Consult Discount",
+    "paidAmount": "0.00"
   },
   
   "paymentData": {

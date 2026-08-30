@@ -188,6 +188,10 @@ class PaymentLocator {
                 'xpath=../..'
             );
         };
+
+        // Payment History
+    this.paymentHistoryRow =
+    page.locator('table tbody tr').last();
     }
 
 

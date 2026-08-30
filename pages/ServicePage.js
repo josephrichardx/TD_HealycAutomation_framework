@@ -262,10 +262,67 @@ async selectFirstAvailableSlot() {
                 await this.keywords.click(
                     this.locator.nextDateBtn
                 );
+
+                await this.keywords.wait(
+                    this.page,
+                    500
+                );
             }
         }
     );
 }
+
+// async selectFirstAvailableSlot() {
+//     await StepHelper.step(
+//         this.page,
+//         'Select First Available Slot',
+//         async () => {
+
+//             while (true) {
+
+//                 const slotCount =
+//                     await this.locator.slotButton.count();
+
+//                 console.log('==============================');
+//                 console.log('Slot count:', slotCount);
+//                 console.log('Current URL:', this.page.url());
+
+//                 if (slotCount > 0) {
+
+//                     const slot =
+//                         this.locator.slotButton.first();
+
+//                     console.log(
+//                         'Slot visible:',
+//                         await slot.isVisible().catch(() => false)
+//                     );
+
+//                     console.log(
+//                         'Slot text:',
+//                         await slot.textContent().catch(() => null)
+//                     );
+
+//                     await slot.screenshot({
+//                         path: 'slot-debug.png'
+//                     }).catch(() => {});
+
+//                     await slot.click({
+//                         timeout: 60000
+//                     });
+
+//                     break;
+//                 }
+
+//                 console.log('No slot found - clicking next date');
+
+//                 await this.keywords.click(
+//                     this.locator.nextDateBtn
+//                 );
+//             }
+//         }
+//     );
+// }
+
     async selectMultipleServices(
         serviceNames
     ) {
