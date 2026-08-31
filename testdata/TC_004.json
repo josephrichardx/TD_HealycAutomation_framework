@@ -1,6 +1,5 @@
 {
   "patientData": {
-    "patientName": "Test Pjlhlo",
     "title": "Mr",
     "phoneNumber": "1234567890",
     "notes": "Healync",
@@ -18,16 +17,8 @@
     "consultSlot": "First Consult"
   },
  
-   "bookingData": {
-    "bookingDate": "27"
-  },
- 
    "serviceData": {
     "serviceName": "Clear Aligners"
-  },
- 
-  "DateData": {
-    "bookingDate": "27"
   },
  
    "invoiceData": {

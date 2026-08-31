@@ -24,8 +24,7 @@ const { admissionPatientData } = admissionData;
  
 test('IPD - Generate Invoice', async ({ page }) => {
  
-    // const patientName = generateUniquePatientFullName();
-    const patientName = patientData.patientName;
+    const patientName = generateUniquePatientFullName();
     const admissionPage = new AdmissionPage(page);
     const invoicePage = new InvoicePage(page);
     const patientPage = new PatientPage(page);
@@ -39,10 +38,10 @@ test('IPD - Generate Invoice', async ({ page }) => {
     // 1. Create Patient
     // ============================================================
  
-    // await patientPage.createPatient(
-    //     patientName,
-    //     patientData
-    // );
+    await patientPage.createPatient(
+        patientName,
+        patientData
+    );
  
  
     // ==========================================

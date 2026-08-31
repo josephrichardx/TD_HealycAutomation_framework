@@ -6,7 +6,7 @@ const { InvoicePage } = require('../pages/InvoicePage');
 const { PatientPage } = require('../pages/PatientPage');
 const { CalendarPage } = require('../pages/CalendarPage');
 
-const { patientData,bookingData,invoiceData } = require('../testdata/TC_032.json');
+const { patientData,invoiceData } = require('../testdata/TC_032.json');
 
 
 const { generateUniquePatientFullName } = require('../utils/RandomData');
@@ -23,8 +23,7 @@ const { admissionPatientData } = admissionData;
 
 test('Add Admission - Generate Invoice', async ({ page }) => {
 
-    // const patientName = generateUniquePatientFullName();
-    const patientName = patientData.patientName;
+    const patientName = generateUniquePatientFullName();
     const admissionPage = new AdmissionPage(page);
     const invoicePage = new InvoicePage(page);
     const patientPage = new PatientPage(page);
@@ -38,10 +37,10 @@ test('Add Admission - Generate Invoice', async ({ page }) => {
     // 1. Create Patient
     // ============================================================
 
-    // await patientPage.createPatient(
-    //     patientName,
-    //     patientData
-    // );
+    await patientPage.createPatient(
+        patientName,
+        patientData
+    );
 
 
     // ==========================================

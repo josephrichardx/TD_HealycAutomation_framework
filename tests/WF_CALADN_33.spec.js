@@ -4,13 +4,11 @@ import { AdmissionPage } from '../pages/AdmissionPage.js';
 
 const { InvoicePage } = require('../pages/InvoicePage');
 const { PatientPage } = require('../pages/PatientPage');
-const { ConsultPage } = require('../pages/ConsultPage');
-const { ServicePage } = require('../pages/ServicePage');
 const { PaymentPage } = require('../pages/PaymentPage');
 const { CalendarPage } = require('../pages/CalendarPage');
 
 
-const { patientData,bookingData,invoiceData,paymentData } = require('../testdata/TC_033.json');
+const { patientData,invoiceData,paymentData } = require('../testdata/TC_033.json');
 
 const { generateUniquePatientFullName } = require('../utils/RandomData');
 
@@ -27,8 +25,7 @@ const { admissionPatientData } = admissionData;
 
 test('Add Admission - Make Payment', async ({ page }) => {
 
-    // const patientName = generateUniquePatientFullName();
-    const patientName = patientData.patientName;
+    const patientName = generateUniquePatientFullName();
     const admissionPage = new AdmissionPage(page);
     const invoicePage = new InvoicePage(page);
     const patientPage = new PatientPage(page);
@@ -43,10 +40,10 @@ test('Add Admission - Make Payment', async ({ page }) => {
     // 1. Create Patient
     // ============================================================
 
-    // await patientPage.createPatient(
-    //     patientName,
-    //     patientData
-    // );
+    await patientPage.createPatient(
+        patientName,
+        patientData
+    );
 
 
     // ==========================================

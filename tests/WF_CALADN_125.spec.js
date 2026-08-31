@@ -17,18 +17,17 @@ const { generateUniquePatientFullName } = require('../utils/RandomData');
 
 test('Package - Cancel with Full Refund', async ({ page }) => {
 
-    // const patientName = generateUniquePatientFullName();
-    const patientName = patientData.patientName;
+    const patientName = generateUniquePatientFullName();
     const patientPage = new PatientPage(page);
     const invoicePage = new InvoicePage(page);
     const calendarPage = new CalendarPage(page);
     const packagePage = new PackagePage(page);
     const cancellationPage = new CancellationPage(page);
 
-    // await patientPage.createPatient(
-    //     patientName,
-    //     patientData
-    // );
+    await patientPage.createPatient(
+        patientName,
+        patientData
+    );
 
     await packagePage.addActivateSchedulePackage(
     patientName,

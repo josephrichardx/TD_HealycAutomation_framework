@@ -1,6 +1,5 @@
 {
   "patientData": {
-    "patientName": "Test Lqpeqy",
     "title": "Mr",
     "phoneNumber": "1234567890",
     "notes": "Healync",
@@ -8,10 +7,6 @@
     "age": "21",
     "gender": "Male",
     "address": "Chennai"
-  },
- 
-   "bookingData": {
-    "bookingDate": "27"
   },
 
    "invoiceData": {
