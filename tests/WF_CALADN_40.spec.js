@@ -9,11 +9,14 @@ const { AppointmentPage } = require("../pages/AppointmentPage.js");
 const { WaitlistPage } = require("../pages/WaitlistPage.js");
 const { PaymentPage } = require("../pages/PaymentPage.js");
  
-const { patientData } = require("../testdata/patients.json");
-const { appoinmentData, waitlistBookingData } = require("../testdata/appointmentData.json");
-const { consultData } = require("../testdata/consultData.json");
-const { invoiceData } = require("../testdata/invoiceData.json");
-const { paymentData } = require("../testdata/payments.json");
+const {
+    patientData,
+    appoinmentData,
+    waitlistBookingData,
+    consultData,
+    invoiceData,
+    paymentData
+} = require("../testdata/TC_40.json");
  
 const {
     generatePatientName,
