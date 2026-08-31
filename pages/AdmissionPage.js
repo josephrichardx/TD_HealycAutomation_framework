@@ -383,6 +383,10 @@ export class AdmissionPage {
             { visible: true, soft: false }
         );
 
+        await expect(options.first()).toBeVisible({
+            timeout: 10000
+        });
+
         const count = await options.count();
 
         await Verify.greaterThan(
