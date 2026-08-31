@@ -1,116 +1,35 @@
 name: Playwright Tests
+run-name: Playwright Tests - ${{ inputs.test_case }} (by @${{ github.actor }})
 
 on:
   workflow_dispatch:
     inputs:
-      baseUrl:
-        description: 'Select Target Base URL'
+      test_case:
+        description: 'Test case to run'
         required: true
+        default: '03 WF_CALADN_03'
         type: choice
-        default: 'http://release-uat.healync.com.s3-website.ap-south-1.amazonaws.com'
         options:
-          - 'http://frontend-uat.healync.com'
-          - 'http://release-uat.healync.com.s3-website.ap-south-1.amazonaws.com'
-
-      run_wf_01:
-        description: 'WF_CALADN_01.spec.js'
-        type: boolean
-        default: true
-
-      run_wf_02:
-        description: 'WF_CALADN_02.spec.js'
-        type: boolean
-        default: false
-
-      run_wf_03:
-        description: 'WF_CALADN_03.spec.js'
-        type: boolean
-        default: false
-
-      run_wf_04:
-        description: 'WF_CALADN_04.spec.js'
-        type: boolean
-        default: false
-
-      run_wf_05:
-        description: 'WF_CALADN_05.spec.js'
-        type: boolean
-        default: false
-
-      run_wf_31:
-        description: 'WF_CALADN_31.spec.js'
-        type: boolean
-        default: false
-
-      run_wf_32:
-        description: 'WF_CALADN_32.spec.js'
-        type: boolean
-        default: false
-
-      run_wf_32a:
-        description: 'WF_CALADN_32A.spec.js'
-        type: boolean
-        default: false
-
-      run_wf_33:
-        description: 'WF_CALADN_33.spec.js'
-        type: boolean
-        default: false
-
-      run_wf_33a:
-        description: 'WF_CALADN_33A.spec.js'
-        type: boolean
-        default: false
-
-      run_wf_39:
-        description: 'WF_CALADN_39.spec.js'
-        type: boolean
-        default: false
-
-      run_wf_40:
-        description: 'WF_CALADN_40.spec.js'
-        type: boolean
-        default: false
-
-      run_wf_41:
-        description: 'WF_CALADN_41.spec.js'
-        type: boolean
-        default: false
-
-      run_wf_42:
-        description: 'WF_CALADN_42.spec.js'
-        type: boolean
-        default: false
-
-      run_wf_45:
-        description: 'WF_CALADN_45.spec.js'
-        type: boolean
-        default: false
-
-      run_wf_46:
-        description: 'WF_CALADN_46.spec.js'
-        type: boolean
-        default: false
-
-      run_wf_47:
-        description: 'WF_CALADN_47.spec.js'
-        type: boolean
-        default: false
-
-      run_wf_48:
-        description: 'WF_CALADN_48.spec.js'
-        type: boolean
-        default: false
-
-      run_wf_125:
-        description: 'WF_CALADN_125.spec.js'
-        type: boolean
-        default: false
-
-      run_wf_126:
-        description: 'WF_CALADN_126.spec.js'
-        type: boolean
-        default: false
+          - '01 WF_CALADN_01'
+          - '02 WF_CALADN_02'
+          - '03 WF_CALADN_03'
+          - '04 WF_CALADN_04'
+          - '05 WF_CALADN_05'
+          - '31 WF_CALADN_31'
+          - '32 WF_CALADN_32'
+          - '32A WF_CALADN_32A'
+          - '33 WF_CALADN_33'
+          - '33A WF_CALADN_33A'
+          - '39 WF_CALADN_39'
+          - '40 WF_CALADN_40'
+          - '41 WF_CALADN_41'
+          - '42 WF_CALADN_42'
+          - '45 WF_CALADN_45'
+          - '46 WF_CALADN_46'
+          - '47 WF_CALADN_47'
+          - '48 WF_CALADN_48'
+          - '125 WF_CALADN_125'
+          - '126 WF_CALADN_126'
 
 jobs:
   test:
@@ -118,107 +37,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: 'npm'
 
-      - name: Install dependencies
-        run: npm ci
+    - name: Install dependencies
+      run: npm ci
 
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
 
-      - name: Resolve Selected Test Files and Run
-        env:
-          PLAYWRIGHT_TEST_BASE_URL: ${{ inputs.baseUrl }}
+    - name: Extract spec file name
+      id: extract
+      run: |
+        # input looks like "32A WF_CALADN_32A" -> we just need the WF_CALADN_xxx part
+        TEST_CASE="${{ inputs.test_case }}"
+        SPEC_NAME="${TEST_CASE#* }"
+        echo "spec_name=$SPEC_NAME" >> "$GITHUB_OUTPUT"
 
-          RUN_01: ${{ inputs.run_wf_01 }}
-          RUN_02: ${{ inputs.run_wf_02 }}
-          RUN_03: ${{ inputs.run_wf_03 }}
-          RUN_04: ${{ inputs.run_wf_04 }}
-          RUN_05: ${{ inputs.run_wf_05 }}
+    - name: Run Selected Test Case
+      run: npx playwright test tests/${{ steps.extract.outputs.spec_name }}.spec.js
 
-          RUN_31: ${{ inputs.run_wf_31 }}
-          RUN_32: ${{ inputs.run_wf_32 }}
-          RUN_32A: ${{ inputs.run_wf_32a }}
-          RUN_33: ${{ inputs.run_wf_33 }}
-          RUN_33A: ${{ inputs.run_wf_33a }}
-          RUN_39: ${{ inputs.run_wf_39 }}
-          RUN_40: ${{ inputs.run_wf_40 }}
-          RUN_41: ${{ inputs.run_wf_41 }}
-          RUN_42: ${{ inputs.run_wf_42 }}
-          RUN_45: ${{ inputs.run_wf_45 }}
-          RUN_46: ${{ inputs.run_wf_46 }}
-          RUN_47: ${{ inputs.run_wf_47 }}
-          RUN_48: ${{ inputs.run_wf_48 }}
-          RUN_125: ${{ inputs.run_wf_125 }}
-          RUN_126: ${{ inputs.run_wf_126 }}
-
-        run: |
-          FILES=""
-
-          for TEST in \
-            "01 WF_CALADN_01" \
-            "02 WF_CALADN_02" \
-            "03 WF_CALADN_03" \
-            "04 WF_CALADN_04" \
-            "05 WF_CALADN_05" \
-            "31 WF_CALADN_31" \
-            "32 WF_CALADN_32" \
-            "32A WF_CALADN_32A" \
-            "33 WF_CALADN_33" \
-            "33A WF_CALADN_33A" \
-            "39 WF_CALADN_39" \
-            "40 WF_CALADN_40" \
-            "41 WF_CALADN_41" \
-            "42 WF_CALADN_42" \
-            "45 WF_CALADN_45" \
-            "46 WF_CALADN_46" \
-            "47 WF_CALADN_47" \
-            "48 WF_CALADN_48" \
-            "125 WF_CALADN_125" \
-            "126 WF_CALADN_126"
-          do
-            NUMBER=$(echo "$TEST" | awk '{print $1}')
-            NAME=$(echo "$TEST" | awk '{print $2}')
-            VAR="RUN_$NUMBER"
-
-            if [ "${!VAR}" = "true" ]; then
-              FILES="$FILES tests/$NAME.spec.js"
-            fi
-          done
-
-          if [ -z "$FILES" ]; then
-            echo "No test files were selected!"
-            echo "Please select at least one test case."
-            exit 1
-          fi
-
-          TEST_NAMES=$(echo "$FILES" | sed 's#tests/##g; s#\.spec\.js##g' | xargs)
-
-          echo "======================================"
-          echo "Selected Tests: $TEST_NAMES"
-          echo "Base URL: $PLAYWRIGHT_TEST_BASE_URL"
-          echo "Files: $FILES"
-          echo "======================================"
-
-          echo "## Selected Test Cases" >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "$TEST_NAMES" >> "$GITHUB_STEP_SUMMARY"
-
-          echo "## Base URL" >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "$PLAYWRIGHT_TEST_BASE_URL" >> "$GITHUB_STEP_SUMMARY"
-
-          npx playwright test $FILES
-
-      - name: Upload HTML Report
-        if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 1
+    - name: Upload HTML Report
+      if: ${{ !cancelled() }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 30
