@@ -32,8 +32,12 @@ class InvoiceLocator
         //         'tr:nth-child(2) > .td-checkbox > .ng-untouched'
         //     );
 
-        this.serviceCheckbox = page.locator(
+        this.servicebox = page.locator(
             'th.th-checkbox.cell-input'
+        );
+
+        this.serviceCheckbox = page.locator(
+            'th.th-checkbox.cell-input input[type="checkbox"]'
         );
 
         // Adjustment
@@ -262,7 +266,6 @@ class InvoiceLocator
         page.locator(
             "//app-appointment-details//*[normalize-space()='Paid amount']/parent::*//div[contains(@class,'amount-wrapper')]"
         ).first();
-
 
         this.appointmentTotalAmount =
         page.locator(

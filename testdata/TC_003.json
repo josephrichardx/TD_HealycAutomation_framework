@@ -8,30 +8,22 @@
     "gender": "Male",
     "address": "Chennai"
   },
- 
- "appoinmentData": {
+
+  "appoinmentData": {
     "doctorName": "Dr. Orthopedic"
   },
  
   "consultData": {
     "consultSlot": "First Consult"
   },
- 
-   "bookingData": {
-    "bookingDate": "29"
-  },
- 
    "serviceData": {
     "serviceName": "Clear Aligners"
   },
- 
-  "DateData": {
-    "bookingDate": "29"
-  },
- 
+
    "invoiceData": {
     "adjustmentAmount": "10",
     "adjustmentName": "Discount",
-    "adjustmentReason": "Consult Discount"
+    "adjustmentReason": "Consult Discount",
+    "paidAmount": "0.00"
   }
 }

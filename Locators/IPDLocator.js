@@ -176,13 +176,22 @@ class IPDLocator {
                 }
             );
 
-        this.applyBtn =
-            page.getByText(
+        // this.applyBtn =
+        //     page.getByText(
+        //         'Apply',
+        //         {
+        //             exact: true
+        //         }
+        //     );
+
+        this.applyBtn = page
+            .getByText(
                 'Apply',
                 {
                     exact: true
                 }
-            );
+            )
+             .nth(1);
 
     // IPD Admission Details Summary
  
@@ -251,7 +260,13 @@ class IPDLocator {
         this.admittedSummary = page.locator(
             "//div[normalize-space()='Admitted']/following-sibling::div"
         );
-        
+
+        // Invoice PDF Preview
+
+        this.invoicePdfPreview =
+            page.locator(
+                'app-document-preview'
+            );       
     }
 }
 

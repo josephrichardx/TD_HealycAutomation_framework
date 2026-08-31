@@ -8,7 +8,7 @@ const { IPDPage } = require('../pages/IPDPage.js');
  
 const { patientData,invoiceData } = require('../testdata/TC_032A.json');
 
-const { generatePatientName } = require('../utils/RandomData.js');
+const { generateUniquePatientFullName } = require('../utils/RandomData.js');
  
 import admissionData from '../testdata/admissionData.json' with { type: 'json' };
  
@@ -24,8 +24,7 @@ const { admissionPatientData } = admissionData;
  
 test('IPD - Generate Invoice', async ({ page }) => {
  
-    const patientName = generatePatientName();
-   
+    const patientName = generateUniquePatientFullName();
     const admissionPage = new AdmissionPage(page);
     const invoicePage = new InvoicePage(page);
     const patientPage = new PatientPage(page);

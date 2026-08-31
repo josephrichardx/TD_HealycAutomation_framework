@@ -66,6 +66,11 @@ class ConsultLocator {
             "xpath=//div[@class='search-icon']//following::input[@type='text']"
         );
 
+        this.serviceOption = (consultSlot) =>
+            this.page.locator(
+                `xpath=(//div[normalize-space()='${consultSlot}'])[1]`
+            );
+
         this.bookingDateContainer = page.locator(
             "//div[@class='range-date-container']"
         );
@@ -81,6 +86,11 @@ class ConsultLocator {
         this.slotButton = page.locator(
             '.slotButton'
         );
+
+        this.slotAppointmentCard = (slot) =>
+            slot.locator(
+                'xpath=ancestor::div[contains(@class,"bookappointmentBodyCard")]'
+            );
 
         this.doctorDropdown = page.locator(
             '.multi-dropdown-title'
@@ -175,12 +185,14 @@ class ConsultLocator {
         ).first();
 
         this.customSlotUpdateBtn = page.locator(
-            'button.activeButon:visible'
+            'button.activeButton:visible'
         ).first();
 
+        this.nextDateBtn = page.locator('div.NextListButton').first();
 
-        
-        
+        this.calendarDate = page
+            .locator('.fc-col-header-cell-cushion')
+            .first();
     }
 
 

@@ -8,14 +8,11 @@
     "gender": "Male",
     "address": "Chennai"
   },
- 
-   "bookingData": {
-    "bookingDate": "29"
-  },
 
    "invoiceData": {
     "adjustmentAmount": "10",
     "adjustmentName": "Discount",
-    "adjustmentReason": "Consult Discount"
+    "adjustmentReason": "Consult Discount",
+    "invoicePrefix": "INV-"
   }
 }

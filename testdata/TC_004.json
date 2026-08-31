@@ -17,30 +17,22 @@
     "consultSlot": "First Consult"
   },
  
-   "bookingData": {
-    "bookingDate": "27"
-  },
- 
    "serviceData": {
     "serviceName": "Clear Aligners"
-  },
- 
-  "DateData": {
-    "bookingDate": "27"
   },
  
    "invoiceData": {
     "adjustmentAmount": "10",
     "adjustmentName": "Discount",
-    "adjustmentReason": "Consult Discount"
+    "adjustmentReason": "Consult Discount",
+    "paidAmount": "0.00"
   },
   "paymentData": {
     "paymentMethod": "UPI",
     "amount": "500",
     "transactionId": "TXN123456789",
     "paymentType": "Cash",
-    "makeFullPayment": true,
-    "invoicePrefix": "INV-00"
+    "makeFullPayment": true
   }
 
 }

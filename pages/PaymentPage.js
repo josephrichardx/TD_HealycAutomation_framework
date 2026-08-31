@@ -557,7 +557,7 @@ class PaymentPage {
                 this.page,
                 `Calculate Remaining Amount | ₹${totalAmount} - ₹${expectedPaidAmount} = ₹${expectedRemainingAmount}`,
                 async () => {
-                    // Calculation is already performed above.
+                //     // Calculation is already performed above.
                 }
             );
 
@@ -608,28 +608,118 @@ class PaymentPage {
     );
 }
 
-async IPDVerifyPayment(paymentMethod, amount) {
+// async IPDVerifyPayment(paymentMethod, amount) {
+
+//     await StepHelper.step(
+//         this.page,
+//         'Verify Payment History',
+//         async () => {
+
+//             // Get the latest payment history row
+//             const paymentRow = this.page
+//                 .locator('table tbody tr')
+//                 .last();
+
+//             // Get actual payment method from UI
+//             const actualPaymentMethod =
+//                 (await paymentRow.locator('td').nth(2).innerText())
+//                     .trim();
+
+//             // Get actual payment amount from UI
+//             const actualPaymentAmount =
+//                 (await paymentRow.locator('td').nth(3).innerText())
+//                     .trim()
+//                     .replace(/[₹,\s]/g, '');
+
+//             const expectedAmount =
+//                 Number(amount).toFixed(2);
+
+//             const actualAmount =
+//                 Number(actualPaymentAmount).toFixed(2);
+
+//             // Verify Payment Method
+//             await StepHelper.step(
+//             this.page,
+//             `Verify Payment Method | Expected: ${paymentMethod} | Actual: ${actualPaymentMethod}`,
+//             async () => {
+
+//                 const expected =
+//                     String(paymentMethod).trim().toLowerCase();
+
+//                 const actual =
+//                     String(actualPaymentMethod).trim().toLowerCase();
+
+//                 if (expected !== actual) {
+//                     throw new Error(
+//                         `Payment Method mismatch - Expected: ${paymentMethod}, Actual: ${actualPaymentMethod}`
+//                     );
+//                 }
+//             }
+//             );
+
+//             // Verify Payment Amount
+//             await Verify.equals(
+//                 this.page,
+//                 'Verify Payment Amount',
+//                 expectedAmount,
+//                 actualAmount,
+//                 {
+//                     soft: false
+//                 }
+//             );
+//         }
+//     );
+// }
+async IPDVerifyPayment(
+    paymentMethod,
+    amount
+) {
 
     await StepHelper.step(
         this.page,
         'Verify Payment History',
         async () => {
 
-            // Get the latest payment history row
-            const paymentRow = this.page
-                .locator('table tbody tr')
-                .last();
+            // =========================================================
+            // GET LATEST PAYMENT HISTORY ROW
+            // =========================================================
 
-            // Get actual payment method from UI
+            const paymentRow =
+                this.locator.paymentHistoryRow;
+
+            await paymentRow.waitFor({
+                state: 'visible',
+                timeout: 30000
+            });
+
+
+            // =========================================================
+            // GET ACTUAL PAYMENT METHOD
+            // =========================================================
+
             const actualPaymentMethod =
-                (await paymentRow.locator('td').nth(2).innerText())
-                    .trim();
+                (
+                    await paymentRow
+                        .locator('td')
+                        .nth(2)
+                        .innerText()
+                ).trim();
 
-            // Get actual payment amount from UI
+
+            // =========================================================
+            // GET ACTUAL PAYMENT AMOUNT
+            // =========================================================
+
             const actualPaymentAmount =
-                (await paymentRow.locator('td').nth(3).innerText())
+                (
+                    await paymentRow
+                        .locator('td')
+                        .nth(3)
+                        .innerText()
+                )
                     .trim()
                     .replace(/[₹,\s]/g, '');
+
 
             const expectedAmount =
                 Number(amount).toFixed(2);
@@ -637,39 +727,61 @@ async IPDVerifyPayment(paymentMethod, amount) {
             const actualAmount =
                 Number(actualPaymentAmount).toFixed(2);
 
-            // Verify Payment Method
+
+            // =========================================================
+            // VERIFY PAYMENT METHOD
+            // =========================================================
+
             await StepHelper.step(
-            this.page,
-            `Verify Payment Method | Expected: ${paymentMethod} | Actual: ${actualPaymentMethod}`,
-            async () => {
+                this.page,
+                `Verify Payment Method | Expected: ${paymentMethod} | Actual: ${actualPaymentMethod}`,
+                async () => {
 
-                const expected =
-                    String(paymentMethod).trim().toLowerCase();
+                    const expected =
+                        String(paymentMethod)
+                            .trim()
+                            .toLowerCase();
 
-                const actual =
-                    String(actualPaymentMethod).trim().toLowerCase();
+                    const actual =
+                        String(actualPaymentMethod)
+                            .trim()
+                            .toLowerCase();
 
-                if (expected !== actual) {
-                    throw new Error(
-                        `Payment Method mismatch - Expected: ${paymentMethod}, Actual: ${actualPaymentMethod}`
-                    );
+                    if (expected !== actual) {
+
+                        throw new Error(
+                            `Payment Method mismatch - Expected: ${paymentMethod}, Actual: ${actualPaymentMethod}`
+                        );
+                    }
                 }
-            }
             );
 
-            // Verify Payment Amount
-            await Verify.equals(
+
+            // =========================================================
+            // VERIFY PAYMENT AMOUNT
+            // =========================================================
+
+            await StepHelper.step(
                 this.page,
-                'Verify Payment Amount',
-                expectedAmount,
-                actualAmount,
-                {
-                    soft: false
+                `Verify Payment Amount | Expected: ${expectedAmount} | Actual: ${actualAmount}`,
+                async () => {
+
+                    await Verify.equals(
+                        this.page,
+                        'Payment Amount',
+                        expectedAmount,
+                        actualAmount,
+                        {
+                            soft: false
+                        }
+                    );
                 }
             );
         }
     );
-}
+}//update
+
+
 }
 
 

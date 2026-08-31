@@ -186,65 +186,142 @@ class ServicePage {
             this.page,
             'Close Service Dropdown',
             async () => {
-                await this.keywords.keyboardPress(
-                    this.page,
-                    'Escape'
-                );
-            }
-        );
-
-
-        await StepHelper.step(
-            this.page,
-            'Open Booking Date',
-            async () => {
                 await this.keywords.click(
-                    this.locator.bookingDateContainer
+                    this.locator.providerDropdown
                 );
             }
         );
 
 
-        await StepHelper.step(
-            this.page,
-            `Select Booking Date - ${bookingDate}`,
-            async () => {
-
-                await this.keywords.click(
-                    this.locator.currentMonth.getByText(
-                        bookingDate,
-                        {
-                            exact: true
-                        }
-                    )
-                );
-            }
-        );
+        // await StepHelper.step(
+        //     this.page,
+        //     'Open Booking Date',
+        //     async () => {
+        //         await this.keywords.click(
+        //             this.locator.bookingDateContainer
+        //         );
+        //     }
+        // );
 
 
-        await StepHelper.step(
-            this.page,
-            'Apply Booking Date',
-            async () => {
-                await this.keywords.click(
-                    this.locator.applyBtn
-                );
-            }
-        );
+        // await StepHelper.step(
+        //     this.page,
+        //     `Select Booking Date - ${bookingDate}`,
+        //     async () => {
+
+        //         await this.keywords.click(
+        //             this.locator.currentMonth.getByText(
+        //                 bookingDate,
+        //                 {
+        //                     exact: true
+        //                 }
+        //             )
+        //         );
+        //     }
+        // );
 
 
-        await StepHelper.step(
-            this.page,
-            'Select First Available Slot',
-            async () => {
+        // await StepHelper.step(
+        //     this.page,
+        //     'Apply Booking Date',
+        //     async () => {
+        //         await this.keywords.click(
+        //             this.locator.applyBtn
+        //         );
+        //     }
+        // );
 
-                await this.keywords.click(
-                    this.locator.slotButton.first()
-                );
-            }
-        );
+
+        // await StepHelper.step(
+        //     this.page,
+        //     'Select First Available Slot',
+        //     async () => {
+
+        //         await this.keywords.click(
+        //             this.locator.slotButton.first()
+        //         );
+        //     }
+        // );
     }
 
+async selectFirstAvailableSlot() {
+    await StepHelper.step(
+        this.page,
+        'Select First Available Slot',
+        async () => {
+            while (true) {
+                const slotCount = await this.locator.slotButton.count();
+
+                if (slotCount > 0) {
+                    await this.keywords.click(
+                        this.locator.slotButton.first()
+                    );
+                    break;
+                }
+
+                await this.keywords.click(
+                    this.locator.nextDateBtn
+                );
+
+                await this.keywords.wait(
+                    this.page,
+                    500
+                );
+            }
+        }
+    );
+}
+
+// async selectFirstAvailableSlot() {
+//     await StepHelper.step(
+//         this.page,
+//         'Select First Available Slot',
+//         async () => {
+
+//             while (true) {
+
+//                 const slotCount =
+//                     await this.locator.slotButton.count();
+
+//                 console.log('==============================');
+//                 console.log('Slot count:', slotCount);
+//                 console.log('Current URL:', this.page.url());
+
+//                 if (slotCount > 0) {
+
+//                     const slot =
+//                         this.locator.slotButton.first();
+
+//                     console.log(
+//                         'Slot visible:',
+//                         await slot.isVisible().catch(() => false)
+//                     );
+
+//                     console.log(
+//                         'Slot text:',
+//                         await slot.textContent().catch(() => null)
+//                     );
+
+//                     await slot.screenshot({
+//                         path: 'slot-debug.png'
+//                     }).catch(() => {});
+
+//                     await slot.click({
+//                         timeout: 60000
+//                     });
+
+//                     break;
+//                 }
+
+//                 console.log('No slot found - clicking next date');
+
+//                 await this.keywords.click(
+//                     this.locator.nextDateBtn
+//                 );
+//             }
+//         }
+//     );
+// }
 
     async selectMultipleServices(
         serviceNames
@@ -394,13 +471,26 @@ class ServicePage {
                 );
             }
         );
+    }
 
+    async verifyBookingConfirmation() {
 
-        await this.keywords.wait(
+    await StepHelper.step(
+        this.page,
+        'Verify Service Booking Confirmation Message',
+        async () => {
+            await expect(
+                this.locator.bookingConfirmMsg
+            ).toBeVisible();
+        }
+    );
+
+    await this.keywords.wait(
             this.page,
             5000
         );
-    }
+
+}
 
 
     async addService(
@@ -420,7 +510,11 @@ class ServicePage {
             bookingDate
         );
 
+        await this.selectFirstAvailableSlot();
+
         await this.confirmServiceBooking();
+
+        await this.verifyBookingConfirmation();
     }
 
 

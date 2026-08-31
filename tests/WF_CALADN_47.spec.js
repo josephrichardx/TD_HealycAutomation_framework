@@ -2,17 +2,13 @@ import { test } from '../fixtures/baseTest.js';
 import { AdmissionPage } from '../pages/AdmissionPage.js';
  
  
-const { InvoicePage } = require('../pages/InvoicePage.js');
+
 const { PatientPage } = require('../pages/PatientPage.js');
-const { ConsultPage } = require('../pages/ConsultPage.js');
-const { ServicePage } = require('../pages/ServicePage.js');
-const { PaymentPage } = require('../pages/PaymentPage.js');
-const { CalendarPage } = require('../pages/CalendarPage.js');
 const { IPDPage } = require('../pages/IPDPage.js');
  
 const { patientData,IPDAdmissionDetailsSummary } = require('../testdata/TC_47.json');
 
-const { generatePatientName } = require('../utils/RandomData.js');
+const { generateUniquePatientFullName } = require('../utils/RandomData.js');
  
 import admissionData from '../testdata/admissionData.json' with { type: 'json' };
  
@@ -24,20 +20,13 @@ import {
 } from '../utils/RandomData.js';
  
 const { admissionPatientData } = admissionData;
- 
-test.setTimeout(180000);
+
  
 test('IPD - Generate Invoice', async ({ page }) => {
  
-    const patientName = generatePatientName();
-   
+    const patientName = generateUniquePatientFullName();
     const admissionPage = new AdmissionPage(page);
-    const invoicePage = new InvoicePage(page);
     const patientPage = new PatientPage(page);
-    const consultPage = new ConsultPage(page);
-    const servicePage = new ServicePage(page);
-    const paymentPage = new PaymentPage(page);
-    const calendarPage = new CalendarPage(page);
     const ipdPage = new IPDPage(page);
  
     const data = { ...admissionPatientData };

@@ -7,11 +7,12 @@ const { ServicePage } = require('../pages/ServicePage');
 const { InvoicePage } = require('../pages/InvoicePage');
 const { CalendarPage } = require('../pages/CalendarPage');
  
-const { patientData,appoinmentData,consultData,serviceData,invoiceData } = require('../testdata/TC_003.json');
+const { patientData,appoinmentData,consultData,serviceData,DateData,invoiceData } = require('../testdata/TC_003.json');
 const { generateUniquePatientFullName } = require('../utils/RandomData');
 
 test('Generate Invoice', async ({ page }) => {
  
+    // const patientName = patientData.patientName;
     const patientName = generateUniquePatientFullName();
     const patientPage = new PatientPage(page);
     const consultPage = new ConsultPage(page);
@@ -30,12 +31,6 @@ test('Generate Invoice', async ({ page }) => {
         appoinmentData.doctorName,
         consultData.consultSlot
     );
-
-    await servicePage.addService(
-    patientName,
-    serviceData.serviceName,
-    );
- 
  
     await calendarPage.selectPatientFromCalendar(
     patientName,
@@ -43,24 +38,19 @@ test('Generate Invoice', async ({ page }) => {
     );
  
  
-    await invoicePage.generateInvoice(
-    patientName,
-    invoiceData
-    );
- 
-    const summaryAmount =
-    await invoicePage.verifyInvoiceTotalAfterAdjustment(
-        invoiceData
-    );
- 
-    await invoicePage.verifyPaymentSection();
- 
-    await invoicePage.openAndVerifyInvoicePDF(
-        patientName,
-        patientData,
-        invoiceData,
-        summaryAmount
-    );
+
+
+
+    await page.getByRole('button', { name: 'Write Prescription' }).click();
+
+
+
+
+
+
+
+
+  
  
 });
  

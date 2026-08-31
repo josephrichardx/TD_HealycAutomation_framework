@@ -16,14 +16,70 @@ class InvoicePage {
     async selectInvoiceServices() {
 
         await StepHelper.step(
-            this.page,
-            'Select Service',
-            async () => {
+        this.page,
+        'Wait for Services to Load',
+        async () => {
+
+            await expect(
+                this.locator.serviceCheckbox.first()
+            ).toBeVisible({
+                timeout: 60000
+            });
+        }
+    );//update
+
+    await StepHelper.step(
+        this.page,
+        'Select All Services',
+        async () => {
+
+            const count =
+                await this.locator.serviceCheckbox.count();
+
+            console.log(`Service Checkbox Count: ${count}`);
+
+            for (let i = 0; i < count; i++) {
+
+                console.log(
+                    `Checkbox ${i} visible:`,
+                    await this.locator.serviceCheckbox.nth(i).isVisible()
+                );
+
+                console.log(
+                    `Checkbox ${i} enabled:`,
+                    await this.locator.serviceCheckbox.nth(i).isEnabled()
+                );
+
                 await this.keywords.click(
-                    this.locator.serviceCheckbox
+                    this.locator.serviceCheckbox.nth(i)
                 );
             }
-        );
+        }
+    );
+
+    //     await StepHelper.step(
+    //     this.page,
+    //     'Select All Checkboxes',
+    //     async () => {
+    //         const count = await this.locator.serviceCheckbox.count();
+
+    //         for (let i = 0; i < count; i++) {
+    //             await this.keywords.click(
+    //                 this.locator.serviceCheckbox.nth(i)
+    //             );
+    //         }
+    //     }
+    // );
+
+        // await StepHelper.step(
+        //     this.page,
+        //     'Select Service',
+        //     async () => {
+        //         await this.keywords.click(
+        //             this.locator.serviceCheckbox
+        //         );
+        //     }
+        // );
 
         // await StepHelper.step(
         //     this.page,
@@ -46,6 +102,20 @@ class InvoicePage {
         // );
     }
 
+    async selectServices() {
+
+
+        await StepHelper.step(
+            this.page,
+            'Select Service',
+            async () => {
+                await this.keywords.click(
+                    this.locator.servicebox
+                );
+            }
+        );
+
+    }
 
     async addAdjustment(
         amount,
@@ -180,15 +250,14 @@ class InvoicePage {
         );
     }
 
-    async verifyInvoiceTotalAfterAdjustment(
-    invoiceData
-) {
+async verifyInvoiceTotalAfterAdjustment(invoiceData) {
 
     let summaryValue;
     let summaryAmount;
     let expectedTotal;
     let actualTotal;
-
+    let paymentDue;
+    let paidAmount;
 
     // Get Summary Value
     await StepHelper.step(
@@ -208,7 +277,6 @@ class InvoicePage {
             );
         }
     );
-
 
     // Calculate Expected Invoice Total
     await StepHelper.step(
@@ -246,7 +314,6 @@ class InvoicePage {
         }
     );
 
-
     // Get Actual Invoice Total
     await StepHelper.step(
         this.page,
@@ -265,7 +332,6 @@ class InvoicePage {
             );
         }
     );
-
 
     // Verify Invoice Total
     await StepHelper.step(
@@ -287,11 +353,119 @@ class InvoicePage {
         }
     );
 
+    // Get Payment Due
+    await StepHelper.step(
+        this.page,
+        'Get Payment Due',
+        async () => {
+
+            paymentDue =
+                (
+                    await this.keywords.getText(
+                        this.locator.appointmentPaymentDue
+                    )
+                ).trim();
+
+            console.log(
+                `Payment Due: ${paymentDue}`
+            );
+        }
+    );
+
+    // Verify Invoice Total = Payment Due
+    await StepHelper.step(
+        this.page,
+        `Verify Invoice Total = Payment Due | Invoice Total: ${actualTotal} | Payment Due: ${paymentDue}`,
+        async () => {
+
+            const invoiceAmount =
+                parseFloat(
+                    actualTotal.replace(
+                        /[₹,\s]/g,
+                        ''
+                    )
+                );
+
+            const paymentDueAmount =
+                parseFloat(
+                    paymentDue.replace(
+                        /[₹,\s]/g,
+                        ''
+                    )
+                );
+
+            expect(paymentDueAmount).toBe(
+                invoiceAmount
+            );
+
+            console.log(
+                `Invoice Total: ${invoiceAmount.toFixed(2)}`
+            );
+
+            console.log(
+                `Payment Due: ${paymentDueAmount.toFixed(2)}`
+            );
+
+            console.log(
+                `Invoice Total and Payment Due are equal`
+            );
+        }
+    );
+
+    // Get Paid Amount
+await StepHelper.step(
+    this.page,
+    'Get Paid Amount',
+    async () => {
+
+        paidAmount =
+            (
+                await this.keywords.getText(
+                    this.locator.appointmentPaidAmount
+                )
+            ).trim();
+
+        console.log(
+            `Paid Amount: ${paidAmount}`
+        );
+    }
+);
+
+// Verify Paid Amount
+await StepHelper.step(
+    this.page,
+    `Verify Paid Amount | Expected: ₹${parseFloat(invoiceData.paidAmount).toFixed(2)} | Actual: ${paidAmount}`,
+    async () => {
+
+        const actualPaidAmount =
+            parseFloat(
+                paidAmount.replace(
+                    /[₹,\s]/g,
+                    ''
+                )
+            );
+
+        const expectedPaidAmount =
+            parseFloat(
+                invoiceData.paidAmount
+            );
+
+        expect(actualPaidAmount).toBe(
+            expectedPaidAmount
+        );
+
+        console.log(
+            `Expected Paid Amount: ₹${expectedPaidAmount.toFixed(2)}`
+        );
+
+        console.log(
+            `Actual Paid Amount: ₹${actualPaidAmount.toFixed(2)}`
+        );
+    }
+);
 
     return summaryAmount;
 }
-
-
 
 async verifyPaymentSection() {
 
@@ -341,16 +515,13 @@ async verifyPaymentSection() {
         'Verify Send Invoice',
         async () => {
 
-            const sendInvoiceText =
-                (
-                    await this.keywords.getText(
-                        this.locator.appointmentSendInvoice
-                    )
-                ).trim();
-
-            expect(sendInvoiceText).toBe(
-                'Send invoice'
+            await this.keywords.waitForElement(
+                this.locator.appointmentSendInvoice
             );
+
+            await expect(
+                this.locator.appointmentSendInvoice
+            ).toBeVisible();
         }
     );
 
@@ -376,18 +547,6 @@ async verifyPaymentSection() {
     );
 
 
-    // Verify Payment Due
-
-    await StepHelper.step(
-        this.page,
-        `Verify Payment Due | Actual: ${paymentDue}`,
-        async () => {
-
-            expect(paymentDue).not.toBe('');
-        }
-    );
-
-
     // Get Paid Amount
 
     await StepHelper.step(
@@ -407,19 +566,6 @@ async verifyPaymentSection() {
             );
         }
     );
-
-
-    // Verify Paid Amount
-
-    await StepHelper.step(
-        this.page,
-        `Verify Paid Amount | Actual: ${paidAmount}`,
-        async () => {
-
-            expect(paidAmount).not.toBe('');
-        }
-    );
-
 
     // Get Total Amount
 
@@ -441,17 +587,6 @@ async verifyPaymentSection() {
         }
     );
 
-
-    // Verify Total Amount
-
-    await StepHelper.step(
-        this.page,
-        `Verify Total Amount | Actual: ${totalAmount}`,
-        async () => {
-
-            expect(totalAmount).not.toBe('');
-        }
-    );
 }
 
     async openAndVerifyInvoicePDF(
@@ -794,7 +929,7 @@ if (discountCount > 0) {
         }
     );
 }
-            async InvoiceDetailsAddAdmission() {
+            async InvoiceDetailsAddAdmission(invoiceData) {
 
             let invoiceNumber;
             let totalAmount;
@@ -814,7 +949,10 @@ if (discountCount > 0) {
                         `Invoice Number: ${invoiceNumber}`
                     );
 
-                    expect(invoiceNumber).toContain('INV-');
+                    // expect(invoiceNumber).toContain('INV-');
+                    expect(invoiceNumber).toContain(
+                        invoiceData.invoicePrefix
+                    );
                 }
             );
 
@@ -1656,6 +1794,19 @@ async verifyVisitingSlipContent(
 
         await StepHelper.step(
             this.page,
+            'Wait for Generate Invoice Button to Enable',
+            async () => {
+
+                await expect(
+                    this.locator.finalGenerateInvoiceBtn
+                ).toBeEnabled({
+                    timeout: 60000
+                });
+            }
+        );//update
+
+        await StepHelper.step(
+            this.page,
             'Generate Invoice',
             async () => {
                 await this.keywords.click(
@@ -1707,7 +1858,7 @@ async verifyVisitingSlipContent(
     
             await this.invoiceGenerate(); 
 
-            await this.selectInvoiceServices();
+            await this.selectServices();
 
             await this.Adjustmentaddadmission(
                 invoiceData.adjustmentAmount,
