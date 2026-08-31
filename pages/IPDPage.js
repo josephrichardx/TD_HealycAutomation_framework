@@ -1038,25 +1038,49 @@ async IPDAdmissionDetailsSummary(IPDAdmissionDetailsSummary) {
  
    
  
-    await Verify.state(
-        this.page,
-        `Verify Bed Updated Successfully`,
-        this.locator.bedUpdatedToast,
-        {
-            visible: true,
-            soft: false
-        }
+    // await Verify.state(
+    //     this.page,
+    //     `Verify Bed Updated Successfully`,
+    //     this.locator.bedUpdatedToast,
+    //     {
+    //         visible: true,
+    //         soft: false
+    //     }
+    // );
+
+    await StepHelper.step(
+    this.page,
+    `Verify Bed Updated Successfully`,
+    async () => {
+        await expect(
+            this.locator.bedUpdatedToast
+        ).toBeVisible();
+    }
     );
  
+    // await Verify.equals(
+    //     this.page,
+    //     `Verify Room Type - ${IPDAdmissionDetailsSummary.roomType}`,
+    //     IPDAdmissionDetailsSummary.roomType,
+    //     await this.locator.roomTypeSummary.innerText(),
+    //     {
+    //         soft: false
+    //     }
+    // );
+
+    await this.locator.roomTypeSummary.waitFor({
+    state: 'visible'
+    });
+
     await Verify.equals(
-        this.page,
-        `Verify Room Type - ${IPDAdmissionDetailsSummary.roomType}`,
-        IPDAdmissionDetailsSummary.roomType,
-        await this.locator.roomTypeSummary.innerText(),
-        {
-            soft: false
-        }
-    );
+    this.page,
+    `Verify Room Type - ${IPDAdmissionDetailsSummary.roomType}`,
+    IPDAdmissionDetailsSummary.roomType,
+    await this.locator.roomTypeSummary.innerText(),
+    {
+        soft: false
+    }
+);
  
     // await Verify.equals(
     //     this.page,
