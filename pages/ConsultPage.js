@@ -314,6 +314,7 @@ class ConsultPage {
 
 //     return this.selectedSlotDate;
 // }
+
 async selectFirstAvailableSlot() {
 
     await StepHelper.step(

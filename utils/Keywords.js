@@ -4,32 +4,64 @@ class Keywords {
     // CLICK
     // =========================================================
  
-    async click(locator) {
+    // async click(locator) {
  
-        await locator.waitFor({
-            state: 'visible',
-            timeout: 30000
-        });
+    //     await locator.waitFor({
+    //         state: 'visible',
+    //         timeout: 30000
+    //     });
  
-        await locator.click();
-    }
+    //     await locator.click();
+    // }
+
+    async click(locator, timeout = 60000) {
+
+    await locator.waitFor({
+        state: 'attached',
+        timeout
+    });
+
+    await locator.scrollIntoViewIfNeeded();
+
+    await locator.waitFor({
+        state: 'visible',
+        timeout
+    });
+
+    await locator.click({
+        timeout
+    });
+}
  
  
     // =========================================================
     // FILL
     // =========================================================
  
-    async fill(locator, value) {
+    // async fill(locator, value) {
  
-        await locator.waitFor({
-            state: 'visible',
-            timeout: 30000
-        });
+    //     await locator.waitFor({
+    //         state: 'visible',
+    //         timeout: 30000
+    //     });
  
-        await locator.fill(
-            value.toString()
-        );
-    }
+    //     await locator.fill(
+    //         value.toString()
+    //     );
+    // }
+
+    async fill(locator, value, timeout = 60000) {
+
+    await locator.waitFor({
+        state: 'visible',
+        timeout
+    });
+
+    await locator.fill(
+        value.toString(),
+        { timeout }
+    );
+}
  
  
     // =========================================================
@@ -51,40 +83,68 @@ class Keywords {
     // TYPE / PRESS SEQUENTIALLY
     // =========================================================
  
-    async type(locator, value) {
+    // async type(locator, value) {
  
-        await locator.waitFor({
-            state: 'visible',
-            timeout: 30000
-        });
+    //     await locator.waitFor({
+    //         state: 'visible',
+    //         timeout: 30000
+    //     });
  
-        await locator.focus();
+    //     await locator.focus();
  
-        await locator.pressSequentially(
-            value.toString()
-        );
-    }
+    //     await locator.pressSequentially(
+    //         value.toString()
+    //     );
+    // }
+
+    async type(locator, value, timeout = 60000) {
+
+    await locator.waitFor({
+        state: 'visible',
+        timeout
+    });
+
+    await locator.focus();
+
+    await locator.pressSequentially(
+        value.toString()
+    );
+}
+
  
  
     // =========================================================
     // WAIT FOR ELEMENT
     // =========================================================
  
+    // async waitForElement(
+    //     locator,
+    //     timeout = 30000
+    // ) {
+ 
+    //     await locator.waitFor({
+    //         state: 'attached',
+    //         timeout
+    //     });
+ 
+    //     await locator.waitFor({
+    //         state: 'visible',
+    //         timeout
+    //     });
+    // }
+
     async waitForElement(
-        locator,
-        timeout = 30000
-    ) {
- 
-        await locator.waitFor({
-            state: 'attached',
-            timeout
-        });
- 
-        await locator.waitFor({
-            state: 'visible',
-            timeout
-        });
-    }
+    locator,
+    timeout = 60000
+) {
+
+    await locator.waitFor({
+        state: 'visible',
+        timeout
+    });
+
+    return locator;
+}
  
  
     // =========================================================

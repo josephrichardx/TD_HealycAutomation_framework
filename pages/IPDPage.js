@@ -65,11 +65,72 @@ class IPDPage {
         );
     }
 
-    async selectAdmissionDate(admissionDate) {
+// async selectAdmissionDate(admissionDate) {
+
+//     const monthName = admissionDate.toLocaleString(
+//         'en-US',
+//         { month: 'long' }
+//     );
+
+//     const year = String(admissionDate.getFullYear());
+//     const day = String(admissionDate.getDate());
+
+//     await StepHelper.step(
+//         this.page,
+//         `Select Admission Date - ${day} ${monthName} ${year}`,
+//         async () => {
+
+//             // Open calendar
+//             await this.keywords.click(
+//                 this.locator.calendarBtn
+//             );
+
+//             // Find target month/year
+//             const monthYear = this.page.getByText(
+//                 `${monthName} ${year}`,
+//                 { exact: true }
+//             );
+
+//             await monthYear.scrollIntoViewIfNeeded();
+
+//             // Select the day under the target month
+//             const targetMonth =
+//                 monthYear.locator('..').locator('..');
+
+//             await this.keywords.click(
+//                 targetMonth.getByText(day, {
+//                     exact: true
+//                 }).last()
+//             );
+
+//             // Apply
+//             await this.keywords.click(
+//                 this.locator.applyBtn
+//             );
+//         }
+//     );
+// }
+  
+async selectAdmissionDate(admissionDate) {
+
+    const monthName = admissionDate.toLocaleString(
+        'en-US',
+        {
+            month: 'long'
+        }
+    );
+
+    const year = String(
+        admissionDate.getFullYear()
+    );
+
+    const day = String(
+        admissionDate.getDate()
+    );
 
     await StepHelper.step(
         this.page,
-        `Select Admission Date - ${admissionDate.toDateString()}`,
+        `Select Admission Date - ${day} ${monthName} ${year}`,
         async () => {
 
             // Open calendar
@@ -77,33 +138,24 @@ class IPDPage {
                 this.locator.calendarBtn
             );
 
-            // Get day from generated date
-            const day =
-                admissionDate.getDate().toString();
-
-            // Select generated date
+            // Select date
             await this.keywords.click(
-                this.locator.currentMonth
-                    .getByText(
-                        day,
-                        {
-                            exact: true
-                        }
-                    )
+                this.locator.targetDay(
+                    monthName,
+                    year,
+                    day
+                )
             );
 
-            // Click Apply
-            // await this.keywords.click(
-            //     this.locator.applyBtn.nth(1)
-            // );
+            // Apply
             await this.keywords.click(
-                     this.locator.applyBtn
-);
+                this.locator.applyBtn
+            );
         }
     );
 }
 
-    async searchPatient(patientName) {
+async searchPatient(patientName) {
 
     await StepHelper.step(
         this.page,
