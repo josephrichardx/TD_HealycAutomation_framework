@@ -8,7 +8,7 @@ const { CalendarPage } = require('../pages/CalendarPage');
 const { PackagePage } = require('../pages/PackagePage');
 const { CancellationPage } = require('../pages/CancellationPage.js');
 
-const { patientData,invoiceData,paymentData,packageData,statusData } = require('../testdata/TC_125.json');
+const { patientData,invoiceData,paymentData,packageData,cancellationData,statusData } = require('../testdata/TC_125.json');
 
 
 const { generateUniquePatientFullName } = require('../utils/RandomData');
@@ -34,7 +34,7 @@ test('Package - Cancel with Full Refund', async ({ page }) => {
     packageData.packageName
     );
 
-    await packagePage.bookPackagefromAddPackage();
+    await packagePage.bookPackagefromAddPackage();//update
 
     await calendarPage.PatientFromCalendarView(
     patientName,
@@ -66,7 +66,10 @@ test('Package - Cancel with Full Refund', async ({ page }) => {
 
     await cancellationPage.cancellation();
 
-    await cancellationPage.cancelPackageWithFullRefund();
+    await cancellationPage.cancelPackageWithFullRefund(
+        cancellationData
+    );
+
 
 
 });

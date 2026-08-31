@@ -375,7 +375,7 @@ class CancellationPage {
 );
 }
 
-async cancelPackageWithFullRefund(){
+async cancelPackageWithFullRefund(cancellationData){
 
 await StepHelper.step(
     this.page,
@@ -409,7 +409,19 @@ await StepHelper.step(
 
 await StepHelper.step(
     this.page,
-    'Verify Package Cancelled',
+    'Verify Cancellation Success Message',
+    async () => {
+        await expect(
+            this.locator.cancelledStatus
+        ).toContainText(
+            cancellationData.expectedStatus
+        );
+    }
+);
+
+await StepHelper.step(
+    this.page,
+    'Verify Cancellation Success Message',
     async () => {
         await expect(
             this.locator.cancelledStatus
