@@ -151,6 +151,17 @@ export class AdmissionPage {
 
         const locationOption = this.locator.getLocationOption(locationName);
 
+        await StepHelper.step(
+        this.page,
+        `Wait for Location Option - ${locationName}`,
+        async () => {
+            await locationOption.waitFor({
+                state: 'visible',
+                timeout: 10000
+            });
+        }
+    );
+
         await Verify.state(
             this.page,
             `Location Option - ${locationName}`,
