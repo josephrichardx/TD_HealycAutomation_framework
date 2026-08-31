@@ -427,22 +427,28 @@ async selectFirstAvailableSlot() {
             }
         );
 
-        await this.keywords.wait(
-            this.page,
-            waitData.mediumWait
-        );
+        // Select the option that MATCHES the doctor, not whichever option
+        // happens to be first. The old code clicked
+        // (//div[@class='dropdown-option'])[1] after a fixed wait, so a slow
+        // filter silently booked a different doctor (e.g. Dr. Cardiology).
+        const doctorOption =
+            this.locator.getDoctorOption(doctorName).first();
 
-        await this.keywords.waitForElement(
-            this.locator.doctorOption
+        await this.keywords.waitForElement(doctorOption);
+
+        await Verify.text(
+            this.page,
+            `Doctor Option Text - ${doctorName}`,
+            doctorName,
+            doctorOption,
+            { exact: true }
         );
 
         await StepHelper.step(
             this.page,
             `Select Doctor - ${doctorName}`,
             async () => {
-                await this.keywords.click(
-                    this.locator.doctorOption
-                );
+                await this.keywords.click(doctorOption);
             }
         );
     }
