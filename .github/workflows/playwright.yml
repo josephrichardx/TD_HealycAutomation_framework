@@ -160,35 +160,58 @@ jobs:
         run: |
           FILES=""
 
-          if [ "$RUN_01" = "true" ]; then FILES="$FILES tests/WF_CALADN_01.spec.js"; fi
-          if [ "$RUN_02" = "true" ]; then FILES="$FILES tests/WF_CALADN_02.spec.js"; fi
-          if [ "$RUN_03" = "true" ]; then FILES="$FILES tests/WF_CALADN_03.spec.js"; fi
-          if [ "$RUN_04" = "true" ]; then FILES="$FILES tests/WF_CALADN_04.spec.js"; fi
-          if [ "$RUN_05" = "true" ]; then FILES="$FILES tests/WF_CALADN_05.spec.js"; fi
+          for TEST in \
+            "01 WF_CALADN_01" \
+            "02 WF_CALADN_02" \
+            "03 WF_CALADN_03" \
+            "04 WF_CALADN_04" \
+            "05 WF_CALADN_05" \
+            "31 WF_CALADN_31" \
+            "32 WF_CALADN_32" \
+            "32A WF_CALADN_32A" \
+            "33 WF_CALADN_33" \
+            "33A WF_CALADN_33A" \
+            "39 WF_CALADN_39" \
+            "40 WF_CALADN_40" \
+            "41 WF_CALADN_41" \
+            "42 WF_CALADN_42" \
+            "45 WF_CALADN_45" \
+            "46 WF_CALADN_46" \
+            "47 WF_CALADN_47" \
+            "48 WF_CALADN_48" \
+            "125 WF_CALADN_125" \
+            "126 WF_CALADN_126"
+          do
+            NUMBER=$(echo "$TEST" | awk '{print $1}')
+            NAME=$(echo "$TEST" | awk '{print $2}')
+            VAR="RUN_$NUMBER"
 
-          if [ "$RUN_31" = "true" ]; then FILES="$FILES tests/WF_CALADN_31.spec.js"; fi
-          if [ "$RUN_32" = "true" ]; then FILES="$FILES tests/WF_CALADN_32.spec.js"; fi
-          if [ "$RUN_32A" = "true" ]; then FILES="$FILES tests/WF_CALADN_32A.spec.js"; fi
-          if [ "$RUN_33" = "true" ]; then FILES="$FILES tests/WF_CALADN_33.spec.js"; fi
-          if [ "$RUN_33A" = "true" ]; then FILES="$FILES tests/WF_CALADN_33A.spec.js"; fi
-          if [ "$RUN_39" = "true" ]; then FILES="$FILES tests/WF_CALADN_39.spec.js"; fi
-          if [ "$RUN_40" = "true" ]; then FILES="$FILES tests/WF_CALADN_40.spec.js"; fi
-          if [ "$RUN_41" = "true" ]; then FILES="$FILES tests/WF_CALADN_41.spec.js"; fi
-          if [ "$RUN_42" = "true" ]; then FILES="$FILES tests/WF_CALADN_42.spec.js"; fi
-          if [ "$RUN_45" = "true" ]; then FILES="$FILES tests/WF_CALADN_45.spec.js"; fi
-          if [ "$RUN_46" = "true" ]; then FILES="$FILES tests/WF_CALADN_46.spec.js"; fi
-          if [ "$RUN_47" = "true" ]; then FILES="$FILES tests/WF_CALADN_47.spec.js"; fi
-          if [ "$RUN_48" = "true" ]; then FILES="$FILES tests/WF_CALADN_48.spec.js"; fi
-          if [ "$RUN_125" = "true" ]; then FILES="$FILES tests/WF_CALADN_125.spec.js"; fi
-          if [ "$RUN_126" = "true" ]; then FILES="$FILES tests/WF_CALADN_126.spec.js"; fi
+            if [ "${!VAR}" = "true" ]; then
+              FILES="$FILES tests/$NAME.spec.js"
+            fi
+          done
 
           if [ -z "$FILES" ]; then
-            echo "No test files were selected! Please check at least one checkbox in the GitHub UI."
+            echo "No test files were selected!"
+            echo "Please select at least one test case."
             exit 1
           fi
 
-          echo "Executing Base URL: $PLAYWRIGHT_TEST_BASE_URL"
-          echo "Executing Files: $FILES"
+          TEST_NAMES=$(echo "$FILES" | sed 's#tests/##g; s#\.spec\.js##g' | xargs)
+
+          echo "======================================"
+          echo "Selected Tests: $TEST_NAMES"
+          echo "Base URL: $PLAYWRIGHT_TEST_BASE_URL"
+          echo "Files: $FILES"
+          echo "======================================"
+
+          echo "## Selected Test Cases" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "$TEST_NAMES" >> "$GITHUB_STEP_SUMMARY"
+
+          echo "## Base URL" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "$PLAYWRIGHT_TEST_BASE_URL" >> "$GITHUB_STEP_SUMMARY"
 
           npx playwright test $FILES
 
