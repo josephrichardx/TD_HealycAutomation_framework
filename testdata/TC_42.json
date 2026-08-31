@@ -6,7 +6,11 @@
     "email": "test@gmail.com",
     "age": "21",
     "gender": "Male",
-    "address": "Chennai"
+    "address": "Chennai",
+    "savedVerification": {
+      "step": "Verify Patient Saved Successfully",
+      "expectedMessage": "Patient Saved successfully"
+    }
   },
   "appoinmentData": {
     "doctorName": "Dr. Orthopedic"
@@ -15,9 +19,24 @@
     "standardBookingDate": "28"
   },
   "consultData": {
-    "consultSlot": "First Consult"
+    "consultSlot": "First Consult",
+    "appointmentType": "Consult"
   },
   "cancelReasonData": {
     "cancelReason": "Emergency or unexpected issue"
+  },
+  "waitlistPatientOverrides": {
+    "email": ""
+  },
+  "waitlistVerificationData": {
+    "waitlistEntry": {
+      "step": "Verify Waitlist Entry Present"
+    }
+  },
+  "waitlistCancellationVerificationData": {
+    "consultCancelled": {
+      "step": "Verify Waitlist Consult Cancelled",
+      "expectedEntryState": "removed from the waitlist"
+    }
   }
 }

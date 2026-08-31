@@ -2,7 +2,11 @@ const { expect } = require('@playwright/test');
 const { StepHelper } = require('../utils/StepHelper');
 const { CancellationLocator } = require('../Locators/CancellationLocator');
 const { Keywords } = require('../utils/Keywords');
-const { cancellationData } = require('../testdata/CancellationData.json');
+const { Verify } = require('../utils/verification');
+const {
+    cancellationData,
+    cancellationVerificationData
+} = require('../testdata/CancellationData.json');
 
 class CancellationPage {
 
@@ -10,6 +14,75 @@ class CancellationPage {
         this.page = page;
         this.locator = new CancellationLocator(page);
         this.keywords = new Keywords();
+    }
+
+
+    // Captures the toaster message the application raises at runtime and
+    // verifies it against the expected text held in CancellationData.json.
+    // `verification` is a { step, expectedMessage } block from
+    // cancellationVerificationData - nothing is hardcoded here.
+    async verifyToasterMessage(verification) {
+
+        const toaster = this.locator.paymentSuccessMessage.first();
+
+        let actualMessage;
+
+        await StepHelper.step(
+            this.page,
+            verification.step,
+            async () => {
+
+                actualMessage = (
+                    await this.keywords.getText(toaster)
+                ).trim();
+            }
+        );
+
+        await Verify.contains(
+            this.page,
+            verification.step,
+            verification.expectedMessage,
+            actualMessage
+        );
+
+        return actualMessage;
+    }
+
+
+    // Reads the cancelled status badge the application rendered at runtime and
+    // verifies it against the expected status held in CancellationData.json.
+    async verifyCancelledStatus(verification) {
+
+        const statusBadge = this.locator.cancelledStatus;
+
+        let actualStatus;
+
+        await StepHelper.step(
+            this.page,
+            verification.step,
+            async () => {
+
+                actualStatus = (
+                    await this.keywords.getText(statusBadge)
+                ).trim();
+            }
+        );
+
+        await Verify.state(
+            this.page,
+            `${verification.step} - status badge is displayed`,
+            statusBadge,
+            { visible: true, soft: false }
+        );
+
+        await Verify.contains(
+            this.page,
+            verification.step,
+            verification.expectedStatus,
+            actualStatus
+        );
+
+        return actualStatus;
     }
 
 
@@ -56,29 +129,17 @@ class CancellationPage {
             }
         );
 
-        await StepHelper.step(
-            this.page,
-            'Verify Payment Recorded Successfully',
-            async () => {
-
-                await expect(
-                    this.locator.paymentSuccessMessage
-                ).toContainText(
-                    "Payment recorded successfully"
-                );
-
-            }
+        await this.verifyToasterMessage(
+            cancellationVerificationData.paymentRecorded
         );
     }
 
 
     async clickCancel() {
 
-        await expect(
+        await this.keywords.waitForElement(
             this.locator.cancelBtn
-        ).toBeVisible({
-            timeout: 10000
-        });
+        );
 
         await StepHelper.step(
             this.page,
@@ -134,16 +195,13 @@ class CancellationPage {
             }
         );
 
-        await StepHelper.step(
+        await this.keywords.waitForElement(this.locator.refundPaymentOptionText);
+
+        await Verify.state(
             this.page,
-            'Verify Refund Payment Option Screen',
-            async () => {
-
-                await expect(
-                    this.locator.refundPaymentOptionText
-                ).toBeVisible();
-
-            }
+            'Refund/Payment Option screen is displayed',
+            this.locator.refundPaymentOptionText,
+            { visible: true, soft: false }
         );
     }
 
@@ -176,18 +234,8 @@ class CancellationPage {
             }
         );
 
-        await StepHelper.step(
-            this.page,
-            'Verify Appointment Cancelled',
-            async () => {
-
-                await expect(
-                    this.locator.cancelledStatus
-                ).toContainText(
-                    "Cancelled"
-                );
-
-            }
+        await this.verifyCancelledStatus(
+            cancellationVerificationData.appointmentCancelled
         );
     }
 
@@ -237,6 +285,12 @@ class CancellationPage {
                     this.locator.confirmBtn
                 );
             }
+        );
+
+        // Two toasts race here (payment recorded / cancelled), so verify the
+        // cancelled status badge, which is deterministic.
+        await this.verifyCancelledStatus(
+            cancellationVerificationData.refundRecorded
         );
     }
 
@@ -288,14 +342,19 @@ class CancellationPage {
                 );
             }
         );
+
+        // Two toasts race here (payment recorded / cancelled), so verify the
+        // cancelled status badge, which is deterministic.
+        await this.verifyCancelledStatus(
+            cancellationVerificationData.makePaymentRecorded
+        );
     }
 
    async cancellation() {
 
     // Wait for payment success popup/toaster to disappear
-    await this.locator.paymentSuccessMessage.waitFor({
-        state: 'hidden',
-        timeout: 15000
+    await this.locator.paymentSuccessMessage.first().waitFor({
+        state: 'hidden'
     });
 
 
@@ -407,16 +466,8 @@ await StepHelper.step(
     }
 );
 
-await StepHelper.step(
-    this.page,
-    'Verify Package Cancelled',
-    async () => {
-        await expect(
-            this.locator.cancelledStatus
-        ).toContainText(
-            cancellationData.expectedStatus
-        );
-    }
+await this.verifyCancelledStatus(
+    cancellationVerificationData.packageCancelled
 );
 }
 
@@ -468,16 +519,13 @@ async cancelPackageWithPartialRefund(
         }
     );
 
-    await StepHelper.step(
+    await this.keywords.waitForElement(this.locator.cancellationSuccessMessage);
+
+    await Verify.state(
         this.page,
-        'Verify Cancellation Success Message',
-        async () => {
-            await expect(
-                this.locator.cancellationSuccessMessage
-            ).toBeVisible({
-                timeout: 10000
-            });
-        }
+        'Cancellation Success Message is displayed',
+        this.locator.cancellationSuccessMessage,
+        { visible: true, soft: false }
     );
 }
 

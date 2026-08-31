@@ -6,30 +6,28 @@
     "email": "test@gmail.com",
     "age": "21",
     "gender": "Male",
-    "address": "Chennai"
+    "address": "Chennai",
+    "savedVerification": {
+      "step": "Verify Patient Saved Successfully",
+      "expectedMessage": "Patient Saved successfully"
+    }
   },
- 
- "appoinmentData": {
+  "appoinmentData": {
     "doctorName": "Dr. Orthopedic"
   },
- 
   "consultData": {
     "consultSlot": "First Consult"
   },
- 
-   "bookingData": {
+  "bookingData": {
     "bookingDate": "27"
   },
- 
-   "serviceData": {
+  "serviceData": {
     "serviceName": "Clear Aligners"
   },
- 
   "DateData": {
     "bookingDate": "27"
   },
-  
-   "invoiceData": {
+  "invoiceData": {
     "adjustmentAmount": "10",
     "adjustmentName": "Discount",
     "adjustmentReason": "Consult Discount"
@@ -42,5 +40,4 @@
     "makeFullPayment": true,
     "invoicePrefix": "INV-00"
   }
-
 }

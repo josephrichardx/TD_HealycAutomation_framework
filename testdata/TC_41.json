@@ -6,7 +6,11 @@
     "email": "test@gmail.com",
     "age": "21",
     "gender": "Male",
-    "address": "Chennai"
+    "address": "Chennai",
+    "savedVerification": {
+      "step": "Verify Patient Saved Successfully",
+      "expectedMessage": "Patient Saved successfully"
+    }
   },
   "appoinmentData": {
     "doctorName": "Dr. Orthopedic"
@@ -15,7 +19,8 @@
     "standardBookingDate": "28"
   },
   "consultData": {
-    "consultSlot": "First Consult"
+    "consultSlot": "First Consult",
+    "appointmentType": "Consult"
   },
   "invoiceData": {
     "adjustmentAmount": "10",
@@ -28,6 +33,46 @@
     "transactionId": "TXN123456789",
     "paymentType": "Cash",
     "makeFullPayment": true,
-    "invoicePrefix": "INV-00"
+    "invoicePrefix": "INV-00",
+    "transactionIdRequiredFor": [
+      "UPI",
+      "Card"
+    ]
+  },
+  "waitlistPatientOverrides": {
+    "email": ""
+  },
+  "waitlistVerificationData": {
+    "waitlistEntry": {
+      "step": "Verify Waitlist Entry Present"
+    },
+    "appointmentStatus": {
+      "step": "Verify Appointment Status",
+      "expectedStatus": "Confirmed"
+    },
+    "invoiceGenerated": {
+      "step": "Verify Invoice Generated",
+      "expectedPattern": "^INV-00\\d+$"
+    },
+    "invoiceName": {
+      "step": "Verify Invoice Name Starts With",
+      "expectedPrefix": "INV-00"
+    },
+    "paymentPageOpened": {
+      "step": "Verify Payment Page Opened"
+    },
+    "paymentRecorded": {
+      "step": "Verify Payment Recorded Successfully",
+      "expectedMessage": "Payment recorded successfully"
+    },
+    "paymentMethodInHistory": {
+      "step": "Verify Payment Method In History"
+    },
+    "paymentAmountInHistory": {
+      "step": "Verify Payment Amount In History"
+    },
+    "fullPaymentAmount": {
+      "step": "Verify Full Payment Amount Displayed"
+    }
   }
 }

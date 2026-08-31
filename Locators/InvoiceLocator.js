@@ -238,6 +238,9 @@ class InvoiceLocator
         page.locator(
             "(//div[@class='visiting-slip-label'])[2]"
     );
+    // Rendered visiting-slip PDF page
+    this.visitingSlipPdfPage =
+        page.getByLabel(/Page.*1/);
     // Visiting Slip pdf text locator
     this.pdfBody3 =
         page.locator(

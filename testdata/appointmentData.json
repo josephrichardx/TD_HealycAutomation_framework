@@ -3,7 +3,7 @@
     "doctorName": "Dr. Orthopedic",
     "typeDropdownLabel": "Type: All"
   },
- 
+
   "addNewMenuItems": [
     "Add Consult",
     "Add Service",
@@ -14,9 +14,28 @@
     "Add Surgery",
     "Add Admission"
   ],
- 
+
   "waitlistBookingData": {
     "standardBookingDate": "28",
     "extendedBookingDate": "28"
+  },
+
+  "appointmentTypeData": {
+    "consult": "Consult",
+    "service": "Service"
+  },
+
+  "appointmentActionData": {
+    "addNewButton": "Add New",
+    "addConsultButton": "Add Consult",
+    "applyButton": "Apply",
+    "dashboardPath": "/dashboard"
+  },
+
+  "appointmentVerificationData": {
+    "confirmedStatus": {
+      "step": "Verify Confirmed Appointment",
+      "expectedStatus": "Confirmed"
+    }
   }
 }

@@ -59,8 +59,11 @@ class WaitlistPageLocators {
         return this.page.getByRole('button', { name: 'Record Payment' }).first();
     }
  
+    // The toaster component itself - its text is read at runtime and compared
+    // with the expected message held in the calling spec's data file, so the
+    // message is not baked into this locator.
     get paymentSuccessMessage() {
-        return this.page.getByText('Payment recorded successfully', { exact: true });
+        return this.page.locator('app-custom-toaster-message');
     }
  
     get fullPaymentCheckbox() {
@@ -71,8 +74,110 @@ class WaitlistPageLocators {
         return this.page.getByPlaceholder('₹ Amount').last();
     }
  
+    // ===== WAITLIST TAB - VIRTUALISED ENTRY LIST =====
+    // The Waitlist tab renders its cards inside a scrollable container and only
+    // materialises the ones near the viewport, so a card has to be scrolled to
+    // before it can be seen.
+    get waitlistContainer() {
+        return this.page.locator('div.waitingListContainer');
+    }
+
+    get waitlistCards() {
+        return this.waitlistContainer.locator('div.card');
+    }
+
+    getWaitlistCardByName(patientName) {
+        return this.waitlistCards
+            .filter({ hasText: patientName })
+            .first();
+    }
+
+    // Status badge inside the appointment panel. The expected status comes
+    // from the spec data and is matched case-insensitively on the rendered text.
+    getAppointmentStatusBadge(expectedStatus) {
+        return this.page
+            .locator('app-appointment-details, app-patient-profile')
+            .first()
+            .getByText(new RegExp(expectedStatus, 'i'))
+            .first();
+    }
+
+    // ===== SCHEDULE APPOINTMENT DIALOG - SLOT PICKER =====
+    // Several copies of this dialog can be rendered at once (one per popup
+    // host), and the last one in the DOM is the one stacked on top and
+    // receiving pointer events - the earlier copies are covered by it. Every
+    // locator below is anchored on that topmost visible copy.
+    get scheduleModal() {
+        return this.page
+            .locator('div.schedule-modal:visible')
+            .last();
+    }
+
+    get scheduleAvailableSlots() {
+        return this.scheduleModal.locator(
+            'div.slot-row.available span.slot-time'
+        );
+    }
+
+    // A slot the user picked is marked with the 'selected' class. Without it
+    // the Confirm schedule button does nothing.
+    get scheduleSelectedSlot() {
+        return this.scheduleModal.locator('div.slot-row.selected');
+    }
+
+    get scheduleNoSlotsMessage() {
+        return this.scheduleModal.getByText(/no slots are ava/i);
+    }
+
+    // Morning / Afternoon / Evening segment toggles. The icon image sits on top
+    // of its button and swallows the pointer events, so target the image.
+    get scheduleDayPartToggles() {
+        return this.scheduleModal.locator(
+            'div.slot-icons-schedule button img'
+        );
+    }
+
+    // Only future days are bookable - past days carry the 'past-day' class and
+    // days from the neighbouring month carry 'greyed-out-day'.
+    get scheduleSelectableDays() {
+        return this.scheduleModal.locator(
+            'div.calendar-day:not(.calendar-day-header)' +
+            ':not(.greyed-out-day):not(.past-day)'
+        );
+    }
+
+    get scheduleMonthHeading() {
+        return this.scheduleModal.locator('div.calendar-header h3');
+    }
+
+    get scheduleNextMonthBtn() {
+        return this.scheduleModal
+            .locator('button.calendar-nav-btn')
+            .last();
+    }
+
+    get confirmScheduleButton() {
+        return this.page
+            .getByRole('button', { name: /confirm schedule/i })
+            .first();
+    }
+
+    // The heading text changing is the signal that the next month rendered.
+    getScheduleMonthHeadingOtherThan(monthYear) {
+        return this.scheduleModal
+            .locator(
+                `div.calendar-header h3:not(:text-is("${monthYear}"))`
+            )
+            .first();
+    }
+
+    // The payment form is open once its amount field is on screen.
+    get paymentSection() {
+        return this.amountInput;
+    }
+
     // ===== DYNAMIC LOCATORS - METHODS =====
-   
+
     // Payment History Row
     getPaymentHistoryRow(paymentType, amount) {
         return this.page

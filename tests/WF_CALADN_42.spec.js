@@ -16,20 +16,21 @@ const {
     appoinmentData,
     waitlistBookingData,
     consultData,
-    cancelReasonData
+    cancelReasonData,
+    waitlistPatientOverrides,
+    waitlistVerificationData,
+    waitlistCancellationVerificationData
 } = require('../testdata/TC_42.json');
  
  
-const { generatePatientName, generateShortPatientName } = require('../utils/RandomData.js');
+const { generateUniquePatientFullName, generateShortPatientName } = require('../utils/RandomData.js');
  
  
 test('WF_CALADN_42 - Validate cancellation of a Waitlist booking', async ({ page }) => {
-    test.setTimeout(300000);
- 
     const bookingDate = waitlistBookingData.standardBookingDate;
  
  
-    const patientName = generatePatientName();
+    const patientName = generateUniquePatientFullName();
  
  
     const patientPage = new PatientPage(page);
@@ -47,7 +48,7 @@ test('WF_CALADN_42 - Validate cancellation of a Waitlist booking', async ({ page
     const waitlistPatientName = generateShortPatientName();
     const waitlistPatientData = {
         ...patientData,
-        email: ''
+        ...waitlistPatientOverrides
     };
  
     await patientPage.createPatient(
@@ -63,7 +64,7 @@ test('WF_CALADN_42 - Validate cancellation of a Waitlist booking', async ({ page
     await consultPage.searchAndSelectPatient(waitlistPatientName);
     await consultPage.verifyBookingPanelOpened(
         waitlistPatientName,
-        'Consult'
+        consultData.appointmentType
     );
  
     // Clear any filters left over from an earlier booking in this session
@@ -101,13 +102,17 @@ test('WF_CALADN_42 - Validate cancellation of a Waitlist booking', async ({ page
     // Step 17 - Return to Calendar and open Waitlist
     await calendarPage.clickSidebarCalendarIcon();
     await waitlistPage.clickWaitlist();
-    // Step 18 - Move through calendar pages until the patient appears on the Waitlist
-    await waitlistPage.navigateToWaitlistEntry(
+    // The Waitlist list is filtered by the calendar date, so move the calendar
+    // to the booking date before looking for the entry.
+    await calendarPage.navigateToBookingDayOfMonth(bookingDate);
+    // Step 18 - Scroll the list until the patient appears on the Waitlist
+    await waitlistPage.findWaitlistEntry(
         waitlistPatientName
     );
     // Verify waitlist entry
     await waitlistPage.verifyWaitlistEntry(
-        waitlistPatientName
+        waitlistPatientName,
+        waitlistVerificationData.waitlistEntry
     );
     // Step 19 - Click Cancel
     await waitlistCancellationPage.clickCancel(
@@ -119,6 +124,12 @@ test('WF_CALADN_42 - Validate cancellation of a Waitlist booking', async ({ page
  
     //click the cancel consult button to confirm cancellation
     await waitlistCancellationPage.clickCancelConsult();
+ 
+    //verify the cancelled consult is no longer on the waitlist
+    await waitlistCancellationPage.verifyWaitlistEntryRemoved(
+        waitlistPatientName,
+        waitlistCancellationVerificationData.consultCancelled
+    );
  
  
  

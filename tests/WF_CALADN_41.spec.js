@@ -15,15 +15,15 @@ const {
     waitlistBookingData,
     consultData,
     invoiceData,
-    paymentData
+    paymentData,
+    waitlistPatientOverrides,
+    waitlistVerificationData
 } = require("../testdata/TC_41.json");
  
 const {
-    generatePatientName,
+    generateUniquePatientFullName,
     generateShortPatientName
 } = require("../utils/RandomData.js");
- 
-test.setTimeout(300000);
  
 test("WF_CALADN_41 - Validate Make Payment for a Waitlist invoice and payment status update", async ({ page }) => {
     const bookingDate = waitlistBookingData.standardBookingDate;
@@ -40,7 +40,7 @@ test("WF_CALADN_41 - Validate Make Payment for a Waitlist invoice and payment st
     const waitlistPatientName = generateShortPatientName();
     const waitlistPatientData = {
         ...patientData,
-        email: ""
+        ...waitlistPatientOverrides
     };
  
     await patientPage.createPatient(
@@ -54,7 +54,7 @@ test("WF_CALADN_41 - Validate Make Payment for a Waitlist invoice and payment st
     await consultPage.searchAndSelectPatient(waitlistPatientName);
     await consultPage.verifyBookingPanelOpened(
         waitlistPatientName,
-        "Consult"
+        consultData.appointmentType
     );
     await consultPage.clearPreSelectedFilters();
     await consultPage.selectDoctorByName(appoinmentData.doctorName);
@@ -73,53 +73,122 @@ test("WF_CALADN_41 - Validate Make Payment for a Waitlist invoice and payment st
     await calendarPage.clickSidebarCalendarIcon();
     await waitlistPage.clickWaitlist();
  
-    await waitlistPage.navigateToWaitlistEntry(waitlistPatientName);
+    // The Waitlist list is filtered by the calendar date, so move the calendar
+    // to the booking date before looking for the entry.
+    await calendarPage.navigateToBookingDayOfMonth(bookingDate);
  
-    await waitlistPage.verifyWaitlistEntry(waitlistPatientName);
+    // Scroll the list to reach the entry.
+    await waitlistPage.findWaitlistEntry(waitlistPatientName);
  
-    // Open the waitlist patient's appointment from Calendar and verify Pending.
-    await calendarPage.clickSidebarCalendarIcon();
-    await calendarPage.selectPatientFromCalendarForceHover(
+    await waitlistPage.verifyWaitlistEntry(
         waitlistPatientName,
-        bookingDate
+        waitlistVerificationData.waitlistEntry
     );
-    await waitlistPage.verifyPendingAppointment();
+ 
+    // A pending waitlist entry is not an appointment on the calendar and cannot
+    // be invoiced, so schedule it first - that turns it into a real
+    // appointment on the date the slot was taken.
+    await waitlistPage.clickSchedule(waitlistPatientName);
+
+    const scheduledSlot =
+        await waitlistPage.selectFirstAvailableSlotAcrossDates();
+
+    await waitlistPage.clickConfirmSchedule();
+
+    // Open the now-scheduled appointment from the Calendar and verify status.
+    if (scheduledSlot.day) {
+
+        await calendarPage.selectPatientFromCalendarForceHover(
+            waitlistPatientName,
+            `${scheduledSlot.day} ${scheduledSlot.monthYear}`
+        );
+
+    } else {
+
+        await calendarPage.selectPatientFromCalendarForceHoverByDay(
+            waitlistPatientName,
+            bookingDate
+        );
+    }
+
+    await waitlistPage.verifyAppointmentStatus(
+        waitlistVerificationData.appointmentStatus
+    );
  
     // Generate and verify the invoice without changing the existing invoice method.
     await invoicePage.generateInvoice(
         waitlistPatientName,
         invoiceData
     );
-    await waitlistPage.verifyInvoiceGenerated();
+    await waitlistPage.verifyInvoiceGenerated(
+        waitlistVerificationData.invoiceGenerated
+    );
     await waitlistPage.closeAppointmentDetails();
  
     // Re-open the appointment and verify the invoice before opening Payment.
-    await calendarPage.selectPatientFromCalendarForceHover(
-        waitlistPatientName,
-        bookingDate
+    if (scheduledSlot.day) {
+
+        await calendarPage.selectPatientFromCalendarForceHover(
+            waitlistPatientName,
+            `${scheduledSlot.day} ${scheduledSlot.monthYear}`
+        );
+
+    } else {
+
+        await calendarPage.selectPatientFromCalendarForceHoverByDay(
+            waitlistPatientName,
+            bookingDate
+        );
+    }
+    await waitlistPage.verifyInvoiceGenerated(
+        waitlistVerificationData.invoiceGenerated
     );
-    await waitlistPage.verifyInvoiceGenerated();
-    await waitlistPage.verifyInvoiceNameStartsWith(paymentData.invoicePrefix);
+    await waitlistPage.verifyInvoiceNameStartsWith(
+        waitlistVerificationData.invoiceName
+    );
     await waitlistPage.openPaymentMenu();
  
     // The selected payment method, amount, and transaction ID come from payments.json.
     await waitlistPage.clickMakePaymentButton();
-    await waitlistPage.verifyPaymentPageOpened();
+    await waitlistPage.verifyPaymentPageOpened(
+        waitlistVerificationData.paymentPageOpened
+    );
     await waitlistPage.selectPaymentMethod(paymentData.paymentType);
     await waitlistPage.recordConfiguredPayment(paymentData);
-    await waitlistPage.verifyPaymentRecordedSuccessfully();
-    await waitlistPage.verifyPaymentMethodInHistory(paymentData.paymentType);
-    await waitlistPage.verifyPaymentAmountInHistory(paymentData.amount);
+    await waitlistPage.verifyPaymentRecordedSuccessfully(
+        waitlistVerificationData.paymentRecorded
+    );
+    await waitlistPage.verifyPaymentMethodInHistory(
+        paymentData.paymentType,
+        waitlistVerificationData.paymentMethodInHistory
+    );
+    await waitlistPage.verifyPaymentAmountInHistory(
+        paymentData.amount,
+        waitlistVerificationData.paymentAmountInHistory
+    );
  
     if (paymentData.makeFullPayment) {
         await waitlistPage.clickMakePaymentButton();
-        await waitlistPage.verifyPaymentPageOpened();
+        await waitlistPage.verifyPaymentPageOpened(
+            waitlistVerificationData.paymentPageOpened
+        );
         await waitlistPage.selectPaymentMethod(paymentData.paymentType);
         const fullPaymentAmount = await waitlistPage.enableFullPayment();
-        await waitlistPage.verifyFullPaymentAmountDisplayed(fullPaymentAmount);
+        await waitlistPage.verifyFullPaymentAmountDisplayed(
+            fullPaymentAmount,
+            waitlistVerificationData.fullPaymentAmount
+        );
         await waitlistPage.recordCurrentPayment();
-        await waitlistPage.verifyPaymentRecordedSuccessfully();
-        await waitlistPage.verifyPaymentMethodInHistory(paymentData.paymentType);
-        await waitlistPage.verifyPaymentAmountInHistory(fullPaymentAmount);
+        await waitlistPage.verifyPaymentRecordedSuccessfully(
+            waitlistVerificationData.paymentRecorded
+        );
+        await waitlistPage.verifyPaymentMethodInHistory(
+            paymentData.paymentType,
+            waitlistVerificationData.paymentMethodInHistory
+        );
+        await waitlistPage.verifyPaymentAmountInHistory(
+            fullPaymentAmount,
+            waitlistVerificationData.paymentAmountInHistory
+        );
     }
 });

@@ -182,7 +182,9 @@ class NewPatientLocator {
 
 
     getPatient(patientName) {
-        return this.page.locator(`//div[@title="${patientName}"]`);
+        return this.page
+            .locator(`//div[@title="${patientName}"]`)
+            .first();
     }
 
     getSalutationOption(salutation) {

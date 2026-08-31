@@ -6,7 +6,11 @@
     "email": "test@gmail.com",
     "age": "21",
     "gender": "Male",
-    "address": "Chennai"
+    "address": "Chennai",
+    "savedVerification": {
+      "step": "Verify Patient Saved Successfully",
+      "expectedMessage": "Patient Saved successfully"
+    }
   },
   "appoinmentData": {
     "doctorName": "Dr. Orthopedic"
@@ -16,5 +20,10 @@
   },
   "bookingData": {
     "bookingDate": "28"
+  },
+  "appointmentStatusVerificationData": {
+    "step": "Verify Appointment Status",
+    "frozenStep": "Verify Confirmed Status Is Frozen",
+    "enabledStep": "Verify Completed Status Is Enabled"
   }
 }

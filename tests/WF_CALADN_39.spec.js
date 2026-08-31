@@ -14,17 +14,20 @@ const {
     appoinmentData,
     waitlistBookingData,
     consultData,
-    serviceData
+    serviceData,
+    waitlistVerificationData
 } = require('../testdata/TC_39.json');
  
-const { generatePatientName, generateShortPatientName } = require('../utils/RandomData.js');
+const {
+    generatePatientName,
+    generateShortPatientName,
+    generateUniquePatientFullName
+} = require('../utils/RandomData.js');
  
 test('WF_CALADN_39 - Validate Waitlist appointment booking — Appointment Type, Doctor/Surgeon, Time Slot, Fee, Waitlist, Confirmation and navigate to calendar', async ({ page }) => {
-    test.setTimeout(300000);
- 
     const bookingDate = waitlistBookingData.extendedBookingDate;
  
-    const patientName = generatePatientName();
+    const patientName = generateUniquePatientFullName();
  
     const patientPage = new PatientPage(page);
     const consultPage = new ConsultPage(page);
@@ -73,7 +76,8 @@ test('WF_CALADN_39 - Validate Waitlist appointment booking — Appointment Type,
     );
  
     // Step 5 - Navigate to appointment page via Calendar
-    await calendarPage.selectPatientFromCalendarForceHover(
+    // bookingDate is a day-of-month value ("28"), so use the day-based navigation
+    await calendarPage.selectPatientFromCalendarForceHoverByDay(
         patientName,
         bookingDate
     );
@@ -181,14 +185,20 @@ test('WF_CALADN_39 - Validate Waitlist appointment booking — Appointment Type,
     await calendarPage.clickSidebarCalendarIcon();
     await waitlistPage.clickWaitlist();
  
+    // The Waitlist list is filtered by the calendar date, so move the calendar
+    // to the booking date before looking for the entry.
+    await calendarPage.navigateToBookingDayOfMonth(bookingDate);
+ 
     // Step 18 - Move through calendar pages until the patient appears on the Waitlist
-    await waitlistPage.navigateToWaitlistEntry(
+    // The Waitlist tab list is virtualised, so scroll it to reach the entry.
+    await waitlistPage.findWaitlistEntry(
         waitlistPatientName
     );
  
     // Verify waitlist entry
     await waitlistPage.verifyWaitlistEntry(
-        waitlistPatientName
+        waitlistPatientName,
+        waitlistVerificationData.waitlistEntry
     );
  
     // Step 19 - Click Schedule
@@ -196,19 +206,34 @@ test('WF_CALADN_39 - Validate Waitlist appointment booking — Appointment Type,
         waitlistPatientName
     );
  
-    // Step 20 - Select available time slot
-    await waitlistPage.selectFirstAvailableTimeSlot();
- 
+    // Step 20 - Select available time slot.
+    // A waitlisted booking exists because its own date had no free slot, so the
+    // dialog opens on a date with nothing to pick; walk the dates/day parts and
+    // remember which day the slot was actually taken on.
+    const scheduledSlot = await waitlistPage.selectFirstAvailableSlotAcrossDates();
+
     // Step 21 - Confirm Schedule
     await waitlistPage.clickConfirmSchedule();
- 
-    // Step 22/23 - Navigate back via Calendar to the booking date, then verify Confirmed status there
+
+    // Step 22/23 - Navigate back via Calendar to the scheduled date, then verify Confirmed status there
     // (the scheduled record leaves the Waitlist/Appointments view for "today" once confirmed,
     // so it can only be verified after navigating to its actual booking date)
-    await calendarPage.selectPatientFromCalendarForceHover(
-        waitlistPatientName,
-        bookingDate
-    );
+    if (scheduledSlot.day) {
+
+        // A different date was picked in the schedule dialog - navigate to that
+        // full date ("1 September 2026") rather than the original booking day.
+        await calendarPage.selectPatientFromCalendarForceHover(
+            waitlistPatientName,
+            `${scheduledSlot.day} ${scheduledSlot.monthYear}`
+        );
+
+    } else {
+
+        await calendarPage.selectPatientFromCalendarForceHoverByDay(
+            waitlistPatientName,
+            bookingDate
+        );
+    }
  
     // Step 24 - Verify appointment status is Confirmed
     await appointmentPage.verifyConfirmedAppointment(
