@@ -2,7 +2,7 @@ const { expect } = require('@playwright/test');
 const { StepHelper } = require('../utils/StepHelper');
 const { Keywords } = require('../utils/Keywords');
 const { IPDLocator } = require('../Locators/IPDLocator.js');
-import { Verify } from '../utils/verification.js';
+// import { Verify } from '../utils/verification.js';
 
 class IPDPage {
 
@@ -1054,9 +1054,11 @@ async IPDAdmissionDetailsSummary(IPDAdmissionDetailsSummary) {
     async () => {
         await expect(
             this.locator.bedUpdatedToast
-        ).toBeVisible();
+        ).toBeVisible({
+            timeout: 10000
+        });
     }
-    );
+);
  
     // await Verify.equals(
     //     this.page,
@@ -1068,20 +1070,34 @@ async IPDAdmissionDetailsSummary(IPDAdmissionDetailsSummary) {
     //     }
     // );
 
-    await this.locator.roomTypeSummary.waitFor({
-    state: 'visible'
-    });
+    // await this.locator.roomTypeSummary.waitFor({
+    // state: 'visible'
+    // });
 
-    await Verify.equals(
+//     await Verify.equals(
+//     this.page,
+//     `Verify Room Type - ${IPDAdmissionDetailsSummary.roomType}`,
+//     IPDAdmissionDetailsSummary.roomType,
+//     await this.locator.roomTypeSummary.innerText(),
+//     {
+//         soft: false
+//     }
+// );
+ 
+    await StepHelper.step(
     this.page,
     `Verify Room Type - ${IPDAdmissionDetailsSummary.roomType}`,
-    IPDAdmissionDetailsSummary.roomType,
-    await this.locator.roomTypeSummary.innerText(),
-    {
-        soft: false
+    async () => {
+        await expect(
+            this.locator.roomTypeSummary
+        ).toHaveText(
+            IPDAdmissionDetailsSummary.roomType,
+            {
+                timeout: 10000
+            }
+        );
     }
 );
- 
     // await Verify.equals(
     //     this.page,
     //     `Verify Admitted Bed - ${IPDAdmissionDetailsSummary.bed}`,
