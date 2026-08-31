@@ -15,6 +15,19 @@ class InvoicePage {
 
     async selectInvoiceServices() {
 
+        await StepHelper.step(
+        this.page,
+        'Wait for Services to Load',
+        async () => {
+
+            await expect(
+                this.locator.serviceCheckbox.first()
+            ).toBeVisible({
+                timeout: 60000
+            });
+        }
+    );//update
+
     await StepHelper.step(
         this.page,
         'Select All Services',
@@ -1778,6 +1791,19 @@ async verifyVisitingSlipContent(
             invoiceData.adjustmentName,
             invoiceData.adjustmentReason
         );
+
+        await StepHelper.step(
+            this.page,
+            'Wait for Generate Invoice Button to Enable',
+            async () => {
+
+                await expect(
+                    this.locator.finalGenerateInvoiceBtn
+                ).toBeEnabled({
+                    timeout: 60000
+                });
+            }
+        );//update
 
         await StepHelper.step(
             this.page,
