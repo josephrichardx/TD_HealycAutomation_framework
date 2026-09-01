@@ -7,5 +7,21 @@
     "age": "21",
     "gender": "Male",
     "address": "Chennai"
+  },
+  
+   "admissionPatientData": {
+    "location": "Healync Kolkata",
+    "surgeryName": "Total Knee Replacement (TKR)",
+    "doctorName": "Default Doctor",
+    "otName": "OT_1",
+    "emergency": "emergency",
+    "contactNumber": "1234567890",
+    "physicianName": "physician",
+    "insuranceName": "insurance",
+    "insuranceNumber": "12345",
+    "policyName": "policy",
+    "testCount": 3,
+    "consumableCount": 3,"dateLabel": "Admission Date",
+  "timeLabel": "Appointment Start Time"
   }
 }

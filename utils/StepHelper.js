@@ -40,6 +40,10 @@ class StepHelper {
                         `${name} - PASSED`
                     );
                 }
+                // // Screenshot when step passes
+                // await attachScreenshot(
+                //     `${name} - PASSED`
+                // );
 
             } catch (error) {
 

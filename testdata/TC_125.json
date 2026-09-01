@@ -29,7 +29,13 @@
     "packageName": "Neuro PT (30 sessions)"
   },
 
-  
+  "cancellationData": {
+    "cancellationReason": "Emergency or unexpected issue",
+    "refundAmount": 300,
+    "refundPaymentMethod": "Cash",
+    "expectedStatus": "Cancelled"
+  },
+
   "statusData": {
     "expectedStatus": "Confirmed"
   }

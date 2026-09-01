@@ -77,6 +77,13 @@ test('Make Payment', async ({ page }) => {
     await paymentPage.verifyPayment(
     paymentData.amount
     );
+
+    await paymentPage.clickPaymentHistory();
+
+    await paymentPage.verifyPaymentHistory(
+        paymentData.paymentMethod,
+        paymentData.amount
+    );
  
 });
  

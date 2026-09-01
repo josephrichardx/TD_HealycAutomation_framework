@@ -3,22 +3,22 @@ const { StepHelper } = require('../utils/StepHelper.js');
                         
 const { PatientPage } = require('../pages/PatientPage');
 const { ConsultPage } = require('../pages/ConsultPage');
-const { ServicePage } = require('../pages/ServicePage');
 const { InvoicePage } = require('../pages/InvoicePage');
 const { CalendarPage } = require('../pages/CalendarPage');
+const { PrescriptionPage } = require('../pages/PrescriptionPage');
  
-const { patientData,appoinmentData,consultData,serviceData,DateData,invoiceData } = require('../testdata/TC_003.json');
+const { patientData,appoinmentData,consultData,prescriptionData } = require('../testdata/TC_EMR012.json');
 const { generateUniquePatientFullName } = require('../utils/RandomData');
 
-test('Generate Invoice', async ({ page }) => {
+test('EMR Prescription', async ({ page }) => {
  
     // const patientName = patientData.patientName;
     const patientName = generateUniquePatientFullName();
     const patientPage = new PatientPage(page);
     const consultPage = new ConsultPage(page);
-    const servicePage = new ServicePage(page);
     const invoicePage = new InvoicePage(page);
     const calendarPage = new CalendarPage(page);
+    const prescriptionPage = new PrescriptionPage(page);
  
      await patientPage.createPatient(
         patientName,
@@ -36,21 +36,23 @@ test('Generate Invoice', async ({ page }) => {
     patientName,
     bookingDate
     );
+
+    await prescriptionPage.PrescriptionofObservation(
+    prescriptionData.drugs1,
+    prescriptionData.drugs2
+    );
  
- 
+    
 
 
-
-    await page.getByRole('button', { name: 'Write Prescription' }).click();
-
-
+    
 
 
 
 
 
 
-  
- 
+
+    
 });
  

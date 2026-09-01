@@ -440,7 +440,7 @@ class CancellationPage {
 );
 }
 
-async cancelPackageWithFullRefund(){
+async cancelPackageWithFullRefund(cancellationData){
 
 await StepHelper.step(
     this.page,
@@ -476,12 +476,14 @@ await this.verifyCancelledStatus(
     'Verify Package Cancelled',
     cancellationVerificationData.packageCancelled
 );
+
 }
 
 async cancelPackageWithPartialRefund(
     paymentType,
     amount,
-    transactionId = null
+    transactionId = null,
+    expectedStatus,
 ) {
 
     await StepHelper.step(
@@ -533,6 +535,16 @@ async cancelPackageWithPartialRefund(
         'Cancellation Success Message is displayed',
         this.locator.cancellationSuccessMessage,
         { visible: true, soft: false }
+    );
+
+    await StepHelper.step(
+        this.page,
+        `Verify Cancellation Status - ${expectedStatus}`,
+        async () => {
+            await expect(
+                (await this.locator.cancelledStatus.innerText()).trim()
+            ).toBe(expectedStatus);
+        }
     );
 }
 
