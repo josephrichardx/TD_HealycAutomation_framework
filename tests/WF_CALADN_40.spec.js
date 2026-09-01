@@ -21,8 +21,7 @@ const {
 } = require("../testdata/TC_40.json");
  
 const {
-    generateUniquePatientFullName,
-    generateShortPatientName
+    generateUniquePatientFullName
 } = require("../utils/RandomData.js");
  
 test("WF_CALADN_40 - Validate Generate Invoice for a Waitlist booking and its reflection in the payment section", async ({ page }) => {
@@ -34,10 +33,9 @@ test("WF_CALADN_40 - Validate Generate Invoice for a Waitlist booking and its re
     const appointmentPage = new AppointmentPage(page);
     const waitlistPage = new WaitlistPage(page);
     const invoicePage = new InvoicePage(page);
-    const paymentPage = new PaymentPage(page);
  
     // Create a fresh patient for the waitlist path.
-    const waitlistPatientName = generateShortPatientName();
+    const waitlistPatientName = generateUniquePatientFullName();
     const waitlistPatientData = {
         ...patientData,
         ...waitlistPatientOverrides
@@ -81,8 +79,7 @@ test("WF_CALADN_40 - Validate Generate Invoice for a Waitlist booking and its re
     await waitlistPage.findWaitlistEntry(waitlistPatientName);
  
     await waitlistPage.verifyWaitlistEntry(
-        waitlistPatientName,
-        waitlistVerificationData.waitlistEntry
+        waitlistPatientName
     );
  
     // A pending waitlist entry is not an appointment on the calendar and cannot

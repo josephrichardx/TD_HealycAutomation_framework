@@ -15,8 +15,7 @@ const {
     patientData,
     appoinmentData,
     consultData,
-    bookingData,
-    appointmentStatusVerificationData
+    bookingData
 } = require('../testdata/TC_45.json');
  
 const { generateUniquePatientFullName } = require('../utils/RandomData');
@@ -43,18 +42,26 @@ test('WF_CALADN_45 - Validate changing an appointment status to \'Checked-In\'',
     const bookedDate = await consultPage.addConsult(
         patientName,
         appoinmentData.doctorName,
-        consultData.consultSlot,
-        bookingData.bookingDate
+        consultData.consultSlot
+       
     );
  
     await calendarPage.selectPatientFromCalendar(
     patientName,
     bookedDate
     );
- 
-    await invoicePage.verifyAppointmentStatus(
-    appoinmentData,
-    appointmentStatusVerificationData
+
+    await invoicePage.updateAppointmentStatusToCheckIn();
+
+    // Navigate away and back to the appointment, then confirm the
+    // Checked-In status update actually persisted.
+    await calendarPage.closeAppointmentDetails();
+
+    await calendarPage.selectPatientFromCalendar(
+    patientName,
+    bookedDate
     );
- 
+
+    await invoicePage.verifyAppointmentCheckedIn();
+
     });

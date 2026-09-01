@@ -7,6 +7,7 @@
         "appointmentLabel": "APPT.",
         "arrivalLabel": "ARRIVAL :",
         "dateLabel": "DATE :",
-        "poweredBy": "Powered by Healync Technologies Pvt Ltd"
+        "poweredBy": "Powered by Healync Technologies Pvt Ltd",
+        "newPatientMarker": "- (NEW)"
     }
 }

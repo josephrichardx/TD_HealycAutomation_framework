@@ -339,7 +339,7 @@ export class Verify {
             description,
             expectedMessage,
             toaster,
-            { soft }
+            { soft, exact: true }
         );
     }
 

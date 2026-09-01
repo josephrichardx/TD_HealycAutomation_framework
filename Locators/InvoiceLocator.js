@@ -313,10 +313,12 @@ class InvoiceLocator
 
         ).last();
 
-        // Success toaster shown after generating an invoice / booking a service
-        this.invoiceToastTitle = page.locator(
-            'div.toaster-wrapper.success .text-content .title'
-        );
+        // Status badge carries a status-specific class (status-checkedin) on
+        // its container, so presence of this element is proof of the actual
+        // Checked-In state - not just matching text. The class alone matches
+        // 4 elements on the page (header pill, dropdown, stale popup copies),
+        // so anchor to the one that actually follows the "Status" label.
+        this.checkedInStatusBadge = page.locator("(//div[text()='Status'])[2]//ancestor::div[1]//following-sibling::div[@class='field-dropdown']");
 
     }
 

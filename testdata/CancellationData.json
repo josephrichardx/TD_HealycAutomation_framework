@@ -10,23 +10,18 @@
   },
   "cancellationVerificationData": {
     "paymentRecorded": {
-      "step": "Verify Payment Recorded Successfully",
       "expectedMessage": "Payment recorded successfully"
     },
     "refundRecorded": {
-      "step": "Verify Refund Recorded Successfully",
       "expectedStatus": "Cancelled"
     },
     "makePaymentRecorded": {
-      "step": "Verify Make Payment Recorded Successfully",
       "expectedStatus": "Cancelled"
     },
     "appointmentCancelled": {
-      "step": "Verify Appointment Cancelled",
       "expectedStatus": "Cancelled"
     },
     "packageCancelled": {
-      "step": "Verify Package Cancelled",
       "expectedStatus": "Cancelled"
     }
   }

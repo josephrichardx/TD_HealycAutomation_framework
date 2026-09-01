@@ -479,15 +479,12 @@ async selectFirstAvailableSlot() {
     }
 
      async verifyBookingConfirmation() {
-
-    await StepHelper.step(
+        await Verify.toaster(
         this.page,
-        'Verify Consult Booking Confirmation Message is Visible',
-        async () => {
-            await expect(
-                this.locator.bookingConfirmMsg
-            ).toBeVisible();
-        }
+        'Verify Service Booking Confirmation Toaster',
+        this.locator.bookingConfirmToastTitle,
+        toasterMessages.bookingConfirm
+
     );
 
     await Verify.toaster(
@@ -1006,7 +1003,10 @@ async selectFirstAvailableSlot() {
  
                         const chipText =
 
-                            (await chip.innerText().catch(() => '')).trim();
+                            (
+                                await this.keywords.getText(chip)
+                                    .catch(() => '')
+                            ).trim();
  
  
                         const removeBtn = this._requireLocator(
@@ -1592,7 +1592,7 @@ async selectFirstAvailableSlot() {
             this.page,
             'Appointment Results Label Reports A Number',
             /\d+/,
-            async () => await countLabel.innerText()
+            async () => await this.keywords.getText(countLabel)
         );
 
         await Verify.countAtLeast(
@@ -1621,7 +1621,7 @@ async selectFirstAvailableSlot() {
             { visible: true, soft: false }
         );
 
-        const cardText = await card.innerText();
+        const cardText = await this.keywords.getText(card);
 
                 const feeAmount = this._extractFeeAmount(cardText);
 
@@ -1643,7 +1643,9 @@ async selectFirstAvailableSlot() {
         );
 
         const slotTimeText = (
-            await slot.locator('span.slot-time').innerText()
+            await this.keywords.getText(
+                slot.locator('span.slot-time')
+            )
         ).trim();
 
         await Verify.record(
@@ -1713,7 +1715,7 @@ async selectFirstAvailableSlot() {
             { visible: true, soft: false }
         );
 
-        const feeText = await feeElement.innerText();
+        const feeText = await this.keywords.getText(feeElement);
 
                 const actualFeeAmount =
             this._extractFeeAmount(feeText) ?? feeText.trim();
@@ -2161,7 +2163,7 @@ async selectFirstAvailableSlot() {
 
         await this.keywords.waitForElement(card);
 
-        const cardText = await card.innerText();
+        const cardText = await this.keywords.getText(card);
 
         const feeAmount = this._extractFeeAmount(cardText);
 
@@ -2302,7 +2304,10 @@ async clearPreSelectedFilters(filterRefresh = waitData.filterRefresh) {
 
                     const chipText =
 
-                        (await chip.innerText().catch(() => '')).trim();
+                        (
+                            await this.keywords.getText(chip)
+                                .catch(() => '')
+                        ).trim();
 
                     const removeBtn = this._requireLocator(
 

@@ -8,7 +8,6 @@
     "gender": "Male",
     "address": "Chennai",
     "savedVerification": {
-      "step": "Verify Patient Saved Successfully",
       "expectedMessage": "Patient Saved successfully"
     }
   },
@@ -34,19 +33,13 @@
     "email": ""
   },
   "waitlistVerificationData": {
-    "waitlistEntry": {
-      "step": "Verify Waitlist Entry Present"
-    },
     "appointmentStatus": {
-      "step": "Verify Appointment Status",
       "expectedStatus": "Confirmed"
     },
     "invoiceGenerated": {
-      "step": "Verify Invoice Generated",
       "expectedPattern": "^INV-00\\d+$"
     },
     "invoiceName": {
-      "step": "Verify Invoice Name Starts With",
       "expectedPrefix": "INV-00"
     }
   }

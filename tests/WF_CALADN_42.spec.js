@@ -14,22 +14,17 @@ const { WaitlistCancellationPage } = require('../pages/WaitlistCancellationPage.
 const {
     patientData,
     appoinmentData,
-    waitlistBookingData,
     consultData,
     cancelReasonData,
     waitlistPatientOverrides,
-    waitlistVerificationData,
     waitlistCancellationVerificationData
 } = require('../testdata/TC_42.json');
  
  
-const { generateUniquePatientFullName, generateShortPatientName } = require('../utils/RandomData.js');
+const { generateUniquePatientFullName } = require('../utils/RandomData.js');
  
  
 test('WF_CALADN_42 - Validate cancellation of a Waitlist booking', async ({ page }) => {
-    const bookingDate = waitlistBookingData.standardBookingDate;
- 
- 
     const patientName = generateUniquePatientFullName();
  
  
@@ -45,7 +40,7 @@ test('WF_CALADN_42 - Validate cancellation of a Waitlist booking', async ({ page
  
  
     // Step 12 - Create a fresh patient for the Waitlist path (new name, no reused
-    const waitlistPatientName = generateShortPatientName();
+    const waitlistPatientName = generateUniquePatientFullName();
     const waitlistPatientData = {
         ...patientData,
         ...waitlistPatientOverrides
@@ -80,17 +75,11 @@ test('WF_CALADN_42 - Validate cancellation of a Waitlist booking', async ({ page
         consultData.consultSlot
     );
  
-    // Open booking date picker
-    await appointmentPage.openBookingDatePicker();
- 
-    // Select booking date
-    await appointmentPage.selectBookingDate(
-        bookingDate
-    );
- 
-    // Apply selected date
-    await appointmentPage.applyBookingDate();
- 
+    // Select the booking date at runtime instead of trusting the static
+    // day-of-month from test data: walk dates forward from today and use
+    // the first one whose doctor card shows an available slot.
+    const bookingDate = await appointmentPage.selectRuntimeBookingDate();
+
     // Step 14 - Click hourglass
     await waitlistPage.clickHourglass();
  
@@ -111,8 +100,7 @@ test('WF_CALADN_42 - Validate cancellation of a Waitlist booking', async ({ page
     );
     // Verify waitlist entry
     await waitlistPage.verifyWaitlistEntry(
-        waitlistPatientName,
-        waitlistVerificationData.waitlistEntry
+        waitlistPatientName
     );
     // Step 19 - Click Cancel
     await waitlistCancellationPage.clickCancel(

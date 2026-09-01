@@ -307,10 +307,12 @@ class PatientPage {
     // The success toaster is transient - if it is already gone by the time it
     // is read, the observable outcome is the Add Patient form closing. This
     // races both so a missed toaster is not reported as a failed save.
-    // `verification` = { step, expectedMessage } from the calling spec's own
-    // data file (patientData.savedVerification).
+    // `verification` = { expectedMessage } from the calling spec's own data
+    // file (patientData.savedVerification).
 
     async verifyPatientSavedOutcome(patientName, verification) {
+
+        const step = 'Verify Patient Saved Successfully';
 
         const toaster = this.locator.patientSavedMsg.first();
 
@@ -349,17 +351,16 @@ class PatientPage {
 
         if (actualMessage && verification && verification.expectedMessage) {
 
-            await Verify.contains(
+            await Verify.equals(
                 this.page,
-                `${verification.step} - ${patientName}`,
+                `${step} - ${patientName}`,
                 verification.expectedMessage,
                 actualMessage
             );
 
             return actualMessage;
-        }
 
-        if (actualMessage) {
+        } else if (actualMessage) {
 
             await Verify.record(
                 this.page,
@@ -368,17 +369,19 @@ class PatientPage {
             );
 
             return actualMessage;
+
+        } else {
+
+            // The toaster was already gone - the form closing is the outcome.
+            await Verify.state(
+                this.page,
+                `Add Patient form closed after save - ${patientName}`,
+                panelField,
+                { hidden: true, soft: false }
+            );
+
+            return null;
         }
-
-        // The toaster was already gone - the form closing is the outcome.
-        await Verify.state(
-            this.page,
-            `Add Patient form closed after save - ${patientName}`,
-            panelField,
-            { hidden: true, soft: false }
-        );
-
-        return null;
     }
 
 

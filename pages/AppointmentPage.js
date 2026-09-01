@@ -545,6 +545,8 @@ class AppointmentPage {
 
     async verifyConfirmedAppointment(patientName) {
 
+        const step = 'Verify Confirmed Appointment';
+
         const verification =
             appointmentVerificationData.confirmedStatus;
 
@@ -579,7 +581,7 @@ class AppointmentPage {
 
         await Verify.contains(
             this.page,
-            `${verification.step} - ${patientName}`,
+            `${step} - ${patientName}`,
             verification.expectedStatus,
             actualStatusText
         );

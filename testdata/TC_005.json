@@ -8,7 +8,6 @@
     "gender": "Male",
     "address": "Chennai",
     "savedVerification": {
-      "step": "Verify Patient Saved Successfully",
       "expectedMessage": "Patient Saved successfully"
     }
   },

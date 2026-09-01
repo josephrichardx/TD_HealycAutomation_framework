@@ -52,8 +52,8 @@ test('WF_CALADN_46 - Validate the Check-In PDF after check-in', async ({ page })
     const bookedDate = await consultPage.addConsult(
         patientName,
         appoinmentData.doctorName,
-        consultData.consultSlot,
-        bookingData.bookingDate
+        consultData.consultSlot
+     
     );
  
  

@@ -68,8 +68,8 @@ class PatientLocator {
 
 
         // Success Message
-        this.patientSavedMsg = page.getByText(
-            'Patient Saved successfully'
+        this.patientSavedMsg = page.locator(
+            'div.toaster-wrapper.success .text-content .title'
         );
 
 

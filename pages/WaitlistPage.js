@@ -174,9 +174,9 @@ class WaitlistPage {
     }
 
 
-    // `verification` is the { step } block from the calling spec's own data
-    // file (waitlistVerificationData.waitlistEntry).
-    async verifyWaitlistEntry(patientName, verification) {
+    async verifyWaitlistEntry(patientName) {
+
+        const step = 'Verify Waitlist Entry Present';
 
         const waitlistEntryLocator =
             this.locators.getWaitlistCardByName(patientName);
@@ -205,7 +205,7 @@ class WaitlistPage {
 
         await Verify.contains(
             this.page,
-            `${verification.step} - ${patientName}`,
+            `${step} - ${patientName}`,
             patientName,
             actualEntryText
         );
@@ -317,7 +317,9 @@ class WaitlistPage {
                         timeout: waitData.shortWait * 2
                     });
 
-                    const slotText = (await slot.innerText()).trim();
+                    const slotText = (
+                        await this.keywords.getText(slot)
+                    ).trim();
 
                     await this.keywords.forceClick(slot);
 
@@ -561,8 +563,10 @@ class WaitlistPage {
 
     // Reads whatever status the appointment panel rendered at runtime and
     // compares it with the expected status held in the calling spec's own data
-    // file. `verification` = { step, expectedStatus }.
+    // file. `verification` = { expectedStatus }.
     async verifyAppointmentStatus(verification) {
+
+        const step = 'Verify Appointment Status';
 
         const statusBadge = this.locators.getAppointmentStatusBadge(
             verification.expectedStatus
@@ -590,7 +594,7 @@ class WaitlistPage {
 
         await Verify.contains(
             this.page,
-            verification.step,
+            step,
             verification.expectedStatus,
             actualStatusText
         );
@@ -599,8 +603,10 @@ class WaitlistPage {
     }
 
 
-    // `verification` = { step, expectedStatus } from the calling spec's data.
+    // `verification` = { expectedStatus } from the calling spec's data.
     async verifyPendingAppointment(verification) {
+
+        const step = 'Verify Pending Appointment';
 
         const statusLocator = this.locators.pendingStatusLocator;
 
@@ -628,15 +634,17 @@ class WaitlistPage {
 
         await Verify.contains(
             this.page,
-            verification.step,
+            step,
             verification.expectedStatus,
             actualStatusText
         );
     }
 
 
-    // `verification` = { step, expectedPattern } from the calling spec's data.
+    // `verification` = { expectedPattern } from the calling spec's data.
     async verifyInvoiceGenerated(verification) {
+
+        const step = 'Verify Invoice Generated';
 
         const invoiceLocator = this.locators.invoiceNumberLocator;
 
@@ -664,7 +672,7 @@ class WaitlistPage {
 
         await Verify.matches(
             this.page,
-            verification.step,
+            step,
             new RegExp(verification.expectedPattern),
             actualInvoiceNumber
         );
@@ -673,8 +681,10 @@ class WaitlistPage {
     }
 
 
-    // `verification` = { step, expectedPrefix } from the calling spec's data.
+    // `verification` = { expectedPrefix } from the calling spec's data.
     async verifyInvoiceNameStartsWith(verification) {
+
+        const step = 'Verify Invoice Name Starts With';
 
         const expectedPrefix = verification.expectedPrefix;
 
@@ -688,14 +698,14 @@ class WaitlistPage {
             async () => {
 
                 actualInvoiceText = (
-                    await this.keywords.getTextContent(invoiceLocator)
+                    await this.keywords.getText(invoiceLocator)
                 ).trim();
             }
         );
 
         await Verify.contains(
             this.page,
-            `${verification.step} - ${expectedPrefix}`,
+            `${step} - ${expectedPrefix}`,
             expectedPrefix,
             actualInvoiceText
         );
@@ -779,8 +789,9 @@ class WaitlistPage {
     }
 
 
-    // `verification` = { step } from the calling spec's data.
-    async verifyPaymentPageOpened(verification) {
+    async verifyPaymentPageOpened() {
+
+        const step = 'Verify Payment Page Opened';
 
         await StepHelper.step(
             this.page,
@@ -794,7 +805,7 @@ class WaitlistPage {
 
         await Verify.state(
             this.page,
-            `${verification.step} - payment section is displayed`,
+            `${step} - payment section is displayed`,
             this.locators.paymentSection,
             { visible: true, soft: false }
         );
@@ -988,11 +999,11 @@ class WaitlistPage {
 
 
     // Captures the toaster message the application raises at runtime and
-    // compares it with the expected message held in waitlistData.json.
-    // Captures the toaster message the application raises at runtime and
     // compares it with the expected message held in the calling spec's data.
-    // `verification` = { step, expectedMessage }.
+    // `verification` = { expectedMessage }.
     async verifyPaymentRecordedSuccessfully(verification) {
+
+        const step = 'Verify Payment Recorded Successfully';
 
         const toaster = this.locators.paymentSuccessMessage.first();
 
@@ -1011,7 +1022,7 @@ class WaitlistPage {
 
         await Verify.contains(
             this.page,
-            verification.step,
+            step,
             verification.expectedMessage,
             actualMessage
         );
@@ -1065,8 +1076,9 @@ class WaitlistPage {
     }
 
 
-    // `verification` = { step } from the calling spec's data.
-    async verifyPaymentMethodInHistory(paymentMethod, verification) {
+    async verifyPaymentMethodInHistory(paymentMethod) {
+
+        const step = 'Verify Payment Method In History';
 
         const methodText = this.locators
             .getTextLocator(paymentMethod)
@@ -1096,15 +1108,16 @@ class WaitlistPage {
 
         await Verify.equals(
             this.page,
-            `${verification.step} - ${paymentMethod}`,
+            `${step} - ${paymentMethod}`,
             paymentMethod,
             actualMethodText
         );
     }
 
 
-    // `verification` = { step } from the calling spec's data.
-    async verifyPaymentAmountInHistory(amount, verification) {
+    async verifyPaymentAmountInHistory(amount) {
+
+        const step = 'Verify Payment Amount In History';
 
         const historyAmount = String(amount).replace(/\.00$/, '');
 
@@ -1129,7 +1142,7 @@ class WaitlistPage {
 
         await Verify.equals(
             this.page,
-            `${verification.step} - ${historyAmount}`,
+            `${step} - ${historyAmount}`,
             normalizeCurrencyValue(historyAmount),
             normalizeCurrencyValue(actualAmountText)
         );
@@ -1176,8 +1189,9 @@ class WaitlistPage {
     }
 
 
-    // `verification` = { step } from the calling spec's data.
-    async verifyFullPaymentAmountDisplayed(amount, verification) {
+    async verifyFullPaymentAmountDisplayed(amount) {
+
+        const step = 'Verify Full Payment Amount Displayed';
 
         const fullPaymentAmount = this.locators
             .getTextLocator(amount)
@@ -1207,7 +1221,7 @@ class WaitlistPage {
 
         await Verify.equals(
             this.page,
-            `${verification.step} - ${amount}`,
+            `${step} - ${amount}`,
             normalizeCurrencyValue(amount),
             normalizeCurrencyValue(actualAmountText)
         );
