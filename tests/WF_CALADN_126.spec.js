@@ -76,7 +76,6 @@ test('Package - Cancel with Partial Refund', async ({ page }) => {
     cancellationData.refundAmount,
     cancellationData.transactionId,
     cancellationData.expectedStatus
-
     );
 
 

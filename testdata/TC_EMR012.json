@@ -17,16 +17,21 @@
     "consultSlot": "First Consult"
   },
 
+  "templateData": {
+  "templateName": "EMR_TD1",
+  "time": 8000
+  },
+
  "prescriptionData": {
     "drugs1": 
         {
-            "name": "Drug Library: 1 AL AX 5mg/",
+            "name": " 1 AL AX 5mg/75mg Capsule ",
             "durationType": "Days",
             "instruction": "Before Food"
         },
     "drugs2": 
         {
-            "name": "Drug Library: 1 Nvp Tablet",
+            "name": " 1 Nvp Tablet ",
             "durationType": "Weeks",
             "instruction": "After Food"
         }

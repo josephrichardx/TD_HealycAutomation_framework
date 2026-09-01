@@ -7,11 +7,11 @@ const { InvoicePage } = require('../pages/InvoicePage');
 const { CalendarPage } = require('../pages/CalendarPage');
 const { PrescriptionPage } = require('../pages/PrescriptionPage');
  
-const { patientData,appoinmentData,consultData,prescriptionData } = require('../testdata/TC_EMR012.json');
+const { patientData,appoinmentData,consultData,prescriptionData,templateData } = require('../testdata/TC_EMR012.json');
 const { generateUniquePatientFullName } = require('../utils/RandomData');
 
 test('EMR Prescription', async ({ page }) => {
- 
+
     // const patientName = patientData.patientName;
     const patientName = generateUniquePatientFullName();
     const patientPage = new PatientPage(page);
@@ -37,10 +37,15 @@ test('EMR Prescription', async ({ page }) => {
     bookingDate
     );
 
-    await prescriptionPage.PrescriptionofObservation(
-    prescriptionData.drugs1,
-    prescriptionData.drugs2
+    await prescriptionPage.PrescriptionObservation(
+    templateData.templateName,
+    templateData.time,
+    prescriptionData.drugs1.name,
+    prescriptionData.drugs1.durationType,
+    prescriptionData.drugs1.instruction
     );
+
+
  
     
 
