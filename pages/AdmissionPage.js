@@ -452,7 +452,7 @@ export class AdmissionPage {
         });
     }
 
-    async fillDiagnosisAndDoctor(diagnosisText, doctorName = 'Default Doctor') {
+    async fillDiagnosisAndDoctor(diagnosisText, doctorName) {
 
         await Verify.state(
             this.page,
@@ -636,157 +636,378 @@ export class AdmissionPage {
     
 }
 
-    async addTests(maxCount = 3) {
-        return await this._selectRandomChipsAndLink({
-            label: 'Test',
-            addBtn: this.locator.addTestBtn,
-            linkBtn: this.locator.linkTestBtn,
-            maxCount
-        });
-    }
+    // async addTests(maxCount = 3) {
+    //     return await this._selectRandomChipsAndLink({
+    //         label: 'Test',
+    //         addBtn: this.locator.addTestBtn,
+    //         linkBtn: this.locator.linkTestBtn,
+    //         maxCount
+    //     });
+    // }
 
-    async addConsumables(maxCount = 3) {
-        return await this._selectRandomChipsAndLink({
-            label: 'Consumable',
-            addBtn: this.locator.addConsumableBtn,
-            linkBtn: this.locator.linkConsumablesBtn,
-            maxCount
-        });
-    }
+    // async addConsumables(maxCount = 3) {
+    //     return await this._selectRandomChipsAndLink({
+    //         label: 'Consumable',
+    //         addBtn: this.locator.addConsumableBtn,
+    //         linkBtn: this.locator.linkConsumablesBtn,
+    //         maxCount
+    //     });
+    // }
+
+    async addTests(testCount) {
+    return await this._selectRandomChipsAndLink({
+        label: 'Test',
+        addBtn: this.locator.addTestBtn,
+        linkBtn: this.locator.linkTestBtn,
+        maxCount: testCount
+    });
+}
+
+async addConsumables(consumableCount) {
+    return await this._selectRandomChipsAndLink({
+        label: 'Consumable',
+        addBtn: this.locator.addConsumableBtn,
+        linkBtn: this.locator.linkConsumablesBtn,
+        maxCount: consumableCount
+    });
+}
+
+    // async fillEmergencyDetailsAndContinue(
+    //     contactName = 'emergency',
+    //     phoneNumber = '1234567890',
+    //     physicianName = 'physician'
+    // ) {
+
+    //     await this.page.waitForLoadState('domcontentloaded');
+
+    //     const contactInput = this.locator.emergencyContactTxt;
+
+    //     await Verify.state(
+    //         this.page,
+    //         'Emergency Contact Field',
+    //         contactInput,
+    //         { visible: true, soft: false }
+    //     );
+
+    //     await StepHelper.step(
+    //         this.page,
+    //         'Enter Emergency Details',
+    //         async () => {
+    //             await contactInput.fill(contactName);
+    //             await this.locator.emergencyPhoneTxt.fill(phoneNumber);
+    //             await this.locator.referringPhysicianTxt.fill(physicianName);
+    //         }
+    //     );
+
+    //     await Verify.inputValue(
+    //         this.page,
+    //         'Emergency Contact Field Value',
+    //         contactName,
+    //         contactInput
+    //     );
+
+    //     await Verify.inputValue(
+    //         this.page,
+    //         'Emergency Phone Field Value',
+    //         phoneNumber,
+    //         this.locator.emergencyPhoneTxt
+    //     );
+
+    //     await Verify.inputValue(
+    //         this.page,
+    //         'Referring Physician Field Value',
+    //         physicianName,
+    //         this.locator.referringPhysicianTxt
+    //     );
+
+    //     const btn = this.locator.step2ContinueBtn;
+
+    //     await Verify.state(
+    //         this.page,
+    //         'Step 2 Continue Button',
+    //         btn,
+    //         { enabled: true, soft: false }
+    //     );
+
+    //     await StepHelper.step(
+    //         this.page,
+    //         'Click Step 2 Continue Button',
+    //         async () => {
+    //             await btn.click();
+    //         }
+    //     );
+    // }
 
     async fillEmergencyDetailsAndContinue(
-        contactName = 'emergency',
-        phoneNumber = '1234567890',
-        physicianName = 'physician'
-    ) {
+    contactName,
+    phoneNumber,
+    physicianName
+) {
 
-        await this.page.waitForLoadState('domcontentloaded');
+    await this.page.waitForLoadState('domcontentloaded');
 
-        const contactInput = this.locator.emergencyContactTxt;
+    const contactInput = this.locator.emergencyContactTxt;
 
-        await Verify.state(
-            this.page,
-            'Emergency Contact Field',
-            contactInput,
-            { visible: true, soft: false }
-        );
+    await Verify.state(
+        this.page,
+        'Emergency Contact Field',
+        contactInput,
+        { visible: true, soft: false }
+    );
 
-        await StepHelper.step(
-            this.page,
-            'Enter Emergency Details',
-            async () => {
-                await contactInput.fill(contactName);
-                await this.locator.emergencyPhoneTxt.fill(phoneNumber);
-                await this.locator.referringPhysicianTxt.fill(physicianName);
-            }
-        );
+    await StepHelper.step(
+        this.page,
+        'Enter Emergency Details',
+        async () => {
+            await contactInput.fill(contactName);
+            await this.locator.emergencyPhoneTxt.fill(phoneNumber);
+            await this.locator.referringPhysicianTxt.fill(physicianName);
+        }
+    );
 
-        await Verify.inputValue(
-            this.page,
-            'Emergency Contact Field Value',
-            contactName,
-            contactInput
-        );
+    await Verify.inputValue(
+        this.page,
+        'Emergency Contact Field Value',
+        contactName,
+        contactInput
+    );
 
-        await Verify.inputValue(
-            this.page,
-            'Emergency Phone Field Value',
-            phoneNumber,
-            this.locator.emergencyPhoneTxt
-        );
+    await Verify.inputValue(
+        this.page,
+        'Emergency Phone Field Value',
+        phoneNumber,
+        this.locator.emergencyPhoneTxt
+    );
 
-        await Verify.inputValue(
-            this.page,
-            'Referring Physician Field Value',
-            physicianName,
-            this.locator.referringPhysicianTxt
-        );
+    await Verify.inputValue(
+        this.page,
+        'Referring Physician Field Value',
+        physicianName,
+        this.locator.referringPhysicianTxt
+    );
 
-        const btn = this.locator.step2ContinueBtn;
+    const btn = this.locator.step2ContinueBtn;
 
-        await Verify.state(
-            this.page,
-            'Step 2 Continue Button',
-            btn,
-            { enabled: true, soft: false }
-        );
+    await Verify.state(
+        this.page,
+        'Step 2 Continue Button',
+        btn,
+        { enabled: true, soft: false }
+    );
 
-        await StepHelper.step(
-            this.page,
-            'Click Step 2 Continue Button',
-            async () => {
-                await btn.click();
-            }
-        );
-    }
+    await StepHelper.step(
+        this.page,
+        'Click Step 2 Continue Button',
+        async () => {
+            await btn.click();
+        }
+    );
+}
+
+    // async fillInsuranceDetailsAndContinue(
+    //     companyName = 'insurance',
+    //     policyNumber = '12345',
+    //     policyType = 'policy'
+    // ) {
+
+    //     await this.page.waitForLoadState('domcontentloaded');
+
+    //     const companyInput = this.locator.insuranceCompanyNameTxt;
+
+    //     await Verify.state(
+    //         this.page,
+    //         'Insurance Company Name Field',
+    //         companyInput,
+    //         { visible: true, soft: false }
+    //     );
+
+    //     await StepHelper.step(
+    //         this.page,
+    //         'Enter Insurance Details',
+    //         async () => {
+    //             await companyInput.fill(companyName);
+    //             await this.locator.policyNumberTxt.fill(policyNumber);
+    //             await this.locator.policyTypeTxt.fill(policyType);
+    //         }
+    //     );
+
+    //     await Verify.inputValue(
+    //         this.page,
+    //         'Insurance Company Name Field Value',
+    //         companyName,
+    //         companyInput
+    //     );
+
+    //     await Verify.inputValue(
+    //         this.page,
+    //         'Policy Number Field Value',
+    //         policyNumber,
+    //         this.locator.policyNumberTxt
+    //     );
+
+    //     await Verify.inputValue(
+    //         this.page,
+    //         'Policy Type Field Value',
+    //         policyType,
+    //         this.locator.policyTypeTxt
+    //     );
+
+    //     const btn = this.locator.step3ContinueBtn;
+
+    //     await Verify.state(
+    //         this.page,
+    //         'Step 3 Continue Button',
+    //         btn,
+    //         { enabled: true, soft: false }
+    //     );
+
+    //     await StepHelper.step(
+    //         this.page,
+    //         'Click Step 3 Continue Button',
+    //         async () => {
+    //             await btn.click();
+    //         }
+    //     );
+    // }
 
     async fillInsuranceDetailsAndContinue(
-        companyName = 'insurance',
-        policyNumber = '12345',
-        policyType = 'policy'
-    ) {
+    companyName,
+    policyNumber,
+    policyType
+) {
 
-        await this.page.waitForLoadState('domcontentloaded');
+    await this.page.waitForLoadState('domcontentloaded');
 
-        const companyInput = this.locator.insuranceCompanyNameTxt;
+    const companyInput = this.locator.insuranceCompanyNameTxt;
 
-        await Verify.state(
-            this.page,
-            'Insurance Company Name Field',
-            companyInput,
-            { visible: true, soft: false }
-        );
+    await Verify.state(
+        this.page,
+        'Insurance Company Name Field',
+        companyInput,
+        { visible: true, soft: false }
+    );
 
-        await StepHelper.step(
-            this.page,
-            'Enter Insurance Details',
-            async () => {
-                await companyInput.fill(companyName);
-                await this.locator.policyNumberTxt.fill(policyNumber);
-                await this.locator.policyTypeTxt.fill(policyType);
-            }
-        );
+    await StepHelper.step(
+        this.page,
+        'Enter Insurance Details',
+        async () => {
+            await companyInput.fill(companyName);
+            await this.locator.policyNumberTxt.fill(policyNumber);
+            await this.locator.policyTypeTxt.fill(policyType);
+        }
+    );
 
-        await Verify.inputValue(
-            this.page,
-            'Insurance Company Name Field Value',
-            companyName,
-            companyInput
-        );
+    await Verify.inputValue(
+        this.page,
+        'Insurance Company Name Field Value',
+        companyName,
+        companyInput
+    );
 
-        await Verify.inputValue(
-            this.page,
-            'Policy Number Field Value',
-            policyNumber,
-            this.locator.policyNumberTxt
-        );
+    await Verify.inputValue(
+        this.page,
+        'Policy Number Field Value',
+        policyNumber,
+        this.locator.policyNumberTxt
+    );
 
-        await Verify.inputValue(
-            this.page,
-            'Policy Type Field Value',
-            policyType,
-            this.locator.policyTypeTxt
-        );
+    await Verify.inputValue(
+        this.page,
+        'Policy Type Field Value',
+        policyType,
+        this.locator.policyTypeTxt
+    );
 
-        const btn = this.locator.step3ContinueBtn;
+    const btn = this.locator.step3ContinueBtn;
 
-        await Verify.state(
-            this.page,
-            'Step 3 Continue Button',
-            btn,
-            { enabled: true, soft: false }
-        );
+    await Verify.state(
+        this.page,
+        'Step 3 Continue Button',
+        btn,
+        { enabled: true, soft: false }
+    );
 
-        await StepHelper.step(
-            this.page,
-            'Click Step 3 Continue Button',
-            async () => {
-                await btn.click();
-            }
-        );
-    }
+    await StepHelper.step(
+        this.page,
+        'Click Step 3 Continue Button',
+        async () => {
+            await btn.click();
+        }
+    );
+}
 
-    async verifyAdmissionSummaryAndContinue(admissionDate, admissionTime) {
+    // async verifyAdmissionSummaryAndContinue(admissionDate, admissionTime) {
+
+    //     await this.page.waitForLoadState('domcontentloaded');
+
+    //     const expectedDateText = admissionDate.toLocaleDateString(
+    //         'en-US',
+    //         { month: 'short', day: 'numeric', year: 'numeric' }
+    //     );
+
+    //     const expectedTimeText = `${admissionTime.hour}:${admissionTime.minute} ${admissionTime.period}`;
+
+    //     const dateValue = this.locator.getSummaryValueByLabel('Admission Date');
+    //     const timeValue = this.locator.getSummaryValueByLabel('Appointment Start Time');
+
+    //     await dateValue.waitFor({
+    //         state: 'visible',
+    //         timeout: 30000
+    //     });
+
+
+    //     await Verify.state(
+    //         this.page,
+    //         'Admission Date Summary Value',
+    //         dateValue,
+    //         { visible: true, soft: false }
+    //     );
+
+    //     await Verify.text(
+    //         this.page,
+    //         'Admission Date Summary',
+    //         expectedDateText,
+    //         dateValue,
+    //         { exact: true }
+    //     );
+
+    //     await Verify.state(
+    //         this.page,
+    //         'Appointment Start Time Summary Value',
+    //         timeValue,
+    //         { visible: true, soft: false }
+    //     );
+
+    //     const actualTimeText = (await timeValue.innerText()).trim();
+
+    //     await Verify.record(
+    //         this.page,
+    //         'Selected Time vs Displayed Appointment Start Time',
+    //         `Selected: ${expectedTimeText} | Displayed: ${actualTimeText}`
+    //     );
+
+    //     const btn = this.locator.step4ContinueBtn;
+
+    //     await Verify.state(
+    //         this.page,
+    //         'Step 4 Continue Button',
+    //         btn,
+    //         { visible: true, enabled: true, soft: false }
+    //     );
+
+    //     await StepHelper.step(
+    //         this.page,
+    //         'Click Continue On Step 4',
+    //         async () => {
+    //             await this.keywords.click(btn);
+    //         }
+    //     );
+    // }
+
+    async verifyAdmissionSummaryAndContinue(admissionDate,
+    admissionTime,
+    dateLabel,
+    timeLabel) {
 
         await this.page.waitForLoadState('domcontentloaded');
 
@@ -797,8 +1018,8 @@ export class AdmissionPage {
 
         const expectedTimeText = `${admissionTime.hour}:${admissionTime.minute} ${admissionTime.period}`;
 
-        const dateValue = this.locator.getSummaryValueByLabel('Admission Date');
-        const timeValue = this.locator.getSummaryValueByLabel('Appointment Start Time');
+        const dateValue = this.locator.getSummaryValueByLabel(dateLabel);
+        const timeValue = this.locator.getSummaryValueByLabel(timeLabel);
 
         await dateValue.waitFor({
             state: 'visible',
@@ -853,4 +1074,5 @@ export class AdmissionPage {
             }
         );
     }
+
 }

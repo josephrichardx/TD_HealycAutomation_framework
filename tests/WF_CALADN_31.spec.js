@@ -1,39 +1,17 @@
 import { test } from '../fixtures/baseTest.js';
 import { AdmissionPage } from '../pages/AdmissionPage.js';
-// import { InvoicePage } from '../pages/InvoicePage.js';
 
-const { InvoicePage } = require('../pages/InvoicePage');
 const { PatientPage } = require('../pages/PatientPage');
-const { ConsultPage } = require('../pages/ConsultPage');
-const { ServicePage } = require('../pages/ServicePage');
-const { PaymentPage } = require('../pages/PaymentPage');
-const { CalendarPage } = require('../pages/CalendarPage');
+const { patientData,admissionPatientData} = require('../testdata/TC_031.json');
+const { generateUniquePatientFullName } = require('../utils/RandomData');
 
-const { patientData} = require('../testdata/TC_031.json');
-
-
-const { generatePatientName } = require('../utils/RandomData');
-
-import admissionData from '../testdata/admissionData.json' with { type: 'json' };
-
-import {
-    generateAdmissionDate,
-    generateAdmissionTime,
-    getAdmissionData
-} from '../utils/RandomData.js';
-
-const { admissionPatientData } = admissionData;
-
+import { generateAdmissionDate,generateAdmissionTime,getAdmissionData} from '../utils/RandomData.js';
 
 test('Add Admission', async ({ page }) => {
 
-    const patientName = generatePatientName();
+    const patientName = generateUniquePatientFullName();
     const admissionPage = new AdmissionPage(page);
     const patientPage = new PatientPage(page);
-
-    const data = { ...admissionPatientData };
-
-
     
     // ============================================================
     // 1. Create Patient
@@ -63,7 +41,7 @@ test('Add Admission', async ({ page }) => {
     // ==========================================
 
     await admissionPage.openLocationDropdown();
-    await admissionPage.selectLocation(data.location);
+    await admissionPage.selectLocation(admissionPatientData.location);
 
     // ==========================================
     // 4. Select Admission Date & Time
@@ -90,8 +68,8 @@ test('Add Admission', async ({ page }) => {
     const dynamicData = getAdmissionData();
 
     await admissionPage.fillDiagnosisAndDoctor(
-        dynamicData.admittingDiagnosis,
-        dynamicData.doctorName
+    dynamicData.admittingDiagnosis,
+    admissionPatientData.doctorName
     );
 
     // ==========================================
@@ -99,17 +77,24 @@ test('Add Admission', async ({ page }) => {
     // ==========================================
 
         await admissionPage.addSurgery(admissionPatientData);
-        await admissionPage.addTests(3);
-        await admissionPage.addConsumables(3);
+        // await admissionPage.addTests(3);
+        // await admissionPage.addConsumables(3);
+        await admissionPage.addTests(
+         admissionPatientData.testCount
+        );
+
+        await admissionPage.addConsumables(
+            admissionPatientData.consumableCount
+        );
 
     // ==========================================
     // 8. Emergency Details
     // ==========================================
 
-    await admissionPage.fillEmergencyDetailsAndContinue(
-        'emergency',
-        '1234567890',
-        'physician'
+   await admissionPage.fillEmergencyDetailsAndContinue(
+    admissionPatientData.emergency,
+    admissionPatientData.contactNumber,
+    admissionPatientData.physicianName
     );
 
     // ==========================================
@@ -117,18 +102,24 @@ test('Add Admission', async ({ page }) => {
     // ==========================================
 
     await admissionPage.fillInsuranceDetailsAndContinue(
-        'insurance',
-        '12345',
-        'policy'
+        admissionPatientData.insuranceName,
+        admissionPatientData.insuranceNumber,
+        admissionPatientData.policyName
     );
 
     // ==========================================
     // 10. Verify Admission Summary
     // ==========================================
 
+    // await admissionPage.verifyAdmissionSummaryAndContinue(
+    //     admissionDate,
+    //     admissionTime
+    // );
     await admissionPage.verifyAdmissionSummaryAndContinue(
-        admissionDate,
-        admissionTime
-    );
+    admissionDate,
+    admissionTime,
+    admissionPatientData.dateLabel,
+    admissionPatientData.timeLabel
+);
 
 });

@@ -2,7 +2,7 @@ const { expect } = require('@playwright/test');
 const { StepHelper } = require('../utils/StepHelper');
 const { PaymentLocator } = require('../Locators/PaymentLocator');
 const { Keywords } = require('../utils/Keywords');
-// import { Verify } from '../utils/verification.js';
+import { Verify } from '../utils/verification.js';
 
 class PaymentPage {
 
