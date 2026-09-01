@@ -4,7 +4,6 @@ import { AdmissionPage } from '../pages/AdmissionPage.js';
 const { PatientPage } = require('../pages/PatientPage');
 const { patientData,admissionPatientData} = require('../testdata/TC_031.json');
 const { generateUniquePatientFullName } = require('../utils/RandomData');
-
 import { generateAdmissionDate,generateAdmissionTime,getAdmissionData} from '../utils/RandomData.js';
 
 test('Add Admission', async ({ page }) => {

@@ -8,6 +8,7 @@
     "gender": "Male",
     "address": "Chennai"
   },
+  
    "admissionPatientData": {
     "location": "Healync Kolkata",
     "surgeryName": "Total Knee Replacement (TKR)",
