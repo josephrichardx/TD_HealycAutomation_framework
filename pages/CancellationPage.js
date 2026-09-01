@@ -466,8 +466,40 @@ await StepHelper.step(
     }
 );
 
-await this.verifyCancelledStatus(
-    cancellationVerificationData.packageCancelled
+await StepHelper.step(
+        this.page,
+        'Verify Cancellation Success Message',
+        async () => {
+            await expect(
+                this.locator.cancellationSuccessMessage
+            ).toBeVisible({
+                timeout: 10000
+            });
+        }
+    );
+
+// await StepHelper.step(
+//     this.page,
+//     'Verify Cancellation Success Message',
+//     async () => {
+//         await expect(
+//             this.locator.cancelledStatus
+//         ).toContainText(
+//             cancellationData.expectedStatus
+//         );
+//     }
+// );
+
+await StepHelper.step(
+    this.page,
+    `Verify Cancellation Status - ${cancellationData.expectedStatus}`,
+    async () => {
+        await expect(
+            (await this.locator.cancelledStatus.innerText()).trim()
+        ).toBe(
+            cancellationData.expectedStatus
+        );
+    }
 );
 
 }
@@ -521,13 +553,16 @@ async cancelPackageWithPartialRefund(
         }
     );
 
-    await this.keywords.waitForElement(this.locator.cancellationSuccessMessage);
-
-    await Verify.state(
+    await StepHelper.step(
         this.page,
-        'Cancellation Success Message is displayed',
-        this.locator.cancellationSuccessMessage,
-        { visible: true, soft: false }
+        'Verify Cancellation Success Message',
+        async () => {
+            await expect(
+                this.locator.cancellationSuccessMessage
+            ).toBeVisible({
+                timeout: 10000
+            });
+        }
     );
 
     await StepHelper.step(
