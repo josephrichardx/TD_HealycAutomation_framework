@@ -60,8 +60,24 @@ class Keywords {
         timeout
     });
 }
- 
- 
+
+
+    async forceClick(locator, timeout = 60000) {
+
+    await locator.waitFor({
+        state: 'attached',
+        timeout
+    });
+
+    await locator.scrollIntoViewIfNeeded();
+
+    await locator.click({
+        timeout,
+        force: true
+    });
+}
+
+
     // =========================================================
     // FILL
     // =========================================================
