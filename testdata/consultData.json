@@ -1,11 +1,10 @@
 {
   "consultData": {
-    "consultSlot": "First Consult",
-    "appointmentType": "Consult"
+    "consultSlot": "First Consult"
   },
 
   "bookingData": {
-    "bookingDate": "28"
+    "bookingDate": "30"
   },
 
   "consultBookingData": {

@@ -16,8 +16,7 @@ class PatientLocator {
             name: 'Save'
         });
 
-
-        // Patient Fields
+        // Patient Fields (Visible & Below the fold)
         this.patientNameTxt = page.getByRole('textbox', {
             name: 'Enter patient name'
         });
@@ -43,6 +42,15 @@ class PatientLocator {
             name: 'Write down resident address'
         });
 
+        // Additional Fields Below Fold (Treating Doctor, Medical Condition, Pincode, Patient Category)
+        this.treatingDoctorTxt = page.locator('input').filter({ has: page.locator('xpath=./ancestor::div[contains(text(), "Treating Doctor") or preceding-sibling::div[contains(text(), "Treating Doctor")]]') }).first()
+            .or(page.locator('div.form-group:has-text("Treating Doctor") input, div:has-text("Treating Doctor") input').last());
+
+        this.medicalConditionTxt = page.locator('div.form-group:has-text("Medical Condition") input, div:has-text("Medical Condition") input').last();
+
+        this.pincodeTxt = page.locator('div.form-group:has-text("Pincode") input, div:has-text("Pincode") input').last();
+
+        this.patientCategoryTxt = page.locator('div.form-group:has-text("Patient Category") input, div:has-text("Patient Category") input').last();
 
         // Title
         this.titleDropdown = page.getByRole('button', {
@@ -53,7 +61,6 @@ class PatientLocator {
         this.mrOption = page.locator('div').filter({
             hasText: /^Mr$/
         });
-
 
         // Gender
         this.maleBtn = page.getByRole('button', {
@@ -66,12 +73,15 @@ class PatientLocator {
             exact: true
         });
 
+        this.otherBtn = page.getByRole('button', {
+            name: 'Other',
+            exact: true
+        });
 
         // Success Message
         this.patientSavedMsg = page.getByText(
             'Patient Saved successfully'
         );
-
 
         // Search Patient
         this.searchPatientTxt = page.getByRole(
@@ -82,9 +92,7 @@ class PatientLocator {
         );
     }
 
-
     getPatient(patientName) {
-
         return this.page.locator(
             `//div[@title="${patientName}"]`    
         );

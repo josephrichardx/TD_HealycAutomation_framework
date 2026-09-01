@@ -1,11 +1,9 @@
 {
   "packageData": {
-    "packageName": "Neuro PT (30 sessions)"
+    "packageName": "Neuro PT (30 sessions)",
+    "packageShortName": "Neuro PT"
   },
-
-  
   "statusData": {
     "expectedStatus": "Confirmed"
   }
-
 }

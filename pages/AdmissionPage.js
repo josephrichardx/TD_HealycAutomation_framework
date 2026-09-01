@@ -771,6 +771,43 @@ export class AdmissionPage {
         );
     }
 
+    async verifyAppointmentTypesList(expectedTypes) {
+        
+        // Wait for the dropdown container to be visible
+        await Verify.state(
+            this.page,
+            'Add New Dropdown Menu',
+            this.page.locator('.AddNewButtonOptions'),
+            { visible: true, soft: false }
+        );
+
+        await StepHelper.step(
+            this.page,
+            'Verify Appointment Types List',
+            async () => {
+                const buttons = this.page.locator('.AddNewButtonOptions button');
+                const count = await buttons.count();
+                const actualTypes = [];
+                
+                // Extract and trim the text from every button in the dropdown
+                for (let i = 0; i < count; i++) {
+                    const btnText = await buttons.nth(i).innerText();
+                    actualTypes.push(btnText.trim());
+                }
+
+                // Verify every expected type exists in the actual list
+                for (const expected of expectedTypes) {
+                    await Verify.record(
+                        this.page,
+                        `Checking for Appointment Type: ${expected}`,
+                        actualTypes.includes(expected) ? 'Found' : 'Missing'
+                    );
+                    expect(actualTypes).toContain(expected);
+                }
+            }
+        );
+    }
+
     async verifyAdmissionSummaryAndContinue(admissionDate, admissionTime) {
 
         await this.page.waitForLoadState('domcontentloaded');

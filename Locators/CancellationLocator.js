@@ -176,7 +176,42 @@ this.cancellationSuccessMessage = page.getByText(
     'Success',
     { exact: true }
 );
-    
+
+// Package Name shown on the "Cancel Package" modal itself
+// (confirmed from real video frames: "Cancel Package / Neuro PT
+// (30 sessions)"). Scoped to .cancel-modal, the same confirmed
+// real class already used by cancellationOption above.
+this.cancelModalPackageName = (packageName) =>
+    page.locator('.cancel-modal').getByText(packageName);
+
+// "Amount already paid" value in the Billings details section -
+// confirmed visible in the same modal via video frames, but this
+// specific XPath is inferred from the established
+// label-then-adjacent-value pattern used elsewhere in this
+// codebase (e.g. appointmentPaymentDue), not from a DOM inspection
+// of this exact element - worth a quick sanity check on first run.
+this.amountAlreadyPaidValue = page.locator(
+    "//*[normalize-space()='Amount already paid']/following-sibling::*[1]"
+);
+
+// "New Package Status" value on the final Review/Confirm screen -
+// confirmed from a real screenshot showing "Abandoned" (not
+// "Cancelled") when an over-limit refund amount was entered. Same
+// label-then-adjacent-value XPath pattern as amountAlreadyPaidValue
+// above.
+this.newPackageStatusValue = page.locator(
+    "//*[normalize-space()='New Package Status']/following-sibling::*[1]"
+);
+
+// "Back" button on this review screen - confirmed from the same
+// screenshot. Generic role-based match, .last() defensively (same
+// stale-duplicate-modal caution as everywhere else tonight, in case
+// an earlier step's "Back" button is still in the DOM).
+this.reviewScreenBackBtn = page.getByRole('button', {
+    name: 'Back',
+    exact: true
+}).last();
+
     }
 
     getCancellationReason(reason) {

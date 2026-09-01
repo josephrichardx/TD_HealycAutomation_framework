@@ -1,0 +1,6 @@
+{
+  "fieldReadTimeoutMs": 3000,
+  "networkIdleTimeoutMs": 15000,
+  "toastWaitTimeoutMs": 15000,
+  "cancellationStatusTimeoutMs": 30000
+}

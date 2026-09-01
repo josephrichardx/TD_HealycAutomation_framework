@@ -98,6 +98,16 @@ function generateRandomDateOfBirth(minYear = 1990, maxYear = 2002) {
     };
 }
 
+function generateRandomMobileNumber() {
+    return '9' + Math.floor(100000000 + Math.random() * 900000000);
+}
+
+module.exports = {
+    generateUniquePatientFullName,
+    generateRandomDateOfBirth,
+    generateRandomMobileNumber
+};
+
 function calculateAgeFromDate(dob, today = new Date()) {
 
     let age = today.getFullYear() - dob.getFullYear();
@@ -122,13 +132,8 @@ module.exports = {
     generateAdmissionTime,
     getAdmissionData,
     generateRandomDateOfBirth,
+    generateRandomMobileNumber,
     calculateAgeFromDate,
     generateUniquePatientFullName,
     generateShortPatientName
 };
-
-
-
-// module.exports = {
-//     generatePatientName
-// };

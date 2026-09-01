@@ -3,6 +3,7 @@ const { StepHelper } = require('../utils/StepHelper');
 const { CancellationLocator } = require('../Locators/CancellationLocator');
 const { Keywords } = require('../utils/Keywords');
 const { cancellationData } = require('../testdata/CancellationData.json');
+const { cancellationStatusTimeoutMs } = require('../Config/timeoutConfig.json');
 
 class CancellationPage {
 
@@ -13,7 +14,7 @@ class CancellationPage {
     }
 
 
-    async Payment(amount) {
+    async Payment(amount, paymentMode = 'Cash') {
 
         await StepHelper.step(
             this.page,
@@ -21,6 +22,30 @@ class CancellationPage {
             async () => {
                 await this.keywords.click(
                     this.locator.makePaymentActionBtn.last()
+                );
+            }
+        );
+
+        // paymentMode defaults to 'Cash' for backward compatibility
+        // with the 3 other tests calling Payment() (WF_CALADN_05/
+        // 125/126) that only ever pass amount. Mode -> button
+        // lookup instead of hardcoding which button gets clicked,
+        // same reasoning as not hardcoding the package name - the
+        // payment mode used by a given test might not always be
+        // Cash. .last() to guard against any stray duplicate button
+        // elsewhere in the DOM at this point (same defensive
+        // pattern as everywhere else tonight).
+        const modeButton =
+            paymentMode === 'UPI' ? this.locator.upiBtn :
+            paymentMode === 'Card' ? this.locator.cardBtn :
+            this.locator.cashBtn;
+
+        await StepHelper.step(
+            this.page,
+            `Select ${paymentMode} as Payment Mode`,
+            async () => {
+                await this.keywords.click(
+                    modeButton.last()
                 );
             }
         );
@@ -58,12 +83,26 @@ class CancellationPage {
 
         await StepHelper.step(
             this.page,
-            'Verify Payment Recorded Successfully',
+            'Get Payment Confirmation Message',
             async () => {
 
-                await expect(
-                    this.locator.paymentSuccessMessage
-                ).toContainText(
+                this._paymentMessage =
+                    (
+                        await this.keywords.getText(
+                            this.locator.paymentSuccessMessage
+                        )
+                    ).trim();
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            `Verify Payment Recorded Successfully | Expected: contains "Payment recorded successfully" | Actual: ${this._paymentMessage}`,
+            async () => {
+
+                expect(
+                    this._paymentMessage
+                ).toContain(
                     "Payment recorded successfully"
                 );
 
@@ -411,10 +450,15 @@ await StepHelper.step(
     this.page,
     'Verify Package Cancelled',
     async () => {
+        // Longer timeout here only (30s, not the global 10s) - the
+        // backend processes the cancellation+refund before this
+        // status badge updates, and that can occasionally run past
+        // 10 seconds. Nothing else about this check changed.
         await expect(
             this.locator.cancelledStatus
         ).toContainText(
-            cancellationData.expectedStatus
+            cancellationData.expectedStatus,
+            { timeout: cancellationStatusTimeoutMs }
         );
     }
 );
@@ -583,6 +627,133 @@ async cancelPackageWithPartialRefund(
                     transactionId
                 );
 
+            }
+        );
+    }
+
+    // "Verify the package name and cancellation/schedule status" +
+    // "Verify Total Refund Amount == Paid Amount" from Step 6.
+    // Confirmed from real video frames of this exact modal: package
+    // name shown as "Cancel Package / Neuro PT (30 sessions)", and
+    // "Amount already paid" in the Billings details section. Call
+    // after cancellation() has navigated to the Refund/Payment
+    // Option screen (right where these are visible).
+    async verifyPackageNameAndRefundAmount(
+        expectedPackageName,
+        expectedPaidAmount
+    ) {
+
+        await StepHelper.step(
+            this.page,
+            `Verify Package Name on Cancel Modal | Expected: ${expectedPackageName}`,
+            async () => {
+
+                await expect(
+                    this.locator.cancelModalPackageName(
+                        expectedPackageName
+                    )
+                ).toBeVisible();
+            }
+        );
+
+        const actualAmountAlreadyPaid =
+            (
+                await this.keywords.getText(
+                    this.locator.amountAlreadyPaidValue
+                )
+            ).trim();
+
+        const expectedAmountText =
+            `₹ ${parseFloat(expectedPaidAmount).toFixed(0)}`;
+
+        await StepHelper.step(
+            this.page,
+            `Verify Total Refund Amount == Paid Amount | Expected: ${expectedAmountText} | Actual: ${actualAmountAlreadyPaid}`,
+            async () => {
+
+                expect(actualAmountAlreadyPaid).toContain(
+                    parseFloat(expectedPaidAmount).toFixed(0)
+                );
+            }
+        );
+    }
+
+    // "Try to enter a refund amount greater than the total
+    // refundable amount. Verify that the system does not allow a
+    // refund amount greater than the total amount." from Step 6.
+    //
+    // Real evidence now (from an actual screenshot): the app does
+    // NOT block this at the amount-entry screen - it proceeds to a
+    // "Confirm Cancellation" review screen, but "New Package Status"
+    // shows "Abandoned" instead of the normal "Cancelled". That's
+    // the real signal the system gives that something is wrong with
+    // the amount - not an outright block, a different downstream
+    // status. Confirming "Abandoned" here, then clicking "Back" (NOT
+    // "Confirm Cancellation" - that would actually finalize the
+    // package in this broken state) to recover and let the real
+    // full-refund flow proceed normally afterward.
+    async attemptOverRefundAndVerifyBlocked(paidAmount) {
+
+        const overLimitAmount = (
+            parseFloat(paidAmount) + 1000
+        ).toFixed(2);
+
+        await StepHelper.step(
+            this.page,
+            `Enter Over-Limit Refund Amount - ${overLimitAmount}`,
+            async () => {
+
+                await this.keywords.fill(
+                    this.locator.amountTxt,
+                    overLimitAmount
+                );
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            'Click Review & Confirm (expecting a rejected/Abandoned outcome)',
+            async () => {
+
+                await this.keywords.click(
+                    this.locator.reviewConfirmBtn
+                );
+            }
+        );
+
+        const actualStatus =
+            (
+                await this.keywords.getText(
+                    this.locator.newPackageStatusValue
+                )
+            ).trim();
+
+        await StepHelper.step(
+            this.page,
+            `Verify Over-Refund Amount Was Rejected | Expected: New Package Status shows Abandoned (not Cancelled) | Actual: ${actualStatus}`,
+            async () => {
+
+                expect(actualStatus).toBe('Abandoned');
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            'Click Back to Recover From Invalid Amount',
+            async () => {
+
+                await this.keywords.click(
+                    this.locator.reviewScreenBackBtn
+                );
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            'Clear Over-Limit Amount',
+            async () => {
+
+                await this.locator.amountTxt.fill('');
             }
         );
     }

@@ -111,9 +111,20 @@ class PaymentLocator {
             "//th[contains(text(),'Total Amount')]/ancestor::table//tbody/tr[1]/td[3]"
         );
 
+        // Invoice Number column in the Invoice History table -
+        // built by the same pattern as the two locators above (same
+        // table, header-anchored XPath), not a fresh guess. Column
+        // 1 based on the header order confirmed earlier (Invoice
+        // Number / Generated On / Total Amount / Remaining Amount /
+        // View).
+        this.invoiceHistoryNumberValue = page.locator(
+            "//th[contains(text(),'Invoice Number')]/ancestor::table//tbody/tr[1]/td[1]"
+        );
+
         this.latestReceivedAmount = page.locator(
             "//th[contains(text(),'Received Amount')]/ancestor::table//tbody/tr[1]/td[4]"
         );
+
 
         this.latestPaymentMode = page.locator(
             "//th[contains(text(),'Payment Mode')]/ancestor::table//tbody/tr[1]/td[5]"
@@ -132,6 +143,21 @@ class PaymentLocator {
             {
                 exact: true
             }
+        );
+
+        // Financials > Payment History sub-tab and its table rows.
+        // Confirmed DOM: div.invoice-tab-header > div.tab-left >
+        // div.tab-item (one per sub-tab, "active" class on the
+        // selected one). Row columns confirmed from actual table:
+        // Receipt/Payment Number | Invoice Number | Generated On |
+        // Received Amount | Payment Mode (nested in
+        // div.payment-mode-wrapper > span) | View.
+        this.financialsPaymentHistoryTab = page
+            .locator('div.tab-item')
+            .filter({ hasText: 'Payment History' });
+
+        this.financialsPaymentHistoryRows = page.locator(
+            'div.financials-table-wrapper table tbody tr'
         );
 
         // Financial History
@@ -178,6 +204,15 @@ class PaymentLocator {
         this.remainingAmountValuePayment = page.locator(
             "//th[contains(text(),'Remaining Amount')]/ancestor::table//tbody/tr[1]/td[4]"
         );
+
+        // Refund Receipt Locators (Stage 6)
+        this.refundRow = (invoiceNumber, refundAmount) =>
+            page.locator(`tr:has(td:has-text("${invoiceNumber}")):has(td:has-text("-${refundAmount}"))`).first();
+            
+        this.refundEyeIcon = (invoiceNumber, refundAmount) =>
+            this.refundRow(invoiceNumber, refundAmount).locator('i.fa-eye');
+            
+        this.pdfCloseBtn = page.locator('i.fa-xmark, .close, button:has-text("X")').last();
 
         this.getTotalPaidCardPayment = () => {
             return this.totalPaidLabelPayment.locator(

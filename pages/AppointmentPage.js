@@ -125,153 +125,71 @@ class AppointmentPage {
         );
     }
  
-    // async selectType(type) {
-    //     await StepHelper.step(
-    //         this.page,
-    //         `Select ${type} from the Type dropdown`,
-    //         async () => {
-    //             await this.locator.typeOption(type).click();
-    //         }
-    //     );
-    // }
-
     async selectType(type) {
-    await StepHelper.step(
-        this.page,
-        `Select ${type} from the Type dropdown`,
-        async () => {
-            await this.locator.typeOption(type).click();
-
-            await this.page.waitForTimeout(1000);
-
-            console.log(
-                'AFTER TYPE SELECTED:',
-                await this.page.locator('body').innerText()
-            );
-        }
-    );
-}
-
- 
-    // async verifyDoctorAndService(
-    //     type,
-    //     storedDoctorName,
-    //     storedTypeValue,
-    //     storedServiceName
-    // ) {
-    //     const profileContainer =
-    //         this.page.locator('app-patient-profile');
- 
-    //     let profileText;
- 
-    //     await StepHelper.step(
-    //         this.page,
-    //         `Get ${type} Appointment Details From Profile Panel`,
-    //         async () => {
-    //             await profileContainer.waitFor({
-    //                 state: 'visible',
-    //                 timeout: 10000
-    //             });
- 
-    //             profileText = await profileContainer.innerText();
-    //         }
-    //     );
- 
-    //     const matchedOrNotFound = (expectedValue) =>
-    //         profileText.includes(expectedValue)
-    //             ? expectedValue
-    //             : 'not found';
- 
-    //     await StepHelper.step(
-    //         this.page,
-    //         `${type} Type - Doctor Name | Expected: ${storedDoctorName} | Actual: ${matchedOrNotFound(storedDoctorName)}`,
-    //         async () => {
-    //             expect(profileText).toContain(storedDoctorName);
-    //         }
-    //     );
- 
-    //     if (type === 'Consult') {
-    //         await StepHelper.step(
-    //             this.page,
-    //             `${type} Type - Consult Slot | Expected: ${storedTypeValue} | Actual: ${matchedOrNotFound(storedTypeValue)}`,
-    //             async () => {
-    //                 expect(profileText).toContain(storedTypeValue);
-    //             }
-    //         );
-    //     } else if (type === 'Service') {
-    //         await StepHelper.step(
-    //             this.page,
-    //             `${type} Type - Service Name | Expected: ${storedServiceName} | Actual: ${matchedOrNotFound(storedServiceName)}`,
-    //             async () => {
-    //                 expect(profileText).toContain(storedServiceName);
-    //             }
-    //         );
-    //     }
-    // }
-
-    async verifyDoctorAndService(
-    type,
-    storedDoctorName,
-    storedTypeValue,
-    storedServiceName
-) {
-    await StepHelper.step(
-        this.page,
-        `${type} Type - Doctor Name | Expected: ${storedDoctorName}`,
-        async () => {
-            const doctorLocator = this.page.getByText(
-                storedDoctorName,
-                { exact: true }
-            ).first();
-
-            await doctorLocator.waitFor({
-                state: 'visible',
-                timeout: 15000
-            });
-
-            await expect(doctorLocator).toBeVisible();
-        }
-    );
-
-    if (type === 'Consult') {
         await StepHelper.step(
             this.page,
-            `${type} Type - Consult Slot | Expected: ${storedTypeValue}`,
+            `Select ${type} from the Type dropdown`,
             async () => {
-                const consultLocator = this.page.getByText(
-                    storedTypeValue,
-                    { exact: true }
-                ).first();
-
-                await consultLocator.waitFor({
-                    state: 'visible',
-                    timeout: 15000
-                });
-
-                await expect(consultLocator).toBeVisible();
-            }
-        );
-    } else if (type === 'Service') {
-        await StepHelper.step(
-            this.page,
-            `${type} Type - Service Name | Expected: ${storedServiceName}`,
-            async () => {
-                const serviceLocator = this.page.getByText(
-                    storedServiceName,
-                    { exact: true }
-                ).first();
-
-                await serviceLocator.waitFor({
-                    state: 'visible',
-                    timeout: 15000
-                });
-
-                await expect(serviceLocator).toBeVisible();
+                await this.locator.typeOption(type).click();
             }
         );
     }
-}
-
+ 
+    async verifyDoctorAndService(
+        type,
+        storedDoctorName,
+        storedTypeValue,
+        storedServiceName
+    ) {
+        const profileContainer =
+            this.page.locator('app-patient-profile');
+ 
+        let profileText;
+ 
+        await StepHelper.step(
+            this.page,
+            `Get ${type} Appointment Details From Profile Panel`,
+            async () => {
+                await profileContainer.waitFor({
+                    state: 'visible',
+                    timeout: 10000
+                });
+ 
+                profileText = await profileContainer.innerText();
+            }
+        );
+ 
+        const matchedOrNotFound = (expectedValue) =>
+            profileText.includes(expectedValue)
+                ? expectedValue
+                : 'not found';
+ 
+        await StepHelper.step(
+            this.page,
+            `${type} Type - Doctor Name | Expected: ${storedDoctorName} | Actual: ${matchedOrNotFound(storedDoctorName)}`,
+            async () => {
+                expect(profileText).toContain(storedDoctorName);
+            }
+        );
+ 
+        if (type === 'Consult') {
+            await StepHelper.step(
+                this.page,
+                `${type} Type - Consult Slot | Expected: ${storedTypeValue} | Actual: ${matchedOrNotFound(storedTypeValue)}`,
+                async () => {
+                    expect(profileText).toContain(storedTypeValue);
+                }
+            );
+        } else if (type === 'Service') {
+            await StepHelper.step(
+                this.page,
+                `${type} Type - Service Name | Expected: ${storedServiceName} | Actual: ${matchedOrNotFound(storedServiceName)}`,
+                async () => {
+                    expect(profileText).toContain(storedServiceName);
+                }
+            );
+        }
+    }
  
     async clickAddNewForWaitlist() {
         await StepHelper.step(
@@ -423,4 +341,3 @@ class AppointmentPage {
 }
  
 module.exports = { AppointmentPage };
- 

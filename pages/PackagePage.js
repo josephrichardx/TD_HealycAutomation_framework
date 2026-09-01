@@ -1,3 +1,4 @@
+const { expect } = require('@playwright/test');
 const { StepHelper } = require('../utils/StepHelper');
 const { PackageLocator } = require('../Locators/PackageLocator');
 const { Keywords } = require('../utils/Keywords');
@@ -179,6 +180,130 @@ async selectPackage(packageName) {
         await this.activateSchedulePackage();
     }
 
+    // Same flow as addActivateSchedulePackage(), minus
+    // searchPatient() - for when "Add New -> Add Package" is clicked
+    // from the Patient Profile page rather than the Calendar. The
+    // app already knows which patient it's for in that context
+    // ("Book a suitable 'Packages' for <patient name>" - confirmed
+    // from a real screenshot), so there's no search box to fill;
+    // clickAddNew()/clickAddPackage()/selectPackage()/clickProceed()/
+    // activateSchedulePackage() are reused as-is, unmodified.
+    // addActivateSchedulePackage() itself is untouched - still used
+    // by WF_CALADN_125/126 exactly as before.
+    async addActivateSchedulePackageFromProfile(packageName) {
+
+        await this.clickAddNew();
+
+        await this.clickAddPackage();
+
+        await this.selectPackage(
+            packageName
+        );
+
+        await this.clickProceed();
+
+        await this.activateSchedulePackage();
+    }
+
+    // Covers the three checks from Step 2 that were previously
+    // unverified: the "Package is added" popup, the
+    // Book Packages -> Patient -> Packages breadcrumb (redirect
+    // confirmation), and the package name/status banner on the
+    // "Services includes in package" screen (correct package
+    // associated with the patient). Call right after
+    // addActivateSchedulePackage(), before booking any session.
+    async verifyPackageAddedAndAssociated(packageName) {
+
+        // Poll instead of a single read - guards against reading
+        // this before the "Package is added" toast has actually
+        // mounted (same race-condition class as the Payment Due
+        // Status fix). Manual loop, not expect().toHaveText(), to
+        // avoid Playwright's auto-generated "Wait for selector"
+        // report noise.
+        const deadline = Date.now() + 15000;
+        let actualToastTitle = '';
+
+        while (Date.now() < deadline) {
+
+            actualToastTitle =
+                (
+                    await this.keywords.getText(
+                        this.locator.packageAddedToastTitle
+                    )
+                ).trim();
+
+            if (actualToastTitle === 'Package is added') {
+
+                break;
+            }
+
+            await this.page.waitForTimeout(500);
+        }
+
+        await StepHelper.step(
+            this.page,
+            `Verify "Package is added" Popup | Expected: Package is added | Actual: ${actualToastTitle}`,
+            async () => {
+
+                expect(actualToastTitle).toBe(
+                    'Package is added'
+                );
+            }
+        );
+
+        const actualBreadcrumb =
+            (
+                await this.keywords.getText(
+                    this.locator.packageBreadcrumb
+                )
+            ).trim();
+
+        await StepHelper.step(
+            this.page,
+            `Verify Redirect Breadcrumb | Expected to contain: Book Packages, Patient, Packages | Actual: ${actualBreadcrumb}`,
+            async () => {
+
+                expect(actualBreadcrumb).toContain('Book Packages');
+                expect(actualBreadcrumb).toContain('Patient');
+                expect(actualBreadcrumb).toContain('Packages');
+            }
+        );
+
+        const actualBannerName =
+            (
+                await this.keywords.getText(
+                    this.locator.packageBannerName
+                )
+            ).trim();
+
+        await StepHelper.step(
+            this.page,
+            `Verify Package Associated With Patient | Expected: ${packageName} | Actual: ${actualBannerName}`,
+            async () => {
+
+                expect(actualBannerName).toContain(
+                    packageName
+                );
+            }
+        );
+
+        const actualActiveStatus =
+            (
+                await this.keywords.getText(
+                    this.locator.packageActiveStatusBtn
+                )
+            ).trim();
+
+        await StepHelper.step(
+            this.page,
+            `Verify Package Status | Expected: Active | Actual: ${actualActiveStatus}`,
+            async () => {
+
+                expect(actualActiveStatus).toBe('Active');
+            }
+        );
+    }
+
 
     async clickBookNow() {
 
@@ -314,16 +439,74 @@ async addAllPackageServices() {
 
     async selectFirstAvailableSlot() {
 
-        await StepHelper.step(
-            this.page,
-            'Select First Available Slot',
-            async () => {
+        // Slots are finite per day, and repeated test runs consume
+        // them - before falling back to "Add custom slots", try
+        // clicking to the next day (up to 3 times) to see if a
+        // later day has open slots instead.
+        let availableSlotCount =
+            await this.locator.slotButton.count();
 
-                await this.keywords.click(
-                    this.locator.slotButton.first()
-                );
-            }
-        );
+        let daysAdvanced = 0;
+        const maxDaysToTry = 3;
+
+        while (availableSlotCount === 0 && daysAdvanced < maxDaysToTry) {
+
+            await StepHelper.step(
+                this.page,
+                `No Slots Today - Click Next Day (attempt ${daysAdvanced + 1})`,
+                async () => {
+
+                    await this.keywords.click(
+                        this.locator.nextDayBtn
+                    );
+                }
+            );
+
+            daysAdvanced++;
+
+            availableSlotCount =
+                await this.locator.slotButton.count();
+        }
+
+        if (availableSlotCount > 0) {
+
+            await StepHelper.step(
+                this.page,
+                'Select First Available Slot',
+                async () => {
+
+                    await this.keywords.click(
+                        this.locator.slotButton.first()
+                    );
+                }
+            );
+
+        } else {
+
+            await StepHelper.step(
+                this.page,
+                'No Available Slots Found - Click Add Custom Slots',
+                async () => {
+
+                    await this.keywords.click(
+                        this.locator.addCustomSlotsBtn
+                    );
+                }
+            );
+
+            await StepHelper.step(
+                this.page,
+                'Accept Default Custom Slot Time (Click Update)',
+                async () => {
+
+                    await this.keywords.click(
+                        this.locator.customSlotUpdateBtn
+                    );
+                }
+            );
+        }
+
+        return daysAdvanced;
     }
 
     async clickNext() {
@@ -373,7 +556,121 @@ async clickConfirm() {
         await this.clickConfirm();
 
     }
-}
 
+    async selectPendingServiceItem() {
+
+        const pendingService =
+            this.locator.pendingServiceCards.first();
+
+        const addButton =
+            pendingService.locator(
+                'button:not(.status)'
+            );
+
+        await StepHelper.step(
+            this.page,
+            'Click Add Service (+) on Pending Package Card',
+            async () => {
+
+                await this.keywords.click(
+                    addButton
+                );
+            }
+        );
+    }
+
+    async clickConfirmPackageBooking() {
+
+        await StepHelper.step(
+            this.page,
+            'Click Confirm Package Booking',
+            async () => {
+
+                await this.keywords.click(
+                    this.locator.confirmPackageBookingBtn
+                );
+            }
+        );
+    }
+
+    // For a package with a single session booked out of many (e.g.
+    // Neuro PT 30 sessions, only 1 scheduled): click the "+" on the
+    // pending card, pick whichever slot appears first regardless of
+    // which location row it's in (they're all the same doctor), Next,
+    // then Confirm. Kept separate from bookPackagefromAddPackage()/
+    // addAllPackageServices() since that one loops and picks a random
+    // slot across every pending card - this one is deliberately for
+    // the single-session case only.
+    async bookSingleSessionFromAddPackage() {
+
+        await this.selectPendingServiceItem();
+
+        const daysAdvanced = await this.selectFirstAvailableSlot();
+
+        await this.clickNext();
+
+        await this.clickConfirmPackageBooking();
+
+        return daysAdvanced;
+    }
+
+    // "Services is Added" toast, shown after Confirm - confirmed
+    // DOM from a real screenshot: same app-custom-toaster-message
+    // structure as the earlier "Package is added" toast, title
+    // "Services is Added", subtext "Your appointment have been
+    // scheduled successfully". Read-only - does NOT click "Go to
+    // appointment page" yet, since the Package Tag check (searching
+    // via the Calendar bar) still needs to happen first while we're
+    // on this screen. Call clickGoToAppointmentPage() separately
+    // once ready to navigate.
+    async verifyServicesAddedToast() {
+
+        const actualTitle =
+            (
+                await this.keywords.getText(
+                    this.locator.packageAddedToastTitle
+                )
+            ).trim();
+
+        await StepHelper.step(
+            this.page,
+            `Verify "Services is Added" Toast | Expected: Services is Added | Actual: ${actualTitle}`,
+            async () => {
+
+                expect(actualTitle).toBe('Services is Added');
+            }
+        );
+
+        const actualSubtext =
+            (
+                await this.keywords.getText(
+                    this.locator.packageToastSubtext
+                )
+            ).trim();
+
+        await StepHelper.step(
+            this.page,
+            `Verify Toast Subtext | Expected: Your appointment have been scheduled successfully | Actual: ${actualSubtext}`,
+            async () => {
+
+                expect(actualSubtext).toBe(
+                    'Your appointment have been scheduled successfully'
+                );
+            }
+        );
+    }
+
+    async clickGoToAppointmentPage() {
+        await StepHelper.step(
+            this.page,
+            'Click Go To Appointment Page',
+            async () => {
+                // Bypassing the keyword wrapper to force the click instantly before the toast detaches
+                await this.locator.goToAppointmentPageLink.click({ force: true });
+            }
+        );
+    }
+
+}
 
 module.exports = { PackagePage };

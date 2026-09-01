@@ -286,14 +286,21 @@ class PatientPage {
 
     async verifyPatientSaved(patientName) {
 
+        const actualMessage =
+            (
+                await this.keywords.getText(
+                    this.locator.patientSavedMsg
+                )
+            ).trim();
+
         await StepHelper.step(
             this.page,
-            `Verify Patient Saved Successfully - ${patientName}`,
+            `Verify Patient Saved Successfully | Expected: Patient Saved successfully | Actual: ${actualMessage}`,
             async () => {
 
-                await expect(
-                    this.locator.patientSavedMsg
-                ).toBeVisible();
+                expect(actualMessage).toBe(
+                    'Patient Saved successfully'
+                );
 
             }
         );
@@ -349,6 +356,79 @@ class PatientPage {
 
         await this.verifyPatientSaved(
             patientName
+        );
+    }
+
+    // =========================================================
+    // VERIFY PATIENT PROFILE DETAILS (Expected vs Actual)
+    // =========================================================
+
+    async verifyPatientProfileDetails(expectedData, expectedFullName) {
+
+        // 1. Click "Go to patient profile" on the success toast
+        await StepHelper.step(
+            this.page,
+            'Click Go to Patient Profile from Toast',
+            async () => {
+                const goToProfileLink = this.page.locator('app-custom-toaster-message span.action');
+                await goToProfileLink.waitFor({ state: 'visible', timeout: 5000 });
+                await goToProfileLink.click();
+                await this.page.waitForLoadState('networkidle');
+            }
+        );
+
+        // 2. Extract Actual Values from the Left Patient Profile Panel (based on your DOM screenshots)
+        const actualName = (await this.page.locator('div.patient-name span').first().textContent()).trim();
+        const actualGenderAge = (await this.page.locator('div.patient-gender-age').textContent()).trim(); // e.g. "Male | 63 Years"
+        const actualEmail = (await this.page.locator('div.meta-row i.fa-at + span').textContent()).trim();
+        const actualPhone = (await this.page.locator('div.meta-row i.fa-phone + span').textContent()).trim();
+        const actualAddress = (await this.page.locator('div.meta-row i.fa-location-dot + span').textContent()).trim();
+
+        // 3. Perform Expected vs Actual Assertions with explicit console logs
+        await StepHelper.step(
+            this.page,
+            `Verify Patient Name | Expected: ${expectedFullName} | Actual: ${actualName}`,
+            async () => {
+                console.log(`[PASS] Patient Name | Expected: ${expectedFullName} | Actual: ${actualName}`);
+                expect(actualName).toBe(expectedFullName);
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            `Verify Gender & Age | Expected: ${expectedData.gender} | ${expectedData.age} Years | Actual: ${actualGenderAge}`,
+            async () => {
+                console.log(`[PASS] Gender/Age | Expected: ${expectedData.gender} | ${expectedData.age} Years | Actual: ${actualGenderAge}`);
+                expect(actualGenderAge).toContain(expectedData.gender);
+                expect(actualGenderAge).toContain(`${expectedData.age} Years`);
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            `Verify Email | Expected: ${expectedData.email} | Actual: ${actualEmail}`,
+            async () => {
+                console.log(`[PASS] Email | Expected: ${expectedData.email} | Actual: ${actualEmail}`);
+                expect(actualEmail).toBe(expectedData.email);
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            `Verify Phone Number | Expected: ${expectedData.phoneNumber} | Actual: ${actualPhone}`,
+            async () => {
+                console.log(`[PASS] Phone | Expected: ${expectedData.phoneNumber} | Actual: ${actualPhone}`);
+                expect(actualPhone).toContain(expectedData.phoneNumber);
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            `Verify Address | Expected: ${expectedData.address} | Actual: ${actualAddress}`,
+            async () => {
+                console.log(`[PASS] Address | Expected: ${expectedData.address} | Actual: ${actualAddress}`);
+                expect(actualAddress).toBe(expectedData.address);
+            }
         );
     }
 

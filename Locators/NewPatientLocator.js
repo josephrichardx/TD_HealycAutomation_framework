@@ -33,8 +33,6 @@ class NewPatientLocator {
         this.cancelBtn = page.getByRole('button', { name: 'Cancel' });
         this.saveBtn = page.getByRole('button', { name: 'Save' });
 
-        this.patientSavedMsg = page.getByText('Patient Saved successfully');
-
         this.searchPatientTxt = page.getByPlaceholder('Search or register patient');
 
         this.salutationDropdownBtn = page.locator('button.dropdown-button').first();
@@ -62,9 +60,11 @@ class NewPatientLocator {
         // SAVE CONFIRMATION TOAST (creation)
         // ---------------------------------------------------------
 
-        this.patientSavedToastTitle = page.locator(
-            'div.toaster-wrapper.success .text-content .title'
-        );
+        // Replaces all hardcoded success toasts with a single dynamic locator
+        this.successToastTitle = page.locator('div.toaster-wrapper.success .text-content .title').first();
+
+        // Inline field error (used for missing/invalid name)
+        this.inlineFieldError = page.locator('div.field-error').first();
 
         this.goToPatientProfileLink = page.locator(
             'div.toaster-wrapper.success span.action'
@@ -99,9 +99,12 @@ class NewPatientLocator {
             .locator('button.passiveButton')
             .filter({ hasText: 'Cancel' });
 
-        this.patientUpdatedToastTitle = page.getByText(
-            'Patient details updated successfully'
-        );
+
+        // ---------------------------------------------------------
+        // VIP TOOLTIP
+        // ---------------------------------------------------------
+        this.vipInfoIcon = page.locator('span.vip-info-icon');
+        this.vipInfoTooltip = page.locator('div.vip-info-tooltip span');
 
 
         // ---------------------------------------------------------
@@ -113,6 +116,85 @@ class NewPatientLocator {
 
         this.vipCheckboxToggle = page.locator('div.checkMark div.checkBox').first();
         this.vipCheckboxState = page.locator('div.checkMark div.checkBox').first();
+
+
+        // ---------------------------------------------------------
+        // PATIENT PROFILE PAGE - read-only sidebar fields
+        // Confirmed DOM from real screenshots:
+        //   div.patient-uhid (UHID)
+        //   div.patient-gender-age (combined "Male | 63 Years" text)
+        //   div.profile-meta > div.meta-row (one per contact field,
+        //     differentiated by icon class: fa-at / fa-phone /
+        //     fa-location-dot) > span (the value)
+        //   div.medical-details-container > div.medical-info-row >
+        //     div.info-text > div.info-label (field name) +
+        //     div.info-value (field value) - used for "Patient
+        //     referral source"
+        // ---------------------------------------------------------
+        // ---------------------------------------------------------
+        // SAVE CONFIRMATION TOAST (creation)
+        // ---------------------------------------------------------
+
+        this.patientSavedToastTitle = page.locator(
+            'div.toaster-wrapper.success .text-content .title'
+        );
+
+        this.goToPatientProfileLink = page.locator(
+            'div.toaster-wrapper.success span.action'
+        ).filter({ hasText: 'Go to patient profile' });
+
+
+        // ---------------------------------------------------------
+        // ERROR VALIDATION TOASTS (Negative flows)
+        // Extracted directly from DOM: div.toaster-wrapper.error
+        // ---------------------------------------------------------
+
+        this.errorToastTitle = page.locator(
+            'div.toaster-wrapper.error .text-content .title'
+        ).first();
+
+        this.errorToastSubtext = page.locator(
+            'div.toaster-wrapper.error .text-content .subtext'
+        ).first();
+
+        // ---------------------------------------------------------
+        // DUPLICATE WARNING BOX (Inline Negative Flow)
+        // Extracted directly from DOM: div.duplicate-warning-box
+        // ---------------------------------------------------------
+
+        this.duplicateWarningBox = page.locator('div.duplicate-warning-box');
+        
+        this.duplicateWarningTitle = this.duplicateWarningBox.locator('div.duplicate-title');
+        
+        this.duplicateWarningMessage = this.duplicateWarningBox.locator('div.duplicate-message');
+
+        // Drawer Close 'X' Button
+        this.closeXBtn = page.locator('div.drawer-close-btn');
+
+        this.profileUhidText = page.locator('div.patient-uhid');
+
+        this.profileGenderAgeText = page.locator('div.patient-gender-age');
+
+        this.profileEmailText = page.locator(
+            'div.meta-row:has(i.fa-at) span'
+        );
+
+        this.profilePhoneText = page.locator(
+            'div.meta-row:has(i.fa-phone) span'
+        );
+
+        this.profileAddressText = page.locator(
+            'div.meta-row:has(i.fa-location-dot) span'
+        );
+
+        this.profileReferralSourceValue = page.locator(
+            'div.info-text'
+        ).filter({
+            has: page.locator('div.info-label', {
+                hasText: 'Patient referral source'
+            })
+        }).locator('div.info-value');
+
     }
 
 
@@ -176,13 +258,13 @@ class NewPatientLocator {
     }
 
     getDayLocator(day) {
-        return this.page.locator('div.calendar-day')
+        return this.page.locator('div.calendar-day:not(.greyed-out-day)')
             .filter({ hasText: new RegExp(`^\\s*${day}\\s*$`) });
     }
 
 
     getPatient(patientName) {
-        return this.page.locator(`//div[@title="${patientName}"]`);
+        return this.page.locator(`//div[@title="${patientName}"]`).first();
     }
 
     getSalutationOption(salutation) {

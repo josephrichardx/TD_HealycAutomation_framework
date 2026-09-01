@@ -4,8 +4,5 @@
     "refundAmount": 300,
     "refundPaymentMethod": "Cash",
     "expectedStatus": "Cancelled"
-  },
-  "cancelReasonData": {
-  "cancelReason": "Emergency or unexpected issue"
   }
 }
