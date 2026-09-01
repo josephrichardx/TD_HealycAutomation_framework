@@ -6,6 +6,7 @@ const { invoiceData } = require('../testdata/invoiceData.json');
 const { Verify } = require('../utils/verification');
 const { waitData } = require('../testdata/waitData.json');
 const visitingSlipData = require('../testdata/visitingSlip.json');
+const { toasterMessages } = require('../testdata/toasterMessages.json');
 
 class InvoicePage {
 
@@ -1400,7 +1401,7 @@ async InvoicePDFAddAdmission(
         await Verify.equals(
             this.page,
             verification.frozenStep,
-            false,
+            verification.frozenStepExpected,
             confirmedStatusIsActionable
         );
 
@@ -1413,7 +1414,7 @@ async InvoicePDFAddAdmission(
         await Verify.equals(
             this.page,
             verification.enabledStep,
-            true,
+            verification.enabledStepExpected,
             completedStatusIsActionable
         );
     }
@@ -1834,6 +1835,13 @@ async verifyVisitingSlipContent(
                     this.locator.finalGenerateInvoiceBtn
                 );
             }
+        );
+
+        await Verify.toaster(
+            this.page,
+            'Verify Service Invoice Confirmation Toaster',
+            this.locator.invoiceToastTitle,
+            toasterMessages.bookingConfirm
         );
     }
 

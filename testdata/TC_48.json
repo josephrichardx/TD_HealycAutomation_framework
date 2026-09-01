@@ -18,12 +18,12 @@
   "consultData": {
     "consultSlot": "First Consult"
   },
-  "bookingData": {
-    "bookingDate": "28"
-  },
+ 
   "appointmentStatusVerificationData": {
     "step": "Verify Appointment Status",
     "frozenStep": "Verify Confirmed Status Is Frozen",
-    "enabledStep": "Verify Completed Status Is Enabled"
+    "frozenStepExpected": false,
+    "enabledStep": "Verify Completed Status Is Enabled",
+    "enabledStepExpected": true
   }
 }

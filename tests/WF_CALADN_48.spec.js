@@ -1,21 +1,15 @@
 import { test, expect } from "../fixtures/baseTest.js";
-const { StepHelper } = require('../utils/StepHelper');
- 
- 
  
 // const { LoginPage } = require('../pages/LoginPage');
 const { PatientPage } = require('../pages/PatientPage');
 const { ConsultPage } = require('../pages/ConsultPage');
-const { ServicePage } = require('../pages/ServicePage');
 const { InvoicePage } = require('../pages/InvoicePage');
 const { CalendarPage } = require('../pages/CalendarPage');
-const { CancellationPage } = require('../pages/CancellationPage');
  
 const {
     patientData,
     appoinmentData,
     consultData,
-    bookingData,
     appointmentStatusVerificationData
 } = require('../testdata/TC_48.json');
  
@@ -28,10 +22,8 @@ test('WF_CALADN_48 - Validate changing an appointment status to Checked-In', asy
     // const loginPage = new LoginPage(page);
     const patientPage = new PatientPage(page);
     const consultPage = new ConsultPage(page);
-    const servicePage = new ServicePage(page);
     const invoicePage = new InvoicePage(page);
     const calendarPage = new CalendarPage(page);
-    const cancellationPage = new CancellationPage(page);
  
      await patientPage.createPatient(
         patientName,
@@ -43,8 +35,7 @@ test('WF_CALADN_48 - Validate changing an appointment status to Checked-In', asy
     const bookedDate = await consultPage.addConsult(
         patientName,
         appoinmentData.doctorName,
-        consultData.consultSlot,
-        bookingData.bookingDate
+        consultData.consultSlot
     );
  
     await calendarPage.selectPatientFromCalendar(

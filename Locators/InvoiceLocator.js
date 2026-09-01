@@ -225,14 +225,14 @@ class InvoiceLocator
     this.appointmentDetails =
         page.locator('app-appointment-details');
     // Appointment Status
-    this.confirmedStatus =
-        page.locator(
-            "(//div[@class='field-dropdown'])[2]"
-        );
-    this.checkInStatus =
-        page.locator(
-            "(//span[text()='Checked-In'])[2]"
-        );
+    // this.confirmedStatus =
+        // page.locator(
+            // "(//div[@class='field-dropdown'])[2]"
+        // );
+    // this.checkInStatus =
+        // page.locator(
+            // "(//span[text()='Checked-In'])[2]"
+        // );
     // Visiting Slip
     this.visitingSlip =
         page.locator(
@@ -312,6 +312,11 @@ class InvoiceLocator
             { exact: true }
 
         ).last();
+
+        // Success toaster shown after generating an invoice / booking a service
+        this.invoiceToastTitle = page.locator(
+            'div.toaster-wrapper.success .text-content .title'
+        );
 
     }
 

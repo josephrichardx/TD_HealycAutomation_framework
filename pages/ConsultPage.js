@@ -5,6 +5,7 @@ const { waitData } = require('../testdata/waitData.json');
 const { ConsultLocator } = require('../Locators/ConsultLocator');
 const { Keywords } = require('../utils/Keywords');
 const { generateAdmissionDate } = require('../utils/RandomData');
+const { toasterMessages } = require('../testdata/toasterMessages.json');
 
 class ConsultPage {
 
@@ -487,6 +488,13 @@ async selectFirstAvailableSlot() {
                 this.locator.bookingConfirmMsg
             ).toBeVisible();
         }
+    );
+
+    await Verify.toaster(
+        this.page,
+        'Verify Consult Booking Confirmation Toaster',
+        this.locator.bookingConfirmToastTitle,
+        toasterMessages.bookingConfirm
     );
 
     await this.keywords.waitForLoadState(
