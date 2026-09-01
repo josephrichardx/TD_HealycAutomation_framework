@@ -70,9 +70,9 @@ class PrescriptionPage {
         'Wait for Prescription Page',
         async () => {
 
-            await this.locator.writePrescriptionBtn.waitFor({
+            await this.locator.drugSearch.waitFor({
                 state: 'visible',
-                timeout: 30000
+                timeout: 50000
             });
         }
       );
@@ -306,6 +306,124 @@ class PrescriptionPage {
 
         await this.locators.saveSignatureBtn.click();
     }
+
+    async fillPrescriptionObservation(observationData) {
+
+    await StepHelper.step(
+        this.page,
+        'Fill Prescription Observation',
+        async () => {
+
+            // Row 1 - Column 1
+            await this.keywords.click(
+                this.locators.observationSearchByIndex(3)
+            );
+
+            await this.keywords.click(
+                this.locators.observationOption(
+                    observationData.row1.column1
+                )
+            );
+
+            await this.locators.editorContainer.click();
+
+
+            // Row 1 - Column 2
+            await this.keywords.click(
+                this.locators.observationSearchByIndex(4)
+            );
+
+            await this.keywords.click(
+                this.locators.observationOption(
+                    observationData.row1.column2
+                )
+            );
+
+            await this.locators.editorContainer.click();
+
+
+            // Row 1 - Column 3
+            await this.keywords.click(
+                this.locators.observationSearchByIndex(5)
+            );
+
+            await this.keywords.click(
+                this.locators.observationOption(
+                    observationData.row1.column3
+                )
+            );
+
+            await this.locators.editorContainer.click();
+
+
+            // Row 1 - Column 4
+            await this.locators.row1Column4Search.click();
+
+            await this.keywords.click(
+                this.locators.observationOption(
+                    observationData.row1.column4
+                )
+            );
+
+            await this.locators.editorContainer.click();
+
+
+            // Add Row 2
+            await this.locators.addRowBtn.click();
+
+
+            // Row 2 - Column 1
+            await this.locators.row2Column1Search.click();
+
+            await this.locators.favouriteOption.click();
+
+            await this.keywords.click(
+                this.locators.observationOption(
+                    observationData.row2.column1
+                )
+            );
+
+            await this.locators.editorContainer.click();
+
+
+            // Row 2 - Column 2
+            await this.locators.row2Column2Search.click();
+
+            await this.keywords.click(
+                this.locators.observationOption(
+                    observationData.row2.column2
+                )
+            );
+
+            await this.locators.editorContainer.click();
+
+
+            // Row 2 - Column 3
+            await this.locators.row2Column3Search.click();
+
+            await this.keywords.click(
+                this.locators.observationOption(
+                    observationData.row2.column3
+                )
+            );
+
+            await this.locators.editorContainer.click();
+
+
+            // Row 2 - Column 4
+            await this.locators.row2Column4Search.click();
+
+            await this.keywords.click(
+                this.locators.observationOption(
+                    observationData.row2.column4
+                )
+            );
+
+            await this.locators.editorContainer.click();
+
+        }
+    );
+}
 
  
 }

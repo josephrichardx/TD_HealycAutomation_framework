@@ -56,6 +56,61 @@ class PrescriptionLocator {
                 name: 'Add row'
             })
             .first();
+
+
+            //new
+
+                    // Prescription Observation / Medical History
+
+        this.observationSearchByIndex = (index) =>
+            page.getByRole('textbox', {
+                name: 'Search'
+            }).nth(index);
+
+        this.observationOption = (text) =>
+            page.locator('label').filter({
+                hasText: text
+            });
+
+
+        // First Row
+
+        this.row1Column4Search = page
+            .locator(
+                '.col-col4 > .cell-wrapper > .drug-search-cell > .cell-input'
+            )
+            .first();
+
+
+        // Second Row
+
+        this.row2Column1Search = page
+            .locator(
+                'tr:nth-child(2) > .col-col1 > .cell-wrapper > .drug-search-cell > .cell-input'
+            );
+
+        this.row2Column2Search = page
+            .locator(
+                'tr:nth-child(2) > .col-col2 > .cell-wrapper > .drug-search-cell > .cell-input'
+            );
+
+        this.row2Column3Search = page
+            .locator(
+                'tr:nth-child(2) > .col-col3 > .cell-wrapper > .drug-search-cell > .cell-input'
+            );
+
+        this.row2Column4Search = page
+            .locator(
+                'tr:nth-child(2) > .col-col4 > .cell-wrapper > .drug-search-cell > .cell-input'
+            );
+
+
+        // Favourite Option
+
+        this.favouriteOption = page
+            .locator(
+                'label:nth-child(24) > .fav-option-cells > .fav-option-cell > .fav-option-label'
+            );
     }
 
     drugLibrary(drugName) {
