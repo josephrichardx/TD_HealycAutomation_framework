@@ -8,17 +8,17 @@ const { InvoicePage } = require('../pages/InvoicePage.js');
 const { CalendarPage } = require('../pages/CalendarPage.js');
 const { CancellationPage } = require('../pages/CancellationPage.js');
 
-const { patientData,appoinmentData,consultData,bookingData,serviceData,DateData,invoiceData,paymentData } = require('../testdata/TC_005.json');
-const { generatePatientName } = require('../utils/RandomData.js');
+const { patientData, appoinmentData, consultData, serviceData, invoiceData, paymentData } = require('../testdata/TC_005.json');
+const { generateUniquePatientFullName } = require('../utils/RandomData.js');
 
 
 // =====================================================
-// TC06 - Cancel With No Refund - Cash
+// WF_CALADN_05 - Cancel With No Refund - Cash
 // =====================================================
 
-test('TC06 New Patient Cancel With No Refund with Cash', async ({ page }) => {
+test('WF_CALADN_05 - New Patient Cancel With No Refund with Cash', async ({ page }) => {
 
-    const patientName = generatePatientName();
+    const patientName = generateUniquePatientFullName();
 
     const patientPage = new PatientPage(page);
     const consultPage = new ConsultPage(page);
@@ -34,24 +34,23 @@ test('TC06 New Patient Cancel With No Refund with Cash', async ({ page }) => {
     );
 
     // Step 2 - Add Consult
+    const bookingDate =
     await consultPage.addConsult(
         patientName,
         appoinmentData.doctorName,
-        consultData.consultSlot,
-        bookingData.bookingDate
+        consultData.consultSlot
     );
 
     // Step 3 - Add Service
     await servicePage.addService(
         patientName,
-        serviceData.serviceName,
-        DateData.bookingDate
+        serviceData.serviceName
     );
 
     // Step 4 - Select Patient From Calendar
     await calendarPage.selectPatientFromCalendar(
         patientName,
-        bookingData.bookingDate
+        bookingDate
     );
 
     // Step 5 - Generate Invoice
@@ -72,12 +71,12 @@ test('TC06 New Patient Cancel With No Refund with Cash', async ({ page }) => {
 
 
 // =====================================================
-// TC07 - Cancel With Refund - Cash
+// WF_CALADN_05 - Cancel With Refund - Cash
 // =====================================================
 
-test('TC07 New Patient Cancel With Refund with Cash', async ({ page }) => {
+test('WF_CALADN_05 - New Patient Cancel With Refund with Cash', async ({ page }) => {
 
-    const patientName = generatePatientName();
+    const patientName = generateUniquePatientFullName();
 
     const patientPage = new PatientPage(page);
     const consultPage = new ConsultPage(page);
@@ -93,24 +92,23 @@ test('TC07 New Patient Cancel With Refund with Cash', async ({ page }) => {
     );
 
     // Step 2 - Add Consult
+    const bookingDate =
     await consultPage.addConsult(
         patientName,
         appoinmentData.doctorName,
-        consultData.consultSlot,
-        bookingData.bookingDate
+        consultData.consultSlot
     );
 
     // Step 3 - Add Service
     await servicePage.addService(
         patientName,
-        serviceData.serviceName,
-        DateData.bookingDate
+        serviceData.serviceName
     );
 
     // Step 4 - Select Patient From Calendar
     await calendarPage.selectPatientFromCalendar(
         patientName,
-        bookingData.bookingDate
+        bookingDate
     );
 
     // Step 5 - Generate Invoice
@@ -135,12 +133,12 @@ test('TC07 New Patient Cancel With Refund with Cash', async ({ page }) => {
 
 
 // =====================================================
-// TC08 - Cancel With Make Payment - Cash
+// WF_CALADN_05 - Cancel With Make Payment - Cash
 // =====================================================
 
-test('TC08 New Patient Cancel With Make Payment with Cash', async ({ page }) => {
+test('WF_CALADN_05 - New Patient Cancel With Make Payment with Cash', async ({ page }) => {
 
-    const patientName = generatePatientName();
+    const patientName = generateUniquePatientFullName();
 
     const patientPage = new PatientPage(page);
     const consultPage = new ConsultPage(page);
@@ -156,24 +154,23 @@ test('TC08 New Patient Cancel With Make Payment with Cash', async ({ page }) => 
     );
 
     // Step 2 - Add Consult
+    const bookingDate =
     await consultPage.addConsult(
         patientName,
         appoinmentData.doctorName,
-        consultData.consultSlot,
-        bookingData.bookingDate
+        consultData.consultSlot
     );
 
     // Step 3 - Add Service
     await servicePage.addService(
         patientName,
-        serviceData.serviceName,
-        DateData.bookingDate
+        serviceData.serviceName
     );
 
     // Step 4 - Select Patient From Calendar
     await calendarPage.selectPatientFromCalendar(
         patientName,
-        bookingData.bookingDate
+        bookingDate
     );
 
     // Step 5 - Generate Invoice

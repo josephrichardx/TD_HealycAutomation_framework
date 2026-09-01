@@ -8,9 +8,7 @@ class StepHelper {
 
             if (page && typeof page.screenshot === 'function') {
                 try {
-                    const screenshot = await page.screenshot({
-                        fullPage: true
-                    });
+                    const screenshot = await page.screenshot();
 
                     await test.info().attach(screenshotName, {
                         body: screenshot,
@@ -24,12 +22,24 @@ class StepHelper {
         };
 
 
+        // A full-page screenshot per passing step dominates the run time (every
+        // Verify.* call goes through here) and bloats the HTML report. Capture
+        // them only on failure; set STEP_SCREENSHOTS=all to get every step.
+        const screenshotEveryStep =
+            process.env.STEP_SCREENSHOTS === 'all';
+
         const runAction = async () => {
 
             try {
 
                 await action();
 
+                if (screenshotEveryStep) {
+
+                    await attachScreenshot(
+                        `${name} - PASSED`
+                    );
+                }
                 // // Screenshot when step passes
                 // await attachScreenshot(
                 //     `${name} - PASSED`

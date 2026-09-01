@@ -2,7 +2,6 @@ import { test, expect } from "../fixtures/baseTest.js";
 const { StepHelper } = require('../utils/StepHelper');
  
  
-test.setTimeout(120000);
  
 // const { LoginPage } = require('../pages/LoginPage');
 const { PatientPage } = require('../pages/PatientPage');
@@ -12,19 +11,19 @@ const { InvoicePage } = require('../pages/InvoicePage');
 const { CalendarPage } = require('../pages/CalendarPage');
 const { CancellationPage } = require('../pages/CancellationPage');
  
-// const { loginData } = require('../testdata/users');
-const { patientData } = require('../testdata/patients.json');
-const { paymentData } = require('../testdata/payments.json');
-const { appoinmentData }= require('../testdata/appointmentData.json');
-const { consultData, bookingData } = require('../testdata/consultData.json');
-const { serviceData, DateData } = require('../testdata/serviceData.json');
-const { invoiceData } = require('../testdata/invoiceData.json');
+const {
+    patientData,
+    appoinmentData,
+    consultData,
+    bookingData,
+    appointmentStatusVerificationData
+} = require('../testdata/TC_45.json');
  
-const { generatePatientName } = require('../utils/RandomData');
+const { generateUniquePatientFullName } = require('../utils/RandomData');
  
-test('WF_CALADN_45.spec.js', async ({ page }) => {
+test('WF_CALADN_45 - Validate changing an appointment status to \'Checked-In\'', async ({ page }) => {
  
-    const patientName = generatePatientName();
+    const patientName = generateUniquePatientFullName();
  
     // const loginPage = new LoginPage(page);
     const patientPage = new PatientPage(page);
@@ -39,7 +38,9 @@ test('WF_CALADN_45.spec.js', async ({ page }) => {
         patientData
     );
  
-    await consultPage.addConsult(
+    // addConsult returns the date the slot was actually booked on
+    // (e.g. "02 Sep, 2026"), which is what the calendar navigation needs.
+    const bookedDate = await consultPage.addConsult(
         patientName,
         appoinmentData.doctorName,
         consultData.consultSlot,
@@ -48,11 +49,12 @@ test('WF_CALADN_45.spec.js', async ({ page }) => {
  
     await calendarPage.selectPatientFromCalendar(
     patientName,
-    bookingData.bookingDate
+    bookedDate
     );
  
     await invoicePage.verifyAppointmentStatus(
-    appoinmentData
+    appoinmentData,
+    appointmentStatusVerificationData
     );
  
     });

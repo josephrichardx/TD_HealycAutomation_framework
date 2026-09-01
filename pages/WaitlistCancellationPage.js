@@ -1,70 +1,161 @@
 const { StepHelper } = require('../utils/StepHelper.js');
- 
+const { Keywords } = require('../utils/Keywords.js');
+const { Verify } = require('../utils/verification.js');
+const {
+    WaitlistCancellationLocator
+} = require('../Locators/WaitlistCancellationLocator.js');
+
 class WaitlistCancellationPage {
+
     constructor(page) {
         this.page = page;
- 
-        this.cancelButton = page.getByRole('button', { name: 'Cancel' }).nth(1);
-        this.chooseReason = page.getByText('Choose reason');
-        this.cancelConsultButton = page.getByRole(
-            'button',
-            { name: 'Cancel Consult' }
-        );
+        this.locator = new WaitlistCancellationLocator(page);
+        this.keywords = new Keywords();
     }
- 
+
     getWaitlistCard(patientName) {
-        return this.page
-            .locator('div')
-            .filter({ hasText: patientName })
-            .filter({
-                has: this.page.getByRole('button', { name: 'Cancel' })
-            })
-            .last();
+        return this.locator.getWaitlistCard(patientName);
     }
- 
-    //Click cancel button for specific waitlist record
+
+    // Click cancel button for a specific waitlist record
     async clickCancel(patientName) {
+
+        const cancelButton =
+            this.locator.getCancelButtonForCard(patientName);
+
+        await this.keywords.waitForElement(cancelButton);
+
+        await Verify.state(
+            this.page,
+            `Cancel button for waitlist record - ${patientName}`,
+            cancelButton,
+            { visible: true, enabled: true, soft: false }
+        );
+
         await StepHelper.step(
             this.page,
             `Click Cancel button for waitlist record: '${patientName}'`,
             async () => {
-                await this.getWaitlistCard(patientName)
-                    .getByRole('button', { name: 'Cancel' })
-                    .click();
+                await this.keywords.click(cancelButton);
             }
         );
     }
- 
+
     async selectCancellationReason(reason) {
+
         const cancellationReason = typeof reason === 'string'
             ? reason
             : reason.cancelReason;
- 
+
+        const reasonOption =
+            this.locator.getCancellationReasonOption(cancellationReason);
+
+        await StepHelper.step(
+            this.page,
+            'Open Choose Reason dropdown',
+            async () => {
+                await this.keywords.click(this.locator.chooseReason);
+            }
+        );
+
+        await this.keywords.waitForElement(reasonOption);
+
+        await Verify.state(
+            this.page,
+            `Cancellation reason option - ${cancellationReason} is displayed`,
+            reasonOption,
+            { visible: true, soft: false }
+        );
+
         await StepHelper.step(
             this.page,
             `Select cancellation reason: ${cancellationReason}`,
             async () => {
- 
-                // Open Choose Reason dropdown
-                await this.chooseReason.click();
- 
-                // Select reason from dropdown
-                await this.page
-                    .getByText(cancellationReason, { exact: true })
-                    .click();
+                await this.keywords.click(reasonOption);
             }
         );
     }
- 
+
     async clickCancelConsult() {
+
+        await this.keywords.waitForElement(this.locator.cancelConsultButton);
+
+        await Verify.state(
+            this.page,
+            'Cancel Consult button is displayed',
+            this.locator.cancelConsultButton,
+            { visible: true, enabled: true, soft: false }
+        );
+
         await StepHelper.step(
             this.page,
             'Click Cancel Consult button',
             async () => {
-                await this.cancelConsultButton.click();
+                await this.keywords.click(
+                    this.locator.cancelConsultButton
+                );
             }
         );
     }
+
+    // This flow raises no toaster - the observable outcome is the entry
+    // leaving the waitlist, so that is what gets verified.
+    // `verification` = { step, expectedEntryState } from the calling spec's
+    // own data file.
+    async verifyWaitlistEntryRemoved(patientName, verification) {
+
+        const card = this.locator.getWaitlistCard(patientName);
+
+        await StepHelper.step(
+            this.page,
+            `${verification.step} - ${patientName}`,
+            async () => {
+                await card.waitFor({ state: 'hidden' });
+            }
+        );
+
+        await Verify.state(
+            this.page,
+            `${verification.step} - ${patientName} is ${verification.expectedEntryState}`,
+            card,
+            { hidden: true, soft: false }
+        );
+    }
+
+
+    // Captures the toaster message the application raises at runtime and
+    // compares it with the expected message held in the calling spec's own
+    // data file. `verification` = { step, expectedMessage }.
+    async verifyCancellationToasterMessage(verification) {
+
+        const toaster = this.locator.toasterMessage.first();
+
+        let actualMessage;
+
+        await StepHelper.step(
+            this.page,
+            verification.step,
+            async () => {
+
+                actualMessage = (
+                    await this.keywords.getText(toaster)
+                ).trim();
+
+                console.log(
+                    `Runtime cancellation toaster message: ${actualMessage}`
+                );
+            }
+        );
+
+        await Verify.contains(
+            this.page,
+            verification.step,
+            verification.expectedMessage,
+            actualMessage
+        );
+
+        return actualMessage;
+    }
 }
- 
+
 module.exports = { WaitlistCancellationPage };

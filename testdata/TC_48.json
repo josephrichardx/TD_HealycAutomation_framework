@@ -1,0 +1,29 @@
+{
+  "patientData": {
+    "title": "Mr",
+    "phoneNumber": "1234567890",
+    "notes": "Healync",
+    "email": "test@gmail.com",
+    "age": "21",
+    "gender": "Male",
+    "address": "Chennai",
+    "savedVerification": {
+      "step": "Verify Patient Saved Successfully",
+      "expectedMessage": "Patient Saved successfully"
+    }
+  },
+  "appoinmentData": {
+    "doctorName": "Dr. Orthopedic"
+  },
+  "consultData": {
+    "consultSlot": "First Consult"
+  },
+ 
+  "appointmentStatusVerificationData": {
+    "step": "Verify Appointment Status",
+    "frozenStep": "Verify Confirmed Status Is Frozen",
+    "frozenStepExpected": false,
+    "enabledStep": "Verify Completed Status Is Enabled",
+    "enabledStepExpected": true
+  }
+}

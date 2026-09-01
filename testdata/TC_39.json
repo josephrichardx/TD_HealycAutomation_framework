@@ -1,0 +1,36 @@
+{
+  "patientData": {
+    "title": "Mr",
+    "phoneNumber": "1234567890",
+    "notes": "Healync",
+    "email": "test@gmail.com",
+    "age": "21",
+    "gender": "Male",
+    "address": "Chennai",
+    "savedVerification": {
+      "step": "Verify Patient Saved Successfully",
+      "expectedMessage": "Patient Saved successfully"
+    }
+  },
+  "appoinmentData": {
+    "doctorName": "Dr. Orthopedic",
+    "typeDropdownLabel": "Type: All"
+  },
+  "waitlistBookingData": {
+    "extendedBookingDate": "20"
+  },
+  "consultData": {
+    "consultSlot": "First Consult",
+    "appointmentType": "Consult"
+  },
+  "serviceData": {
+    "serviceName": "Advance Robotics",
+    "appointmentType": "Service",
+    "doctorName": "Dr. Physiotherapy"
+  },
+  "waitlistVerificationData": {
+    "waitlistEntry": {
+      "step": "Verify Waitlist Entry Present"
+    }
+  }
+}

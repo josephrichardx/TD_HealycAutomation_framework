@@ -1,0 +1,12 @@
+{
+  "waitData": {
+    "shortWait": 500,
+    "mediumWait": 1000,
+    "searchRefresh": 1500,
+    "filterRefresh": 2000,
+    "actionableProbe": 2000,
+    "slowLoad": 60000,
+    "extendedLoad": 120000,
+    "selectionConfirm": 5000
+  }
+}

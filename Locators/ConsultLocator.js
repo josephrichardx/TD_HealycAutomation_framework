@@ -198,9 +198,12 @@ class ConsultLocator {
 
     getPatientResult(patientName) {
 
+        // The patient list can hold more than one row with the same title when
+        // a generated name already exists in the environment, so resolve to the
+        // first match instead of raising a strict-mode violation.
         return this.page.locator(
             `//div[@title="${patientName}"]`
-        );
+        ).first();
     }
 
 

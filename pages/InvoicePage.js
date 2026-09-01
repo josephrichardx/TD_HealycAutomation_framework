@@ -3,7 +3,10 @@ const { StepHelper } = require('../utils/StepHelper');
 const { InvoiceLocator } = require('../Locators/InvoiceLocator');
 const { Keywords } = require('../utils/Keywords');
 const { invoiceData } = require('../testdata/invoiceData.json');
+const { Verify } = require('../utils/verification');
+const { waitData } = require('../testdata/waitData.json');
 const visitingSlipData = require('../testdata/visitingSlip.json');
+const { toasterMessages } = require('../testdata/toasterMessages.json');
 
 class InvoicePage {
 
@@ -23,7 +26,7 @@ class InvoicePage {
             await expect(
                 this.locator.serviceCheckbox.first()
             ).toBeVisible({
-                timeout: 60000
+                timeout: waitData.slowLoad
             });
         }
     );//update
@@ -1270,199 +1273,208 @@ async InvoicePDFAddAdmission(
         );
     }
 
+    // Probes whether a control can actually be acted on. Missing previously,
+    // which made verifyAppointmentStatus throw a TypeError.
+    // The probe duration comes from waitData, not from this method.
+    async isActionable(
+        locator,
+        timeout = waitData.actionableProbe,
+        stepName = 'Check Element Actionability'
+    ) {
+
+        let actionable = false;
+
+        await StepHelper.step(
+            this.page,
+            stepName,
+            async () => {
+
+                try {
+
+                    await locator.waitFor({
+                        state: 'visible',
+                        timeout
+                    });
+
+                    // A trial click runs every actionability check without
+                    // actually clicking. A frozen option carries
+                    // pointer-events: none, so the trial click fails.
+                    await locator.click({
+                        trial: true,
+                        timeout
+                    });
+
+                    actionable = true;
+
+                } catch {
+
+                    actionable = false;
+                }
+            }
+        );
+
+        return actionable;
+    }
+
+
+    // `verification` = { step, frozenStep, enabledStep } from the calling
+    // spec's own data file.
     async verifyAppointmentStatus(
-
-     appoinmentData
-
+        appoinmentData,
+        verification
     ) {
 
         await StepHelper.step(
-
             this.page,
-
             'Update Appointment Status to Check-In',
-
             async () => {
 
                 // Click on Confirmed status dropdown
-
                 await this.keywords.click(
-
                     this.locator.confirmedStatus
-
                 );
- 
- 
-                await expect(
-
-                    this.locator.checkInStatus
-
-                ).toBeVisible();
- 
- 
-                // Click on Check-In option
-
-                await this.keywords.click(
-
-                    this.locator.checkInStatus
-
-                );
- 
- 
-                await expect(
-
-                    this.locator.checkedInStatus
-
-                ).toBeVisible();
- 
- 
-                console.log(
-
-                    'Checked-In status has been verified'
-
-                );
-
             }
-
         );
- 
- 
-        await StepHelper.step(
 
+        await this.keywords.waitForElement(this.locator.checkInStatus);
+
+        await Verify.state(
             this.page,
+            'Check-In status option is displayed',
+            this.locator.checkInStatus,
+            { visible: true, soft: false }
+        );
 
+        await StepHelper.step(
+            this.page,
+            'Select Check-In status',
+            async () => {
+                await this.keywords.click(
+                    this.locator.checkInStatus
+                );
+            }
+        );
+
+        await this.keywords.waitForElement(this.locator.checkedInStatus);
+
+        await Verify.state(
+            this.page,
+            `${verification.step} - Checked-In status is displayed`,
+            this.locator.checkedInStatus,
+            { visible: true, soft: false }
+        );
+
+        await StepHelper.step(
+            this.page,
             'Open Status Dropdown From Checked-In',
-
             async () => {
-
                 await this.keywords.click(
-
                     this.locator.checkedInStatus
-
                 );
- 
- 
-                await expect(
-
-                    this.locator.completedStatus
-
-                ).toBeVisible();
- 
- 
-                await expect(
-
-                    this.locator.confirmedStatus
-
-                ).toBeVisible();
-
             }
-
         );
- 
- 
-        const confirmedStatusIsActionable = await this.isActionable(
 
-            this.locator.confirmedStatus,
+        await this.keywords.waitForElement(this.locator.completedStatus);
 
-            2000,
-
-            'Check Confirmed Status Actionability'
-
-        );
- 
- 
-        await StepHelper.step(
-
+        await Verify.state(
             this.page,
-
-            `Verify Confirmed Status Is Frozen | Expected: not actionable | Actual: ${confirmedStatusIsActionable ? 'actionable' : 'not actionable'}`,
-
-            async () => {
-
-                expect(confirmedStatusIsActionable).toBe(false);
-
-            }
-
-        );
- 
- 
-        const completedStatusIsActionable = await this.isActionable(
-
+            'Completed status option is displayed',
             this.locator.completedStatus,
-
-            2000,
-
-            'Check Completed Status Actionability'
-
+            { visible: true, soft: false }
         );
- 
- 
-        await StepHelper.step(
 
+        await this.keywords.waitForElement(this.locator.confirmedStatus);
+
+        await Verify.state(
             this.page,
+            'Confirmed status option is displayed',
+            this.locator.confirmedStatus,
+            { visible: true, soft: false }
+        );
 
-            `Verify Completed Status Is Enabled | Expected: actionable | Actual: ${completedStatusIsActionable ? 'actionable' : 'not actionable'}`,
+        const confirmedStatusIsActionable = await this.isActionable(
+            this.locator.confirmedStatus,
+            waitData.actionableProbe,
+            'Check Confirmed Status Actionability'
+        );
 
+        await Verify.equals(
+            this.page,
+            verification.frozenStep,
+            verification.frozenStepExpected,
+            confirmedStatusIsActionable
+        );
+
+        const completedStatusIsActionable = await this.isActionable(
+            this.locator.completedStatus,
+            waitData.actionableProbe,
+            'Check Completed Status Actionability'
+        );
+
+        await Verify.equals(
+            this.page,
+            verification.enabledStep,
+            verification.enabledStepExpected,
+            completedStatusIsActionable
+        );
+    }
+
+
+    // `verification` = { step, expectedLabel } from the calling spec's own
+    // data file. The label text is captured from the page at runtime and
+    // compared with the expected value from that data.
+    async verifyVisitingSlip(patientName, doctorName, verification) {
+
+        let actualLabelText;
+
+        await StepHelper.step(
+            this.page,
+            'Get Visiting Slip Label',
             async () => {
 
-                expect(completedStatusIsActionable).toBe(true);
-
+                actualLabelText = (
+                    await this.keywords.getText(
+                        this.locator.visitingSlip
+                    )
+                ).trim();
             }
-
         );
 
+        await Verify.state(
+            this.page,
+            'Visiting Slip is displayed',
+            this.locator.visitingSlip,
+            { visible: true, soft: false }
+        );
+
+        await Verify.contains(
+            this.page,
+            verification.step,
+            verification.expectedLabel,
+            actualLabelText
+        );
+
+        await StepHelper.step(
+            this.page,
+            'Open Visiting Slip',
+            async () => {
+                await this.keywords.click(
+                    this.locator.visitingSlip
+                );
+            }
+        );
+
+        // Wait for the generated PDF page to render instead of sleeping.
+        await StepHelper.step(
+            this.page,
+            'Wait For Visiting Slip PDF To Render',
+            async () => {
+                await this.keywords.waitForElement(
+                    this.locator.visitingSlipPdfPage
+                );
+            }
+        );
     }
- 
-
-    async verifyVisitingSlip(patientName, doctorName) {
-    await StepHelper.step(
-        this.page,
-        'Verify and Click Visiting Slip',
-        async () => {
-            // Verify Visiting Slip is visible
-            await expect(
-                this.locator.visitingSlip
-            ).toContainText('Visiting Slip');
-            console.log(
-                'Visiting Slip verified and visible'
-            );
-            // Click on Visiting Slip
-            await this.keywords.click(
-                this.locator.visitingSlip
-            );
-            // Wait for 10 seconds
-            await this.keywords.wait(
-                this.page,
-                20000
-            );
-        });
-}
-
-async verifyVisitingSlip(patientName, doctorName) {
-    await StepHelper.step(
-        this.page,
-        'Verify and Click Visiting Slip',
-        async () => {
-            // Verify Visiting Slip is visible
-            await expect(
-                this.locator.visitingSlip
-            ).toContainText('Visiting Slip');
-
-            console.log('Visiting Slip verified and visible');
-
-            // Click on Visiting Slip
-            await this.keywords.click(
-                this.locator.visitingSlip
-            );
-
-            // Wait for 20 seconds
-            await this.keywords.wait(
-                this.page,
-                20000
-            );
-        }
-    );
-}
 
 async verifyVisitingSlipContent(
     doctorName,
@@ -1472,12 +1484,9 @@ async verifyVisitingSlipContent(
     appointmentDate
 ) {
     const constants = visitingSlipData.visitingSlip;
-    const visitingSlip = this.page.getByLabel(/Page.*1/);
+    const visitingSlip = this.locator.visitingSlipPdfPage;
 
-    await this.keywords.waitForElement(
-        visitingSlip,
-        30000
-    );
+    await this.keywords.waitForElement(visitingSlip);
 
     const actualPdfText = (
         await visitingSlip.textContent()
@@ -1685,13 +1694,20 @@ async verifyVisitingSlipContent(
                 .replace(/\s+/g, ' ')
                 .trim();
 
+        const expectedForReport = field.isDate
+            ? `${constants.dateLabel} day ${
+                (String(field.expected).match(/\d+/) || [''])
+                    .map(Number)[0]
+              }`
+            : normalizedExpected;
+
         console.log(
-            `Expected Result = '${normalizedExpected}' | Actual Result = '${normalizedActual}'`
+            `Expected Result = '${expectedForReport}' | Actual Result = '${normalizedActual}'`
         );
 
         await StepHelper.step(
             this.page,
-            `Verify Visiting Slip: ${field.name} | Expected Result = '${normalizedExpected}' | Actual Result = '${normalizedActual}'`,
+            `Verify Visiting Slip: ${field.name} | Expected Result = '${expectedForReport}' | Actual Result = '${normalizedActual}'`,
             async () => {
                 if (field.isDate) {
                     // Check date label
@@ -1699,27 +1715,33 @@ async verifyVisitingSlipContent(
                         constants.dateLabel
                     );
 
-                    // Check passed appointment date
+                    // Check passed appointment date. The slip formats the day
+                    // without a leading zero ("Sept. 2, 2026"), so compare the
+                    // day number itself rather than the raw text.
                     if (appointmentDate) {
                         const matchDate =
-                            appointmentDate.match(/\d+/);
+                            String(appointmentDate).match(/\d+/);
 
                         if (matchDate) {
                             expect(
                                 normalizedActual
-                            ).toContain(matchDate[0]);
+                            ).toContain(
+                                String(Number(matchDate[0]))
+                            );
                         }
                     }
 
                     // Check stored JSON date
                     if (field.storedVal) {
                         const matchJsonDate =
-                            field.storedVal.match(/\d+/);
+                            String(field.storedVal).match(/\d+/);
 
                         if (matchJsonDate) {
                             expect(
                                 normalizedActual
-                            ).toContain(matchJsonDate[0]);
+                            ).toContain(
+                                String(Number(matchJsonDate[0]))
+                            );
                         }
                     }
                 } else {
@@ -1800,7 +1822,7 @@ async verifyVisitingSlipContent(
                 await expect(
                     this.locator.finalGenerateInvoiceBtn
                 ).toBeEnabled({
-                    timeout: 60000
+                    timeout: waitData.slowLoad
                 });
             }
         );//update
@@ -1813,6 +1835,13 @@ async verifyVisitingSlipContent(
                     this.locator.finalGenerateInvoiceBtn
                 );
             }
+        );
+
+        await Verify.toaster(
+            this.page,
+            'Verify Service Invoice Confirmation Toaster',
+            this.locator.invoiceToastTitle,
+            toasterMessages.bookingConfirm
         );
     }
 
@@ -1835,7 +1864,7 @@ async verifyVisitingSlipContent(
         async () => {
             await this.locator.EndGenerateInvoiceBtn.waitFor({
                 state: 'visible',
-                timeout: 120000
+                timeout: waitData.extendedLoad
             });
         }
     );

@@ -2,7 +2,6 @@ import { test, expect } from "../fixtures/baseTest.js";
 const { StepHelper } = require('../utils/StepHelper');
  
  
-test.setTimeout(120000);
  
 // const { LoginPage } = require('../pages/LoginPage');
 const { PatientPage } = require('../pages/PatientPage');
@@ -12,20 +11,20 @@ const { InvoicePage } = require('../pages/InvoicePage');
 const { CalendarPage } = require('../pages/CalendarPage');
 const { CancellationPage } = require('../pages/CancellationPage');
  
-// const { loginData } = require('../testdata/users');
-const { patientData } = require('../testdata/patients.json');
-const { paymentData } = require('../testdata/payments.json');
-const { appoinmentData }= require('../testdata/appointmentData.json');
-const { consultData, bookingData } = require('../testdata/consultData.json');
-const { serviceData, DateData } = require('../testdata/serviceData.json');
-const { invoiceData } = require('../testdata/invoiceData.json');
-const  visitingSlipData  = require('../testdata/visitingSlip.json');
+const {
+    patientData,
+    appoinmentData,
+    consultData,
+    bookingData,
+    appointmentStatusVerificationData,
+    visitingSlipVerificationData
+} = require('../testdata/TC_46.json');
  
-const { generatePatientName } = require('../utils/RandomData');
+const { generateUniquePatientFullName } = require('../utils/RandomData');
  
-test('WF_CALADN_46.spec.js', async ({ page }) => {
+test('WF_CALADN_46 - Validate the Check-In PDF after check-in', async ({ page }) => {
      
-    const patientName = generatePatientName();
+    const patientName = generateUniquePatientFullName();
  
     // const loginPage = new LoginPage(page);
     const patientPage = new PatientPage(page);
@@ -47,7 +46,10 @@ test('WF_CALADN_46.spec.js', async ({ page }) => {
         patientData
     );
  
-    await consultPage.addConsult(
+    // addConsult returns the date the slot was actually booked on
+    // (e.g. "02 Sep, 2026"), which is what the calendar navigation and the
+    // visiting-slip date check need.
+    const bookedDate = await consultPage.addConsult(
         patientName,
         appoinmentData.doctorName,
         consultData.consultSlot,
@@ -55,10 +57,12 @@ test('WF_CALADN_46.spec.js', async ({ page }) => {
     );
  
  
-    const calendarDate = await calendarPage.selectPatientFromCalendar(
+    await calendarPage.selectPatientFromCalendar(
         patientName,
-        bookingData.bookingDate
+        bookedDate
     );
+
+    const calendarDate = bookedDate;
  
     // Save runtime variables to JSON file
     const fs = require('fs');
@@ -75,12 +79,14 @@ test('WF_CALADN_46.spec.js', async ({ page }) => {
  
  
     await invoicePage.verifyAppointmentStatus(
-    appoinmentData
+    appoinmentData,
+    appointmentStatusVerificationData
     );
  
     await invoicePage.verifyVisitingSlip(
         patientName,
-        appoinmentData.doctorName
+        appoinmentData.doctorName,
+        visitingSlipVerificationData
     );
  
     await invoicePage.verifyVisitingSlipContent(
@@ -88,7 +94,7 @@ test('WF_CALADN_46.spec.js', async ({ page }) => {
         patientName,
         undefined,
         undefined,
-        bookingData.bookingDate
+        bookedDate
     );
  
     });

@@ -1,9 +1,12 @@
 const { expect } = require('@playwright/test');
-
 const { StepHelper } = require('../utils/StepHelper.js');
-
+const { Keywords } = require('../utils/Keywords.js');
+const { Verify } = require('../utils/verification.js');
 const { WaitlistPageLocators } = require('../Locators/WaitlistPageLocators.js');
-
+const {
+    appointmentActionData
+} = require('../testdata/appointmentData.json');
+const { waitData } = require('../testdata/waitData.json');
 
 
 function normalizeCurrencyValue(value) {
@@ -11,9 +14,7 @@ function normalizeCurrencyValue(value) {
     const cleaned = String(value ?? '').replace(/[₹,\s]/g, '');
 
     return Number(cleaned || 0);
-
 }
-
 
 
 class WaitlistPage {
@@ -24,1104 +25,1193 @@ class WaitlistPage {
 
         this.locators = new WaitlistPageLocators(page);
 
+        this.keywords = new Keywords();
     }
 
 
+    // ---------------------------------------------------------------
+    // WAITLIST BOOKING
+    // ---------------------------------------------------------------
 
     async clickHourglass() {
 
-        await StepHelper.step(
+        await this.keywords.waitForElement(this.locators.hourglassIcon);
 
+        await Verify.state(
             this.page,
-
-            'Click Hourglass (Waitlist) icon on the first doctor card',
-
-            async () => {
-
-                await this.locators.hourglassIcon.click();
-
-            }
-
+            'Hourglass (Waitlist) icon is displayed',
+            this.locators.hourglassIcon,
+            { visible: true, soft: false }
         );
 
+        await StepHelper.step(
+            this.page,
+            'Click Hourglass (Waitlist) icon on the first doctor card',
+            async () => {
+                await this.keywords.click(this.locators.hourglassIcon);
+            }
+        );
     }
-
 
 
     async clickProceed() {
 
         await StepHelper.step(
-
             this.page,
-
             'Click Proceed after hourglass selection',
-
             async () => {
-
-                await this.locators.proceedButton.click();
-
+                await this.keywords.click(this.locators.proceedButton);
             }
-
         );
-
     }
-
 
 
     async clickConfirmBooking() {
 
         await StepHelper.step(
-
             this.page,
-
             'Click Confirm Booking to add to waitlist',
-
             async () => {
-
-                await this.locators.confirmBookingButton.click();
-
+                await this.keywords.click(
+                    this.locators.confirmBookingButton
+                );
             }
-
         );
 
-
-
         await this.page.waitForLoadState('networkidle');
-
     }
-
 
 
     async clickWaitlist() {
 
         await StepHelper.step(
-
             this.page,
-
             'Click Waitlist from the left corner menu on Calendar page',
-
             async () => {
-
-                await this.locators.waitlistMenuItem.click();
-
+                await this.keywords.click(
+                    this.locators.waitlistMenuItem
+                );
             }
-
         );
-
     }
-
 
 
     getWaitlistCard(patientName) {
 
         return this.locators.getWaitlistCard(patientName);
-
     }
 
 
+    // The Waitlist tab keeps every card for the selected date in the DOM inside
+    // a scrollable container, so the card only has to be scrolled into view -
+    // no manual paging. Waiting for the list to populate first matters when the
+    // app is under load, otherwise the scan runs against an empty list.
+    async findWaitlistEntry(patientName) {
 
+        const card = this.locators.getWaitlistCardByName(patientName);
+
+        await StepHelper.step(
+            this.page,
+            `Find Waitlist Entry - ${patientName}`,
+            async () => {
+
+                await this.keywords.waitForElement(
+                    this.locators.waitlistContainer
+                );
+
+                // The list is populated once its first card exists.
+                await this.locators.waitlistCards
+                    .first()
+                    .waitFor({ state: 'attached' });
+
+                // Every card for the date is in the DOM, so wait for this
+                // patient's card and bring it into view.
+                await card.waitFor({ state: 'attached' });
+
+                await this.keywords.scrollIntoViewIfNeeded(card);
+
+                console.log(
+                    `Waitlist entry found: ${patientName}`
+                );
+            }
+        );
+
+        return card;
+    }
+
+
+    // Kept for callers that page through the calendar rather than the list.
     async navigateToWaitlistEntry(patientName, maxPages = 31) {
-
-
 
         const waitlistEntryLocator = this.getWaitlistCard(patientName);
 
-
-
         await StepHelper.step(
-
             this.page,
-
             `Navigate Calendar Until Waitlist Entry Found - ${patientName}`,
-
             async () => {
-
-
 
                 for (let pageNumber = 0; pageNumber < maxPages; pageNumber++) {
 
-
-
-                    if (await waitlistEntryLocator.isVisible().catch(() => false)) {
-
+                    if (
+                        await waitlistEntryLocator
+                            .isVisible()
+                            .catch(() => false)
+                    ) {
                         break;
-
                     }
 
+                    await this.keywords.click(
+                        this.locators.calendarNavigationArrow
+                    );
 
-
-                    await this.locators.calendarNavigationArrow.click();
-
-                    await this.page.waitForTimeout(500);
-
+                    await this.keywords.wait(
+                        this.page,
+                        waitData.shortWait
+                    );
                 }
-
             }
-
         );
-
     }
 
 
+    // `verification` is the { step } block from the calling spec's own data
+    // file (waitlistVerificationData.waitlistEntry).
+    async verifyWaitlistEntry(patientName, verification) {
 
-    async verifyWaitlistEntry(patientName) {
-
-        const waitlistEntryLocator = this.getWaitlistCard(patientName);
-
-
+        const waitlistEntryLocator =
+            this.locators.getWaitlistCardByName(patientName);
 
         let actualEntryText;
 
-
-
         await StepHelper.step(
-
             this.page,
-
             `Get Waitlist Entry - ${patientName}`,
-
             async () => {
 
-                await waitlistEntryLocator.waitFor({
-
-                    state: 'visible',
-
-                    timeout: 15000
-
-                });
-
-
+                await this.keywords.waitForElement(waitlistEntryLocator);
 
                 actualEntryText = (
-
-                    await waitlistEntryLocator.innerText()
-
+                    await this.keywords.getText(waitlistEntryLocator)
                 ).trim();
-
             }
-
         );
 
-
-
-        await StepHelper.step(
-
+        await Verify.state(
             this.page,
-
-            `Verify Waitlist Entry Present | Expected: ${patientName} | Actual: ${actualEntryText}`,
-
-            async () => {
-
-                expect(actualEntryText).toContain(patientName);
-
-            }
-
+            `Waitlist Entry - ${patientName} is displayed`,
+            waitlistEntryLocator,
+            { visible: true, soft: false }
         );
 
+        await Verify.contains(
+            this.page,
+            `${verification.step} - ${patientName}`,
+            patientName,
+            actualEntryText
+        );
     }
-
 
 
     async clickSchedule(patientName) {
 
-        await StepHelper.step(
+        const scheduleButton =
+            this.locators.getScheduleButton(patientName);
 
+        await this.keywords.waitForElement(scheduleButton);
+
+        await Verify.state(
             this.page,
-
-            `Click Schedule button for waitlist record: '${patientName}'`,
-
-            async () => {
-
-                await this.locators.getScheduleButton(patientName).click();
-
-            }
-
+            `Schedule button for waitlist record - ${patientName}`,
+            scheduleButton,
+            { visible: true, enabled: true, soft: false }
         );
 
+        await StepHelper.step(
+            this.page,
+            `Click Schedule button for waitlist record: '${patientName}'`,
+            async () => {
+                await this.keywords.click(scheduleButton);
+            }
+        );
     }
 
 
+    // ---------------------------------------------------------------
+    // SCHEDULE APPOINTMENT DIALOG - SLOT SELECTION
+    // ---------------------------------------------------------------
+    // The dialog loads its slot list asynchronously and can land on any of the
+    // Morning / Afternoon / Evening segments, so wait for the list (or the
+    // "No slots are avaiable for this duration" message) instead of sleeping.
+    async waitForScheduleSlotsToSettle() {
 
+        const slots = this.locators.scheduleAvailableSlots;
+
+        const noSlots = this.locators.scheduleNoSlotsMessage;
+
+        await Promise.race([
+
+            slots
+                .first()
+                .waitFor({ state: 'visible' })
+                .catch(() => {}),
+
+            noSlots
+                .first()
+                .waitFor({ state: 'visible' })
+                .catch(() => {})
+        ]);
+    }
+
+
+    // Clicks the first available slot in the segment currently shown, falling
+    // back to the other Morning / Afternoon / Evening segments.
+    // Returns the selected slot text, or null when the date has no slots.
+    async tryPickSlotInAnyDayPart() {
+
+        const slots = this.locators.scheduleAvailableSlots;
+
+        const toggles = this.locators.scheduleDayPartToggles;
+
+        const toggleCount = await toggles.count().catch(() => 0);
+
+        // Segment the dialog opened on first, then each segment in turn.
+        for (let index = -1; index < toggleCount; index++) {
+
+            if (index >= 0) {
+
+                await this.keywords.click(toggles.nth(index));
+            }
+
+            await this.waitForScheduleSlotsToSettle();
+
+            const slotCount = await slots.count().catch(() => 0);
+
+            if (slotCount === 0) {
+                continue;
+            }
+
+            // The dialog re-renders its slot list while the app fetches live
+            // availability (other bookings can consume a slot between count()
+            // and click()), so a slot resolved a moment ago can detach before
+            // it is clicked. Re-resolve fresh from the DOM and retry on that
+            // specific failure - and use a short per-attempt timeout instead
+            // of the 30s default, so a truly-gone slot fails fast enough to
+            // still try several more times, or fall through to the next
+            // segment/day, rather than burning the whole scan on one row.
+            const maxAttempts = 5;
+
+            for (let attempt = 0; attempt < maxAttempts; attempt++) {
+
+                const remainingSlots = await slots.count().catch(() => 0);
+
+                if (remainingSlots === 0) {
+                    break;
+                }
+
+                try {
+
+                    const slot = slots.first();
+
+                    await slot.waitFor({
+                        state: 'visible',
+                        timeout: waitData.shortWait * 2
+                    });
+
+                    const slotText = (await slot.innerText()).trim();
+
+                    await this.keywords.forceClick(slot);
+
+                    // The click only counts once the row is marked selected.
+                    // The list can re-render mid-click and drop the selection,
+                    // which leaves Confirm schedule doing nothing at all.
+                    await this.locators.scheduleSelectedSlot
+                        .first()
+                        .waitFor({
+                            state: 'visible',
+                            timeout: waitData.selectionConfirm
+                        });
+
+                    console.log(
+                        `Time slot selected: ${slotText}`
+                    );
+
+                    return slotText || 'slot';
+
+                } catch (error) {
+
+                    const isRetryable =
+                        /not attached|not stable|detached|timeout/i
+                            .test(error.message || '');
+
+                    if (!isRetryable) {
+                        throw error;
+                    }
+
+                    if (attempt === maxAttempts - 1) {
+
+                        // Exhausted retries on this segment - treat it the
+                        // same as "no slot here" instead of failing the
+                        // whole multi-date scan, so the caller moves on to
+                        // the next segment/day.
+                        console.log(
+                            'Slot list kept re-rendering - giving up on this segment, trying next'
+                        );
+
+                        break;
+                    }
+
+                    console.log(
+                        'Slot list re-rendered while selecting - retrying'
+                    );
+
+                    await this.keywords.wait(
+                        this.page,
+                        waitData.shortWait
+                    );
+                }
+            }
+        }
+
+        return null;
+    }
 
 
     async selectFirstAvailableTimeSlot() {
 
         await StepHelper.step(
-
             this.page,
-
             'Select any available time slot from the schedule picker',
-
             async () => {
 
-                const firstSlot = this.page
+                const slots = this.locators.scheduleAvailableSlots;
 
-                    .locator('span.slot-time:visible')
+                await this.keywords.waitForElement(slots.last());
 
-                    .last();
+                const slot = slots.last();
 
+                await this.keywords.scrollIntoViewIfNeeded(slot);
 
-
-                await firstSlot.waitFor({
-
-                    state: 'visible',
-
-                    timeout: 15000
-
-                });
-
-
-
-                await firstSlot.scrollIntoViewIfNeeded();
-
-                await firstSlot.click({ force: true });
-
+                await this.keywords.forceClick(slot);
             }
-
         );
-
     }
 
+
+    async selectAnyAvailableTimeSlot() {
+
+        let selectedSlotText;
+
+        await StepHelper.step(
+            this.page,
+            'Select any available time slot across Morning/Afternoon/Evening',
+            async () => {
+
+                selectedSlotText = await this.tryPickSlotInAnyDayPart();
+
+                if (!selectedSlotText) {
+
+                    throw new Error(
+                        'No time slots are available in the Morning, Afternoon or Evening segments for the selected date.'
+                    );
+                }
+            }
+        );
+
+        return selectedSlotText;
+    }
+
+
+    // The dialog does not pre-select any date - the calendar shows no
+    // "Selected" day and the slots panel reads "No slots avaiable for this
+    // duration" until a day is actually clicked. So every bookable day has
+    // to be clicked first before its slots can be read/picked; every day of
+    // the current month can already be in the past, so this walks forward
+    // across bookable days, month by month.
+    // Returns { slot, day, monthYear } so the caller knows which date to open
+    // on the calendar afterwards.
+    async selectFirstAvailableSlotAcrossDates(monthsToScan = 3) {
+
+        let selectedSlotText = null;
+
+        let selectedDayText = null;
+
+        let selectedMonthYear = null;
+
+        await StepHelper.step(
+            this.page,
+            'Select the first available time slot in the schedule dialog',
+            async () => {
+
+                await this.keywords.waitForElement(
+                    this.locators.scheduleModal
+                );
+
+                const monthHeading =
+                    this.locators.scheduleMonthHeading;
+
+                // Every bookable day, month by month - click the day first,
+                // only then check/pick its slots.
+                for (let month = 0; month < monthsToScan; month++) {
+
+                    const monthYear = (
+                        await this.keywords.getText(monthHeading)
+                    ).trim();
+
+                    const days =
+                        this.locators.scheduleSelectableDays;
+
+                    const dayCount = await days.count().catch(() => 0);
+
+                    console.log(
+                        `${monthYear}: ${dayCount} bookable day(s)`
+                    );
+
+                    for (let index = 0; index < dayCount; index++) {
+
+                        const day = days.nth(index);
+
+                        const dayText = (
+                            await this.keywords.getText(day)
+                        ).trim();
+
+                        await this.keywords.click(day);
+
+                        selectedSlotText =
+                            await this.tryPickSlotInAnyDayPart();
+
+                        if (selectedSlotText) {
+
+                            selectedDayText = dayText;
+
+                            selectedMonthYear = monthYear;
+
+                            console.log(
+                                `Slot found on ${dayText} ${monthYear}: ${selectedSlotText}`
+                            );
+
+                            return;
+                        }
+
+                        console.log(
+                            `No slots on ${dayText} ${monthYear}`
+                        );
+                    }
+
+                    if (month === monthsToScan - 1) {
+                        break;
+                    }
+
+                    await this.keywords.click(
+                        this.locators.scheduleNextMonthBtn
+                    );
+
+                    // The heading text changing is the signal that the next
+                    // month has rendered.
+                    await this.locators
+                        .getScheduleMonthHeadingOtherThan(monthYear)
+                        .waitFor({ state: 'visible' });
+                }
+
+                throw new Error(
+                    `No time slots are available on any bookable date within the next ${monthsToScan} month(s) of the schedule dialog.`
+                );
+            }
+        );
+
+        return {
+            slot: selectedSlotText,
+            day: selectedDayText,
+            monthYear: selectedMonthYear
+        };
+    }
 
 
     async clickConfirmSchedule() {
 
         await StepHelper.step(
-
             this.page,
-
             'Click Confirm Schedule button',
-
             async () => {
-
-                await this.page
-
-                    .getByRole('button', { name: /confirm schedule/i })
-
-                    .first()
-
-                    .click({ force: true });
-
+                await this.keywords.forceClick(
+                    this.locators.confirmScheduleButton
+                );
             }
-
         );
 
         await this.page.waitForLoadState('networkidle');
 
+        // The dialog animates out after confirming and keeps intercepting
+        // pointer events until it is gone, which blocks the next calendar
+        // click. Wait for it to disappear instead of assuming it has.
+        await StepHelper.step(
+            this.page,
+            'Wait For Schedule Dialog To Close',
+            async () => {
+                await this.locators.scheduleModal.waitFor({
+                    state: 'hidden'
+                });
+            }
+        );
     }
 
 
+    // ---------------------------------------------------------------
+    // APPOINTMENT / INVOICE VERIFICATION
+    // ---------------------------------------------------------------
 
-    async verifyPendingAppointment() {
+    // Reads whatever status the appointment panel rendered at runtime and
+    // compares it with the expected status held in the calling spec's own data
+    // file. `verification` = { step, expectedStatus }.
+    async verifyAppointmentStatus(verification) {
 
-
+        const statusBadge = this.locators.getAppointmentStatusBadge(
+            verification.expectedStatus
+        );
 
         let actualStatusText;
 
-
-
         await StepHelper.step(
-
             this.page,
-
-            'Get Appointment Status',
-
+            `Get Appointment Status - ${verification.expectedStatus}`,
             async () => {
-
-                await this.locators.pendingStatusLocator.waitFor({
-
-                    state: 'visible',
-
-                    timeout: 15000
-
-                });
-
-
 
                 actualStatusText = (
-
-                    await this.locators.pendingStatusLocator.innerText()
-
+                    await this.keywords.getText(statusBadge)
                 ).trim();
-
             }
-
         );
 
-
-
-        await StepHelper.step(
-
+        await Verify.state(
             this.page,
-
-            `Verify Appointment Status | Expected: Pending | Actual: ${actualStatusText}`,
-
-            async () => {
-
-                expect(actualStatusText).toContain('Pending');
-
-            }
-
+            'Appointment status badge is displayed',
+            statusBadge,
+            { visible: true, soft: false }
         );
 
+        await Verify.contains(
+            this.page,
+            verification.step,
+            verification.expectedStatus,
+            actualStatusText
+        );
+
+        return actualStatusText;
     }
 
 
+    // `verification` = { step, expectedStatus } from the calling spec's data.
+    async verifyPendingAppointment(verification) {
 
-    async verifyInvoiceGenerated() {
+        const statusLocator = this.locators.pendingStatusLocator;
+
+        let actualStatusText;
+
+        await StepHelper.step(
+            this.page,
+            'Get Appointment Status',
+            async () => {
+
+                await this.keywords.waitForElement(statusLocator);
+
+                actualStatusText = (
+                    await this.keywords.getText(statusLocator)
+                ).trim();
+            }
+        );
+
+        await Verify.state(
+            this.page,
+            'Appointment status badge is displayed',
+            statusLocator,
+            { visible: true, soft: false }
+        );
+
+        await Verify.contains(
+            this.page,
+            verification.step,
+            verification.expectedStatus,
+            actualStatusText
+        );
+    }
 
 
+    // `verification` = { step, expectedPattern } from the calling spec's data.
+    async verifyInvoiceGenerated(verification) {
+
+        const invoiceLocator = this.locators.invoiceNumberLocator;
 
         let actualInvoiceNumber;
 
-
-
         await StepHelper.step(
-
             this.page,
-
             'Get Generated Invoice Number',
-
             async () => {
 
-                await this.locators.invoiceNumberLocator.waitFor({
-
-                    state: 'visible',
-
-                    timeout: 15000
-
-                });
-
-
+                await this.keywords.waitForElement(invoiceLocator);
 
                 actualInvoiceNumber = (
-
-                    await this.locators.invoiceNumberLocator.innerText()
-
+                    await this.keywords.getText(invoiceLocator)
                 ).trim();
-
             }
-
         );
 
-
-
-        await StepHelper.step(
-
+        await Verify.state(
             this.page,
-
-            `Verify Invoice Generated | Expected: matches INV-00* | Actual: ${actualInvoiceNumber}`,
-
-            async () => {
-
-                expect(actualInvoiceNumber).toMatch(/^INV-00\d+$/);
-
-            }
-
+            'Generated invoice number is displayed',
+            invoiceLocator,
+            { visible: true, soft: false }
         );
 
-
+        await Verify.matches(
+            this.page,
+            verification.step,
+            new RegExp(verification.expectedPattern),
+            actualInvoiceNumber
+        );
 
         return actualInvoiceNumber;
-
     }
 
 
+    // `verification` = { step, expectedPrefix } from the calling spec's data.
+    async verifyInvoiceNameStartsWith(verification) {
 
-    async verifyInvoiceNameStartsWith(prefix) {
+        const expectedPrefix = verification.expectedPrefix;
 
-
+        const invoiceLocator = this.locators.invoiceNumberLocator;
 
         let actualInvoiceText;
 
-
-
         await StepHelper.step(
-
             this.page,
-
             'Get Invoice Name',
-
             async () => {
 
                 actualInvoiceText = (
-
-                    await this.locators.invoiceNumberLocator.textContent()
-
+                    await this.keywords.getTextContent(invoiceLocator)
                 ).trim();
-
             }
-
         );
 
-
-
-        await StepHelper.step(
-
+        await Verify.contains(
             this.page,
-
-            `Verify Invoice Name Starts With | Expected: ${prefix} | Actual: ${actualInvoiceText}`,
-
-            async () => {
-
-                expect(actualInvoiceText).toContain(prefix);
-
-            }
-
+            `${verification.step} - ${expectedPrefix}`,
+            expectedPrefix,
+            actualInvoiceText
         );
-
     }
-
 
 
     async closeAppointmentDetails() {
 
         await StepHelper.step(
-
             this.page,
-
             'Close appointment details panel',
-
             async () => {
 
-                await this.locators.calendarToggleButton.waitFor({
+                await this.keywords.waitForElement(
+                    this.locators.calendarToggleButton
+                );
 
-                    state: 'visible',
+                await this.keywords.forceClick(
+                    this.locators.calendarToggleButton
+                );
 
-                    timeout: 10000
+                await this.page
+                    .waitForURL(
+                        (url) => url.pathname.includes(
+                            appointmentActionData.dashboardPath
+                        )
+                    )
+                    .catch(() => {});
 
+                await this.page.reload({
+                    waitUntil: 'domcontentloaded'
                 });
-
-                await this.locators.calendarToggleButton.evaluate(button => button.click());
-
-                await this.page.waitForURL(
-
-                    url => url.pathname.includes('/dashboard'),
-
-                    { timeout: 15000 }
-
-                ).catch(() => {});
-
-                await this.page.reload({ waitUntil: 'domcontentloaded' });
-
             }
-
         );
-
     }
 
 
+    // ---------------------------------------------------------------
+    // PAYMENT
+    // ---------------------------------------------------------------
 
     async openPaymentMenu() {
 
         await StepHelper.step(
-
             this.page,
-
             'Open Payment menu',
-
             async () => {
 
-                if (await this.locators.paymentTabMenu.isVisible().catch(() => false)) {
+                const isPaymentTabVisible = await this.locators
+                    .paymentTabMenu
+                    .isVisible()
+                    .catch(() => false);
 
-                    await this.locators.paymentTabMenu.evaluate(tab => tab.click());
+                if (isPaymentTabVisible) {
 
+                    await this.keywords.forceClick(
+                        this.locators.paymentTabMenu
+                    );
                 }
-
             }
-
         );
-
     }
-
 
 
     async clickMakePaymentButton() {
 
         await StepHelper.step(
-
             this.page,
-
             'Click Make Payment button',
-
             async () => {
 
-                await this.locators.makePaymentButton.waitFor({
+                await this.keywords.waitForElement(
+                    this.locators.makePaymentButton
+                );
 
-                    state: 'visible',
-
-                    timeout: 60000
-
-                });
-
-                await this.locators.makePaymentButton.evaluate(button => button.click());
-
+                await this.keywords.forceClick(
+                    this.locators.makePaymentButton
+                );
             }
-
         );
-
     }
 
 
-
-    async verifyPaymentPageOpened() {
+    // `verification` = { step } from the calling spec's data.
+    async verifyPaymentPageOpened(verification) {
 
         await StepHelper.step(
-
             this.page,
-
-            'Verify payment page is opened',
-
+            'Wait For Payment Section',
             async () => {
-
-                console.log("✓ NEW: Verifying payment page opened...");
-
-                await this.page.waitForTimeout(1500);
-
-               
-
-                // Check for payment modal by multiple selectors
-
-                const paymentModal = this.page
-
-                    .locator("//div[contains(@class, 'payment')] | //div[contains(@class, 'modal')] | //text()[contains(., 'Payment')]/..")
-
-                    .first();
-
-               
-
-                await paymentModal.waitFor({ state: 'visible', timeout: 5000 }).catch(async () => {
-
-                    // Alternative check - if payment text is visible
-
-                    const paymentText = this.page.locator("text=/Payment/i").first();
-
-                    await expect(paymentText).toBeVisible({ timeout: 5000 });
-
-                });
-
-               
-
-                console.log("✓ NEW: Payment page is open");
-
+                await this.keywords.waitForElement(
+                    this.locators.paymentSection
+                );
             }
-
         );
 
+        await Verify.state(
+            this.page,
+            `${verification.step} - payment section is displayed`,
+            this.locators.paymentSection,
+            { visible: true, soft: false }
+        );
     }
-
 
 
     async selectPaymentMethod(methodName) {
 
+        const methodLocator =
+            this.locators.getPaymentMethodByLabel(methodName);
+
+        let selected = false;
+
         await StepHelper.step(
-
             this.page,
-
             `Select payment method: ${methodName}`,
-
             async () => {
 
-                console.log(`✓ NEW: Selecting payment method: ${methodName}`);
+                // The payment form does not always render a method selector -
+                // when only one method applies it is pre-selected and no
+                // control is drawn. Treat it as optional (the original
+                // behaviour) but record which case happened, so the report
+                // shows whether the method was actively selected.
+                const isMethodPresent =
+                    (await methodLocator.count().catch(() => 0)) > 0;
 
-                const element = this.locators.getPaymentMethodByLabel(methodName);
+                if (!isMethodPresent) {
 
-                if (await element.isVisible()) {
-
-                    await element.click();
-
-                    await this.page.waitForTimeout(800);
-
-                    console.log(`✓ NEW: Payment method '${methodName}' selected`);
-
+                    selected = false;
+                    return;
                 }
 
-            }
+                await this.keywords.waitForElement(methodLocator);
 
+                await this.keywords.click(methodLocator);
+
+                selected = true;
+            }
         );
 
-    }
+        if (selected) {
 
+            await Verify.state(
+                this.page,
+                `Payment method - ${methodName} is displayed`,
+                methodLocator,
+                { visible: true, soft: false }
+            );
+
+        } else {
+
+            await Verify.record(
+                this.page,
+                `Payment Method Selector - ${methodName}`,
+                'not rendered on the payment form - pre-selected method used'
+            );
+        }
+
+        return selected;
+    }
 
 
     async recordConfiguredPayment(paymentData) {
 
         const paymentType = paymentData.paymentType;
 
-
-
-        // Payment method already selected by selectPaymentMethod()
-
-        // Only handle transaction ID and amount input
-
-
-
-        if (paymentType === 'UPI' || paymentType === 'Card') {
-
-            await StepHelper.step(
-
-                this.page,
-
-                'Enter transaction ID',
-
-                async () => {
-
-                    await this.locators.transactionIdInput.fill(paymentData.transactionId);
-
-                }
-
+        // Which methods need a transaction ID comes from the spec's own
+        // paymentData block.
+        const needsTransactionId =
+            (paymentData.transactionIdRequiredFor || []).includes(
+                paymentType
             );
 
+        if (needsTransactionId) {
+
+            await StepHelper.step(
+                this.page,
+                'Enter transaction ID',
+                async () => {
+                    await this.keywords.fill(
+                        this.locators.transactionIdInput,
+                        paymentData.transactionId
+                    );
+                }
+            );
         }
 
-
-
         await StepHelper.step(
-
             this.page,
-
             `Enter payment amount - ${paymentData.amount}`,
-
             async () => {
-
-                await this.locators.amountInput.fill(String(paymentData.amount));
-
+                await this.keywords.fill(
+                    this.locators.amountInput,
+                    String(paymentData.amount)
+                );
             }
-
         );
 
-
-
         await this.recordCurrentPayment();
-
     }
-
 
 
     async recordCurrentPayment() {
 
         await StepHelper.step(
-
             this.page,
-
             'Record payment',
-
             async () => {
-
-                await this.locators.recordPaymentButton.evaluate(button => button.click());
-
+                await this.keywords.forceClick(
+                    this.locators.recordPaymentButton
+                );
             }
-
         );
-
     }
-
 
 
     async enterCashAmount(amount) {
 
         await StepHelper.step(
-
             this.page,
-
             `Enter cash amount: ${amount}`,
-
             async () => {
 
-                console.log(`✓ NEW: Entering cash amount: ${amount}`);
+                await this.keywords.scrollIntoViewIfNeeded(
+                    this.locators.amountInput
+                );
 
-                await this.locators.amountInput.scrollIntoViewIfNeeded();
+                await this.keywords.click(this.locators.amountInput);
 
-                await this.locators.amountInput.click();
+                await this.keywords.clear(this.locators.amountInput);
 
-                await this.locators.amountInput.clear();
-
-                await this.locators.amountInput.fill(amount.toString());
-
-                await this.page.waitForTimeout(500);
-
-                console.log(`✓ NEW: Cash amount '${amount}' entered`);
-
+                await this.keywords.fill(
+                    this.locators.amountInput,
+                    amount.toString()
+                );
             }
-
         );
-
     }
-
 
 
     async enterCardAmount(amount) {
 
         await StepHelper.step(
-
             this.page,
-
             `Enter card amount: ${amount}`,
-
             async () => {
 
-                console.log(`✓ NEW: Entering card amount: ${amount}`);
+                await this.keywords.scrollIntoViewIfNeeded(
+                    this.locators.amountInput
+                );
 
-                await this.locators.amountInput.scrollIntoViewIfNeeded();
+                await this.keywords.click(this.locators.amountInput);
 
-                await this.locators.amountInput.click();
+                await this.keywords.clear(this.locators.amountInput);
 
-                await this.locators.amountInput.clear();
-
-                await this.locators.amountInput.fill(amount.toString());
-
-                await this.page.waitForTimeout(500);
-
-                console.log(`✓ NEW: Card amount '${amount}' entered`);
-
+                await this.keywords.fill(
+                    this.locators.amountInput,
+                    amount.toString()
+                );
             }
-
         );
-
     }
-
 
 
     async enterUPITransactionId(transactionId) {
 
         await StepHelper.step(
-
             this.page,
-
             `Enter UPI transaction ID: ${transactionId}`,
-
             async () => {
 
-                console.log(`✓ NEW: Entering UPI transaction ID: ${transactionId}`);
+                await this.keywords.scrollIntoViewIfNeeded(
+                    this.locators.transactionIdInput
+                );
 
-                await this.locators.transactionIdInput.scrollIntoViewIfNeeded();
+                await this.keywords.click(
+                    this.locators.transactionIdInput
+                );
 
-                await this.locators.transactionIdInput.click();
+                await this.keywords.clear(
+                    this.locators.transactionIdInput
+                );
 
-                await this.locators.transactionIdInput.clear();
-
-                await this.locators.transactionIdInput.fill(transactionId);
-
-                await this.page.waitForTimeout(500);
-
-                console.log(`✓ NEW: UPI transaction ID '${transactionId}' entered`);
-
+                await this.keywords.fill(
+                    this.locators.transactionIdInput,
+                    transactionId
+                );
             }
-
         );
-
     }
 
 
+    // Captures the toaster message the application raises at runtime and
+    // compares it with the expected message held in waitlistData.json.
+    // Captures the toaster message the application raises at runtime and
+    // compares it with the expected message held in the calling spec's data.
+    // `verification` = { step, expectedMessage }.
+    async verifyPaymentRecordedSuccessfully(verification) {
 
-    async verifyPaymentRecordedSuccessfully() {
-
-
+        const toaster = this.locators.paymentSuccessMessage.first();
 
         let actualMessage;
 
-
-
         await StepHelper.step(
-
             this.page,
-
             'Get Payment Success Message',
-
             async () => {
-
-                await this.locators.paymentSuccessMessage.waitFor({
-
-                    state: 'visible',
-
-                    timeout: 10000
-
-                });
-
-
 
                 actualMessage = (
-
-                    await this.locators.paymentSuccessMessage.innerText()
-
+                    await this.keywords.getText(toaster)
                 ).trim();
-
             }
-
         );
 
-
-
-        await StepHelper.step(
-
+        await Verify.contains(
             this.page,
-
-            `Verify Payment Recorded Successfully | Expected: Payment recorded successfully | Actual: ${actualMessage}`,
-
-            async () => {
-
-                expect(actualMessage).toContain(
-
-                    'Payment recorded successfully'
-
-                );
-
-            }
-
+            verification.step,
+            verification.expectedMessage,
+            actualMessage
         );
 
+        return actualMessage;
     }
-
 
 
     async verifyPaymentHistory(amount, paymentType) {
 
-        const paymentHistoryRow = this.locators.getPaymentHistoryRow(paymentType, amount);
-
-
-
-        await StepHelper.step(
-
-            this.page,
-
-            `Verify payment history amount ${amount} and method ${paymentType}`,
-
-            async () => {
-
-                await expect(paymentHistoryRow).toBeVisible({
-
-                    timeout: 15000
-
-                });
-
-                await expect(paymentHistoryRow).toContainText(paymentType, {
-
-                    timeout: 15000
-
-                });
-
-                await expect(paymentHistoryRow).toContainText(String(amount), {
-
-                    timeout: 15000
-
-                });
-
-            }
-
+        const paymentHistoryRow = this.locators.getPaymentHistoryRow(
+            paymentType,
+            amount
         );
 
+        let actualRowText;
+
+        await StepHelper.step(
+            this.page,
+            `Get Payment History Row - ${paymentType} / ${amount}`,
+            async () => {
+
+                await this.keywords.waitForElement(paymentHistoryRow);
+
+                actualRowText = (
+                    await this.keywords.getText(paymentHistoryRow)
+                ).trim();
+            }
+        );
+
+        await Verify.state(
+            this.page,
+            `Payment history row - ${paymentType} is displayed`,
+            paymentHistoryRow,
+            { visible: true, soft: false }
+        );
+
+        await Verify.contains(
+            this.page,
+            'Payment History Row - Method',
+            paymentType,
+            actualRowText
+        );
+
+        await Verify.contains(
+            this.page,
+            'Payment History Row - Amount',
+            String(amount),
+            actualRowText
+        );
     }
 
 
+    // `verification` = { step } from the calling spec's data.
+    async verifyPaymentMethodInHistory(paymentMethod, verification) {
 
-    async verifyPaymentMethodInHistory(paymentMethod) {
-
-
+        const methodText = this.locators
+            .getTextLocator(paymentMethod)
+            .first();
 
         let actualMethodText;
 
-
-
         await StepHelper.step(
-
             this.page,
-
             'Get Payment Method From History',
-
             async () => {
 
-                await this.page.waitForTimeout(1000);
+                await this.keywords.waitForElement(methodText);
 
-                const methodText = this.locators.getTextLocator(paymentMethod).first();
-
-                await methodText.waitFor({ state: 'visible', timeout: 5000 });
-
-                actualMethodText = (await methodText.innerText()).trim();
-
+                actualMethodText = (
+                    await this.keywords.getText(methodText)
+                ).trim();
             }
-
         );
 
-
-
-        await StepHelper.step(
-
+        await Verify.state(
             this.page,
-
-            `Verify Payment Method In History | Expected: ${paymentMethod} | Actual: ${actualMethodText}`,
-
-            async () => {
-
-                expect(actualMethodText).toBe(paymentMethod);
-
-            }
-
+            `Payment method in history - ${paymentMethod} is displayed`,
+            methodText,
+            { visible: true, soft: false }
         );
 
+        await Verify.equals(
+            this.page,
+            `${verification.step} - ${paymentMethod}`,
+            paymentMethod,
+            actualMethodText
+        );
     }
 
 
-
-    async verifyPaymentAmountInHistory(amount) {
-
-
+    // `verification` = { step } from the calling spec's data.
+    async verifyPaymentAmountInHistory(amount, verification) {
 
         const historyAmount = String(amount).replace(/\.00$/, '');
 
+        const amountText = this.locators
+            .getTextLocator(historyAmount)
+            .first();
+
         let actualAmountText;
 
-
-
         await StepHelper.step(
-
             this.page,
-
             'Get Payment Amount From History',
-
             async () => {
 
-                await this.page.waitForTimeout(500);
+                await this.keywords.waitForElement(amountText);
 
-                const amountText = this.locators.getTextLocator(historyAmount).first();
-
-                await amountText.waitFor({ state: 'visible', timeout: 5000 });
-
-                actualAmountText = (await amountText.innerText()).trim();
-
+                actualAmountText = (
+                    await this.keywords.getText(amountText)
+                ).trim();
             }
-
         );
 
-
-
-        await StepHelper.step(
-
+        await Verify.equals(
             this.page,
-
-            `Verify Payment Amount In History | Expected: ${historyAmount} | Actual: ${actualAmountText}`,
-
-            async () => {
-
-                expect(normalizeCurrencyValue(actualAmountText)).toBe(
-
-                    normalizeCurrencyValue(historyAmount)
-
-                );
-
-            }
-
+            `${verification.step} - ${historyAmount}`,
+            normalizeCurrencyValue(historyAmount),
+            normalizeCurrencyValue(actualAmountText)
         );
-
     }
-
 
 
     async enableFullPayment() {
 
         let fullPaymentAmount;
 
-
-
         await StepHelper.step(
-
             this.page,
-
             'Select Make full payment',
-
             async () => {
-
-                console.log("✓ NEW: Enabling full payment...");
-
-                await this.locators.fullPaymentCheckbox.check();
-
-                await this.page.waitForTimeout(1000);
-
-                console.log("✓ NEW: Full payment enabled");
-
+                await this.keywords.check(
+                    this.locators.fullPaymentCheckbox
+                );
             }
-
         );
-
-
 
         await StepHelper.step(
-
             this.page,
-
             'Extract full payment amount',
-
             async () => {
 
-                await expect(this.locators.fullPaymentAmountInput).toHaveValue(/\S+/, { timeout: 10000 });
+                // The field is populated by the application, so wait for a
+                // non-empty value rather than a fixed delay. The timeout comes
+                // from the expect config, not from this method.
+                await expect(
+                    this.locators.fullPaymentAmountInput
+                ).toHaveValue(/\S+/);
 
-                fullPaymentAmount = await this.locators.fullPaymentAmountInput.inputValue();
+                fullPaymentAmount = await this.locators
+                    .fullPaymentAmountInput
+                    .inputValue();
 
-                console.log(`✓ NEW: Full payment amount extracted: ${fullPaymentAmount}`);
-
+                console.log(
+                    `Full payment amount extracted: ${fullPaymentAmount}`
+                );
             }
-
         );
-
-
 
         return fullPaymentAmount;
-
     }
 
 
+    // `verification` = { step } from the calling spec's data.
+    async verifyFullPaymentAmountDisplayed(amount, verification) {
 
-    async verifyFullPaymentAmountDisplayed(amount) {
-
-
+        const fullPaymentAmount = this.locators
+            .getTextLocator(amount)
+            .first();
 
         let actualAmountText;
 
-
-
         await StepHelper.step(
-
             this.page,
-
             'Get Full Payment Amount Displayed',
-
             async () => {
 
-                await this.page.waitForTimeout(500);
+                await this.keywords.waitForElement(fullPaymentAmount);
 
-                const fullPaymentAmount = this.locators.getTextLocator(amount).first();
-
-                await fullPaymentAmount.waitFor({ state: 'visible', timeout: 5000 });
-
-                actualAmountText = (await fullPaymentAmount.innerText()).trim();
-
+                actualAmountText = (
+                    await this.keywords.getText(fullPaymentAmount)
+                ).trim();
             }
-
         );
 
-
-
-        await StepHelper.step(
-
+        await Verify.state(
             this.page,
-
-            `Verify Full Payment Amount Displayed | Expected: ${amount} | Actual: ${actualAmountText}`,
-
-            async () => {
-
-                expect(normalizeCurrencyValue(actualAmountText)).toBe(
-
-                    normalizeCurrencyValue(amount)
-
-                );
-
-            }
-
+            `Full payment amount - ${amount} is displayed`,
+            fullPaymentAmount,
+            { visible: true, soft: false }
         );
 
+        await Verify.equals(
+            this.page,
+            `${verification.step} - ${amount}`,
+            normalizeCurrencyValue(amount),
+            normalizeCurrencyValue(actualAmountText)
+        );
     }
-
-
-
 }
 
 module.exports = { WaitlistPage };
