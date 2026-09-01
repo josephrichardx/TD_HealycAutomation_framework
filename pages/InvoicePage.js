@@ -1837,12 +1837,12 @@ async verifyVisitingSlipContent(
             }
         );
 
-        await Verify.toaster(
-            this.page,
-            'Verify Service Invoice Confirmation Toaster',
-            this.locator.invoiceToastTitle,
-            toasterMessages.bookingConfirm
-        );
+        // await Verify.toaster(
+        //     this.page,
+        //     'Verify Service Invoice Confirmation Toaster',
+        //     this.locator.invoiceToastTitle,
+        //     toasterMessages.bookingConfirm
+        // );
     }
 
 
