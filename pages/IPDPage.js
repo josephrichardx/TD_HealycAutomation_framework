@@ -2,7 +2,7 @@ const { expect } = require('@playwright/test');
 const { StepHelper } = require('../utils/StepHelper');
 const { Keywords } = require('../utils/Keywords');
 const { IPDLocator } = require('../Locators/IPDLocator.js');
-// import { Verify } from '../utils/verification.js';
+import { Verify } from '../utils/verification.js';
 
 class IPDPage {
 
