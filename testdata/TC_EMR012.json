@@ -1,0 +1,34 @@
+{
+  "patientData": {
+    "title": "Mr",
+    "phoneNumber": "1234567890",
+    "notes": "Healync",
+    "email": "test@gmail.com",
+    "age": "21",
+    "gender": "Male",
+    "address": "Chennai"
+  },
+
+  "appoinmentData": {
+    "doctorName": "Dr. Orthopedic"
+  },
+ 
+  "consultData": {
+    "consultSlot": "First Consult"
+  },
+
+ "prescriptionData": {
+    "drugs1": 
+        {
+            "name": "Drug Library: 1 AL AX 5mg/",
+            "durationType": "Days",
+            "instruction": "Before Food"
+        },
+    "drugs2": 
+        {
+            "name": "Drug Library: 1 Nvp Tablet",
+            "durationType": "Weeks",
+            "instruction": "After Food"
+        }
+}
+}

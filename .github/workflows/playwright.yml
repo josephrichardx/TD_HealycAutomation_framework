@@ -1,5 +1,5 @@
 name: Playwright Tests
-
+run-name: Playwright Tests - ${{ inputs.test_case }} (by @${{ github.actor }})
 on:
   workflow_dispatch:
     inputs:
@@ -7,195 +7,102 @@ on:
         description: 'Select Target Base URL'
         required: true
         type: choice
-        default: 'http://release-uat.healync.com.s3-website.ap-south-1.amazonaws.com'
+        default: '-- Select Base URL --'
         options:
+          - '-- Select Base URL --'
           - 'http://frontend-uat.healync.com'
           - 'http://release-uat.healync.com.s3-website.ap-south-1.amazonaws.com'
-
-      run_wf_01:
-        description: 'WF_CALADN_01.spec.js'
-        type: boolean
-        default: true
-
-      run_wf_02:
-        description: 'WF_CALADN_02.spec.js'
-        type: boolean
-        default: false
-
-      run_wf_03:
-        description: 'WF_CALADN_03.spec.js'
-        type: boolean
-        default: false
-
-      run_wf_04:
-        description: 'WF_CALADN_04.spec.js'
-        type: boolean
-        default: false
-
-      run_wf_05:
-        description: 'WF_CALADN_05.spec.js'
-        type: boolean
-        default: false
-
-      run_wf_31:
-        description: 'WF_CALADN_31.spec.js'
-        type: boolean
-        default: false
-
-      run_wf_32:
-        description: 'WF_CALADN_32.spec.js'
-        type: boolean
-        default: false
-
-      run_wf_32a:
-        description: 'WF_CALADN_32A.spec.js'
-        type: boolean
-        default: false
-
-      run_wf_33:
-        description: 'WF_CALADN_33.spec.js'
-        type: boolean
-        default: false
-
-      run_wf_33a:
-        description: 'WF_CALADN_33A.spec.js'
-        type: boolean
-        default: false
-
-      run_wf_39:
-        description: 'WF_CALADN_39.spec.js'
-        type: boolean
-        default: false
-
-      run_wf_40:
-        description: 'WF_CALADN_40.spec.js'
-        type: boolean
-        default: false
-
-      run_wf_41:
-        description: 'WF_CALADN_41.spec.js'
-        type: boolean
-        default: false
-
-      run_wf_42:
-        description: 'WF_CALADN_42.spec.js'
-        type: boolean
-        default: false
-
-      run_wf_45:
-        description: 'WF_CALADN_45.spec.js'
-        type: boolean
-        default: false
-
-      run_wf_46:
-        description: 'WF_CALADN_46.spec.js'
-        type: boolean
-        default: false
-
-      run_wf_47:
-        description: 'WF_CALADN_47.spec.js'
-        type: boolean
-        default: false
-
-      run_wf_48:
-        description: 'WF_CALADN_48.spec.js'
-        type: boolean
-        default: false
-
-      run_wf_125:
-        description: 'WF_CALADN_125.spec.js'
-        type: boolean
-        default: false
-
-      run_wf_126:
-        description: 'WF_CALADN_126.spec.js'
-        type: boolean
-        default: false
-
+      test_case:
+        description: 'Select Test Case to run'
+        required: true
+        type: choice
+        default: '-- Select Test Case --'
+        options:
+          - '-- Select Test Case --'
+          - 'ALL'
+          - 'Healync_E2E.spec.js'
+          - 'WF_CALADN_01.spec.js'
+          - 'WF_CALADN_02.spec.js'
+          - 'WF_CALADN_03.spec.js'
+          - 'WF_CALADN_04.spec.js'
+          - 'WF_CALADN_05.spec.js'
+          - 'WF_CALADN_31.spec.js'
+          - 'WF_CALADN_32.spec.js'
+          - 'WF_CALADN_32A.spec.js'
+          - 'WF_CALADN_33.spec.js'
+          - 'WF_CALADN_33A.spec.js'
+          - 'WF_CALADN_39.spec.js'
+          - 'WF_CALADN_40.spec.js'
+          - 'WF_CALADN_41.spec.js'
+          - 'WF_CALADN_42.spec.js'
+          - 'WF_CALADN_45.spec.js'
+          - 'WF_CALADN_46.spec.js'
+          - 'WF_CALADN_47.spec.js'
+          - 'WF_CALADN_48.spec.js'
+          - 'WF_CALADN_125.spec.js'
+          - 'WF_CALADN_126.spec.js'
+ 
 jobs:
-  test:
-    timeout-minutes: 10
+  validate:
     runs-on: ubuntu-latest
-
+    outputs:
+      proceed: ${{ steps.check.outputs.proceed }}
+    steps:
+      - id: check
+        run: |
+          if [ "${{ inputs.baseUrl }}" == "-- Select Base URL --" ] || [ "${{ inputs.test_case }}" == "-- Select Test Case --" ]; then
+            echo "proceed=false" >> "$GITHUB_OUTPUT"
+            echo "::error::Please select both a Base URL and a Test Case before running."
+          else
+            echo "proceed=true" >> "$GITHUB_OUTPUT"
+          fi
+ 
+  setup:
+    needs: validate
+    if: needs.validate.outputs.proceed == 'true'
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
-
-      - name: Resolve Selected Test Files and Run
-        env:
-          PLAYWRIGHT_TEST_BASE_URL: ${{ inputs.baseUrl }}
-
-          RUN_01: ${{ inputs.run_wf_01 }}
-          RUN_02: ${{ inputs.run_wf_02 }}
-          RUN_03: ${{ inputs.run_wf_03 }}
-          RUN_04: ${{ inputs.run_wf_04 }}
-          RUN_05: ${{ inputs.run_wf_05 }}
-
-          RUN_31: ${{ inputs.run_wf_31 }}
-          RUN_32: ${{ inputs.run_wf_32 }}
-          RUN_32A: ${{ inputs.run_wf_32a }}
-          RUN_33: ${{ inputs.run_wf_33 }}
-          RUN_33A: ${{ inputs.run_wf_33a }}
-          RUN_39: ${{ inputs.run_wf_39 }}
-          RUN_40: ${{ inputs.run_wf_40 }}
-          RUN_41: ${{ inputs.run_wf_41 }}
-          RUN_42: ${{ inputs.run_wf_42 }}
-          RUN_45: ${{ inputs.run_wf_45 }}
-          RUN_46: ${{ inputs.run_wf_46 }}
-          RUN_47: ${{ inputs.run_wf_47 }}
-          RUN_48: ${{ inputs.run_wf_48 }}
-          RUN_125: ${{ inputs.run_wf_125 }}
-          RUN_126: ${{ inputs.run_wf_126 }}
-
+      - id: set-matrix
         run: |
-          FILES=""
-
-          if [ "$RUN_01" = "true" ]; then FILES="$FILES tests/WF_CALADN_01.spec.js"; fi
-          if [ "$RUN_02" = "true" ]; then FILES="$FILES tests/WF_CALADN_02.spec.js"; fi
-          if [ "$RUN_03" = "true" ]; then FILES="$FILES tests/WF_CALADN_03.spec.js"; fi
-          if [ "$RUN_04" = "true" ]; then FILES="$FILES tests/WF_CALADN_04.spec.js"; fi
-          if [ "$RUN_05" = "true" ]; then FILES="$FILES tests/WF_CALADN_05.spec.js"; fi
-
-          if [ "$RUN_31" = "true" ]; then FILES="$FILES tests/WF_CALADN_31.spec.js"; fi
-          if [ "$RUN_32" = "true" ]; then FILES="$FILES tests/WF_CALADN_32.spec.js"; fi
-          if [ "$RUN_32A" = "true" ]; then FILES="$FILES tests/WF_CALADN_32A.spec.js"; fi
-          if [ "$RUN_33" = "true" ]; then FILES="$FILES tests/WF_CALADN_33.spec.js"; fi
-          if [ "$RUN_33A" = "true" ]; then FILES="$FILES tests/WF_CALADN_33A.spec.js"; fi
-          if [ "$RUN_39" = "true" ]; then FILES="$FILES tests/WF_CALADN_39.spec.js"; fi
-          if [ "$RUN_40" = "true" ]; then FILES="$FILES tests/WF_CALADN_40.spec.js"; fi
-          if [ "$RUN_41" = "true" ]; then FILES="$FILES tests/WF_CALADN_41.spec.js"; fi
-          if [ "$RUN_42" = "true" ]; then FILES="$FILES tests/WF_CALADN_42.spec.js"; fi
-          if [ "$RUN_45" = "true" ]; then FILES="$FILES tests/WF_CALADN_45.spec.js"; fi
-          if [ "$RUN_46" = "true" ]; then FILES="$FILES tests/WF_CALADN_46.spec.js"; fi
-          if [ "$RUN_47" = "true" ]; then FILES="$FILES tests/WF_CALADN_47.spec.js"; fi
-          if [ "$RUN_48" = "true" ]; then FILES="$FILES tests/WF_CALADN_48.spec.js"; fi
-          if [ "$RUN_125" = "true" ]; then FILES="$FILES tests/WF_CALADN_125.spec.js"; fi
-          if [ "$RUN_126" = "true" ]; then FILES="$FILES tests/WF_CALADN_126.spec.js"; fi
-
-          if [ -z "$FILES" ]; then
-            echo "No test files were selected! Please check at least one checkbox in the GitHub UI."
-            exit 1
+          if [ "${{ inputs.test_case }}" == "ALL" ]; then
+            # Scans the actual tests folder — no hardcoded/duplicated list to maintain
+            FILES=$(ls tests/*.spec.js | xargs -n1 basename | jq -R -s -c 'split("\n")[:-1]')
+            echo "matrix=$FILES" >> "$GITHUB_OUTPUT"
+          else
+            echo "matrix=[\"${{ inputs.test_case }}\"]" >> "$GITHUB_OUTPUT"
           fi
-
-          echo "Executing Base URL: $PLAYWRIGHT_TEST_BASE_URL"
-          echo "Executing Files: $FILES"
-
-          npx playwright test $FILES
-
-      - name: Upload HTML Report
-        if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 1
+ 
+  test:
+    needs: [validate, setup]
+    if: needs.validate.outputs.proceed == 'true'
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 1
+      fail-fast: false
+      matrix:
+        test_case: ${{ fromJSON(needs.setup.outputs.matrix) }}
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: 'npm'
+    - name: Install dependencies
+      run: npm ci
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
+    - name: Run Test Case
+      env:
+        BASE_URL: ${{ inputs.baseUrl }}
+      run: npx playwright test tests/${{ matrix.test_case }}
+    - name: Upload HTML Report
+      if: ${{ !cancelled() }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: playwright-report-${{ matrix.test_case }}
+        path: playwright-report/
+        retention-days: 30

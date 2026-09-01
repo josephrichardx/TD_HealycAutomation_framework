@@ -190,11 +190,33 @@ class PaymentLocator {
         };
 
         // Payment History
-    this.paymentHistoryRow =
-    page.locator('table tbody tr').last();
+        this.paymentHistoryRow =
+        page.locator('table tbody tr').last();
+
+       // Payment History
+this.paymentHistoryTab = page.getByText(
+    'Payment History',
+    {
+        exact: true
     }
+);
 
+this.latestReceivedAmount = page.locator(
+    "//div[contains(@class,'financials-table-wrapper')]//table//tbody/tr[1]/td[4]"
+);
 
+this.latestPaymentMode = page.locator(
+    "//div[contains(@class,'financials-table-wrapper')]//table//tbody/tr[1]/td[5]//span[not(contains(@class,'transaction-id'))]"
+);
+
+        // this.paymentHistoryRow =
+        //     page.locator(
+        //         'table tbody tr'
+        //     ).last();
+            
+        }
+
+    
         getTotalPaidCard() {
 
             return this.totalPaidLabel.locator(

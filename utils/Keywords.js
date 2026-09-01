@@ -32,58 +32,64 @@ class Keywords {
     // CLICK
     // =========================================================
  
-    async click(locator) {
-
-        return await boxed('Click element', async () => {
+    // async click(locator) {
  
-                await locator.waitFor({
-                    state: 'visible',
-                    timeout: 30000
-                });
+    //     await locator.waitFor({
+    //         state: 'visible',
+    //         timeout: 30000
+    //     });
  
-                await locator.click();
-        });
-    }
+    //     await locator.click();
+    // }
 
+    async click(locator, timeout = 60000) {
 
-    // =========================================================
-    // FORCE CLICK
-    // =========================================================
-    // Use when a transient overlay (toaster, animating panel) sits over the
-    // target and intercepts pointer events.
+    await locator.waitFor({
+        state: 'attached',
+        timeout
+    });
 
-    async forceClick(locator) {
+    await locator.scrollIntoViewIfNeeded();
 
-        return await boxed('Force click element', async () => {
+    await locator.waitFor({
+        state: 'visible',
+        timeout
+    });
 
-                await locator.waitFor({
-                    state: 'visible',
-                    timeout: 30000
-                });
-
-                await locator.click({ force: true });
-        });
-    }
-
-
+    await locator.click({
+        timeout
+    });
+}
+ 
+ 
     // =========================================================
     // FILL
     // =========================================================
  
-    async fill(locator, value) {
+    // async fill(locator, value) {
+ 
+    //     await locator.waitFor({
+    //         state: 'visible',
+    //         timeout: 30000
+    //     });
+ 
+    //     await locator.fill(
+    //         value.toString()
+    //     );
+    // }
 
-        return await boxed('Fill element', async () => {
- 
-                await locator.waitFor({
-                    state: 'visible',
-                    timeout: 30000
-                });
- 
-                await locator.fill(
-                    value.toString()
-                );
-        });
-    }
+    async fill(locator, value, timeout = 60000) {
+
+    await locator.waitFor({
+        state: 'visible',
+        timeout
+    });
+
+    await locator.fill(
+        value.toString(),
+        { timeout }
+    );
+}
  
  
     // =========================================================
@@ -108,46 +114,68 @@ class Keywords {
     // TYPE / PRESS SEQUENTIALLY
     // =========================================================
  
-    async type(locator, value) {
+    // async type(locator, value) {
+ 
+    //     await locator.waitFor({
+    //         state: 'visible',
+    //         timeout: 30000
+    //     });
+ 
+    //     await locator.focus();
+ 
+    //     await locator.pressSequentially(
+    //         value.toString()
+    //     );
+    // }
 
-        return await boxed('Type into element', async () => {
- 
-                await locator.waitFor({
-                    state: 'visible',
-                    timeout: 30000
-                });
- 
-                await locator.focus();
- 
-                await locator.pressSequentially(
-                    value.toString()
-                );
-        });
-    }
+    async type(locator, value, timeout = 60000) {
+
+    await locator.waitFor({
+        state: 'visible',
+        timeout
+    });
+
+    await locator.focus();
+
+    await locator.pressSequentially(
+        value.toString()
+    );
+}
+
  
  
     // =========================================================
     // WAIT FOR ELEMENT
     // =========================================================
  
-    async waitForElement(
-        locator,
-        timeout = 30000
-    ) {
+    // async waitForElement(
+    //     locator,
+    //     timeout = 30000
+    // ) {
+ 
+    //     await locator.waitFor({
+    //         state: 'attached',
+    //         timeout
+    //     });
+ 
+    //     await locator.waitFor({
+    //         state: 'visible',
+    //         timeout
+    //     });
+    // }
 
-        return await boxed('Wait for element', async () => {
- 
-                await locator.waitFor({
-                    state: 'attached',
-                    timeout
-                });
- 
-                await locator.waitFor({
-                    state: 'visible',
-                    timeout
-                });
-        });
-    }
+    async waitForElement(
+    locator,
+    timeout = 60000
+) {
+
+    await locator.waitFor({
+        state: 'visible',
+        timeout
+    });
+
+    return locator;
+}
  
  
     // =========================================================

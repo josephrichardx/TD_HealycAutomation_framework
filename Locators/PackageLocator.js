@@ -59,13 +59,18 @@ class PackageLocator {
         this.timeSlots =
         page.locator('.slotButton:visible');
 
-        this.confirmBtn =
-        page.locator("//button[@class='activeButon']");
+        // this.confirmBtn =
+        //     page.locator(
+        //         "//button[contains(@class,'activeButon') and normalize-space()='Confirm' and not(contains(@class,'disabledButton'))]"
+        //     );
 
-        this.nextDateBtn = page.locator(
-        'div.NextListButton'
-        );
-             
+       this.confirmBtn = page.locator(
+    "//button[@class='activeButon']"
+);
+
+        this.nextDateBtn =
+            page.locator('div.NextListButton');
+                
     }
 
     getPatient(patientName) {
