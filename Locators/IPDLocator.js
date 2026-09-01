@@ -97,11 +97,11 @@ class IPDLocator {
                 name: /Calendar:/
             });
 
-        this.currentMonth =
-            page.locator('#currentMonth');
+        // this.currentMonth =
+        //     page.locator('#currentMonth');
 
 
-        // Invoice PDF
+       
 
 // Invoice PDF
 
@@ -192,6 +192,35 @@ class IPDLocator {
                 }
             )
              .nth(1);
+
+
+        // Calendar
+
+        this.calendarBtn = page.getByRole('button', {
+            name: /Calendar:/
+        });
+
+        this.monthYear = (monthName, year) =>
+            page.getByText(
+                `${monthName} ${year}`,
+                {
+                    exact: true
+                }
+            );
+
+        this.targetDay = (monthName, year, day) =>
+            this.monthYear(monthName, year)
+                .locator('..')
+                .locator('..')
+                .getByText(
+                    day,
+                    {
+                        exact: true
+                    }
+                )
+                .last();
+
+
 
     // IPD Admission Details Summary
  

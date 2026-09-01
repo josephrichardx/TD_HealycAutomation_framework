@@ -6,20 +6,11 @@ const { InvoicePage } = require('../pages/InvoicePage');
 const { PatientPage } = require('../pages/PatientPage');
 const { CalendarPage } = require('../pages/CalendarPage');
 
-const { patientData,invoiceData } = require('../testdata/TC_032.json');
-
-
+const { patientData,invoiceData,admissionPatientData } = require('../testdata/TC_032.json');
 const { generateUniquePatientFullName } = require('../utils/RandomData');
+import {generateAdmissionDate,generateAdmissionTime,getAdmissionData} from '../utils/RandomData.js';
 
-import admissionData from '../testdata/admissionData.json' with { type: 'json' };
 
-import {
-    generateAdmissionDate,
-    generateAdmissionTime,
-    getAdmissionData
-} from '../utils/RandomData.js';
-
-const { admissionPatientData } = admissionData;
 
 test('Add Admission - Generate Invoice', async ({ page }) => {
 
@@ -29,10 +20,7 @@ test('Add Admission - Generate Invoice', async ({ page }) => {
     const patientPage = new PatientPage(page);
     const calendarPage = new CalendarPage(page);
 
-    const data = { ...admissionPatientData };
-
-
-    
+ 
     // ============================================================
     // 1. Create Patient
     // ============================================================
@@ -61,7 +49,7 @@ test('Add Admission - Generate Invoice', async ({ page }) => {
     // ==========================================
 
     await admissionPage.openLocationDropdown();
-    await admissionPage.selectLocation(data.location);
+    await admissionPage.selectLocation(admissionPatientData.location);
 
     // ==========================================
     // 4. Select Admission Date & Time
@@ -88,27 +76,31 @@ test('Add Admission - Generate Invoice', async ({ page }) => {
     const dynamicData = getAdmissionData();
 
     await admissionPage.fillDiagnosisAndDoctor(
-        dynamicData.admittingDiagnosis,
-        dynamicData.doctorName
+    dynamicData.admittingDiagnosis,
+    admissionPatientData.doctorName
     );
 
     // ==========================================
-    // 7. Add Tests & Consumables
+    // 7. Add Surgery,Tests & Consumables
     // ==========================================
 
-    await admissionPage.addSurgery(admissionPatientData);
-    await admissionPage.addTests(3);
-    await admissionPage.addConsumables(3);
+        await admissionPage.addSurgery(admissionPatientData);
+        await admissionPage.addTests(
+         admissionPatientData.testCount
+        );
 
+        await admissionPage.addConsumables(
+            admissionPatientData.consumableCount
+        );
 
     // ==========================================
     // 8. Emergency Details
     // ==========================================
 
-    await admissionPage.fillEmergencyDetailsAndContinue(
-        'emergency',
-        '1234567890',
-        'physician'
+   await admissionPage.fillEmergencyDetailsAndContinue(
+    admissionPatientData.emergency,
+    admissionPatientData.contactNumber,
+    admissionPatientData.physicianName
     );
 
     // ==========================================
@@ -116,9 +108,9 @@ test('Add Admission - Generate Invoice', async ({ page }) => {
     // ==========================================
 
     await admissionPage.fillInsuranceDetailsAndContinue(
-        'insurance',
-        '12345',
-        'policy'
+        admissionPatientData.insuranceName,
+        admissionPatientData.insuranceNumber,
+        admissionPatientData.policyName
     );
 
     // ==========================================
@@ -126,10 +118,11 @@ test('Add Admission - Generate Invoice', async ({ page }) => {
     // ==========================================
 
     await admissionPage.verifyAdmissionSummaryAndContinue(
-        admissionDate,
-        admissionTime
+    admissionDate,
+    admissionTime,
+    admissionPatientData.dateLabel,
+    admissionPatientData.timeLabel
     );
-
 
     await calendarPage.selectPatientAddAdmission(
     patientName

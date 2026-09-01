@@ -375,7 +375,7 @@ class CancellationPage {
 );
 }
 
-async cancelPackageWithFullRefund(){
+async cancelPackageWithFullRefund(cancellationData){
 
 await StepHelper.step(
     this.page,
@@ -408,22 +408,48 @@ await StepHelper.step(
 );
 
 await StepHelper.step(
+        this.page,
+        'Verify Cancellation Success Message',
+        async () => {
+            await expect(
+                this.locator.cancellationSuccessMessage
+            ).toBeVisible({
+                timeout: 10000
+            });
+        }
+    );
+
+// await StepHelper.step(
+//     this.page,
+//     'Verify Cancellation Success Message',
+//     async () => {
+//         await expect(
+//             this.locator.cancelledStatus
+//         ).toContainText(
+//             cancellationData.expectedStatus
+//         );
+//     }
+// );
+
+await StepHelper.step(
     this.page,
-    'Verify Package Cancelled',
+    `Verify Cancellation Status - ${cancellationData.expectedStatus}`,
     async () => {
         await expect(
-            this.locator.cancelledStatus
-        ).toContainText(
+            (await this.locator.cancelledStatus.innerText()).trim()
+        ).toBe(
             cancellationData.expectedStatus
         );
     }
 );
+
 }
 
 async cancelPackageWithPartialRefund(
     paymentType,
     amount,
-    transactionId = null
+    transactionId = null,
+    expectedStatus,
 ) {
 
     await StepHelper.step(
@@ -477,6 +503,16 @@ async cancelPackageWithPartialRefund(
             ).toBeVisible({
                 timeout: 10000
             });
+        }
+    );
+
+    await StepHelper.step(
+        this.page,
+        `Verify Cancellation Status - ${expectedStatus}`,
+        async () => {
+            await expect(
+                (await this.locator.cancelledStatus.innerText()).trim()
+            ).toBe(expectedStatus);
         }
     );
 }

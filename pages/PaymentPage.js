@@ -608,6 +608,76 @@ class PaymentPage {
     );
 }
 
+async getLatestReceivedAmount() {
+
+    return (
+        await this.keywords.getText(
+            this.locator.latestReceivedAmount
+        )
+    ).trim();
+}
+
+async getLatestPaymentMode() {
+
+    return (
+        await this.keywords.getText(
+            this.locator.latestPaymentMode
+        )
+    ).trim();
+}
+
+async clickPaymentHistory() {
+
+    await StepHelper.step(
+        this.page,
+        'Click Payment History',
+        async () => {
+            await this.keywords.click(
+                this.locator.paymentHistoryTab
+            );
+        }
+    );
+}
+
+async verifyPaymentHistory(
+    expectedPaymentMethod,
+    expectedAmount
+) {
+
+    const actualReceivedAmount =
+        await this.getLatestReceivedAmount();
+
+    const actualPaymentMode =
+        await this.getLatestPaymentMode();
+
+    const expectedReceivedAmount =
+        `₹${expectedAmount}`;
+
+    await StepHelper.step(
+        this.page,
+        `Verify Received Amount | Expected: ${expectedReceivedAmount} | Actual: ${actualReceivedAmount}`,
+        async () => {
+            expect(
+                actualReceivedAmount
+            ).toBe(
+                expectedReceivedAmount
+            );
+        }
+    );
+
+    await StepHelper.step(
+        this.page,
+        `Verify Payment Mode | Expected: ${expectedPaymentMethod} | Actual: ${actualPaymentMode}`,
+        async () => {
+            expect(
+                actualPaymentMode.trim().toLowerCase()
+            ).toBe(
+                expectedPaymentMethod.trim().toLowerCase()
+            );
+        }
+    );
+}
+
 // async IPDVerifyPayment(paymentMethod, amount) {
 
 //     await StepHelper.step(
