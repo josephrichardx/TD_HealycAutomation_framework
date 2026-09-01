@@ -315,34 +315,6 @@ export class Verify {
         );
     }
 
-    // Waits for a success toaster to appear, then verifies its text against
-    // the expected message. `toasterLocator` should resolve to the toaster
-    // title element (e.g. `div.toaster-wrapper.success .text-content .title`).
-    static async toaster(
-        page,
-        description,
-        toasterLocator,
-        expectedMessage,
-        options = {}
-    ) {
-
-        const { timeout = 15000, soft = false } = options;
-
-        const toaster = toasterLocator.first();
-
-        await toaster
-            .waitFor({ state: 'visible', timeout })
-            .catch(() => {});
-
-        return await this.text(
-            page,
-            description,
-            expectedMessage,
-            toaster,
-            { soft }
-        );
-    }
-
     static async record(page, description, actual) {
 
         const resolved = await this._resolve(actual);
