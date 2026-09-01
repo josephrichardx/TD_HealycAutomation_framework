@@ -67,7 +67,7 @@ test('Package - Cancel with Full Refund', async ({ page }) => {
     await cancellationPage.cancellation();
 
     await cancellationPage.cancelPackageWithFullRefund(
-        cancellationData
+    cancellationData
     );
 
 
