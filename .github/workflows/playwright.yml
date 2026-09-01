@@ -1,5 +1,5 @@
 name: Playwright Tests
-run-name: Playwright Tests - ${{ inputs.test_case }} on ${{ inputs.baseUrl }} (by @${{ github.actor }})
+run-name: Playwright Tests - ${{ inputs.test_case }} (by @${{ github.actor }})
 on:
   workflow_dispatch:
     inputs:
@@ -20,6 +20,7 @@ on:
         options:
           - '-- Select Test Case --'
           - 'ALL'
+          - 'Healync_E2E.spec.js'
           - 'WF_CALADN_01.spec.js'
           - 'WF_CALADN_02.spec.js'
           - 'WF_CALADN_03.spec.js'
