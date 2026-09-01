@@ -20,7 +20,6 @@ const {
  
 const {
     generatePatientName,
-    generateShortPatientName,
     generateUniquePatientFullName
 } = require('../utils/RandomData.js');
  
@@ -124,7 +123,7 @@ test('WF_CALADN_39 - Validate Waitlist appointment booking — Appointment Type,
     await calendarPage.clickSidebarCalendarIcon();
  
     // Step 12 - Create a fresh patient for the Waitlist path (new name, no reused email)
-    const waitlistPatientName = generateShortPatientName();
+    const waitlistPatientName = generateUniquePatientFullName();
     const waitlistPatientData = {
         ...patientData,
         email: ''
@@ -161,17 +160,12 @@ test('WF_CALADN_39 - Validate Waitlist appointment booking — Appointment Type,
         consultData.consultSlot
     );
  
-    // Open booking date picker
-    await appointmentPage.openBookingDatePicker();
- 
-    // Select booking date
-    await appointmentPage.selectBookingDate(
-        bookingDate
-    );
- 
-    // Apply selected date
-    await appointmentPage.applyBookingDate();
- 
+    // Select the booking date at runtime instead of trusting the static
+    // day-of-month from test data: walk dates forward from today and use
+    // the first one whose doctor card shows an available slot.
+    const waitlistBookingDay =
+        await appointmentPage.selectRuntimeBookingDate();
+
     // Step 14 - Click hourglass
     await waitlistPage.clickHourglass();
  
@@ -187,7 +181,7 @@ test('WF_CALADN_39 - Validate Waitlist appointment booking — Appointment Type,
  
     // The Waitlist list is filtered by the calendar date, so move the calendar
     // to the booking date before looking for the entry.
-    await calendarPage.navigateToBookingDayOfMonth(bookingDate);
+    await calendarPage.navigateToBookingDayOfMonth(waitlistBookingDay);
  
     // Step 18 - Move through calendar pages until the patient appears on the Waitlist
     // The Waitlist tab list is virtualised, so scroll it to reach the entry.
@@ -231,7 +225,7 @@ test('WF_CALADN_39 - Validate Waitlist appointment booking — Appointment Type,
 
         await calendarPage.selectPatientFromCalendarForceHoverByDay(
             waitlistPatientName,
-            bookingDate
+            waitlistBookingDay
         );
     }
  

@@ -51,6 +51,18 @@ class AppointmentLocator {
             .getByText(appointmentActionData.applyButton)
             .nth(1);
 
+        // The date picker pre-renders the previous/next month too for a
+        // smooth scroll, but only the month currently in view carries this
+        // id, and its real day cells (class "day") are distinguished from
+        // the leading blank grid cells (class "none day").
+        this.bookingDateSelectableDays = this.bookingDateMonth.locator(
+            'div.day:not(.none)'
+        );
+
+        // Rendered on the doctor card once a date with real availability is
+        // applied - used to detect whether a candidate date has a slot.
+        this.availableSlotButtons = page.locator('.slotButton:visible');
+
         this.typeDropdownBtn = (typeLabel) => {
             const escapedLabel = typeLabel.replace(
                 /[.*+?^${}()|[\]\\]/g,

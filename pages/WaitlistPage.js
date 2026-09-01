@@ -290,18 +290,34 @@ class WaitlistPage {
                 continue;
             }
 
-            // The dialog re-renders its slot list while the app fetches
-            // availability, so a slot resolved a moment ago can detach before
-            // it is clicked. Re-resolve and retry on that specific failure.
-            for (let attempt = 0; attempt < 3; attempt++) {
+            // The dialog re-renders its slot list while the app fetches live
+            // availability (other bookings can consume a slot between count()
+            // and click()), so a slot resolved a moment ago can detach before
+            // it is clicked. Re-resolve fresh from the DOM and retry on that
+            // specific failure - and use a short per-attempt timeout instead
+            // of the 30s default, so a truly-gone slot fails fast enough to
+            // still try several more times, or fall through to the next
+            // segment/day, rather than burning the whole scan on one row.
+            const maxAttempts = 5;
+
+            for (let attempt = 0; attempt < maxAttempts; attempt++) {
+
+                const remainingSlots = await slots.count().catch(() => 0);
+
+                if (remainingSlots === 0) {
+                    break;
+                }
 
                 try {
 
                     const slot = slots.first();
 
-                    const slotText = (
-                        await this.keywords.getText(slot)
-                    ).trim();
+                    await slot.waitFor({
+                        state: 'visible',
+                        timeout: waitData.shortWait * 2
+                    });
+
+                    const slotText = (await slot.innerText()).trim();
 
                     await this.keywords.forceClick(slot);
 
@@ -327,8 +343,21 @@ class WaitlistPage {
                         /not attached|not stable|detached|timeout/i
                             .test(error.message || '');
 
-                    if (!isRetryable || attempt === 2) {
+                    if (!isRetryable) {
                         throw error;
+                    }
+
+                    if (attempt === maxAttempts - 1) {
+
+                        // Exhausted retries on this segment - treat it the
+                        // same as "no slot here" instead of failing the
+                        // whole multi-date scan, so the caller moves on to
+                        // the next segment/day.
+                        console.log(
+                            'Slot list kept re-rendering - giving up on this segment, trying next'
+                        );
+
+                        break;
                     }
 
                     console.log(
@@ -392,14 +421,14 @@ class WaitlistPage {
     }
 
 
-    // A waitlisted booking exists precisely because its own date had no free
-    // slot, so the dialog can open on a date with nothing to pick, and every
-    // day of the current month can already be in the past. This tries the
-    // date the dialog opens on, then each bookable day of the month, then the
-    // following months.
+    // The dialog does not pre-select any date - the calendar shows no
+    // "Selected" day and the slots panel reads "No slots avaiable for this
+    // duration" until a day is actually clicked. So every bookable day has
+    // to be clicked first before its slots can be read/picked; every day of
+    // the current month can already be in the past, so this walks forward
+    // across bookable days, month by month.
     // Returns { slot, day, monthYear } so the caller knows which date to open
-    // on the calendar afterwards (day is null when the date the dialog opened
-    // on was used as-is).
+    // on the calendar afterwards.
     async selectFirstAvailableSlotAcrossDates(monthsToScan = 3) {
 
         let selectedSlotText = null;
@@ -420,19 +449,8 @@ class WaitlistPage {
                 const monthHeading =
                     this.locators.scheduleMonthHeading;
 
-                // 1 - the date the dialog opened on.
-                selectedSlotText = await this.tryPickSlotInAnyDayPart();
-
-                if (selectedSlotText) {
-
-                    selectedMonthYear = (
-                        await this.keywords.getText(monthHeading)
-                    ).trim();
-
-                    return;
-                }
-
-                // 2 - every bookable day, month by month.
+                // Every bookable day, month by month - click the day first,
+                // only then check/pick its slots.
                 for (let month = 0; month < monthsToScan; month++) {
 
                     const monthYear = (

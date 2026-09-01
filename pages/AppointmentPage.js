@@ -441,6 +441,108 @@ class AppointmentPage {
         );
     }
 
+    // Walks the booking date picker day by day starting from today (instead
+    // of trusting a fixed day-of-month from test data, which goes stale as
+    // slots get consumed by earlier runs) and applies the first date whose
+    // doctor card renders an available slot. The Hourglass/Waitlist action
+    // is offered on every date regardless of slot availability, so this only
+    // has to find a valid, current date to book against - not an empty one.
+    async selectRuntimeBookingDate(maxDaysToTry = 31) {
+
+        let selectedDay = null;
+
+        const todayDayOfMonth = new Date().getDate();
+
+        await StepHelper.step(
+            this.page,
+            'Select booking date at runtime - walk dates from today until one has an available slot',
+            async () => {
+
+                await this.openBookingDatePicker();
+
+                const dayCount = await this.locator.bookingDateSelectableDays
+                    .count()
+                    .catch(() => 0);
+
+                for (
+                    let index = 0;
+                    index < Math.min(dayCount, maxDaysToTry);
+                    index++
+                ) {
+
+                    // Applying a date closes the picker, so it has to be
+                    // reopened before reading/clicking the next candidate.
+                    if (index > 0) {
+                        await this.openBookingDatePicker();
+                    }
+
+                    const day = this.locator.bookingDateSelectableDays.nth(
+                        index
+                    );
+
+                    const dayText = (
+                        await this.keywords.getText(day)
+                    ).trim();
+
+                    const dayNumber = Number(dayText);
+
+                    if (
+                        !Number.isInteger(dayNumber) ||
+                        dayNumber < todayDayOfMonth
+                    ) {
+                        continue;
+                    }
+
+                    await this.keywords.click(day);
+
+                    await this.applyBookingDate();
+
+                    // The doctor cards for the newly applied date render
+                    // asynchronously, so counting slots immediately can read
+                    // a stale (empty) DOM and reject a date that actually
+                    // has availability.
+                    await this.page
+                        .waitForLoadState('networkidle')
+                        .catch(() => {});
+
+                    await this.keywords.wait(
+                        this.page,
+                        waitData.mediumWait
+                    );
+
+                    const slotCount = await this.locator
+                        .availableSlotButtons
+                        .count()
+                        .catch(() => 0);
+
+                    if (slotCount > 0) {
+
+                        selectedDay = dayText;
+
+                        console.log(
+                            `Runtime booking date selected: ${dayText} (slot available)`
+                        );
+
+                        return;
+                    }
+
+                    console.log(
+                        `No available slot on day ${dayText} - checking next date`
+                    );
+                }
+
+                throw new Error(
+                    `Unable to find a booking date with an available slot ` +
+                    `(scanned ${Math.min(dayCount, maxDaysToTry)} day(s) ` +
+                    `in the currently displayed month).`
+                );
+            }
+        );
+
+        return selectedDay;
+    }
+
+
     async verifyConfirmedAppointment(patientName) {
 
         const verification =
