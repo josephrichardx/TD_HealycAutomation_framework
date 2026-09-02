@@ -2,6 +2,7 @@ name: Playwright Tests
 run-name: >-
   Playwright Tests -
   ${{ inputs.Healync_E2E && 'Healync_E2E, ' || '' }}${{ inputs.WF_CALADN_01 && 'WF_CALADN_01, ' || '' }}${{ inputs.WF_CALADN_02 && 'WF_CALADN_02, ' || '' }}${{ inputs.WF_CALADN_03 && 'WF_CALADN_03, ' || '' }}${{ inputs.WF_CALADN_04 && 'WF_CALADN_04, ' || '' }}${{ inputs.WF_CALADN_05 && 'WF_CALADN_05, ' || '' }}${{ inputs.WF_CALADN_31 && 'WF_CALADN_31, ' || '' }}${{ inputs.WF_CALADN_32 && 'WF_CALADN_32, ' || '' }}${{ inputs.WF_CALADN_32A && 'WF_CALADN_32A, ' || '' }}${{ inputs.WF_CALADN_33 && 'WF_CALADN_33, ' || '' }}${{ inputs.WF_CALADN_33A && 'WF_CALADN_33A, ' || '' }}${{ inputs.WF_CALADN_39 && 'WF_CALADN_39, ' || '' }}${{ inputs.WF_CALADN_40 && 'WF_CALADN_40, ' || '' }}${{ inputs.WF_CALADN_41 && 'WF_CALADN_41, ' || '' }}${{ inputs.WF_CALADN_42 && 'WF_CALADN_42, ' || '' }}${{ inputs.WF_CALADN_45 && 'WF_CALADN_45, ' || '' }}${{ inputs.WF_CALADN_46 && 'WF_CALADN_46, ' || '' }}${{ inputs.WF_CALADN_47 && 'WF_CALADN_47, ' || '' }}${{ inputs.WF_CALADN_48 && 'WF_CALADN_48, ' || '' }}${{ inputs.WF_CALADN_125 && 'WF_CALADN_125, ' || '' }}${{ inputs.WF_CALADN_126 && 'WF_CALADN_126, ' || '' }}
+  on ${{ inputs.baseUrl }} (by @${{ github.actor }})
 
 on:
   workflow_dispatch:
@@ -10,7 +11,7 @@ on:
         description: 'Select Target Base URL'
         required: true
         type: choice
-        default: 'http://release-uat.healync.com.s3-website.ap-south-1.amazonaws.com'
+        default: '-- Select Base URL --'
         options:
           - '-- Select Base URL --'
           - 'http://frontend-uat.healync.com'
@@ -122,13 +123,15 @@ jobs:
 
         echo "$SPECS" | jq -r '.[]' | while read -r TC; do
           echo "::group::Running $TC"
+          rm -rf blob-report
           if npx playwright test tests/${TC} --reporter=blob; then
             echo "$TC passed"
           else
             echo "::warning::$TC failed"
             echo "$TC" >> failed_tests.txt
           fi
-          mv blob-report/report.zip "blob-reports/${TC%.spec.js}.zip" 2>/dev/null || true
+          # Move whatever zip Playwright actually created (filename includes a hash, varies per run)
+          mv blob-report/*.zip "blob-reports/${TC%.spec.js}.zip" 2>/dev/null || echo "::warning::No blob report produced for $TC"
           echo "::endgroup::"
         done
 
