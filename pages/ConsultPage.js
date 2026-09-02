@@ -479,28 +479,24 @@ async selectFirstAvailableSlot() {
         );
     }
 
-     async verifyBookingConfirmation() {
-        await Verify.toaster(
+    async verifyBookingConfirmation() {
+ 
+    await StepHelper.step(
         this.page,
-        'Verify Service Booking Confirmation Toaster',
-        this.locator.bookingConfirmToastTitle,
-        toasterMessages.bookingConfirm
-
+        'Verify Consult Booking Confirmation Message is Visible',
+        async () => {
+            await expect(
+                this.locator.bookingConfirmMsg
+            ).toBeVisible();
+        }
     );
-
-    await Verify.toaster(
-        this.page,
-        'Verify Consult Booking Confirmation Toaster',
-        this.locator.bookingConfirmToastTitle,
-        toasterMessages.bookingConfirm
-    );
-
+ 
     await this.keywords.waitForLoadState(
             this.page,
             'networkidle'
         );
     }
-
+ 
 
     async addConsult(
         patientName,

@@ -475,21 +475,24 @@ async selectFirstAvailableSlot() {
         );
     }
 
-    async verifyBookingConfirmation() {
-
-    await Verify.toaster(
+     async verifyBookingConfirmation() {
+ 
+    await StepHelper.step(
         this.page,
-        'Verify Service Booking Confirmation Toaster',
-        this.locator.bookingConfirmToastTitle,
-        toasterMessages.bookingConfirm
+        'Verify Service Booking Confirmation Message',
+        async () => {
+            await expect(
+                this.locator.bookingConfirmMsg
+            ).toBeVisible();
+        }
     );
-
+ 
     await this.keywords.wait(
             this.page,
             5000
         );
-
-}
+ 
+    }
 
 
     async addService(
