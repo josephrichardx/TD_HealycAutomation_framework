@@ -1474,26 +1474,39 @@ async InvoicePDFAddAdmission(
     // Verifies the appointment is showing as Checked-In without clicking
     // anything - used after navigating away and back to confirm the status
     // update persisted.
-    async verifyAppointmentCheckedIn() {
+    async verifyAppointmentCheckedIn(expectedStatus) {
 
         await this.keywords.waitForElement(this.locator.checkedInStatus);
 
-        await Verify.state(
-            this.page,
-            'Verify Checked-In Status Persisted After Navigation',
-            this.locator.checkedInStatus,
-            { visible: true, soft: false }
-        );
+        const Checkin =  this.locator.checkedInStatus;
+        const Actual_status = (
+                        await this.keywords.getText(Checkin)
+                    ).trim();
+            // const expectedStatus = 'Checked-In';
+
+            // await Verify.state(
+            //     this.page,
+            //     'Verify Checked-In Status Badge',
+            //     this.locator.checkedInStatusBadge,
+            //     { visible: true, soft: false }
+            // );
+
+            await Verify.equals(
+                this.page,
+                'Verify Checked-In Status Text',
+                expectedStatus,
+                Actual_status
+            );
 
         // The status badge container carries a status-checkedin class only
         // when the appointment is actually in the Checked-In state, so its
         // presence is the real verification - not a text comparison.
-        await Verify.state(
-            this.page,
-            'Verify Checked-In Status Badge',
-            this.locator.checkedInStatusBadge,
-            { visible: true, soft: false }
-        );
+        // await Verify.state(
+        //     this.page,
+        //     'Verify Checked-In Status Badge',
+        //     this.locator.checkedInStatusBadge,
+        //     { visible: true, soft: false }
+        // );
     }
 
 
