@@ -2,8 +2,8 @@ const { expect } = require('@playwright/test');
 const { StepHelper } = require('../utils/StepHelper');
 const { InvoiceLocator } = require('../Locators/InvoiceLocator');
 const { Keywords } = require('../utils/Keywords');
-const { invoiceData } = require('../testdata/invoiceData.json');
-const visitingSlipData = require('../testdata/visitingSlip.json');
+// const { invoiceData } = require('../testdata/invoiceData.json');
+// const visitingSlipData = require('../testdata/visitingSlip.json');
 
 class InvoicePage {
 
@@ -1464,12 +1464,13 @@ async verifyVisitingSlip(patientName, doctorName) {
     );
 }
 
-async verifyVisitingSlipContent(
+async verifyVisitingSlipContent(//updated
     doctorName,
     patientName,
     appointmentTime,
     arrivalTime,
-    appointmentDate
+    appointmentDate,
+    visitingSlipData
 ) {
     const constants = visitingSlipData.visitingSlip;
     const visitingSlip = this.page.getByLabel(/Page.*1/);
@@ -1852,7 +1853,7 @@ async verifyVisitingSlipContent(
     }
 
 
-    async generateInvoiceAddAdmission() { 
+    async generateInvoiceAddAdmission(invoiceData) { //updated
     
             await this.Financials(); 
     

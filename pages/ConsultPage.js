@@ -475,7 +475,7 @@ async selectFirstAvailableSlot() {
         );
     }
 
-     async verifyBookingConfirmation() {
+    async verifyBookingConfirmation() {
 
     await StepHelper.step(
         this.page,

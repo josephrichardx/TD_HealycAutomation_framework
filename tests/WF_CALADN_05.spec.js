@@ -8,7 +8,7 @@ const { InvoicePage } = require('../pages/InvoicePage.js');
 const { CalendarPage } = require('../pages/CalendarPage.js');
 const { CancellationPage } = require('../pages/CancellationPage.js');
 
-const { patientData,appoinmentData,consultData,bookingData,serviceData,DateData,invoiceData,paymentData } = require('../testdata/TC_005.json');
+const { patientData,appoinmentData,consultData,bookingData,serviceData,DateData,invoiceData,paymentData,cancelReasonData } = require('../testdata/TC_005.json');
 const { generatePatientName } = require('../utils/RandomData.js');
 
 

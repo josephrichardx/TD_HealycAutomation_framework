@@ -132,8 +132,8 @@ test('Add Admission - Generate Invoice', async ({ page }) => {
     // 11. Generate Invoice
     // ==========================================
 
-    await invoicePage.generateInvoiceAddAdmission();
-
+    // await invoicePage.generateInvoiceAddAdmission();
+    await invoicePage.generateInvoiceAddAdmission(invoiceData);//updated
     // ==========================================
     // 12. Get Invoice Details
     // ==========================================

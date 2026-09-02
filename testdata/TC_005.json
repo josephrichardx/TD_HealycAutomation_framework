@@ -41,6 +41,9 @@
     "paymentType": "Cash",
     "makeFullPayment": true,
     "invoicePrefix": "INV-00"
+  },
+  "cancelReasonData": {
+  "cancelReason": "Emergency or unexpected issue"
   }
 
 }

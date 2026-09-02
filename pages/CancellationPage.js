@@ -2,7 +2,7 @@ const { expect } = require('@playwright/test');
 const { StepHelper } = require('../utils/StepHelper');
 const { CancellationLocator } = require('../Locators/CancellationLocator');
 const { Keywords } = require('../utils/Keywords');
-const { cancellationData } = require('../testdata/CancellationData.json');
+// const { cancellationData } = require('../testdata/CancellationData.json');
 
 class CancellationPage {
 
@@ -290,7 +290,7 @@ class CancellationPage {
         );
     }
 
-   async cancellation() {
+   async cancellation(cancelReason) {
 
     // Wait for payment success popup/toaster to disappear
     await this.locator.paymentSuccessMessage.waitFor({
