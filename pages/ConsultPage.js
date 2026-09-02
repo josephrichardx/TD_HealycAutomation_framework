@@ -490,7 +490,14 @@ async selectFirstAvailableSlot() {
             ).toBeVisible();
         }
     );
- 
+
+    // await Verify.toaster(
+    //     this.page,
+    //     'Verify Consult Booking Confirmation Toaster',
+    //     this.locator.bookingConfirmToastTitle,
+    //     toasterMessages.bookingConfirm
+    // );
+
     await this.keywords.waitForLoadState(
             this.page,
             'networkidle'

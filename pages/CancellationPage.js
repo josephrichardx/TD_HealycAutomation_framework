@@ -471,7 +471,7 @@ await StepHelper.step(
         );
     }
 );
- 
+
 await StepHelper.step(
         this.page,
         'Verify Cancellation Success Message',
@@ -483,7 +483,7 @@ await StepHelper.step(
             });
         }
     );
- 
+
 // await StepHelper.step(
 //     this.page,
 //     'Verify Cancellation Success Message',
@@ -495,7 +495,7 @@ await StepHelper.step(
 //         );
 //     }
 // );
- 
+
 await StepHelper.step(
     this.page,
     `Verify Cancellation Status - ${cancellationData.expectedStatus}`,
@@ -558,7 +558,7 @@ async cancelPackageWithPartialRefund(
             );
         }
     );
- 
+
     await StepHelper.step(
         this.page,
         'Verify Cancellation Success Message',

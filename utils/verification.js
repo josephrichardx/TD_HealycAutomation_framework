@@ -332,6 +332,7 @@ export class Verify {
         );
     }
  
+
     static async record(page, description, actual) {
  
         const resolved = await this._resolve(actual);
