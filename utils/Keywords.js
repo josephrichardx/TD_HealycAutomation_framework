@@ -164,30 +164,20 @@ class Keywords {
     // WAIT FOR ELEMENT
     // =========================================================
  
-    // async waitForElement(
-    //     locator,
-    //     timeout = 30000
-    // ) {
- 
-    //     await locator.waitFor({
-    //         state: 'attached',
-    //         timeout
-    //     });
- 
-    //     await locator.waitFor({
-    //         state: 'visible',
-    //         timeout
-    //     });
-    // }
-
     async waitForElement(
     locator,
     timeout = 60000
 ) {
 
     await locator.waitFor({
+            state: 'attached',
+            timeout
+        });
+
+    await locator.waitFor({
         state: 'visible',
         timeout
+        
     });
 
     return locator;
@@ -507,4 +497,3 @@ class Keywords {
  
  
 module.exports = { Keywords };
- 

@@ -1,0 +1,12 @@
+{
+    "toastWaitTimeoutMs": 30000,
+    "shortWaitMs": 500,
+    "mediumWaitMs": 1000,
+    "longWaitMs": 2000,
+    "retryTimeoutMs": 5000,
+    "navigationTimeoutMs": 15000,
+    "typingDelayMs": 100,
+    "fastTypingDelayMs": 10,
+    "calendarMaxAttempts": 15,
+    "clearBufferAttempts": 5
+}
