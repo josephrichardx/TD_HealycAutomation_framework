@@ -15,7 +15,7 @@ const {
     patientData,
     appoinmentData,
     consultData,
-    bookingData
+    InvoiceData
 } = require('../testdata/TC_45.json');
  
 const { generateUniquePatientFullName } = require('../utils/RandomData');
@@ -62,6 +62,6 @@ test('WF_CALADN_45 - Validate changing an appointment status to \'Checked-In\'',
     bookedDate
     );
 
-    await invoicePage.verifyAppointmentCheckedIn();
-
+    await invoicePage.verifyAppointmentCheckedIn(InvoiceData.expectedStatus);
+    
     });

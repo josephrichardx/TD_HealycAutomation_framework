@@ -16,5 +16,8 @@
   },
   "consultData": {
     "consultSlot": "First Consult"
+  },
+  "InvoiceData": {
+    "expectedStatus": "Checked-In"
   }
 }

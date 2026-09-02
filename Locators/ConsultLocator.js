@@ -11,6 +11,9 @@ class ConsultLocator {
             name: 'Add Consult'
         });
 
+        this.ConsultbookingConfirmMsg = page.getByText(
+            'Booking confirm'
+        );
         this.patientSearchTxt = page.getByRole('textbox', {
             name: 'Search with patient name or'
         });
