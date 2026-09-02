@@ -2,7 +2,7 @@ name: Playwright Tests
 run-name: >-
   Playwright Tests -
   ${{ inputs.Healync_E2E && 'Healync_E2E, ' || '' }}${{ inputs.WF_CALADN_01 && 'WF_CALADN_01, ' || '' }}${{ inputs.WF_CALADN_02 && 'WF_CALADN_02, ' || '' }}${{ inputs.WF_CALADN_03 && 'WF_CALADN_03, ' || '' }}${{ inputs.WF_CALADN_04 && 'WF_CALADN_04, ' || '' }}${{ inputs.WF_CALADN_05 && 'WF_CALADN_05, ' || '' }}${{ inputs.WF_CALADN_31 && 'WF_CALADN_31, ' || '' }}${{ inputs.WF_CALADN_32 && 'WF_CALADN_32, ' || '' }}${{ inputs.WF_CALADN_32A && 'WF_CALADN_32A, ' || '' }}${{ inputs.WF_CALADN_33 && 'WF_CALADN_33, ' || '' }}${{ inputs.WF_CALADN_33A && 'WF_CALADN_33A, ' || '' }}${{ inputs.WF_CALADN_39 && 'WF_CALADN_39, ' || '' }}${{ inputs.WF_CALADN_40 && 'WF_CALADN_40, ' || '' }}${{ inputs.WF_CALADN_41 && 'WF_CALADN_41, ' || '' }}${{ inputs.WF_CALADN_42 && 'WF_CALADN_42, ' || '' }}${{ inputs.WF_CALADN_45 && 'WF_CALADN_45, ' || '' }}${{ inputs.WF_CALADN_46 && 'WF_CALADN_46, ' || '' }}${{ inputs.WF_CALADN_47 && 'WF_CALADN_47, ' || '' }}${{ inputs.WF_CALADN_48 && 'WF_CALADN_48, ' || '' }}${{ inputs.WF_CALADN_125 && 'WF_CALADN_125, ' || '' }}${{ inputs.WF_CALADN_126 && 'WF_CALADN_126, ' || '' }}
-  on ${{ inputs.baseUrl }} (by @${{ github.actor }})
+
 
 on:
   workflow_dispatch:
