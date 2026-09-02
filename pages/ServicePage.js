@@ -482,7 +482,7 @@ async selectFirstAvailableSlot() {
         'Verify Service Booking Confirmation Message',
         async () => {
             await expect(
-                this.locator.bookingConfirmMsg
+                this.locator.ServicebookingConfirmMsg
             ).toBeVisible();
         }
     );

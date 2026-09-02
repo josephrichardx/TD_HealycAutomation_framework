@@ -12,6 +12,10 @@ class ServiceLocator {
             name: 'Add Service'
         });
 
+        this.ServicebookingConfirmMsg = page.getByText(
+            'Booking confirm'
+        );
+
         this.proceedBtn = page.getByText(
             'Proceed'
         );

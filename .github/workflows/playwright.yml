@@ -1,5 +1,8 @@
 name: Playwright Tests
-run-name: Playwright Tests 
+run-name: >-
+  Playwright Tests -
+  ${{ inputs.Healync_E2E && 'Healync_E2E, ' || '' }}${{ inputs.WF_CALADN_01 && 'WF_CALADN_01, ' || '' }}${{ inputs.WF_CALADN_02 && 'WF_CALADN_02, ' || '' }}${{ inputs.WF_CALADN_03 && 'WF_CALADN_03, ' || '' }}${{ inputs.WF_CALADN_04 && 'WF_CALADN_04, ' || '' }}${{ inputs.WF_CALADN_05 && 'WF_CALADN_05, ' || '' }}${{ inputs.WF_CALADN_31 && 'WF_CALADN_31, ' || '' }}${{ inputs.WF_CALADN_32 && 'WF_CALADN_32, ' || '' }}${{ inputs.WF_CALADN_32A && 'WF_CALADN_32A, ' || '' }}${{ inputs.WF_CALADN_33 && 'WF_CALADN_33, ' || '' }}${{ inputs.WF_CALADN_33A && 'WF_CALADN_33A, ' || '' }}${{ inputs.WF_CALADN_39 && 'WF_CALADN_39, ' || '' }}${{ inputs.WF_CALADN_40 && 'WF_CALADN_40, ' || '' }}${{ inputs.WF_CALADN_41 && 'WF_CALADN_41, ' || '' }}${{ inputs.WF_CALADN_42 && 'WF_CALADN_42, ' || '' }}${{ inputs.WF_CALADN_45 && 'WF_CALADN_45, ' || '' }}${{ inputs.WF_CALADN_46 && 'WF_CALADN_46, ' || '' }}${{ inputs.WF_CALADN_47 && 'WF_CALADN_47, ' || '' }}${{ inputs.WF_CALADN_48 && 'WF_CALADN_48, ' || '' }}${{ inputs.WF_CALADN_125 && 'WF_CALADN_125, ' || '' }}${{ inputs.WF_CALADN_126 && 'WF_CALADN_126, ' || '' }}
+
 on:
   workflow_dispatch:
     inputs:
@@ -12,6 +15,7 @@ on:
           - '-- Select Base URL --'
           - 'http://frontend-uat.healync.com'
           - 'http://release-uat.healync.com.s3-website.ap-south-1.amazonaws.com'
+      Healync_E2E: { description: 'Healync_E2E', type: boolean, default: false }
       WF_CALADN_01: { description: 'WF_CALADN_01', type: boolean, default: false }
       WF_CALADN_02: { description: 'WF_CALADN_02', type: boolean, default: false }
       WF_CALADN_03: { description: 'WF_CALADN_03', type: boolean, default: false }
@@ -34,28 +38,54 @@ on:
       WF_CALADN_126: { description: 'WF_CALADN_126', type: boolean, default: false }
 
 jobs:
+  validate:
+    runs-on: ubuntu-latest
+    outputs:
+      proceed: ${{ steps.check.outputs.proceed }}
+    steps:
+      - id: check
+        env:
+          INPUTS_JSON: ${{ toJSON(inputs) }}
+        run: |
+          if [ "${{ inputs.baseUrl }}" == "-- Select Base URL --" ]; then
+            echo "proceed=false" >> "$GITHUB_OUTPUT"
+            echo "::error::Please select a Base URL."
+            exit 0
+          fi
+
+          COUNT=$(echo "$INPUTS_JSON" | jq '[to_entries[] | select(.key != "baseUrl") | select(.value == true or .value == "true")] | length')
+
+          if [ "$COUNT" -eq 0 ]; then
+            echo "proceed=false" >> "$GITHUB_OUTPUT"
+            echo "::error::No test case selected. Please tick at least one checkbox."
+          else
+            echo "proceed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  setup:
+    needs: validate
+    if: needs.validate.outputs.proceed == 'true'
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - id: set-matrix
+        env:
+          INPUTS_JSON: ${{ toJSON(inputs) }}
+        run: |
+          # Picks every checkbox that's ticked and turns it into a spec filename
+          MATRIX=$(echo "$INPUTS_JSON" | jq -c '[to_entries[] | select(.key != "baseUrl") | select(.value == true or .value == "true") | .key + ".spec.js"]')
+          echo "matrix=$MATRIX" >> "$GITHUB_OUTPUT"
+
   test:
+    needs: [validate, setup]
+    if: needs.validate.outputs.proceed == 'true'
     timeout-minutes: 30
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
-    - name: Validate inputs
-      env:
-        INPUTS_JSON: ${{ toJSON(inputs) }}
-      run: |
-        if [ "${{ inputs.baseUrl }}" == "-- Select Base URL --" ]; then
-          echo "::error::Please select a Base URL."
-          exit 1
-        fi
-        SELECTED=$(echo "$INPUTS_JSON" | jq -c 'to_entries | map(select(.key | startswith("WF_CALADN_"))) | map(select(.value == true or .value == "true"))')
-        COUNT=$(echo "$SELECTED" | jq 'length')
-        if [ "$COUNT" -eq 0 ]; then
-          echo "::error::No test case selected. Please tick at least one checkbox."
-          exit 1
-        fi
-
-    - uses: actions/setup-node@v4
+    - uses: actions/setup-node@v5
       with:
         node-version: 20
         cache: 'npm'
@@ -85,16 +115,34 @@ jobs:
     - name: Run Selected Test Cases
       env:
         BASE_URL: ${{ inputs.baseUrl }}
-        INPUTS_JSON: ${{ toJSON(inputs) }}
       run: |
-        SELECTED=$(echo "$INPUTS_JSON" | jq -r 'to_entries | map(select(.key | startswith("WF_CALADN_"))) | map(select(.value == true or .value == "true")) | map(.key) | .[]')
-        for TC in $SELECTED; do
-          echo "::group::Running $TC.spec.js"
-          npx playwright test tests/${TC}.spec.js || echo "::warning::$TC failed"
+        mkdir -p blob-reports
+        rm -f failed_tests.txt
+        SPECS='${{ needs.setup.outputs.matrix }}'
+
+        echo "$SPECS" | jq -r '.[]' | while read -r TC; do
+          echo "::group::Running $TC"
+          if npx playwright test tests/${TC} --reporter=blob; then
+            echo "$TC passed"
+          else
+            echo "::warning::$TC failed"
+            echo "$TC" >> failed_tests.txt
+          fi
+          mv blob-report/report.zip "blob-reports/${TC%.spec.js}.zip" 2>/dev/null || true
           echo "::endgroup::"
         done
 
-    - name: Upload HTML Report
+        if [ -f failed_tests.txt ]; then
+          echo "The following test cases failed:"
+          cat failed_tests.txt
+          exit 1
+        fi
+
+    - name: Merge into one HTML report
+      if: ${{ !cancelled() }}
+      run: npx playwright merge-reports --reporter html ./blob-reports
+
+    - name: Upload Combined HTML Report
       if: ${{ !cancelled() }}
       uses: actions/upload-artifact@v4
       with:
