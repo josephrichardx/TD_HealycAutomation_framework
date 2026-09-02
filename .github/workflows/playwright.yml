@@ -1,9 +1,5 @@
 name: Playwright Tests
-run-name: >-
-  Playwright Tests -
-  ${{ inputs.Healync_E2E && 'Healync_E2E, ' || '' }}${{ inputs.WF_CALADN_01 && 'WF_CALADN_01, ' || '' }}${{ inputs.WF_CALADN_02 && 'WF_CALADN_02, ' || '' }}${{ inputs.WF_CALADN_03 && 'WF_CALADN_03, ' || '' }}${{ inputs.WF_CALADN_04 && 'WF_CALADN_04, ' || '' }}${{ inputs.WF_CALADN_05 && 'WF_CALADN_05, ' || '' }}${{ inputs.WF_CALADN_31 && 'WF_CALADN_31, ' || '' }}${{ inputs.WF_CALADN_32 && 'WF_CALADN_32, ' || '' }}${{ inputs.WF_CALADN_32A && 'WF_CALADN_32A, ' || '' }}${{ inputs.WF_CALADN_33 && 'WF_CALADN_33, ' || '' }}${{ inputs.WF_CALADN_33A && 'WF_CALADN_33A, ' || '' }}${{ inputs.WF_CALADN_39 && 'WF_CALADN_39, ' || '' }}${{ inputs.WF_CALADN_40 && 'WF_CALADN_40, ' || '' }}${{ inputs.WF_CALADN_41 && 'WF_CALADN_41, ' || '' }}${{ inputs.WF_CALADN_42 && 'WF_CALADN_42, ' || '' }}${{ inputs.WF_CALADN_45 && 'WF_CALADN_45, ' || '' }}${{ inputs.WF_CALADN_46 && 'WF_CALADN_46, ' || '' }}${{ inputs.WF_CALADN_47 && 'WF_CALADN_47, ' || '' }}${{ inputs.WF_CALADN_48 && 'WF_CALADN_48, ' || '' }}${{ inputs.WF_CALADN_125 && 'WF_CALADN_125, ' || '' }}${{ inputs.WF_CALADN_126 && 'WF_CALADN_126, ' || '' }}
-  
-
+run-name: Playwright Tests - ${{ inputs.test_case }} (by @${{ github.actor }})
 on:
   workflow_dispatch:
     inputs:
@@ -11,33 +7,41 @@ on:
         description: 'Select Target Base URL'
         required: true
         type: choice
-        default: 'http://release-uat.healync.com.s3-website.ap-south-1.amazonaws.com'
+        default: '-- Select Base URL --'
         options:
           - '-- Select Base URL --'
           - 'http://frontend-uat.healync.com'
           - 'http://release-uat.healync.com.s3-website.ap-south-1.amazonaws.com'
-      Healync_E2E: { description: 'Healync_E2E', type: boolean, default: false }
-      WF_CALADN_01: { description: 'WF_CALADN_01', type: boolean, default: false }
-      WF_CALADN_02: { description: 'WF_CALADN_02', type: boolean, default: false }
-      WF_CALADN_03: { description: 'WF_CALADN_03', type: boolean, default: false }
-      WF_CALADN_04: { description: 'WF_CALADN_04', type: boolean, default: false }
-      WF_CALADN_05: { description: 'WF_CALADN_05', type: boolean, default: false }
-      WF_CALADN_31: { description: 'WF_CALADN_31', type: boolean, default: false }
-      WF_CALADN_32: { description: 'WF_CALADN_32', type: boolean, default: false }
-      WF_CALADN_32A: { description: 'WF_CALADN_32A', type: boolean, default: false }
-      WF_CALADN_33: { description: 'WF_CALADN_33', type: boolean, default: false }
-      WF_CALADN_33A: { description: 'WF_CALADN_33A', type: boolean, default: false }
-      WF_CALADN_39: { description: 'WF_CALADN_39', type: boolean, default: false }
-      WF_CALADN_40: { description: 'WF_CALADN_40', type: boolean, default: false }
-      WF_CALADN_41: { description: 'WF_CALADN_41', type: boolean, default: false }
-      WF_CALADN_42: { description: 'WF_CALADN_42', type: boolean, default: false }
-      WF_CALADN_45: { description: 'WF_CALADN_45', type: boolean, default: false }
-      WF_CALADN_46: { description: 'WF_CALADN_46', type: boolean, default: false }
-      WF_CALADN_47: { description: 'WF_CALADN_47', type: boolean, default: false }
-      WF_CALADN_48: { description: 'WF_CALADN_48', type: boolean, default: false }
-      WF_CALADN_125: { description: 'WF_CALADN_125', type: boolean, default: false }
-      WF_CALADN_126: { description: 'WF_CALADN_126', type: boolean, default: false }
-
+      test_case:
+        description: 'Select Test Case to run'
+        required: true
+        type: choice
+        default: '-- Select Test Case --'
+        options:
+          - '-- Select Test Case --'
+          - 'ALL'
+          - 'Healync_E2E.spec.js'
+          - 'WF_CALADN_01.spec.js'
+          - 'WF_CALADN_02.spec.js'
+          - 'WF_CALADN_03.spec.js'
+          - 'WF_CALADN_04.spec.js'
+          - 'WF_CALADN_05.spec.js'
+          - 'WF_CALADN_31.spec.js'
+          - 'WF_CALADN_32.spec.js'
+          - 'WF_CALADN_32A.spec.js'
+          - 'WF_CALADN_33.spec.js'
+          - 'WF_CALADN_33A.spec.js'
+          - 'WF_CALADN_39.spec.js'
+          - 'WF_CALADN_40.spec.js'
+          - 'WF_CALADN_41.spec.js'
+          - 'WF_CALADN_42.spec.js'
+          - 'WF_CALADN_45.spec.js'
+          - 'WF_CALADN_46.spec.js'
+          - 'WF_CALADN_47.spec.js'
+          - 'WF_CALADN_48.spec.js'
+          - 'WF_CALADN_125.spec.js'
+          - 'WF_CALADN_126.spec.js'
+ 
 jobs:
   validate:
     runs-on: ubuntu-latest
@@ -45,24 +49,14 @@ jobs:
       proceed: ${{ steps.check.outputs.proceed }}
     steps:
       - id: check
-        env:
-          INPUTS_JSON: ${{ toJSON(inputs) }}
         run: |
-          if [ "${{ inputs.baseUrl }}" == "-- Select Base URL --" ]; then
+          if [ "${{ inputs.baseUrl }}" == "-- Select Base URL --" ] || [ "${{ inputs.test_case }}" == "-- Select Test Case --" ]; then
             echo "proceed=false" >> "$GITHUB_OUTPUT"
-            echo "::error::Please select a Base URL."
-            exit 0
-          fi
-
-          COUNT=$(echo "$INPUTS_JSON" | jq '[to_entries[] | select(.key != "baseUrl") | select(.value == true or .value == "true")] | length')
-
-          if [ "$COUNT" -eq 0 ]; then
-            echo "proceed=false" >> "$GITHUB_OUTPUT"
-            echo "::error::No test case selected. Please tick at least one checkbox."
+            echo "::error::Please select both a Base URL and a Test Case before running."
           else
             echo "proceed=true" >> "$GITHUB_OUTPUT"
           fi
-
+ 
   setup:
     needs: validate
     if: needs.validate.outputs.proceed == 'true'
@@ -70,85 +64,45 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
+      - uses: actions/checkout@v4
       - id: set-matrix
-        env:
-          INPUTS_JSON: ${{ toJSON(inputs) }}
         run: |
-          # Picks every checkbox that's ticked and turns it into a spec filename
-          MATRIX=$(echo "$INPUTS_JSON" | jq -c '[to_entries[] | select(.key != "baseUrl") | select(.value == true or .value == "true") | .key + ".spec.js"]')
-          echo "matrix=$MATRIX" >> "$GITHUB_OUTPUT"
-
+          if [ "${{ inputs.test_case }}" == "ALL" ]; then
+            # Scans the actual tests folder — no hardcoded/duplicated list to maintain
+            FILES=$(ls tests/*.spec.js | xargs -n1 basename | jq -R -s -c 'split("\n")[:-1]')
+            echo "matrix=$FILES" >> "$GITHUB_OUTPUT"
+          else
+            echo "matrix=[\"${{ inputs.test_case }}\"]" >> "$GITHUB_OUTPUT"
+          fi
+ 
   test:
     needs: [validate, setup]
     if: needs.validate.outputs.proceed == 'true'
-    timeout-minutes: 30
+    timeout-minutes: 10
     runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 1
+      fail-fast: false
+      matrix:
+        test_case: ${{ fromJSON(needs.setup.outputs.matrix) }}
     steps:
-    - uses: actions/checkout@v5
-
-    - uses: actions/setup-node@v5
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
       with:
         node-version: 20
         cache: 'npm'
-
     - name: Install dependencies
       run: npm ci
-
-    - name: Get Playwright version
-      id: pw-version
-      run: echo "version=$(npm ls @playwright/test --json | jq -r '.dependencies["@playwright/test"].version')" >> "$GITHUB_OUTPUT"
-
-    - name: Cache Playwright Browsers
-      uses: actions/cache@v4
-      id: pw-cache
-      with:
-        path: ~/.cache/ms-playwright
-        key: playwright-browsers-${{ runner.os }}-${{ steps.pw-version.outputs.version }}
-
     - name: Install Playwright Browsers
-      if: steps.pw-cache.outputs.cache-hit != 'true'
       run: npx playwright install --with-deps
-
-    - name: Install OS deps only (cache hit)
-      if: steps.pw-cache.outputs.cache-hit == 'true'
-      run: npx playwright install-deps
-
-    - name: Run Selected Test Cases
+    - name: Run Test Case
       env:
         BASE_URL: ${{ inputs.baseUrl }}
-      run: |
-        mkdir -p blob-reports
-        rm -f failed_tests.txt
-        SPECS='${{ needs.setup.outputs.matrix }}'
-
-        echo "$SPECS" | jq -r '.[]' | while read -r TC; do
-          echo "::group::Running $TC"
-          rm -rf blob-report
-          if npx playwright test tests/${TC} --reporter=blob; then
-            echo "$TC passed"
-          else
-            echo "::warning::$TC failed"
-            echo "$TC" >> failed_tests.txt
-          fi
-          # Move whatever zip Playwright actually created (filename includes a hash, varies per run)
-          mv blob-report/*.zip "blob-reports/${TC%.spec.js}.zip" 2>/dev/null || echo "::warning::No blob report produced for $TC"
-          echo "::endgroup::"
-        done
-
-        if [ -f failed_tests.txt ]; then
-          echo "The following test cases failed:"
-          cat failed_tests.txt
-          exit 1
-        fi
-
-    - name: Merge into one HTML report
-      if: ${{ !cancelled() }}
-      run: npx playwright merge-reports --reporter html ./blob-reports
-
-    - name: Upload Combined HTML Report
+      run: npx playwright test tests/${{ matrix.test_case }}
+    - name: Upload HTML Report
       if: ${{ !cancelled() }}
       uses: actions/upload-artifact@v4
       with:
-        name: playwright-report
+        name: playwright-report-${{ matrix.test_case }}
         path: playwright-report/
         retention-days: 30
