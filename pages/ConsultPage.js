@@ -486,7 +486,7 @@ async selectFirstAvailableSlot() {
         'Verify Consult Booking Confirmation Message is Visible',
         async () => {
             await expect(
-                this.locator.bookingConfirmMsg
+                this.locator.bookingConfirmToastTitle
             ).toBeVisible();
         }
     );

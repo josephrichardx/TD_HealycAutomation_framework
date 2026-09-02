@@ -1,0 +1,63 @@
+{
+  "patientData": {
+    "title": "Mr",
+    "phoneNumber": "1234567890",
+    "notes": "Healync",
+    "email": "test@gmail.com",
+    "age": "21",
+    "gender": "Male",
+    "address": "Chennai"
+  },
+ 
+  "appoinmentData": {
+    "doctorName": "Dr. Orthopedic"
+  },
+ 
+  "consultData": {
+    "consultSlot": "First Consult"
+  },
+ 
+  "templateData": {
+  "templateName": "EMR_TD1",
+  "searchKey": "Enter"
+  },
+ 
+  "timeout": {
+    "time": 3000
+  },
+ 
+ "prescriptionData": {
+    "drugs1":
+        {
+            "drugName": " 1 AL AX 5mg/75mg Capsule ",
+            "durationType": "Days",
+            "instruction": "Before Food"
+        },
+    "drugs2":
+        {
+            "drugName": " 1 Nvp Tablet ",
+            "durationType": "Weeks",
+            "instruction": "After Food"
+        }
+},
+
+  "diagnosisData": [
+    {
+        "mainDiagnosis": "Fever",
+        "subDiagnosis": "Viral Fever",
+        "location": "General",
+        "remarks": "Follow up after 5 days"
+    },
+    {
+        "mainDiagnosis": "Cough",
+        "subDiagnosis": "Dry Cough",
+        "location": "Respiratory",
+        "remarks": "Monitor symptoms"
+    }
+  ],
+
+  "signatureData": {
+    "title": "Standard",
+    "subTitle": "General Physician"
+  }
+}
