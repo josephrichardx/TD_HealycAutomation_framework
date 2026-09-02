@@ -6,7 +6,6 @@ const { invoiceData } = require('../testdata/invoiceData.json');
 const { Verify } = require('../utils/verification');
 const { waitData } = require('../testdata/waitData.json');
 const visitingSlipData = require('../testdata/visitingSlip.json');
-const { toasterMessages } = require('../testdata/toasterMessages.json');
 
 class InvoicePage {
 
@@ -1317,12 +1316,16 @@ async InvoicePDFAddAdmission(
     }
 
 
-    // `verification` = { step, frozenStep, enabledStep } from the calling
-    // spec's own data file.
+    // `verification` = { frozenStepExpected, enabledStepExpected } from the
+    // calling spec's own data file.
     async verifyAppointmentStatus(
         appoinmentData,
         verification
     ) {
+
+        const step = 'Verify Appointment Status';
+        const frozenStep = 'Verify Confirmed Status Is Frozen';
+        const enabledStep = 'Verify Completed Status Is Enabled';
 
         await StepHelper.step(
             this.page,
@@ -1359,7 +1362,7 @@ async InvoicePDFAddAdmission(
 
         await Verify.state(
             this.page,
-            `${verification.step} - Checked-In status is displayed`,
+            `${step} - Checked-In status is displayed`,
             this.locator.checkedInStatus,
             { visible: true, soft: false }
         );
@@ -1400,7 +1403,7 @@ async InvoicePDFAddAdmission(
 
         await Verify.equals(
             this.page,
-            verification.frozenStep,
+            frozenStep,
             verification.frozenStepExpected,
             confirmedStatusIsActionable
         );
@@ -1413,9 +1416,83 @@ async InvoicePDFAddAdmission(
 
         await Verify.equals(
             this.page,
-            verification.enabledStep,
+            enabledStep,
             verification.enabledStepExpected,
             completedStatusIsActionable
+        );
+    }
+
+
+    // Sets the appointment status from Confirmed to Checked-In and verifies
+    // it took - nothing else. No frozen/enabled actionability checks.
+    async updateAppointmentStatusToCheckIn() {
+
+        const step = 'Verify Checked-In Status';
+
+        await StepHelper.step(
+            this.page,
+            'Update Appointment Status to Check-In',
+            async () => {
+
+                // Click on Confirmed status dropdown
+                await this.keywords.click(
+                    this.locator.confirmedStatus
+                );
+            }
+        );
+
+        await this.keywords.waitForElement(this.locator.checkInStatus);
+
+        await Verify.state(
+            this.page,
+            'Check-In status option is displayed',
+            this.locator.checkInStatus,
+            { visible: true, soft: false }
+        );
+
+        await StepHelper.step(
+            this.page,
+            'Select Check-In status',
+            async () => {
+                await this.keywords.click(
+                    this.locator.checkInStatus
+                );
+            }
+        );
+
+        await this.keywords.waitForElement(this.locator.checkedInStatus);
+
+        await Verify.state(
+            this.page,
+            `${step} - Checked-In status is displayed`,
+            this.locator.checkedInStatus,
+            { visible: true, soft: false }
+        );
+    }
+
+
+    // Verifies the appointment is showing as Checked-In without clicking
+    // anything - used after navigating away and back to confirm the status
+    // update persisted.
+    async verifyAppointmentCheckedIn() {
+
+        await this.keywords.waitForElement(this.locator.checkedInStatus);
+
+        await Verify.state(
+            this.page,
+            'Verify Checked-In Status Persisted After Navigation',
+            this.locator.checkedInStatus,
+            { visible: true, soft: false }
+        );
+
+        // The status badge container carries a status-checkedin class only
+        // when the appointment is actually in the Checked-In state, so its
+        // presence is the real verification - not a text comparison.
+        await Verify.state(
+            this.page,
+            'Verify Checked-In Status Badge',
+            this.locator.checkedInStatusBadge,
+            { visible: true, soft: false }
         );
     }
 
@@ -1424,6 +1501,8 @@ async InvoicePDFAddAdmission(
     // data file. The label text is captured from the page at runtime and
     // compared with the expected value from that data.
     async verifyVisitingSlip(patientName, doctorName, verification) {
+
+        const step = 'Verify Visiting Slip';
 
         let actualLabelText;
 
@@ -1449,7 +1528,7 @@ async InvoicePDFAddAdmission(
 
         await Verify.contains(
             this.page,
-            verification.step,
+            step,
             verification.expectedLabel,
             actualLabelText
         );
@@ -1489,7 +1568,7 @@ async verifyVisitingSlipContent(
     await this.keywords.waitForElement(visitingSlip);
 
     const actualPdfText = (
-        await visitingSlip.textContent()
+        await this.keywords.getText(visitingSlip)
     ).replace(/\s+/g, ' ').trim();
 
     // Read stored JSON data
@@ -1615,6 +1694,8 @@ async verifyVisitingSlipContent(
             )
         });
     } else {
+        // No concrete time was passed in, so there is nothing to compare the
+        // rendered value against - only the label's presence can be checked.
         fieldsToVerify.push({
             name: 'Appointment Time',
             expected: `${constants.timeLabel} ${constants.appointmentLabel}`,
@@ -1622,7 +1703,8 @@ async verifyVisitingSlipContent(
                 actualPdfText,
                 constants.timeLabel,
                 nextMarkerAfterTime
-            )
+            ),
+            isPartial: true
         });
     }
 
@@ -1638,6 +1720,8 @@ async verifyVisitingSlipContent(
             )
         });
     } else {
+        // No concrete time was passed in, so there is nothing to compare the
+        // rendered value against - only the label's presence can be checked.
         fieldsToVerify.push({
             name: 'Arrival Time',
             expected: constants.arrivalLabel,
@@ -1645,7 +1729,8 @@ async verifyVisitingSlipContent(
                 actualPdfText,
                 constants.arrivalLabel,
                 constants.dateLabel
-            )
+            ),
+            isPartial: true
         });
     }
 
@@ -1693,6 +1778,22 @@ async verifyVisitingSlipContent(
             field.actual
                 .replace(/\s+/g, ' ')
                 .trim();
+
+        // The app appends a "- (NEW)" marker to the patient name on the
+        // slip for a freshly created patient. Strip it before comparing so
+        // the name check isn't coupled to that decoration.
+        const comparableActual =
+            field.name === 'Patient Name'
+                ? normalizedActual
+                    .replace(
+                        new RegExp(
+                            `\\s*${constants.newPatientMarker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*$`,
+                            'i'
+                        ),
+                        ''
+                    )
+                    .trim()
+                : normalizedActual;
 
         const expectedForReport = field.isDate
             ? `${constants.dateLabel} day ${
@@ -1744,9 +1845,18 @@ async verifyVisitingSlipContent(
                             );
                         }
                     }
+                } else if (field.isPartial) {
+
+                    // No concrete value was passed in for this field, so only
+                    // the label's presence can be verified - a partial match.
+                    expect(comparableActual).toContain(
+                        normalizedExpected
+                    );
+
                 } else {
-                    // Check expected value
-                    expect(normalizedActual).toContain(
+                    // Full field text is extracted between two markers, so
+                    // compare it exactly rather than as a partial match.
+                    expect(comparableActual).toBe(
                         normalizedExpected
                     );
 
@@ -1756,7 +1866,7 @@ async verifyVisitingSlipContent(
                         field.storedVal
                     ) {
                         expect(
-                            normalizedActual
+                            comparableActual
                         ).toContain(field.storedVal);
                     }
 

@@ -19,9 +19,10 @@ class CancellationPage {
 
     // Captures the toaster message the application raises at runtime and
     // verifies it against the expected text held in CancellationData.json.
-    // `verification` is a { step, expectedMessage } block from
-    // cancellationVerificationData - nothing is hardcoded here.
+    // `verification` = { expectedMessage } from cancellationVerificationData.
     async verifyToasterMessage(verification) {
+
+        const step = 'Verify Payment Recorded Successfully';
 
         const toaster = this.locator.paymentSuccessMessage.first();
 
@@ -29,7 +30,7 @@ class CancellationPage {
 
         await StepHelper.step(
             this.page,
-            verification.step,
+            step,
             async () => {
 
                 actualMessage = (
@@ -40,7 +41,7 @@ class CancellationPage {
 
         await Verify.contains(
             this.page,
-            verification.step,
+            step,
             verification.expectedMessage,
             actualMessage
         );
@@ -51,7 +52,9 @@ class CancellationPage {
 
     // Reads the cancelled status badge the application rendered at runtime and
     // verifies it against the expected status held in CancellationData.json.
-    async verifyCancelledStatus(verification) {
+    // `stepLabel` names the calling flow (e.g. "Verify Appointment Cancelled")
+    // since the same badge check backs several distinct cancellation flows.
+    async verifyCancelledStatus(stepLabel, verification) {
 
         const statusBadge = this.locator.cancelledStatus;
 
@@ -59,7 +62,7 @@ class CancellationPage {
 
         await StepHelper.step(
             this.page,
-            verification.step,
+            stepLabel,
             async () => {
 
                 actualStatus = (
@@ -70,14 +73,14 @@ class CancellationPage {
 
         await Verify.state(
             this.page,
-            `${verification.step} - status badge is displayed`,
+            `${stepLabel} - status badge is displayed`,
             statusBadge,
             { visible: true, soft: false }
         );
 
-        await Verify.contains(
+        await Verify.equals(
             this.page,
-            verification.step,
+            stepLabel,
             verification.expectedStatus,
             actualStatus
         );
@@ -235,6 +238,7 @@ class CancellationPage {
         );
 
         await this.verifyCancelledStatus(
+            'Verify Appointment Cancelled',
             cancellationVerificationData.appointmentCancelled
         );
     }
@@ -290,6 +294,7 @@ class CancellationPage {
         // Two toasts race here (payment recorded / cancelled), so verify the
         // cancelled status badge, which is deterministic.
         await this.verifyCancelledStatus(
+            'Verify Refund Recorded Successfully',
             cancellationVerificationData.refundRecorded
         );
     }
@@ -346,6 +351,7 @@ class CancellationPage {
         // Two toasts race here (payment recorded / cancelled), so verify the
         // cancelled status badge, which is deterministic.
         await this.verifyCancelledStatus(
+            'Verify Make Payment Recorded Successfully',
             cancellationVerificationData.makePaymentRecorded
         );
     }
@@ -434,8 +440,8 @@ class CancellationPage {
 );
 }
 
-async cancelPackageWithFullRefund(cancellationData){
-
+    async cancelPackageWithFullRefund(cancellationData){
+ 
 await StepHelper.step(
     this.page,
     'Select Make Full Refund',
@@ -445,7 +451,7 @@ await StepHelper.step(
         );
     }
 );
-
+ 
 await StepHelper.step(
     this.page,
     'Review And Confirm Full Refund',
@@ -455,7 +461,7 @@ await StepHelper.step(
         );
     }
 );
-
+ 
 await StepHelper.step(
     this.page,
     'Confirm Cancellation',
@@ -501,16 +507,16 @@ await StepHelper.step(
         );
     }
 );
-
+ 
 }
-
+ 
 async cancelPackageWithPartialRefund(
     paymentType,
     amount,
     transactionId = null,
     expectedStatus,
 ) {
-
+ 
     await StepHelper.step(
         this.page,
         'Select Refund Payment Mode',
@@ -521,7 +527,7 @@ async cancelPackageWithPartialRefund(
             );
         }
     );
-
+ 
     await StepHelper.step(
         this.page,
         `Enter Refund Amount - ${amount}`,
@@ -532,7 +538,7 @@ async cancelPackageWithPartialRefund(
             );
         }
     );
-
+ 
     await StepHelper.step(
         this.page,
         'Click Review & Confirm',
@@ -542,7 +548,7 @@ async cancelPackageWithPartialRefund(
             );
         }
     );
-
+ 
     await StepHelper.step(
         this.page,
         'Click Confirm Cancellation',
@@ -564,7 +570,7 @@ async cancelPackageWithPartialRefund(
             });
         }
     );
-
+ 
     await StepHelper.step(
         this.page,
         `Verify Cancellation Status - ${expectedStatus}`,
@@ -575,6 +581,9 @@ async cancelPackageWithPartialRefund(
         }
     );
 }
+ 
+
+
 
     async selectPaymentMode(
         paymentType,

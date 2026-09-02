@@ -14,12 +14,10 @@ const {
     appoinmentData,
     waitlistBookingData,
     consultData,
-    serviceData,
-    waitlistVerificationData
+    serviceData
 } = require('../testdata/TC_39.json');
  
 const {
-    generatePatientName,
     generateUniquePatientFullName
 } = require('../utils/RandomData.js');
  
@@ -63,15 +61,15 @@ test('WF_CALADN_39 - Validate Waitlist appointment booking — Appointment Type,
     await consultPage.addConsult(
         patientName,
         appoinmentData.doctorName,
-        consultData.consultSlot,
-        bookingDate
+        consultData.consultSlot
+        
     );
  
     // Step 4 - Add Service
     await servicePage.addService(
         patientName,
-        serviceData.serviceName,
-        bookingDate
+        serviceData.serviceName
+        
     );
  
     // Step 5 - Navigate to appointment page via Calendar
@@ -191,8 +189,7 @@ test('WF_CALADN_39 - Validate Waitlist appointment booking — Appointment Type,
  
     // Verify waitlist entry
     await waitlistPage.verifyWaitlistEntry(
-        waitlistPatientName,
-        waitlistVerificationData.waitlistEntry
+        waitlistPatientName
     );
  
     // Step 19 - Click Schedule

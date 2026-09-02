@@ -563,6 +563,40 @@ async dismissOpenAppointmentDetailsPanel() {
             }
         );
     }
+
+
+    // The full-screen appointment details panel sits over the sidebar icon
+    // and intercepts a plain click, so this force-clicks through it and
+    // reloads - same approach as WaitlistPage.closeAppointmentDetails().
+    async closeAppointmentDetails() {
+
+        await StepHelper.step(
+            this.page,
+            'Close appointment details panel',
+            async () => {
+
+                await this.keywords.waitForElement(
+                    this.locator.sidebarCalendarIcon
+                );
+
+                await this.keywords.forceClick(
+                    this.locator.sidebarCalendarIcon
+                );
+
+                await this.page
+                    .waitForURL(
+                        (url) => url.pathname.includes(
+                            appointmentActionData.dashboardPath
+                        )
+                    )
+                    .catch(() => {});
+
+                await this.page.reload({
+                    waitUntil: 'domcontentloaded'
+                });
+            }
+        );
+    }
   
  
     async openPatientAppointment(patientName) {
@@ -583,9 +617,13 @@ async dismissOpenAppointmentDetailsPanel() {
                     patientResult
                 );
 
-
-                const viewAppointmentBtn =
-                        this.locator.viewAppointmentBtn;
+                // Scoped to this patient's own row - a patient with more than
+                // one appointment on the same day (e.g. consult and service)
+                // renders more than one "View Appt" button on the page, and
+                // the page-wide locator hits a strict-mode violation.
+                const viewAppointmentBtn = patientResult
+                    .locator("button[class='view-appt-btn']")
+                    .first();
 
                     await viewAppointmentBtn.waitFor({
                         state: 'attached'

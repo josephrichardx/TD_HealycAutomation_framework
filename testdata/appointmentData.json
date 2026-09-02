@@ -34,7 +34,6 @@
 
   "appointmentVerificationData": {
     "confirmedStatus": {
-      "step": "Verify Confirmed Appointment",
       "expectedStatus": "Confirmed"
     }
   }

@@ -100,15 +100,17 @@ class WaitlistCancellationPage {
 
     // This flow raises no toaster - the observable outcome is the entry
     // leaving the waitlist, so that is what gets verified.
-    // `verification` = { step, expectedEntryState } from the calling spec's
-    // own data file.
+    // `verification` = { expectedEntryState } from the calling spec's own
+    // data file.
     async verifyWaitlistEntryRemoved(patientName, verification) {
+
+        const step = 'Verify Waitlist Consult Cancelled';
 
         const card = this.locator.getWaitlistCard(patientName);
 
         await StepHelper.step(
             this.page,
-            `${verification.step} - ${patientName}`,
+            `${step} - ${patientName}`,
             async () => {
                 await card.waitFor({ state: 'hidden' });
             }
@@ -116,7 +118,7 @@ class WaitlistCancellationPage {
 
         await Verify.state(
             this.page,
-            `${verification.step} - ${patientName} is ${verification.expectedEntryState}`,
+            `${step} - ${patientName} is ${verification.expectedEntryState}`,
             card,
             { hidden: true, soft: false }
         );
@@ -125,8 +127,10 @@ class WaitlistCancellationPage {
 
     // Captures the toaster message the application raises at runtime and
     // compares it with the expected message held in the calling spec's own
-    // data file. `verification` = { step, expectedMessage }.
+    // data file. `verification` = { expectedMessage }.
     async verifyCancellationToasterMessage(verification) {
+
+        const step = 'Verify Cancellation Toaster Message';
 
         const toaster = this.locator.toasterMessage.first();
 
@@ -134,7 +138,7 @@ class WaitlistCancellationPage {
 
         await StepHelper.step(
             this.page,
-            verification.step,
+            step,
             async () => {
 
                 actualMessage = (
@@ -149,7 +153,7 @@ class WaitlistCancellationPage {
 
         await Verify.contains(
             this.page,
-            verification.step,
+            step,
             verification.expectedMessage,
             actualMessage
         );

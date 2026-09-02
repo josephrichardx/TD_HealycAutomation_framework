@@ -8,7 +8,6 @@
     "gender": "Male",
     "address": "Chennai",
     "savedVerification": {
-      "step": "Verify Patient Saved Successfully",
       "expectedMessage": "Patient Saved successfully"
     }
   },
@@ -18,12 +17,8 @@
   "consultData": {
     "consultSlot": "First Consult"
   },
- 
   "appointmentStatusVerificationData": {
-    "step": "Verify Appointment Status",
-    "frozenStep": "Verify Confirmed Status Is Frozen",
     "frozenStepExpected": false,
-    "enabledStep": "Verify Completed Status Is Enabled",
     "enabledStepExpected": true
   }
 }

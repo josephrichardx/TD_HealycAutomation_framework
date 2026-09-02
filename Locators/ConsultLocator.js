@@ -35,10 +35,6 @@ class ConsultLocator {
             'Confirm Booking'
         );
 
-        this.bookingConfirmMsg = page.getByText(
-            'Booking confirm'
-        );
-
         this.addCustomSlotsBtn = page.getByText(
             'Add custom slots'
         ).first();

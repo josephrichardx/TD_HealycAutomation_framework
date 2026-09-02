@@ -8,16 +8,13 @@
     "gender": "Male",
     "address": "Chennai",
     "savedVerification": {
-      "step": "Verify Patient Saved Successfully",
       "expectedMessage": "Patient Saved successfully"
     }
   },
   "appoinmentData": {
     "doctorName": "Dr. Orthopedic"
   },
-  "waitlistBookingData": {
-    "standardBookingDate": "28"
-  },
+ 
   "consultData": {
     "consultSlot": "First Consult",
     "appointmentType": "Consult"
@@ -28,14 +25,8 @@
   "waitlistPatientOverrides": {
     "email": ""
   },
-  "waitlistVerificationData": {
-    "waitlistEntry": {
-      "step": "Verify Waitlist Entry Present"
-    }
-  },
   "waitlistCancellationVerificationData": {
     "consultCancelled": {
-      "step": "Verify Waitlist Consult Cancelled",
       "expectedEntryState": "removed from the waitlist"
     }
   }

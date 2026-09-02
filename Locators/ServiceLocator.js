@@ -20,8 +20,8 @@ class ServiceLocator {
             'Confirm Booking'
         );
 
-        this.bookingConfirmMsg = page.getByText(
-            'Booking confirm'
+        this.bookingConfirmToastTitle = page.locator(
+            'div.toaster-wrapper.success .text-content .title'
         );
 
 
