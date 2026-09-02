@@ -479,7 +479,7 @@ async dismissOpenAppointmentDetailsPanel() {
                         `Current Calendar Day: ${currentDay} | Target Booking Day: ${targetDay}`
                     );
 
-                    if (currentDay > targetDay) {
+                    if (currentDay === targetDay) {
                         console.log(
                             `Booking day reached: ${targetDay}`
                         );
