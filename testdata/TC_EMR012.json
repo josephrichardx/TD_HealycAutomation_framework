@@ -18,22 +18,45 @@
   },
 
   "templateData": {
-  "templateName": "EMR_TD1",
-  "time": 8000
+  "templateName": "EMR_AUTOMATION_TEMPLATE TD",
+  "searchKey": "Enter"
+  },
+
+  "timeout": {
+    "time": 3000
   },
 
  "prescriptionData": {
-    "drugs1": 
-        {
-            "name": " 1 AL AX 5mg/75mg Capsule ",
-            "durationType": "Days",
+
+    "addRows": 1,
+    "drugs": [
+          {
+            "drugName": " 1 AL Plus 5mg/120mg Capsule ",
+            "durationType1": "Days",
+            "durationType2": "Weeks",
             "instruction": "Before Food"
-        },
-    "drugs2": 
-        {
-            "name": " 1 Nvp Tablet ",
-            "durationType": "Weeks",
+          },
+          {
+            "drugName": "1 Nvp Tablet",
+            "durationType1": "Weeks",
+            "durationType2": "Months",
             "instruction": "After Food"
-        }
-}
+          }
+      ]
+},
+
+ "loginData": {
+    "url": "http://release-uat.healync.com.s3-website.ap-south-1.amazonaws.com",
+    "username": "sales@healync.com",
+    "password": "Demo2025$$"
+  },
+
+  "marginData": {
+    "top": "10",
+    "bottom": "20",
+    "leftRight": "15"
+  }
+
+
+
 }

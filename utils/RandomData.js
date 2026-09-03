@@ -44,18 +44,54 @@ function getAdmissionData() {
     };
 }
 
+// const firstNames = [
+//     'John', 'James', 'Robert', 'Michael', 'David',
+//     'Sarah', 'Emily', 'Jessica', 'Ashley', 'Amanda',
+//     'Daniel', 'Matthew', 'Christopher', 'Andrew', 'Joseph',
+//     'Emma', 'Olivia', 'Sophia', 'Isabella', 'Mia'
+// ];
+
+// const lastNames = [
+//     'Doe', 'Smith', 'Johnson', 'Williams', 'Brown',
+//     'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez',
+//     'Martinez', 'Wilson', 'Anderson', 'Taylor', 'Thomas',
+//     'Moore', 'Jackson', 'Martin', 'Lee', 'Perez'
+// ];
+
 const firstNames = [
     'John', 'James', 'Robert', 'Michael', 'David',
     'Sarah', 'Emily', 'Jessica', 'Ashley', 'Amanda',
     'Daniel', 'Matthew', 'Christopher', 'Andrew', 'Joseph',
-    'Emma', 'Olivia', 'Sophia', 'Isabella', 'Mia'
+    'Emma', 'Olivia', 'Sophia', 'Isabella', 'Mia',
+    'William', 'Richard', 'Thomas', 'Charles', 'Christopher',
+    'Benjamin', 'Samuel', 'Alexander', 'Henry', 'Jack',
+    'Lucas', 'Liam', 'Noah', 'Ethan', 'Mason',
+    'Logan', 'Jacob', 'Michael', 'Elijah', 'James',
+    'Ava', 'Charlotte', 'Amelia', 'Harper', 'Evelyn',
+    'Abigail', 'Ella', 'Scarlett', 'Grace', 'Chloe',
+    'Victoria', 'Riley', 'Aria', 'Lily', 'Aurora',
+    'Zoey', 'Hannah', 'Layla', 'Nora', 'Camila',
+    'Samantha', 'Elizabeth', 'Natalie', 'Luna', 'Savannah',
+    'Brooklyn', 'Leah', 'Zoe', 'Stella', 'Hazel',
+    'Violet', 'Penelope', 'Lucy', 'Claire', 'Ellie'
 ];
-
+ 
 const lastNames = [
     'Doe', 'Smith', 'Johnson', 'Williams', 'Brown',
     'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez',
     'Martinez', 'Wilson', 'Anderson', 'Taylor', 'Thomas',
-    'Moore', 'Jackson', 'Martin', 'Lee', 'Perez'
+    'Moore', 'Jackson', 'Martin', 'Lee', 'Perez',
+    'Thompson', 'White', 'Harris', 'Sanchez', 'Clark',
+    'Ramirez', 'Lewis', 'Robinson', 'Walker', 'Young',
+    'Allen', 'King', 'Wright', 'Scott', 'Torres',
+    'Nguyen', 'Hill', 'Flores', 'Green', 'Adams',
+    'Nelson', 'Baker', 'Hall', 'Rivera', 'Campbell',
+    'Mitchell', 'Carter', 'Roberts', 'Gomez', 'Phillips',
+    'Evans', 'Turner', 'Diaz', 'Parker', 'Cruz',
+    'Edwards', 'Collins', 'Reyes', 'Stewart', 'Morris',
+    'Morales', 'Murphy', 'Cook', 'Rogers', 'Gutierrez',
+    'Ortiz', 'Morgan', 'Cooper', 'Peterson', 'Bailey',
+    'Reed', 'Kelly', 'Howard', 'Ramos', 'Kim'
 ];
 
 function generateUniquePatientFullName() {

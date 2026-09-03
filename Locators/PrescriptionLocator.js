@@ -105,87 +105,126 @@ class PrescriptionLocator {
                 "(//button[@title='Add row'])[1]"
             );
 
-        // // Prescription
+        this.firstMedicationRow = page.locator(
+            "(//tbody//following::tr[@class='medication-row'])[1]"
+        );
 
-        // this.drugSearch = page
-        //     .getByPlaceholder('Search')
+        //2row 
+
+        this.secondDrugCell =
+        page.locator(
+            "(//td[contains(@class,'col-drug col-id')])[2]"
+        );
+
+        this.secondDrugSearchInput =
+            page.locator(
+                "(//td[contains(@class,'col-drug col-id')])[2]"
+            );
+
+        this.thirdDurationOption =
+            page.locator(
+                "(//td[contains(@class,'col-duration col-id')])[3]"
+            );
+
+        this.ThirdDurationDropdown =
+            page.locator(
+                "(//td[contains(@class,'col-duration col-id')])[3]//select"
+            );
+
+        this.fourthDurationOption =
+            page.locator(
+                "(//td[contains(@class,'col-duration col-id')])[4]"
+            );
+
+        this.FourthDurationDropdown =
+            page.locator(
+                "(//td[contains(@class,'col-duration col-id')])[4]//select"
+            );
+
+        this.secondInstructionsCell =
+            page.locator(
+                "(//td[contains(@class,'col-instructions')])[2]"
+            );
+
+        this.secondInstructionInput =
+            page.locator(
+                "(//input[contains(@placeholder,'Type instruction')])[2]"
+            );
+
+        this.secondMedicationRow =
+            page.locator(
+                "(//tbody//following::tr[@class='medication-row'])[2]"
+            );
+
+        this.sidebarEdgeToggle = page.locator(
+            "//button[@class='sidebar-edge-toggle collapsed']"
+        );
+
+        this.marginTopInput = page.locator(
+        '(//div[@class="margin-input"])[1]//input'
+        );
+
+        this.marginBottomInput = page.locator(
+            '(//div[@class="margin-input"])[2]//input'
+        );
+
+        this.marginLeftRightInput = page.locator(
+            '(//div[@class="margin-input"])[3]//input'
+        );
+
+        this.proceedBtn = page.locator(
+        "//button[text()=' Proceed ']"
+        );
+
+        // this.drugNameInput = (drugName) =>
+        // this.page.getByDisplayValue(drugName.trim(), { exact: true });
+
+        // this.instructionInput = (instruction) =>
+        // this.page.getByDisplayValue(instruction.trim(), { exact: true });
+
+        // this.durationType1Input = (drugName) =>
+        // this.page
+        // .getByDisplayValue(drugName.trim(), { exact: true })
+        // .locator("xpath=ancestor::tr[1]")
+        // .locator("select")
+        // .first();
+
+        // this.durationType2Input = (drugName) =>
+        // this.page
+        //     .getByDisplayValue(drugName.trim(), { exact: true })
+        //     .locator("xpath=ancestor::tr[1]")
+        //     .locator("select")
         //     .last();
 
-        // this.editorContainer = page
-        //     .locator('.editor-container');
+        this.observationRow = (drugName) =>
+    this.page
+        .locator("//tr[contains(@class,'medication-row')]")
+        .filter({
+            has: this.page.getByDisplayValue(
+                drugName.trim(),
+                { exact: true }
+            )
+        });
 
-        // this.instructionDropdown = page
-        //     .getByRole('combobox', {
-        //         name: 'Type instruction (e.g. Before'
-        //     });
+this.drugNameInput = (row) =>
+    row.locator("input").filter({
+        hasValue: row
+            .locator("input")
+            .first()
+            .inputValue()
+    });
 
-        // this.selectDurationDropdown = page
-        //     .getByRole('cell', {
-        //         name: 'Select'
-        //     })
-        //     .getByRole('combobox');
+this.durationType1Input = (row) =>
+    row.locator("select").first();
 
-        // this.addRowBtn = page
-        //     .getByRole('button', {
-        //         name: 'Add row'
-        //     })
-        //     .first();
+this.durationType2Input = (row) =>
+    row.locator("select").last();
 
-
-        //     //new
-
-        //             // Prescription Observation / Medical History
-
-        // this.observationSearchByIndex = (index) =>
-        //     page.getByRole('textbox', {
-        //         name: 'Search'
-        //     }).nth(index);
-
-        // this.observationOption = (text) =>
-        //     page.locator('label').filter({
-        //         hasText: text
-        //     });
-
-
-        // // First Row
-
-        // this.row1Column4Search = page
-        //     .locator(
-        //         '.col-col4 > .cell-wrapper > .drug-search-cell > .cell-input'
-        //     )
-        //     .first();
-
-
-        // // Second Row
-
-        // this.row2Column1Search = page
-        //     .locator(
-        //         'tr:nth-child(2) > .col-col1 > .cell-wrapper > .drug-search-cell > .cell-input'
-        //     );
-
-        // this.row2Column2Search = page
-        //     .locator(
-        //         'tr:nth-child(2) > .col-col2 > .cell-wrapper > .drug-search-cell > .cell-input'
-        //     );
-
-        // this.row2Column3Search = page
-        //     .locator(
-        //         'tr:nth-child(2) > .col-col3 > .cell-wrapper > .drug-search-cell > .cell-input'
-        //     );
-
-        // this.row2Column4Search = page
-        //     .locator(
-        //         'tr:nth-child(2) > .col-col4 > .cell-wrapper > .drug-search-cell > .cell-input'
-        //     );
-
-
-        // // Favourite Option
-
-        // this.favouriteOption = page
-        //     .locator(
-        //         'label:nth-child(24) > .fav-option-cells > .fav-option-cell > .fav-option-label'
-        //     );
-    }
+this.instructionInput = (row) =>
+    row.locator(
+        "input[placeholder*='Type instruction']"
+    );
+        }
 
     drugLibrary(drugName) {
         return this.page.getByText(drugName);

@@ -6,8 +6,9 @@ const { ConsultPage } = require('../pages/ConsultPage');
 const { InvoicePage } = require('../pages/InvoicePage');
 const { CalendarPage } = require('../pages/CalendarPage');
 const { PrescriptionPage } = require('../pages/PrescriptionPage');
+
  
-const { patientData,appoinmentData,consultData,prescriptionData,templateData } = require('../testdata/TC_EMR012.json');
+const { patientData,appoinmentData,consultData,prescriptionData,templateData,timeout,loginData,marginData } = require('../testdata/TC_EMR012.json');
 const { generateUniquePatientFullName } = require('../utils/RandomData');
 
 test('EMR Prescription', async ({ page }) => {
@@ -19,6 +20,7 @@ test('EMR Prescription', async ({ page }) => {
     const invoicePage = new InvoicePage(page);
     const calendarPage = new CalendarPage(page);
     const prescriptionPage = new PrescriptionPage(page);
+   
  
      await patientPage.createPatient(
         patientName,
@@ -37,26 +39,43 @@ test('EMR Prescription', async ({ page }) => {
     bookingDate
     );
 
+    await prescriptionPage.clickWritePrescription();
+
     await prescriptionPage.PrescriptionObservation(
     templateData.templateName,
-    templateData.time,
-    prescriptionData.drugs1.name,
-    prescriptionData.drugs1.durationType,
-    prescriptionData.drugs1.instruction
+    templateData.searchKey,
+    timeout.time,
+    prescriptionData.addRows,
+    prescriptionData.drugs
     );
 
+    await prescriptionPage.fillMarginValues(
+    marginData.top,
+    marginData.bottom,
+    marginData.leftRight,
+    timeout.time,
+    );
 
- 
-    
+   const newTab = await prescriptionPage.openSameUrlInNewTab(
+    loginData.url,
+    timeout.time
+    );
 
+    const newCalendarPage = new CalendarPage(newTab);
 
-    
+    await newCalendarPage.selectPatientFromCalendar(
+        patientName,
+        bookingDate
+    );
 
+    const newPrescriptionPage =
+    new PrescriptionPage(newTab);
 
+    await newPrescriptionPage.clickWritePrescription();
 
-
-
-
+    await newPrescriptionPage.verifyPrescriptionObservationData(
+        prescriptionData.drugs
+    );
 
     
 });

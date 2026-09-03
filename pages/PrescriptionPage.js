@@ -2,6 +2,7 @@ const { expect } = require('@playwright/test');
 const { StepHelper } = require('../utils/StepHelper');
 const { PrescriptionLocator } = require('../Locators/PrescriptionLocator.js');
 const { Keywords } = require('../utils/Keywords');
+const { LoginPage } = require('../pages/LoginPage');
 
 class PrescriptionPage {
 
@@ -14,19 +15,6 @@ class PrescriptionPage {
     async openScheduledAppointment() {
         await this.locators.appointmentCard.waitFor({ state: 'visible' });
         await this.locators.appointmentCard.click();
-    }
-
-    async clickWritePrescription() {
-
-        await StepHelper.step(
-            this.page,
-            'Click Write Prescription',
-            async () => {
-                await this.keywords.click(
-                    this.locators.writePrescriptionBtn
-                );
-            }
-        );
     }
 
     async addSignature() {
@@ -57,35 +45,20 @@ class PrescriptionPage {
         return await downloadPromise;
     }
 
-    // async ApplyTemplate(templateName, time) {
+    async clickWritePrescription() {
 
-    //     await this.locators.documentBody.waitFor({
-    //         state: 'visible',
-    //         timeout: time
-    //     });
+        await StepHelper.step(
+            this.page,
+            'Click Write Prescription',
+            async () => {
+                await this.keywords.click(
+                    this.locators.writePrescriptionBtn
+                );
+            }
+        );
+    }
 
-    //     await this.locators.panelSearch.click();
-
-    //     await this.locators.templateSearchInput.fill(
-    //         templateName
-    //     );
-
-    //     await this.locators.templateSearchInput.press('Enter');
-
-    //     const templateItem =
-    //         this.locators.templateItem(templateName);
-
-    //     await templateItem.waitFor({
-    //         state: 'visible',
-    //         timeout: time
-    //     });
-
-    //     await templateItem.hover();
-
-    //     await templateItem.click();
-    // }
-
-    async ApplyTemplate(templateName, time) {
+    async ApplyTemplate(templateName,searchKey,time) {
 
         await StepHelper.step(
             this.page,
@@ -119,7 +92,7 @@ class PrescriptionPage {
 
                 await this.keywords.press(
                     this.locators.templateSearchInput,
-                    'Enter'
+                     searchKey
                 );
             }
         );
@@ -146,16 +119,6 @@ class PrescriptionPage {
                 );
             }
         );
-
-        // await StepHelper.step(
-        //     this.page,
-        //     'Click Left Arrow',
-        //     async () => {
-        //         await this.keywords.click(
-        //             this.locators.leftarrowBtn
-        //         );
-        //     }
-        // );
 
         await StepHelper.step(
             this.page,
@@ -184,10 +147,12 @@ class PrescriptionPage {
 
     }
 
-    async fillObservationfirst(
+    async fillObservationone(
         drugName,
-        durationType,
-        instruction
+        durationType1,
+        durationType2,
+        instruction,
+        time
     ) {
 
         await StepHelper.step(
@@ -199,7 +164,7 @@ class PrescriptionPage {
                     this.locators.firstDrugCell
                 );
 
-                await this.page.waitForTimeout(500);
+                await this.page.waitForTimeout(time);
 
                 await this.keywords.type(
                     this.locators.firstDrugSearchInput,
@@ -210,37 +175,36 @@ class PrescriptionPage {
 
         await StepHelper.step(
             this.page,
-            `Select Duration - ${durationType}`,
+            `Select Duration - ${durationType1}`,
             async () => {
 
                 await this.keywords.click(
                     this.locators.firstDurationOption
                 );
 
-                await this.page.waitForTimeout(500);
+                await this.page.waitForTimeout(time);
 
                 await this.keywords.selectOption(
                     this.locators.firstDurationDropdown,
-                    durationType
+                    durationType1
                 );
-
             }
         );
 
         await StepHelper.step(
             this.page,
-            `Select Duration - ${durationType}`,
+            `Select Duration - ${durationType2}`,
             async () => {
 
                 await this.keywords.click(
                     this.locators.secondDurationoption
                 );
 
-                await this.page.waitForTimeout(500);
+                await this.page.waitForTimeout(time);
 
                  await this.keywords.selectOption(
                     this.locators.SecondDurationDropdown,
-                    durationType
+                    durationType2
                 );
             }
         );
@@ -264,6 +228,96 @@ class PrescriptionPage {
                 );
             }
         );
+    }
+
+async fillObservationtwo(
+    drugName,
+    durationType1,
+    durationType2,
+    instruction,
+    time
+) {
+
+    await StepHelper.step(
+        this.page,
+        `Select Drug - ${drugName}`,
+        async () => {
+
+            await this.keywords.click(
+                this.locators.secondDrugCell
+            );
+
+            await this.page.waitForTimeout(time);
+
+            await this.keywords.type(
+                this.locators.secondDrugSearchInput,
+                drugName
+            );
+        }
+    );
+
+    await StepHelper.step(
+        this.page,
+        `Select Duration - ${durationType1}`,
+        async () => {
+
+            await this.keywords.click(
+                this.locators.thirdDurationOption
+            );
+
+            await this.page.waitForTimeout(time);
+
+            await this.keywords.selectOption(
+                this.locators.ThirdDurationDropdown,
+                durationType1
+            );
+        }
+    );
+
+    await StepHelper.step(
+        this.page,
+        `Select Duration - ${durationType2}`,
+        async () => {
+
+            await this.keywords.click(
+                this.locators.fourthDurationOption
+            );
+
+            await this.page.waitForTimeout(time);
+
+            await this.keywords.selectOption(
+                this.locators.FourthDurationDropdown,
+                durationType2
+            );
+        }
+    );
+
+    await StepHelper.step(
+        this.page,
+        `Select Instruction - ${instruction}`,
+        async () => {
+
+            await this.keywords.click(
+                this.locators.secondInstructionsCell
+            );
+
+            await this.keywords.click(
+                this.locators.secondInstructionInput
+            );
+
+            await this.keywords.type(
+                this.locators.secondInstructionInput,
+                instruction
+            );
+
+            await this.page.waitForTimeout(time);
+        }
+    );
+}
+
+async addAndVerifyRows(addRows) {
+
+    for (let i = 0; i < addRows; i++) {
 
         await StepHelper.step(
             this.page,
@@ -275,413 +329,370 @@ class PrescriptionPage {
                 );
             }
         );
+
+        await StepHelper.step(
+            this.page,
+            `Verify Medication Row ${i + 2}`,
+            async () => {
+
+                await expect(
+                    this.locators.firstMedicationRow
+                ).toBeVisible();
+            }
+        );
     }
+}
 
-    async PrescriptionObservation(templateName, time, drugName, durationType, instruction) {
-
-        await this.clickWritePrescription();
+    async PrescriptionObservationfirst(templateName, searchKey, time, drugName, durationType1,durationType2, instruction) {
 
         await this.ApplyTemplate(
             templateName,
+            searchKey,
             time
         );
 
-        await this.fillObservationfirst(
+        await this.fillObservationone(
             drugName,
-            durationType,
-            instruction
-        );
-
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-    async PrescriptionofObservation(
-        drugs1,
-        drugs2
-    ) {
-
-        // ---------------------------------------------------------
-        // WRITE PRESCRIPTION
-        // ---------------------------------------------------------
-
-        await this.clickWritePrescription();
-
-
-        // =========================================================
-        // FIRST DRUG
-        // =========================================================
-
-
-        await StepHelper.step(
-            this.page,
-            'Wait for Prescription Page',
-            async () => {
-
-                await this.locator.drugSearch.waitFor({
-                    state: 'visible',
-                    timeout: 50000
-                });
-            }
-        );
-
-        await StepHelper.step(
-            this.page,
-            `Select Drug - ${drugs1.name}`,
-            async () => {
-
-                await this.keywords.click(
-                    this.locators.drugSearch
-                );
-
-                await this.keywords.click(
-                    this.locators.drugLibrary(
-                        drugs1.name
-                    )
-                );
-
-                // Close Drug Library
-                await this.page
-                    .locator('body')
-                    .press('Escape');
-
-                await this.keywords.click(
-                    this.locators.editorContainer
-                );
-            }
-        );
-
-
-        // =========================================================
-        // FIRST DRUG - DURATION
-        // =========================================================
-
-        await StepHelper.step(
-            this.page,
-            `Select Duration - ${drugs1.durationType}`,
-            async () => {
-
-                await this.locators
-                    .durationDropdownByIndex(1)
-                    .selectOption(
-                        drugs1.durationType
-                    );
-
-                await this.locators
-                    .selectDurationDropdown
-                    .selectOption(
-                        drugs1.durationType
-                    );
-            }
-        );
-
-
-        // =========================================================
-        // FIRST DRUG - INSTRUCTION
-        // =========================================================
-
-        await StepHelper.step(
-            this.page,
-            `Enter Instruction - ${drugs1.instruction}`,
-            async () => {
-
-                await this.keywords.fill(
-                    this.locators.instructionDropdown,
-                    drugs1.instruction
-                );
-            }
-        );
-
-
-        // =========================================================
-        // ADD SECOND ROW
-        // =========================================================
-
-        await StepHelper.step(
-            this.page,
-            'Click Add Row',
-            async () => {
-
-                await this.keywords.click(
-                    this.locators.addRowBtn
-                );
-            }
-        );
-
-
-        // =========================================================
-        // SECOND DRUG
-        // =========================================================
-
-        await StepHelper.step(
-            this.page,
-            `Select Drug - ${drugs2.name}`,
-            async () => {
-
-                await this.keywords.click(
-                    this.locators.drugSearch
-                );
-
-                await this.keywords.click(
-                    this.locators.drugLibrary(
-                        drugs2.name
-                    )
-                );
-
-                // Close Drug Library
-                await this.page
-                    .locator('body')
-                    .press('Escape');
-
-                await this.keywords.click(
-                    this.locators.editorContainer
-                );
-            }
-        );
-
-
-        // =========================================================
-        // SECOND DRUG - CHECKBOX
-        // =========================================================
-
-        await StepHelper.step(
-            this.page,
-            `Select Drug Checkbox - ${drugs2.name}`,
-            async () => {
-
-                await this.keywords.click(
-                    this.locators.drugCheckbox(
-                        drugs2.name
-                    )
-                );
-            }
-        );
-
-
-        await this.keywords.click(
-            this.locators.editorContainer
-        );
-
-
-        // =========================================================
-        // SECOND DRUG - DURATION
-        // =========================================================
-
-        await StepHelper.step(
-            this.page,
-            `Select Duration - ${drugs2.durationType}`,
-            async () => {
-
-                await this.locators
-                    .durationDropdownByIndex(4)
-                    .selectOption(
-                        drugs2.durationType
-                    );
-
-                await this.locators
-                    .selectDurationDropdown
-                    .selectOption(
-                        drugs2.durationType
-                    );
-            }
-        );
-
-
-        // =========================================================
-        // SECOND DRUG - INSTRUCTION
-        // =========================================================
-
-        await StepHelper.step(
-            this.page,
-            `Enter Instruction - ${drugs2.instruction}`,
-            async () => {
-
-                await this.keywords.fill(
-                    this.locators.drugInstruction(
-                        drugs2.name
-                    ),
-                    drugs2.instruction
-                );
-            }
-        );
-
-
-        await this.keywords.click(
-            this.locators.editorContainer
+            durationType1,
+            durationType2,
+            instruction,
+            time
         );
     }
 
+    async PrescriptionObservationSecond(time, drugName, durationType1,durationType2, instruction) {
 
-    // =========================================================
-    // ADD SIGNATURE
-    // =========================================================
+        await this.fillObservationtwo(
+        drugName,
+        durationType1,
+        durationType2,
+        instruction,
+        time
+        );  
+        
+        await this.clickSidebarEdgeToggle(time);
+    }
 
-    async addSignature() {
+   async fillMarginValues(top, bottom, leftRight,time) {
 
-        await this.locators.addSignatureBtn.waitFor({
-            state: 'visible'
-        });
+    await StepHelper.step(
+        this.page,
+        `Enter Top Margin - ${top}`,
+        async () => {
 
-        await this.locators.addSignatureBtn.click();
+            await this.keywords.clear(
+                this.locators.marginTopInput
+            );
 
-        if (
-            await this.locators.signatureCanvas
-                .isVisible()
-                .catch(() => false)
-        ) {
+            await this.keywords.fill(
+                this.locators.marginTopInput,
+                top
+            );
 
-            const box =
-                await this.locators.signatureCanvas
-                    .boundingBox();
+            await this.page.waitForTimeout(time);
+        }
+    );
 
-            if (box) {
 
-                await this.page.mouse.move(
-                    box.x + 20,
-                    box.y + 20
+
+    await StepHelper.step(
+        this.page,
+        `Enter Bottom Margin - ${bottom}`,
+        async () => {
+
+            await this.keywords.clear(
+                this.locators.marginBottomInput
+            );
+
+            await this.keywords.fill(
+                this.locators.marginBottomInput,
+                bottom
+            );
+
+            await this.page.waitForTimeout(time);
+        }
+    );
+
+    await StepHelper.step(
+        this.page,
+        `Enter Left & Right Margin - ${leftRight}`,
+        async () => {
+
+            await this.keywords.clear(
+                this.locators.marginLeftRightInput
+            );
+
+            await this.keywords.fill(
+                this.locators.marginLeftRightInput,
+                leftRight
+            );
+
+            await this.page.waitForTimeout(time);
+        }
+    );
+
+     await StepHelper.step(
+        this.page,
+        'Click Proceed if Available',
+        async () => {
+
+            if (
+                await this.locators.proceedBtn
+                    .isVisible()
+                    .catch(() => false)
+            ) {
+
+                await this.keywords.click(
+                    this.locators.proceedBtn
                 );
 
-                await this.page.mouse.down();
+                await this.page.waitForTimeout(time);
 
-                await this.page.mouse.move(
-                    box.x + 80,
-                    box.y + 40
+            } else {
+
+                console.log(
+                    'Proceed button is not available, continuing without clicking.'
                 );
-
-                await this.page.mouse.up();
             }
         }
+    );
+}
 
-        await this.locators.saveSignatureBtn.click();
+async PrescriptionObservation(
+    templateName,
+    searchKey,
+    time,
+    addRows,
+    drugs
+) {
+
+    // Fill Existing Row 1
+    await this.PrescriptionObservationfirst(
+        templateName,
+        searchKey,
+        time,
+        drugs[0].drugName,
+        drugs[0].durationType1,
+        drugs[0].durationType2,
+        drugs[0].instruction
+    );
+
+    // Add and verify new rows
+    await this.addAndVerifyRows(addRows);
+
+
+
+    // Fill newly added rows
+    for (let i = 1; i <= addRows; i++) {
+
+        await this.PrescriptionObservationSecond(
+            time,
+            drugs[i].drugName,
+            drugs[i].durationType1,
+            drugs[i].durationType2,
+            drugs[i].instruction
+        );
     }
+}
 
-    async fillPrescriptionObservation(observationData) {
+async openSameUrlInNewTab(url, time) {
+
+    let newTab;
+
+    await StepHelper.step(
+        this.page,
+        'Open URL and Login in New Tab',
+        async () => {
+
+            newTab = await this.page.context().newPage();
+
+            await newTab.goto(url);
+
+            await newTab.waitForTimeout(Number(time));
+
+            const loginPage = new LoginPage(newTab);
+
+            await loginPage.login();
+        }
+    );
+
+    return newTab;
+}
+
+async clickSidebarEdgeToggle(time) {
+
+    await StepHelper.step(
+        this.page,
+        'Click Sidebar Edge Toggle',
+        async () => {
+
+            await this.keywords.click(
+                this.locators.sidebarEdgeToggle
+            );
+
+            await this.page.waitForTimeout(time);
+
+        }
+    );
+}
+
+// async verifyPrescriptionObservationData(drugs) {
+
+//     for (const drug of drugs) {
+
+//         await StepHelper.step(
+//             this.page,
+//             `Verify Prescription Data - ${drug.drugName}`,
+//             async () => {
+
+//                 // Actual values from UI
+//                 const actualDrugName =
+//                     await this.locators.drugNameInput(
+//                         drug.drugName
+//                     ).inputValue();
+
+//                 const actualInstruction =
+//                     await this.locators.instructionInput(
+//                         drug.instruction
+//                     ).inputValue();
+
+//                 const actualDurationType1 =
+//                     await this.locators.durationType1Input(
+//                         drug.drugName
+//                     ).inputValue();
+
+//                 const actualDurationType2 =
+//                     await this.locators.durationType2Input(
+//                         drug.drugName
+//                     ).inputValue();
+
+
+//                 // Expected values from Data
+//                 const expectedDrugName =
+//                     drug.drugName;
+
+//                 const expectedDurationType1 =
+//                     drug.durationType1;
+
+//                 const expectedDurationType2 =
+//                     drug.durationType2;
+
+//                 const expectedInstruction =
+//                     drug.instruction;
+
+
+//                 // Verify Drug Name
+//                 expect(actualDrugName.trim())
+//                     .toBe(expectedDrugName.trim());
+
+
+//                 // Verify Duration Type 1
+//                 expect(actualDurationType1.trim())
+//                     .toBe(expectedDurationType1.trim());
+
+
+//                 // Verify Duration Type 2
+//                 expect(actualDurationType2.trim())
+//                     .toBe(expectedDurationType2.trim());
+
+
+//                 // Verify Instruction
+//                 expect(actualInstruction.trim())
+//                     .toBe(expectedInstruction.trim());
+//             }
+//         );
+//     }
+// }
+
+async verifyPrescriptionObservationData(drugs) {
+
+    for (const drug of drugs) {
+
+        const row =
+            this.locators.observationRow(
+                drug.drugName
+            );
 
         await StepHelper.step(
             this.page,
-            'Fill Prescription Observation',
+            `Verify Drug Name - ${drug.drugName}`,
             async () => {
 
-                // Row 1 - Column 1
-                await this.keywords.click(
-                    this.locators.observationSearchByIndex(3)
+                const actualDrugName =
+                    await this.locators.drugNameInput(
+                        row
+                    ).inputValue();
+
+                expect(
+                    actualDrugName.trim(),
+                    `Expected: ${drug.drugName.trim()}, Actual: ${actualDrugName.trim()}`
+                ).toBe(
+                    drug.drugName.trim()
                 );
+            }
+        );
 
-                await this.keywords.click(
-                    this.locators.observationOption(
-                        observationData.row1.column1
-                    )
+
+        await StepHelper.step(
+            this.page,
+            `Verify Duration Type 1 - ${drug.durationType1}`,
+            async () => {
+
+                const actualDurationType1 =
+                    await this.locators.durationType1Input(
+                        row
+                    ).inputValue();
+
+                expect(
+                    actualDurationType1.trim(),
+                    `Expected: ${drug.durationType1.trim()}, Actual: ${actualDurationType1.trim()}`
+                ).toBe(
+                    drug.durationType1.trim()
                 );
+            }
+        );
 
-                await this.locators.editorContainer.click();
 
+        await StepHelper.step(
+            this.page,
+            `Verify Duration Type 2 - ${drug.durationType2}`,
+            async () => {
 
-                // Row 1 - Column 2
-                await this.keywords.click(
-                    this.locators.observationSearchByIndex(4)
+                const actualDurationType2 =
+                    await this.locators.durationType2Input(
+                        row
+                    ).inputValue();
+
+                expect(
+                    actualDurationType2.trim(),
+                    `Expected: ${drug.durationType2.trim()}, Actual: ${actualDurationType2.trim()}`
+                ).toBe(
+                    drug.durationType2.trim()
                 );
+            }
+        );
 
-                await this.keywords.click(
-                    this.locators.observationOption(
-                        observationData.row1.column2
-                    )
+
+        await StepHelper.step(
+            this.page,
+            `Verify Instruction - ${drug.instruction}`,
+            async () => {
+
+                const actualInstruction =
+                    await this.locators.instructionInput(
+                        row
+                    ).inputValue();
+
+                expect(
+                    actualInstruction.trim(),
+                    `Expected: ${drug.instruction.trim()}, Actual: ${actualInstruction.trim()}`
+                ).toBe(
+                    drug.instruction.trim()
                 );
-
-                await this.locators.editorContainer.click();
-
-
-                // Row 1 - Column 3
-                await this.keywords.click(
-                    this.locators.observationSearchByIndex(5)
-                );
-
-                await this.keywords.click(
-                    this.locators.observationOption(
-                        observationData.row1.column3
-                    )
-                );
-
-                await this.locators.editorContainer.click();
-
-
-                // Row 1 - Column 4
-                await this.locators.row1Column4Search.click();
-
-                await this.keywords.click(
-                    this.locators.observationOption(
-                        observationData.row1.column4
-                    )
-                );
-
-                await this.locators.editorContainer.click();
-
-
-                // Add Row 2
-                await this.locators.addRowBtn.click();
-
-
-                // Row 2 - Column 1
-                await this.locators.row2Column1Search.click();
-
-                await this.locators.favouriteOption.click();
-
-                await this.keywords.click(
-                    this.locators.observationOption(
-                        observationData.row2.column1
-                    )
-                );
-
-                await this.locators.editorContainer.click();
-
-
-                // Row 2 - Column 2
-                await this.locators.row2Column2Search.click();
-
-                await this.keywords.click(
-                    this.locators.observationOption(
-                        observationData.row2.column2
-                    )
-                );
-
-                await this.locators.editorContainer.click();
-
-
-                // Row 2 - Column 3
-                await this.locators.row2Column3Search.click();
-
-                await this.keywords.click(
-                    this.locators.observationOption(
-                        observationData.row2.column3
-                    )
-                );
-
-                await this.locators.editorContainer.click();
-
-
-                // Row 2 - Column 4
-                await this.locators.row2Column4Search.click();
-
-                await this.keywords.click(
-                    this.locators.observationOption(
-                        observationData.row2.column4
-                    )
-                );
-
-                await this.locators.editorContainer.click();
-
             }
         );
     }
-
+}
 
 }
 
