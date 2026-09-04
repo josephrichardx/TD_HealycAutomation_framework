@@ -494,6 +494,59 @@ async selectFirstAvailableSlot() {
     }
 
 
+    async updateConsultationRoom(room, expectedStatus) {
+
+    let currentStatus;
+
+    await StepHelper.step(
+        this.page,
+        'Check Consultation Status',
+        async () => {
+            currentStatus = await this.keywords.getText(
+                this.locator.consultationStatus
+            );
+        }
+    );
+
+    if (currentStatus.trim() !== expectedStatus) {
+
+        await StepHelper.step(
+            this.page,
+            `Select ${expectedStatus} Status`,
+            async () => {
+                await this.keywords.click(
+                    this.locator.consultationStatus
+                );
+
+                await this.keywords.click(
+                    this.locator.consultationStatusOption(expectedStatus)
+                );
+            }
+        );
+    }
+
+    await StepHelper.step(
+        this.page,
+        'Click Consultation Room Dropdown',
+        async () => {
+            await this.keywords.click(
+                this.locator.consultationRoomDropdown
+            );
+        }
+    );
+
+    await StepHelper.step(
+        this.page,
+        `Select Consultation Room - ${room}`,
+        async () => {
+            await this.keywords.click(
+                this.locator.consultationRoom(room)
+            );
+        }
+    );
+}
+
+
     async addConsult(
         patientName,
         doctorName,
@@ -539,6 +592,9 @@ async selectFirstAvailableSlot() {
         // return this.selectedSlotDate;
         return selectedSlotDate;
     }
+
+
+
 
 
     async addConsultForExistingPatient(

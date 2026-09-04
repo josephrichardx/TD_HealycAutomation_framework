@@ -39,6 +39,9 @@ class ConsultLocator {
             'Booking confirm'
         );
 
+
+        
+
         this.addCustomSlotsBtn = page.getByText(
             'Add custom slots'
         ).first();

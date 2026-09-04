@@ -1,0 +1,23 @@
+{
+  "patientData": {
+    "title": "Mr",
+    "phoneNumber": "1234567890",
+    "notes": "Healync",
+    "email": "test@gmail.com",
+    "age": "21",
+    "gender": "Male",
+    "address": "Chennai"
+  },
+
+  "appoinmentData": {
+    "doctorName": "Dr. Orthopedic"
+  },
+ 
+  "consultData": {
+    "consultSlot": "First Consult",
+    "consultationStatus": "Checked-In",
+    "consultationRoom": "C2",
+    "expectedToast": "Consultation room updated"
+  }
+
+}
