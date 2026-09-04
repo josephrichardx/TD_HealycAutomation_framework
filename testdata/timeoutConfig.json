@@ -4,9 +4,9 @@
     "mediumWaitMs": 1000,
     "longWaitMs": 2000,
     "retryTimeoutMs": 5000,
-    "navigationTimeoutMs": 15000,
+    "navigationTimeoutMs": 30000,
     "typingDelayMs": 100,
     "fastTypingDelayMs": 10,
-    "calendarMaxAttempts": 15,
+    "calendarMaxAttempts": 30,
     "clearBufferAttempts": 5
 }

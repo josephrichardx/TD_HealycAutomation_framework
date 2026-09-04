@@ -193,8 +193,7 @@ class ConsultLocator {
             'button.activeButon:visible'
         ).first();
 
-
-        this.nextDateBtn = page.locator('div.NextListButton').first();
+         this.nextDateBtn = page.locator('div.NextListButton').first();
  
         this.calendarDate = page
             .locator('.fc-col-header-cell-cushion')

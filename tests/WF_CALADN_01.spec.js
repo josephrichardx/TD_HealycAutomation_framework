@@ -177,6 +177,8 @@ test.describe('WF_CALADN_01 - Add Patient Profile Workflow', () => {
         // 2. Search from calendar bar and navigate to profile
         await newPatient.searchPatientAndGoToProfile(patientName);
 
+        await page.waitForTimeout(40000);
+
         // 3. Verify Name appears on Profile Page
         await newPatient.verifyPatientProfileNameMatches(
             patientName
@@ -237,6 +239,8 @@ test.describe('WF_CALADN_01 - Add Patient Profile Workflow', () => {
 
         // 2. Search and navigate to profile
         await newPatient.searchPatientAndGoToProfile(patientName);
+
+         await page.waitForTimeout(40000);
 
         // 3. Verify Name appears on Profile Page
         await newPatient.verifyPatientProfileNameMatches(

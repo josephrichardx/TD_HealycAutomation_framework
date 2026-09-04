@@ -188,19 +188,28 @@ class Keywords {
     // GET TEXT
     // =========================================================
  
-    async getText(locator) {
+    // async getText(locator) {
 
-        return await boxed('Get element text', async () => {
+    //     return await boxed('Get element text', async () => {
  
-                await locator.waitFor({
-                    state: 'visible',
-                    timeout: 30000
-                });
+    //             await locator.waitFor({
+    //                 state: 'visible',
+    //                 timeout: 30000
+    //             });
  
-                return await locator.innerText();
+    //             return await locator.innerText();
+    //     });
+    // }
+ 
+    async getText(locator) {
+ 
+        await locator.waitFor({
+            state: 'visible',
+            timeout: 30000
         });
-    }
  
+        return await locator.innerText();
+    }
  
     // =========================================================
     // GET TEXT CONTENT
@@ -368,14 +377,21 @@ class Keywords {
     // WAIT
     // =========================================================
  
-    async wait(page, milliseconds) {
+    // async wait(page, milliseconds) {
 
-        return await boxed('Wait', async () => {
+    //     return await boxed('Wait', async () => {
  
-                await page.waitForTimeout(
-                    milliseconds
-                );
-        });
+    //             await page.waitForTimeout(
+    //                 milliseconds
+    //             );
+    //     });
+    // }
+
+    async wait(page, milliseconds) {
+ 
+        await page.waitForTimeout(
+            milliseconds
+        );
     }
  
  
