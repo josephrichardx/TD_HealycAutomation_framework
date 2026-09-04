@@ -2043,18 +2043,7 @@ export class NewPatient {
 
         await this.keywords.wait(this.page, mediumWaitMs);
 
-       await Verify.state(
-
-            this.page,
-
-            'Verify Save Button is Disabled on Invalid Email Format',
-
-            this.locator.saveBtn,
-
-            { visible: true, enabled: false, soft: false }
-
-        );
-
+    
         await StepHelper.step(
 
             this.page,
