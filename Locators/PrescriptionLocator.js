@@ -47,6 +47,12 @@ class PrescriptionLocator {
         page.locator('//div[@class="template-item"]')
         .filter({ hasText: templateName });
 
+        this.templateAppliedSuccessMsg = page.locator(
+            "//div[contains(@class,'toast')]"
+        );
+
+        this.closeBtn = page.locator("//button[text()=' Close ']");
+
         this.firstDrugCell =
         page.locator(
             "(//td[contains(@class,'col-drug col-id')])[1]"
@@ -206,24 +212,284 @@ class PrescriptionLocator {
             )
         });
 
-this.drugNameInput = (row) =>
-    row.locator("input").filter({
-        hasValue: row
-            .locator("input")
-            .first()
-            .inputValue()
+    this.drugNameInput = (row) =>
+        row.locator("input").filter({
+            hasValue: row
+                .locator("input")
+                .first()
+                .inputValue()
     });
 
-this.durationType1Input = (row) =>
-    row.locator("select").first();
+    this.durationType1Input = (row) =>
+        row.locator("select").first();
 
-this.durationType2Input = (row) =>
-    row.locator("select").last();
+    this.durationType2Input = (row) =>
+        row.locator("select").last();
 
-this.instructionInput = (row) =>
-    row.locator(
-        "input[placeholder*='Type instruction']"
+    // Drug
+this.drugCell = page.locator(
+    "//td[contains(@class,'col-drug col-id')]"
+);
+
+this.drugSearchInput = page.locator(
+    "//textarea[contains(@class,'drug-name-input')]"
+);
+
+// this.drugSearchInput = () =>
+//     page
+//         .locator("tr.medication-row")
+//         .last()
+//         .locator("textarea.drug-name-input");
+
+this.drugLibraryOption = (drugName) =>
+    page.getByText(
+        `Drug Library: ${drugName}`,
+        { exact: true }
     );
+// Form
+this.formDropdown = page.locator(
+    "//td[contains(@class,'col-form')]//select"
+);
+
+// Strength
+this.strengthInput = page.locator(
+    "//td[contains(@class,'col-strength')]//input"
+);
+
+this.strengthUnitDropdown = (rowIndex) =>
+    page
+        .locator("//tr[contains(@class,'medication-row')]")
+        .nth(rowIndex)
+        .locator("td.col-strength select");
+
+// this.strengthUnitDropdown = page.locator(
+//     "//td[contains(@class,'col-strength')]//select"
+// );
+
+// Route
+this.routeDropdown = page.locator(
+    "//td[contains(@class,'col-route')]//select"
+);
+
+// Dosage
+this.dosageInput = page.locator(
+    "//td[contains(@class,'col-dosage')]//input"
+);
+
+// this.dosageUnitDropdown = page.locator(
+//     "//td[contains(@class,'col-dosage')]//select"
+// );
+
+// this.dosageUnitDropdown = (rowIndex) =>
+//     page
+//         .locator("//tr[contains(@class,'medication-row')]")
+//         .nth(rowIndex)
+//         .locator("td.col-dosage select");
+this.dosageUnitDropdown = page.locator(
+    "//tr[contains(@class,'medication-row')]//td[contains(@class,'col-dosage')]//select"
+);
+
+// Frequency
+this.frequencyDropdown = page.locator(
+    "//td[contains(@class,'col-frequency')]//select"
+);
+
+// Schedule
+this.scheduleInputs = page.locator(
+    "//td[contains(@class,'col-schedule')]//input"
+);
+
+// // Timing
+// this.timingCell = page.locator(
+//     "//td[contains(@class,'col-timing')]"
+// );
+
+// this.timingButton = page.locator(
+//     "//td[contains(@class,'col-timing')]//button"
+// );
+
+// this.timingOption = (timing) =>
+//     page.locator(
+//         `//button[@title='${timing}']`
+//     );
+
+// Duration
+this.durationInput = page.locator(
+    "//td[contains(@class,'col-duration')]//input"
+);
+
+// this.durationUnitDropdown = page.locator(
+//     "//td[contains(@class,'col-duration')]//select"
+// );
+
+this.durationUnitDropdown = (rowIndex) =>
+    page
+        .locator("//tr[contains(@class,'medication-row')]")
+        .nth(rowIndex)
+        .locator("td.col-duration select");  
+
+// Instruction
+// this.instructionInput = page.locator(
+//     "//td[contains(@class,'col-instructions')]//input"
+// );
+
+this.medicationRows = page.locator(
+    "//tr[contains(@class,'medication-row')]"
+);
+
+// this.medicationRows = page.locator(
+//     "//tr[contains(@class,'medication-row')]"
+// );
+
+// Timing Cell
+
+this.timingCell = (rowIndex) =>
+    page
+        .locator("tr.medication-row")
+        .nth(rowIndex)
+        .locator("td.col-timing");
+
+// Timing Dropdown
+this.timingDropdown = (rowIndex) =>
+    this.timingCell(rowIndex)
+        .locator("button.multi-select-trigger");
+
+// Timing Option
+this.timingOption = (rowIndex, timing) =>
+    this.timingCell(rowIndex)
+        .locator("div.multi-select-option")
+        .filter({ hasText: timing })
+        .first();
+
+this.instructionCell = (rowIndex) =>
+    page
+        .locator("//tr[contains(@class,'medication-row')]")
+        .nth(rowIndex)
+        .locator("td.col-instructions");
+
+this.instructionInput = (rowIndex) =>
+    this.instructionCell(rowIndex)
+        .locator("input[placeholder*='Type instruction']");
+
+
+// this.observationRow = (drugName) =>
+//     this.page.locator(
+//         `//tr[contains(@class,'medication-row')][.//input[@value="${drugName.trim()}"]]`
+//     );
+
+// =========================
+// NEW TAB - VERIFICATION
+// =========================
+
+// this.newTabDrugNameInput = (rowIndex) =>
+//     page
+//         .locator("//tr[contains(@class,'medication-row')]")
+//         .nth(rowIndex)
+//         .locator("textarea.drug-name-input");
+
+this.newTabDrugNameCell = (rowIndex) =>
+    page
+        .locator("//tr[contains(@class,'medication-row')]")
+        .nth(rowIndex)
+        .locator("td.col-drug");
+
+this.newTabFormDropdown = (rowIndex) =>
+    page
+        .locator("//tr[contains(@class,'medication-row')]")
+        .nth(rowIndex)
+        .locator("td.col-form select");
+
+this.newTabStrengthInput = (rowIndex) =>
+    page
+        .locator("//tr[contains(@class,'medication-row')]")
+        .nth(rowIndex)
+        .locator("td.col-strength input");
+
+this.newTabStrengthUnitDropdown = (rowIndex) =>
+    page
+        .locator("//tr[contains(@class,'medication-row')]")
+        .nth(rowIndex)
+        .locator("td.col-strength select");
+
+this.newTabRouteDropdown = (rowIndex) =>
+    page
+        .locator("//tr[contains(@class,'medication-row')]")
+        .nth(rowIndex)
+        .locator("td.col-route select");
+
+this.newTabDosageInput = (rowIndex) =>
+    page
+        .locator("//tr[contains(@class,'medication-row')]")
+        .nth(rowIndex)
+        .locator("td.col-dosage input");
+
+this.newTabDosageUnitDropdown = (rowIndex) =>
+    page
+        .locator("//tr[contains(@class,'medication-row')]")
+        .nth(rowIndex)
+        .locator("td.col-dosage select");
+
+this.newTabFrequencyDropdown = (rowIndex) =>
+    page
+        .locator("//tr[contains(@class,'medication-row')]")
+        .nth(rowIndex)
+        .locator("td.col-frequency select");
+
+this.newTabScheduleInputs = (rowIndex) =>
+    page
+        .locator("//tr[contains(@class,'medication-row')]")
+        .nth(rowIndex)
+        .locator("td.col-schedule input");
+
+this.newTabTimingDropdown = (rowIndex) =>
+    page
+        .locator("//tr[contains(@class,'medication-row')]")
+        .nth(rowIndex)
+        .locator("td.col-timing button");
+
+this.newTabDurationInput = (rowIndex) =>
+    page
+        .locator("//tr[contains(@class,'medication-row')]")
+        .nth(rowIndex)
+        .locator("td.col-duration input");
+
+this.newTabDurationUnitDropdown = (rowIndex) =>
+    page
+        .locator("//tr[contains(@class,'medication-row')]")
+        .nth(rowIndex)
+        .locator("td.col-duration select");
+
+this.newTabInstructionInput = (rowIndex) =>
+    page
+        .locator("//tr[contains(@class,'medication-row')]")
+        .nth(rowIndex)
+        .locator("td.col-instructions input");
+
+this.observationRows =
+    page.locator("//tr[contains(@class,'medication-row')]");
+
+    this.existingObservationRows =
+    page.locator("//tr[contains(@class,'medication-row')]");
+
+this.observationSection =
+    page.locator("fieldset").filter({
+        hasText: "Co-morbidities"
+    });
+
+// this.observationAddRowBtn =
+//     this.observationSection.getByRole("button", { name: "+" });
+
+this.observationAddRowBtn = page
+    .locator("section")
+    .filter({
+        hasText: "Co-morbidities"
+    })
+    .locator("button")
+    .filter({
+        has: page.locator("svg")
+    })
+    .last();
+
         }
 
     drugLibrary(drugName) {

@@ -19,7 +19,8 @@
 
   "templateData": {
   "templateName": "EMR_AUTOMATION_TEMPLATE TD",
-  "searchKey": "Enter"
+  "searchKey": "Enter",
+   "templateAppliedMessage": "Template Applied successfully!"
   },
 
   "timeout": {
@@ -43,6 +44,23 @@
             "instruction": "After Food"
           }
       ]
+},
+
+"observationData": {
+    "row": 1,
+    "drugName": "1 AL Plus 5mg/120mg Capsule",
+    "form": "Capsule",
+    "strength": "4",
+    "strengthUnit": "ml",
+    "route": "PO",
+    "dosage": "4",
+    "dosageUnit": "capsule",
+    "frequency": "Daily",
+    "schedule": ["4", "4", "4", "4"],
+    "timing": "Before food",
+    "duration": "4",
+    "durationUnit": "Days",
+    "instruction": "INS 1"
 },
 
  "loginData": {

@@ -8,7 +8,7 @@ const { CalendarPage } = require('../pages/CalendarPage');
 const { PrescriptionPage } = require('../pages/PrescriptionPage');
 
  
-const { patientData,appoinmentData,consultData,prescriptionData,templateData,timeout,loginData,marginData } = require('../testdata/TC_EMR012.json');
+const { patientData,appoinmentData,consultData,prescriptionData,templateData,timeout,loginData,marginData,observationData } = require('../testdata/TC_EMR012.json');
 const { generateUniquePatientFullName } = require('../utils/RandomData');
 
 test('EMR Prescription', async ({ page }) => {
@@ -41,13 +41,27 @@ test('EMR Prescription', async ({ page }) => {
 
     await prescriptionPage.clickWritePrescription();
 
-    await prescriptionPage.PrescriptionObservation(
-    templateData.templateName,
-    templateData.searchKey,
-    timeout.time,
-    prescriptionData.addRows,
-    prescriptionData.drugs
+    await prescriptionPage.ApplyTemplate(
+            templateData.templateName,
+            templateData.searchKey,
+            timeout.time,
+            templateData.templateAppliedMessage
+        );
+
+    await prescriptionPage.fillObservation(
+    observationData,
+    timeout.time
     );
+
+    // await prescriptionPage.PrescriptionObservation(
+    // templateData.templateName,
+    // templateData.searchKey,
+    // timeout.time,
+    // prescriptionData.addRows,
+    // prescriptionData.drugs
+    // );
+
+    await prescriptionPage.clickSidebarEdgeToggle(timeout.time);
 
     await prescriptionPage.fillMarginValues(
     marginData.top,
@@ -56,7 +70,7 @@ test('EMR Prescription', async ({ page }) => {
     timeout.time,
     );
 
-   const newTab = await prescriptionPage.openSameUrlInNewTab(
+    const newTab = await prescriptionPage.openSameUrlInNewTab(
     loginData.url,
     timeout.time
     );
@@ -73,8 +87,9 @@ test('EMR Prescription', async ({ page }) => {
 
     await newPrescriptionPage.clickWritePrescription();
 
-    await newPrescriptionPage.verifyPrescriptionObservationData(
-        prescriptionData.drugs
+    await newPrescriptionPage.verifyNewTabObservationData(
+    observationData,
+    timeout.time
     );
 
     
