@@ -23,6 +23,7 @@ class StepHelper {
             }
         };
 
+        
 
         const runAction = async () => {
 
@@ -65,6 +66,15 @@ class StepHelper {
             }
         }
     }
+
+    static async addSteps(stepNumber, type, stepName) {   
+              const message =type.toLowerCase() === 'start'? 
+              `Step ${stepNumber} Start : ${stepName}`: 
+              `Step ${stepNumber} End : ${stepName}`;    
+                   await test.step(message, async () => {     
+                            console.log(message);   
+                              });   
+                              }
 
     static async logStep(page, stepName, action) {
     await test.step(stepName, async () => {
