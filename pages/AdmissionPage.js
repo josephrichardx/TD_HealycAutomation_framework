@@ -100,7 +100,7 @@ export class AdmissionPage {
         }
     );
 
-    await this.keywords.wait(this.page, 2000);
+    await this.keywords.wait(this.page, 1000);
 
     const patient = this.locator.getPatient(patientName);
 
@@ -384,7 +384,7 @@ export class AdmissionPage {
         );
 
         await expect(options.first()).toBeVisible({
-            timeout: 20000
+            timeout: 10000
         });
 
         const count = await options.count();
@@ -1023,7 +1023,7 @@ async addConsumables(consumableCount) {
 
         await dateValue.waitFor({
             state: 'visible',
-            timeout: 50000
+            timeout: 30000
         });
 
 
