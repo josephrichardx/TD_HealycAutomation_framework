@@ -504,37 +504,27 @@ async selectFirstAvailableSlot() {
         );
     }
  
-
-    async updateConsultationRoom(room, expectedStatus) {
-
-    let currentStatus;
+async updateConsultationRoom(room, status, expectedMessage) {
 
     await StepHelper.step(
         this.page,
-        'Check Consultation Status',
+        'Click Consultation Status Dropdown',
         async () => {
-            currentStatus = await this.keywords.getText(
-                this.locator.consultationStatus
+            await this.keywords.click(
+                this.locator.consultationStatusDropdown
             );
         }
     );
 
-    if (currentStatus.trim() !== expectedStatus) {
-
-        await StepHelper.step(
-            this.page,
-            `Select ${expectedStatus} Status`,
-            async () => {
-                await this.keywords.click(
-                    this.locator.consultationStatus
-                );
-
-                await this.keywords.click(
-                    this.locator.consultationStatusOption(expectedStatus)
-                );
-            }
-        );
-    }
+    await StepHelper.step(
+        this.page,
+        `Select Consultation Status - ${status}`,
+        async () => {
+            await this.keywords.click(
+                this.locator.checkedInOption
+            );
+        }
+    );
 
     await StepHelper.step(
         this.page,
@@ -551,12 +541,55 @@ async selectFirstAvailableSlot() {
         `Select Consultation Room - ${room}`,
         async () => {
             await this.keywords.click(
-                this.locator.consultationRoom(room)
+                this.locator.consultationRoomOption(room)
             );
         }
     );
+
+// const actualMessage =
+//     await this.locator.consultationRoomSuccessToast
+//         .getByText(expectedMessage, { exact: true })
+//         .textContent();
+
+// await StepHelper.step(
+//     this.page,
+//     `Verify Consultation Room Success Message | Expected: ${expectedMessage} | Actual: ${actualMessage.trim()}`,
+//     async () => {
+//         expect(actualMessage.trim()).toBe(expectedMessage);
+//     }
+// );
+
+const messageLocator =
+    this.locator.consultationRoomSuccessToast
+        .getByText(expectedMessage, { exact: true });
+
+const actualMessage =
+    await this.keywords.getText(messageLocator);
+
+await StepHelper.step(
+    this.page,
+    `Verify Consultation Room Success Message | Expected: ${expectedMessage} | Actual: ${actualMessage}`,
+    async () => {
+        expect(actualMessage).toBe(expectedMessage);
+    }
+);
+
 }
 
+// async verifyConsultationRoomUpdated(expectedMessage) {
+
+//     await StepHelper.step(
+//         this.page,
+//         'Verify Consultation Room Updated Message',
+//         async () => {
+
+//             const actualMessage =
+//                 (await this.locator.consultationRoomSuccessToast.textContent()).trim();
+
+//             expect(actualMessage).toBe(expectedMessage);
+//         }
+//     );
+// }
 
     async addConsult(
         patientName,

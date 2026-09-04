@@ -36,7 +36,20 @@ test('Generate Invoice', async ({ page }) => {
     bookingDate
     );
  
+    await consultPage.updateConsultationRoom(
+    consultData.consultationRoom,
+    consultData.consultationStatus,
+    consultData.consultationRoomSuccessMessage
+    );
+
+    // await page.locator('app-custom-popup:nth-child(2) > .wrappers > .content > .appointment > div > .appointment-details > .appointment-content > .appointment2 > .booking-info > .appointment-details2 > .container2 > .inner > .statuys > div > div > .field-dropdown > div > .name-action3').click();
+    // await page.getByText('Checked-In').nth(1).click();
+    // await page.getByText('C1').nth(1).click();
+    // await page.getByText('C2').nth(1).click();
+    // await expect(page.locator('app-custom-toaster-message')).toContainText('Consultation room updatedDismiss');
  
+
+
+
  
 });
- 

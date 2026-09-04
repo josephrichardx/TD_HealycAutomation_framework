@@ -441,7 +441,7 @@ class CancellationPage {
 );
 }
 
-    async cancelPackageWithFullRefund(cancellationData){
+async cancelPackageWithFullRefund(cancellationData){
  
 await StepHelper.step(
     this.page,

@@ -53,25 +53,6 @@ function getAdmissionData() {
         doctorName: 'Default Doctor'
     };
 }
-<<<<<<< HEAD
-
-// const firstNames = [
-//     'John', 'James', 'Robert', 'Michael', 'David',
-//     'Sarah', 'Emily', 'Jessica', 'Ashley', 'Amanda',
-//     'Daniel', 'Matthew', 'Christopher', 'Andrew', 'Joseph',
-//     'Emma', 'Olivia', 'Sophia', 'Isabella', 'Mia'
-// ];
-
-// const lastNames = [
-//     'Doe', 'Smith', 'Johnson', 'Williams', 'Brown',
-//     'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez',
-//     'Martinez', 'Wilson', 'Anderson', 'Taylor', 'Thomas',
-//     'Moore', 'Jackson', 'Martin', 'Lee', 'Perez'
-// ];
-
-=======
- 
->>>>>>> 22603a3802c8f6f02250a5835f03619a435ed691
 const firstNames = [
     'John', 'James', 'Robert', 'Michael', 'David',
     'Sarah', 'Emily', 'Jessica', 'Ashley', 'Amanda',
@@ -88,10 +69,6 @@ const firstNames = [
     'Samantha', 'Elizabeth', 'Natalie', 'Luna', 'Savannah',
     'Brooklyn', 'Leah', 'Zoe', 'Stella', 'Hazel',
     'Violet', 'Penelope', 'Lucy', 'Claire', 'Ellie'
-<<<<<<< HEAD
-=======
-
->>>>>>> 22603a3802c8f6f02250a5835f03619a435ed691
 ];
  
 const lastNames = [
@@ -110,10 +87,6 @@ const lastNames = [
     'Morales', 'Murphy', 'Cook', 'Rogers', 'Gutierrez',
     'Ortiz', 'Morgan', 'Cooper', 'Peterson', 'Bailey',
     'Reed', 'Kelly', 'Howard', 'Ramos', 'Kim'
-<<<<<<< HEAD
-=======
-
->>>>>>> 22603a3802c8f6f02250a5835f03619a435ed691
 ];
  
 function generateUniquePatientFullName() {

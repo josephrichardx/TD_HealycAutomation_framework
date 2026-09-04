@@ -17,7 +17,7 @@
     "consultSlot": "First Consult",
     "consultationStatus": "Checked-In",
     "consultationRoom": "C2",
-    "expectedToast": "Consultation room updated"
+    "consultationRoomSuccessMessage": "Consultation room updated"
   }
 
 }

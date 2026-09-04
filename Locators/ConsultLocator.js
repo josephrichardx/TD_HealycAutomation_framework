@@ -14,6 +14,25 @@ class ConsultLocator {
         this.ConsultbookingConfirmMsg = page.getByText(
             'Booking confirm'
         );
+
+        this.consultationStatusDropdown =
+    page.locator("(//div[@class='field-dropdown'])[2]");
+
+this.checkedInOption =
+    page.locator("(//span[text()='Checked-In'])[2]");
+
+this.consultationRoomDropdown =
+    page.locator("(//div[@class='name-consultRoom'])[2]");
+
+this.consultationRoomOption = (room) =>
+    page.locator(`(//div[text()=' ${room} '])[2]`);
+
+this.consultationRoomSuccessToast =
+    page.locator("//div[@class='toaster-wrapper success']");
+    
+// this.consultationRoomSuccessToast =
+//     page.locator("//div[@class='toaster-wrapper success']//div[@class='text-content']");
+
         this.patientSearchTxt = page.getByRole('textbox', {
             name: 'Search with patient name or'
         });
