@@ -480,11 +480,7 @@ async selectFirstAvailableSlot() {
     }
 
     async verifyBookingConfirmation() {
-<<<<<<< HEAD
 
-=======
- 
->>>>>>> 22603a3802c8f6f02250a5835f03619a435ed691
     await StepHelper.step(
         this.page,
         'Verify Consult Booking Confirmation Message is Visible',

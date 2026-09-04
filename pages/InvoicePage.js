@@ -2,15 +2,10 @@ const { expect } = require('@playwright/test');
 const { StepHelper } = require('../utils/StepHelper');
 const { InvoiceLocator } = require('../Locators/InvoiceLocator');
 const { Keywords } = require('../utils/Keywords');
-<<<<<<< HEAD
-// const { invoiceData } = require('../testdata/invoiceData.json');
-// const visitingSlipData = require('../testdata/visitingSlip.json');
-=======
 const { invoiceData } = require('../testdata/invoiceData.json');
 const { Verify } = require('../utils/verification');
 const { waitData } = require('../testdata/waitData.json');
 const visitingSlipData = require('../testdata/visitingSlip.json');
->>>>>>> 22603a3802c8f6f02250a5835f03619a435ed691
 
 class InvoicePage {
 
