@@ -1112,7 +1112,7 @@ await StepHelper.step(
             instructionCell
         );
 
-        await this.page.waitForTimeout(500);
+        // await this.page.waitForTimeout(500);
 
         const instruction =
             this.locators.instructionInput(rowIndex);

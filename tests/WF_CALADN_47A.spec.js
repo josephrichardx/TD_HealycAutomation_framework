@@ -15,8 +15,6 @@ test('Generate Invoice', async ({ page }) => {
     const patientName = generateUniquePatientFullName();
     const patientPage = new PatientPage(page);
     const consultPage = new ConsultPage(page);
-    const servicePage = new ServicePage(page);
-    const invoicePage = new InvoicePage(page);
     const calendarPage = new CalendarPage(page);
  
      await patientPage.createPatient(
