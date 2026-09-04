@@ -97,6 +97,11 @@ on:
         type: boolean
         default: false
 
+      run_wf_47a:
+        description: 'WF_CALADN_47A.spec.js'
+        type: boolean
+        default: false
+
       run_wf_48:
         description: 'WF_CALADN_48.spec.js'
         type: boolean
@@ -153,6 +158,7 @@ jobs:
           RUN_45: ${{ inputs.run_wf_45 }}
           RUN_46: ${{ inputs.run_wf_46 }}
           RUN_47: ${{ inputs.run_wf_47 }}
+          RUN_47A: ${{ inputs.run_wf_47a }}
           RUN_48: ${{ inputs.run_wf_48 }}
           RUN_125: ${{ inputs.run_wf_125 }}
           RUN_126: ${{ inputs.run_wf_126 }}
@@ -178,6 +184,7 @@ jobs:
           if [ "$RUN_45" = "true" ]; then FILES="$FILES tests/WF_CALADN_45.spec.js"; fi
           if [ "$RUN_46" = "true" ]; then FILES="$FILES tests/WF_CALADN_46.spec.js"; fi
           if [ "$RUN_47" = "true" ]; then FILES="$FILES tests/WF_CALADN_47.spec.js"; fi
+          if [ "$RUN_47A" = "true" ]; then FILES="$FILES tests/WF_CALADN_47A.spec.js"; fi
           if [ "$RUN_48" = "true" ]; then FILES="$FILES tests/WF_CALADN_48.spec.js"; fi
           if [ "$RUN_125" = "true" ]; then FILES="$FILES tests/WF_CALADN_125.spec.js"; fi
           if [ "$RUN_126" = "true" ]; then FILES="$FILES tests/WF_CALADN_126.spec.js"; fi
