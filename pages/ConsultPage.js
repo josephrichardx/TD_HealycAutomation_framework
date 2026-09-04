@@ -1,9 +1,11 @@
 const { expect } = require('@playwright/test');
 const { StepHelper } = require('../utils/StepHelper');
 const { Verify } = require('../utils/verification');
+const { waitData } = require('../testdata/waitData.json');
 const { ConsultLocator } = require('../Locators/ConsultLocator');
 const { Keywords } = require('../utils/Keywords');
 const { generateAdmissionDate } = require('../utils/RandomData');
+const { toasterMessages } = require('../testdata/toasterMessages.json');
 
 class ConsultPage {
 
@@ -51,9 +53,8 @@ class ConsultPage {
             }
         );
 
-        const patient = this.page.locator(
-            `//div[@title="${patientName}"]`
-        );
+        const patient =
+            this.locator.getPatientResult(patientName).first();
 
         await this.keywords.waitForElement(
             patient
@@ -90,7 +91,7 @@ class ConsultPage {
 
         await this.keywords.wait(
             this.page,
-            1000
+            waitData.mediumWait
         );
 
         await this.keywords.waitForElement(
@@ -151,10 +152,7 @@ class ConsultPage {
          const serviceOption = this.locator.serviceOption(consultSlot);
 
 
-        await serviceOption.waitFor({
-            state: 'visible',
-            timeout: 1000
-        });
+        await this.keywords.waitForElement(serviceOption);
 
         await StepHelper.step(
             this.page,
@@ -390,7 +388,7 @@ async selectFirstAvailableSlot() {
 
                 await this.keywords.wait(
                     this.page,
-                    1000
+                    waitData.mediumWait
                 );
             }
         }
@@ -431,22 +429,28 @@ async selectFirstAvailableSlot() {
             }
         );
 
-        await this.keywords.wait(
-            this.page,
-            1000
-        );
+        // Select the option that MATCHES the doctor, not whichever option
+        // happens to be first. The old code clicked
+        // (//div[@class='dropdown-option'])[1] after a fixed wait, so a slow
+        // filter silently booked a different doctor (e.g. Dr. Cardiology).
+        const doctorOption =
+            this.locator.getDoctorOption(doctorName).first();
 
-        await this.keywords.waitForElement(
-            this.locator.doctorOption
+        await this.keywords.waitForElement(doctorOption);
+
+        await Verify.text(
+            this.page,
+            `Doctor Option Text - ${doctorName}`,
+            doctorName,
+            doctorOption,
+            { exact: true }
         );
 
         await StepHelper.step(
             this.page,
             `Select Doctor - ${doctorName}`,
             async () => {
-                await this.keywords.click(
-                    this.locator.doctorOption
-                );
+                await this.keywords.click(doctorOption);
             }
         );
     }
@@ -476,23 +480,34 @@ async selectFirstAvailableSlot() {
     }
 
     async verifyBookingConfirmation() {
+<<<<<<< HEAD
 
+=======
+ 
+>>>>>>> 22603a3802c8f6f02250a5835f03619a435ed691
     await StepHelper.step(
         this.page,
         'Verify Consult Booking Confirmation Message is Visible',
         async () => {
             await expect(
-                this.locator.bookingConfirmMsg
+                this.locator.ConsultbookingConfirmMsg
             ).toBeVisible();
         }
     );
+
+    // await Verify.toaster(
+    //     this.page,
+    //     'Verify Consult Booking Confirmation Toaster',
+    //     this.locator.bookingConfirmToastTitle,
+    //     toasterMessages.bookingConfirm
+    // );
 
     await this.keywords.waitForLoadState(
             this.page,
             'networkidle'
         );
     }
-
+ 
 
     async updateConsultationRoom(room, expectedStatus) {
 
@@ -722,7 +737,7 @@ async selectFirstAvailableSlot() {
  
     async searchAndSelectPatient(
         patientName,
-        searchDebounce = 1500
+        searchDebounce = waitData.searchRefresh
     ) {
  
  
@@ -901,7 +916,7 @@ async selectFirstAvailableSlot() {
     }
 
      
-    async clearPreSelectedFilters(filterRefresh = 2000) {
+    async clearPreSelectedFilters(filterRefresh = waitData.filterRefresh) {
  
  
         const chips = this._requireLocator(
@@ -913,7 +928,7 @@ async selectFirstAvailableSlot() {
         );
  
  
-        await this.keywords.wait(this.page, 1000);
+        await this.keywords.wait(this.page, waitData.mediumWait);
  
  
         let initialCount;
@@ -1052,7 +1067,10 @@ async selectFirstAvailableSlot() {
  
                         const chipText =
 
-                            (await chip.innerText().catch(() => '')).trim();
+                            (
+                                await this.keywords.getText(chip)
+                                    .catch(() => '')
+                            ).trim();
  
  
                         const removeBtn = this._requireLocator(
@@ -1074,7 +1092,7 @@ async selectFirstAvailableSlot() {
                         console.log(`Removed filter chip: ${chipText}`);
  
  
-                        await this.keywords.wait(this.page, 500);
+                        await this.keywords.wait(this.page, waitData.shortWait);
 
                     }
 
@@ -1113,7 +1131,7 @@ async selectFirstAvailableSlot() {
  
 
      
-    async selectDoctorByName(doctorName, filterRefresh = 2000) {
+    async selectDoctorByName(doctorName, filterRefresh = waitData.filterRefresh) {
  
  
         if (!doctorName) {
@@ -1350,7 +1368,7 @@ async selectFirstAvailableSlot() {
  
  
      
-    async selectConsultTypeByName(consultType, filterRefresh = 2000) {
+    async selectConsultTypeByName(consultType, filterRefresh = waitData.filterRefresh) {
  
  
         if (!consultType) {
@@ -1498,7 +1516,7 @@ async selectFirstAvailableSlot() {
     async selectBookingDatePreset(
         presetLabel,
         offsetInDays = 1,
-        filterRefresh = 2000
+        filterRefresh = waitData.filterRefresh
     ) {
 
         const targetDate = generateAdmissionDate(offsetInDays);
@@ -1638,7 +1656,7 @@ async selectFirstAvailableSlot() {
             this.page,
             'Appointment Results Label Reports A Number',
             /\d+/,
-            async () => await countLabel.innerText()
+            async () => await this.keywords.getText(countLabel)
         );
 
         await Verify.countAtLeast(
@@ -1667,7 +1685,7 @@ async selectFirstAvailableSlot() {
             { visible: true, soft: false }
         );
 
-        const cardText = await card.innerText();
+        const cardText = await this.keywords.getText(card);
 
                 const feeAmount = this._extractFeeAmount(cardText);
 
@@ -1689,7 +1707,9 @@ async selectFirstAvailableSlot() {
         );
 
         const slotTimeText = (
-            await slot.locator('span.slot-time').innerText()
+            await this.keywords.getText(
+                slot.locator('span.slot-time')
+            )
         ).trim();
 
         await Verify.record(
@@ -1759,7 +1779,7 @@ async selectFirstAvailableSlot() {
             { visible: true, soft: false }
         );
 
-        const feeText = await feeElement.innerText();
+        const feeText = await this.keywords.getText(feeElement);
 
                 const actualFeeAmount =
             this._extractFeeAmount(feeText) ?? feeText.trim();
@@ -2141,7 +2161,7 @@ async selectFirstAvailableSlot() {
             { hidden: true, soft: false }
         );
 
-        await this.keywords.wait(this.page, 500);
+        await this.keywords.wait(this.page, waitData.shortWait);
 
         await Verify.text(
             this.page,
@@ -2207,7 +2227,7 @@ async selectFirstAvailableSlot() {
 
         await this.keywords.waitForElement(card);
 
-        const cardText = await card.innerText();
+        const cardText = await this.keywords.getText(card);
 
         const feeAmount = this._extractFeeAmount(cardText);
 
@@ -2252,7 +2272,7 @@ async selectFirstAvailableSlot() {
         );
     }
 
-async clearPreSelectedFilters(filterRefresh = 2000) {
+async clearPreSelectedFilters(filterRefresh = waitData.filterRefresh) {
 
     const chips = this._requireLocator(
 
@@ -2262,7 +2282,7 @@ async clearPreSelectedFilters(filterRefresh = 2000) {
 
     );
 
-    await this.keywords.wait(this.page, 1000);
+    await this.keywords.wait(this.page, waitData.mediumWait);
 
     const initialCount = await chips.count();
 
@@ -2348,7 +2368,10 @@ async clearPreSelectedFilters(filterRefresh = 2000) {
 
                     const chipText =
 
-                        (await chip.innerText().catch(() => '')).trim();
+                        (
+                            await this.keywords.getText(chip)
+                                .catch(() => '')
+                        ).trim();
 
                     const removeBtn = this._requireLocator(
 
@@ -2366,7 +2389,7 @@ async clearPreSelectedFilters(filterRefresh = 2000) {
 
                     console.log(`Removed filter chip: ${chipText}`);
 
-                    await this.keywords.wait(this.page, 500);
+                    await this.keywords.wait(this.page, waitData.shortWait);
 
                 }
 
@@ -2400,7 +2423,7 @@ async clearPreSelectedFilters(filterRefresh = 2000) {
 
 }
 
-async selectDoctorByName(doctorName, filterRefresh = 2000) {
+async selectDoctorByName(doctorName, filterRefresh = waitData.filterRefresh) {
 
     if (!doctorName) {
 
@@ -2519,7 +2542,7 @@ async selectDoctorByName(doctorName, filterRefresh = 2000) {
     }
 
      
-    async selectDoctorByName(doctorName, filterRefresh = 2000) {
+    async selectDoctorByName(doctorName, filterRefresh = waitData.filterRefresh) {
  
  
         if (!doctorName) {

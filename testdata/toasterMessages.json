@@ -1,0 +1,6 @@
+{
+  "toasterMessages": {
+    "patientSaved": "Patient Saved successfully",
+    "bookingConfirm": "Booking confirm"
+  }
+}

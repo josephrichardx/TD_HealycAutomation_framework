@@ -38,7 +38,11 @@ class CalendarLocator {
         this.sidebarCalendarIcon = page.locator(
         '#calendar-toggle'
         );
-        
+
+        this.appointmentDetailsPanel = page.locator(
+            'app-appointment-details'
+        );
+
 }
 
 getStatus(status) {

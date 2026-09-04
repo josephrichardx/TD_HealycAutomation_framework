@@ -12,6 +12,10 @@ class ServiceLocator {
             name: 'Add Service'
         });
 
+        this.ServicebookingConfirmMsg = page.getByText(
+            'Booking confirm'
+        );
+
         this.proceedBtn = page.getByText(
             'Proceed'
         );
@@ -20,8 +24,8 @@ class ServiceLocator {
             'Confirm Booking'
         );
 
-        this.bookingConfirmMsg = page.getByText(
-            'Booking confirm'
+        this.bookingConfirmToastTitle = page.locator(
+            'div.toaster-wrapper.success .text-content .title'
         );
 
 
@@ -111,9 +115,12 @@ class ServiceLocator {
     // Dynamic Patient Locator
     getPatient(patientName) {
 
+        // The patient list can hold more than one row with the same title when
+        // a generated name already exists in the environment, so resolve to the
+        // first match instead of raising a strict-mode violation.
         return this.page.locator(
             `//div[@title="${patientName}"]`
-        );
+        ).first();
     }
 
 

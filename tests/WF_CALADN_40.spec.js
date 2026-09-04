@@ -9,18 +9,20 @@ const { AppointmentPage } = require("../pages/AppointmentPage.js");
 const { WaitlistPage } = require("../pages/WaitlistPage.js");
 const { PaymentPage } = require("../pages/PaymentPage.js");
  
-const { patientData } = require("../testdata/patients.json");
-const { appoinmentData, waitlistBookingData } = require("../testdata/appointmentData.json");
-const { consultData } = require("../testdata/consultData.json");
-const { invoiceData } = require("../testdata/invoiceData.json");
-const { paymentData } = require("../testdata/payments.json");
+const {
+    patientData,
+    appoinmentData,
+    waitlistBookingData,
+    consultData,
+    invoiceData,
+    paymentData,
+    waitlistPatientOverrides,
+    waitlistVerificationData
+} = require("../testdata/TC_40.json");
  
 const {
-    generatePatientName,
-    generateShortPatientName
+    generateUniquePatientFullName
 } = require("../utils/RandomData.js");
- 
-test.setTimeout(300000);
  
 test("WF_CALADN_40 - Validate Generate Invoice for a Waitlist booking and its reflection in the payment section", async ({ page }) => {
     const bookingDate = waitlistBookingData.standardBookingDate;
@@ -31,13 +33,12 @@ test("WF_CALADN_40 - Validate Generate Invoice for a Waitlist booking and its re
     const appointmentPage = new AppointmentPage(page);
     const waitlistPage = new WaitlistPage(page);
     const invoicePage = new InvoicePage(page);
-    const paymentPage = new PaymentPage(page);
  
     // Create a fresh patient for the waitlist path.
-    const waitlistPatientName = generateShortPatientName();
+    const waitlistPatientName = generateUniquePatientFullName();
     const waitlistPatientData = {
         ...patientData,
-        email: ""
+        ...waitlistPatientOverrides
     };
  
     await patientPage.createPatient(
@@ -51,7 +52,7 @@ test("WF_CALADN_40 - Validate Generate Invoice for a Waitlist booking and its re
     await consultPage.searchAndSelectPatient(waitlistPatientName);
     await consultPage.verifyBookingPanelOpened(
         waitlistPatientName,
-        "Consult"
+        consultData.appointmentType
     );
     await consultPage.clearPreSelectedFilters();
     await consultPage.selectDoctorByName(appoinmentData.doctorName);
@@ -70,17 +71,46 @@ test("WF_CALADN_40 - Validate Generate Invoice for a Waitlist booking and its re
     await calendarPage.clickSidebarCalendarIcon();
     await waitlistPage.clickWaitlist();
  
-    await waitlistPage.navigateToWaitlistEntry(waitlistPatientName);
+    // The Waitlist list is filtered by the calendar date, so move the calendar
+    // to the booking date before looking for the entry.
+    await calendarPage.navigateToBookingDayOfMonth(bookingDate);
  
-    await waitlistPage.verifyWaitlistEntry(waitlistPatientName);
+    // Scroll the list to reach the entry.
+    await waitlistPage.findWaitlistEntry(waitlistPatientName);
  
-    // Open the waitlist patient's appointment from Calendar and verify Pending.
-    await calendarPage.clickSidebarCalendarIcon();
-    await calendarPage.selectPatientFromCalendarForceHover(
-        waitlistPatientName,
-        bookingDate
+    await waitlistPage.verifyWaitlistEntry(
+        waitlistPatientName
     );
-    await waitlistPage.verifyPendingAppointment();
+ 
+    // A pending waitlist entry is not an appointment on the calendar and cannot
+    // be invoiced, so schedule it first - that turns it into a real
+    // appointment on the date the slot was taken.
+    await waitlistPage.clickSchedule(waitlistPatientName);
+
+    const scheduledSlot =
+        await waitlistPage.selectFirstAvailableSlotAcrossDates();
+
+    await waitlistPage.clickConfirmSchedule();
+
+    // Open the now-scheduled appointment from the Calendar and verify status.
+    if (scheduledSlot.day) {
+
+        await calendarPage.selectPatientFromCalendarForceHover(
+            waitlistPatientName,
+            `${scheduledSlot.day} ${scheduledSlot.monthYear}`
+        );
+
+    } else {
+
+        await calendarPage.selectPatientFromCalendarForceHoverByDay(
+            waitlistPatientName,
+            bookingDate
+        );
+    }
+
+    await waitlistPage.verifyAppointmentStatus(
+        waitlistVerificationData.appointmentStatus
+    );
  
     // Generate and verify the invoice without changing the existing invoice method.
     await invoicePage.generateInvoice(
@@ -88,16 +118,32 @@ test("WF_CALADN_40 - Validate Generate Invoice for a Waitlist booking and its re
         invoiceData
     );
     
-    await waitlistPage.verifyInvoiceGenerated();
+    await waitlistPage.verifyInvoiceGenerated(
+        waitlistVerificationData.invoiceGenerated
+    );
     await waitlistPage.closeAppointmentDetails();
  
     // Re-open the appointment and verify the invoice before opening Payment.
-    await calendarPage.selectPatientFromCalendarForceHover(
-        waitlistPatientName,
-        bookingDate
+    if (scheduledSlot.day) {
+
+        await calendarPage.selectPatientFromCalendarForceHover(
+            waitlistPatientName,
+            `${scheduledSlot.day} ${scheduledSlot.monthYear}`
+        );
+
+    } else {
+
+        await calendarPage.selectPatientFromCalendarForceHoverByDay(
+            waitlistPatientName,
+            bookingDate
+        );
+    }
+    await waitlistPage.verifyInvoiceGenerated(
+        waitlistVerificationData.invoiceGenerated
     );
-    await waitlistPage.verifyInvoiceGenerated();
-    await waitlistPage.verifyInvoiceNameStartsWith(paymentData.invoicePrefix);
+    await waitlistPage.verifyInvoiceNameStartsWith(
+        waitlistVerificationData.invoiceName
+    );
  
  
 });

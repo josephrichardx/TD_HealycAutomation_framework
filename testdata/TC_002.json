@@ -1,0 +1,49 @@
+{
+  "validPatientData": {
+    "title": "Mr",
+    "mobileNumber": "9876543210",
+    "referralBy": "test"
+  },
+  "addNewMenuOptions": [
+    "Add Patient", "Add Consult", "Add Service", "Add Test",
+    "Add Consumable", "Add Day Care", "Add Package",
+    "Add Surgery", "Add Admission"
+  ],
+  "expectedAppointmentTypes": [
+    "Consult", "Test", "Consumable", "Service", "DayCare", "Packages"
+  ],
+  "expectedDoctors": [
+    "Default Doctor", "Dr. Dentist", "Dr. Dermatology",
+    "Dr. General Medicine", "Dr. Gynecology", "Dr. Neurology",
+    "Dr. Ophthalmologist", "Dr. Orthopedic", "Dr. Pediatric",
+    "Dr. Physiotherapy"
+  ],
+  "consultBookingData": {
+    "appointmentType": "Consult",
+    "doctorName": "Dr. Orthopedic",
+    "consultType": "First Consult",
+    "followUpConsultType": "Follow-up consult",
+    "expectedOverlapCount": 2,
+    "minSlotsToVerify": 1,
+    "maxSlotsToCheck": 5,
+    "slotDurationMinutes": 10,
+    "minExpectedResults": 1,
+    "expectedTimePickerColumns": 3
+  },
+
+  "uiLabels": {
+    "doctorFilter": "Doctor",
+    "consultFilter": "Consult",
+    "dateFilter": "Date",
+    "startTimePicker": "Start time",
+    "endTimePicker": "End time",
+    "hourCol": "Hour",
+    "minuteCol": "Minute",
+    "amPmCol": "AM/PM"
+  },
+
+  "bookingToast": {
+    "title": "Booking confirm",
+    "subtext": "Your appointment have been booked."
+  }
+}

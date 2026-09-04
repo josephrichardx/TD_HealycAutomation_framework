@@ -225,19 +225,22 @@ class InvoiceLocator
     this.appointmentDetails =
         page.locator('app-appointment-details');
     // Appointment Status
-    this.confirmedStatus =
-        page.locator(
-            "(//div[@class='field-dropdown'])[2]"
-        );
-    this.checkInStatus =
-        page.locator(
-            "(//span[text()='Checked-In'])[2]"
-        );
+    // this.confirmedStatus =
+        // page.locator(
+            // "(//div[@class='field-dropdown'])[2]"
+        // );
+    // this.checkInStatus =
+        // page.locator(
+            // "(//span[text()='Checked-In'])[2]"
+        // );
     // Visiting Slip
     this.visitingSlip =
         page.locator(
             "(//div[@class='visiting-slip-label'])[2]"
     );
+    // Rendered visiting-slip PDF page
+    this.visitingSlipPdfPage =
+        page.getByLabel(/Page.*1/);
     // Visiting Slip pdf text locator
     this.pdfBody3 =
         page.locator(
@@ -309,6 +312,13 @@ class InvoiceLocator
             { exact: true }
 
         ).last();
+
+        // Status badge carries a status-specific class (status-checkedin) on
+        // its container, so presence of this element is proof of the actual
+        // Checked-In state - not just matching text. The class alone matches
+        // 4 elements on the page (header pill, dropdown, stale popup copies),
+        // so anchor to the one that actually follows the "Status" label.
+        this.checkedInStatusBadge = page.locator("(//div[text()='Status'])[2]//ancestor::div[1]//following-sibling::div[@class='field-dropdown']");
 
     }
 

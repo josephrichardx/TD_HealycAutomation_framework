@@ -1,0 +1,72 @@
+{
+  "validPatientData": {
+    "title": "Mr",
+    "mobileNumber": "9876543210",
+    "updatedMobileNumber": "9876501234",
+    "referralBy": "test",
+    "email": "test@gmail.com",
+    "minDobYear": 1990,
+    "maxDobYear": 2005,
+    "gender": "Male",
+    "address": "address",
+    "expectedVipTooltipText": "Enabling this will mask the patient's mobile and WhatsApp numbers. Once marked as VIP, this cannot be changed later.",
+    "additionalDetails": {
+      "treatingDoctor": "test doctor",
+      "medicalCondition": "None",
+      "pincode": "1234",
+      "patientCategory": "patient"
+    }
+  },
+
+  "dobYearRange": {
+    "minYear": 1990,
+    "maxYear": 2002
+  },
+
+  "validationErrors": {
+    "missingSalutationTitle": "Incomplete details",
+    "missingSalutationSubtext": "Salutations are important",
+    "invalidNameTitle": "Invalid value for Patient Name",
+    "invalidNameSubtext": "Invalid value for Patient Name provided for Patient's Name. Please follow any one of these formats: Sanjay Yadav, S Y, etc.",
+    "excessiveLengthTitle": "Error Adding patient",
+    "excessiveLengthSubtext": "Unable to add patient right now",
+    "duplicateWarningTitle": "1 Duplicate patient exists!!",
+    "duplicateWarningMessage": "1 patient record matches. Please verify before proceeding.",
+    "missingMandatoryTitle": "Incomplete details",
+    "missingMandatorySubtext": "Please fill all mandatory fields",
+    "invalidEmailTitle": "Invalid value for Email",
+    "missingReferralTitle": "Incomplete details",
+    "missingReferralSubtext": "Patient referral is important"
+  },
+
+  "invalidPatientData": {
+    "specialCharName": "^%#&$",
+    "alphanumericMobile": "abc!@#1234567890",
+    "expectedSanitizedMobile": "1234567890",
+    "negativeAgeInput": "-5",
+    "expectedSanitizedAge": "5",
+    "invalidEmailFormat": "test.com",
+    "futureTestDay": "15"
+  },
+  
+  "excessiveLengthData": {
+    "nameChar": "John ",
+    "nameLength": 25,
+    "mobileChar": "9",
+    "mobileLength": 25,
+    "addressChar": "Main St ",
+    "addressLength": 70
+  },
+
+  "leapYearDob": {
+    "day": "29",
+    "monthName": "February",
+    "monthIndex": 1,
+    "year": "2020"
+  },
+
+  "toastMessages": {
+    "patientSavedSuccess": "Patient Saved successfully",
+    "patientUpdatedSuccess": "Patient details updated successfully"
+  }
+}

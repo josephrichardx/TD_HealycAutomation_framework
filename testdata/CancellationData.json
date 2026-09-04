@@ -6,6 +6,23 @@
     "expectedStatus": "Cancelled"
   },
   "cancelReasonData": {
-  "cancelReason": "Emergency or unexpected issue"
+    "cancelReason": "Emergency or unexpected issue"
+  },
+  "cancellationVerificationData": {
+    "paymentRecorded": {
+      "expectedMessage": "Payment recorded successfully"
+    },
+    "refundRecorded": {
+      "expectedStatus": "Cancelled"
+    },
+    "makePaymentRecorded": {
+      "expectedStatus": "Cancelled"
+    },
+    "appointmentCancelled": {
+      "expectedStatus": "Cancelled"
+    },
+    "packageCancelled": {
+      "expectedStatus": "Cancelled"
+    }
   }
 }

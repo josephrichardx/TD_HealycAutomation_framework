@@ -61,7 +61,9 @@ this.otOption = (otName) =>
     
 
     getPatient(patientName) {
-        return this.page.locator(`//div[@title="${patientName}"]`);
+        return this.page
+            .locator(`//div[@title="${patientName}"]`)
+            .first();
     }
 
     get locationDropdownBtn() {

@@ -1,0 +1,33 @@
+{
+  "patientData": {
+    "title": "Mr",
+    "phoneNumber": "1234567890",
+    "notes": "Healync",
+    "email": "test@gmail.com",
+    "age": "21",
+    "gender": "Male",
+    "address": "Chennai",
+    "savedVerification": {
+      "expectedMessage": "Patient Saved successfully"
+    }
+  },
+  "appoinmentData": {
+    "doctorName": "Dr. Orthopedic"
+  },
+ 
+  "consultData": {
+    "consultSlot": "First Consult",
+    "appointmentType": "Consult"
+  },
+  "cancelReasonData": {
+    "cancelReason": "Emergency or unexpected issue"
+  },
+  "waitlistPatientOverrides": {
+    "email": ""
+  },
+  "waitlistCancellationVerificationData": {
+    "consultCancelled": {
+      "expectedEntryState": "removed from the waitlist"
+    }
+  }
+}

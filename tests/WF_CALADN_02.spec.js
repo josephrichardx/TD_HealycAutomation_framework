@@ -1,37 +1,61 @@
 import { test } from '../fixtures/baseTest.js';
 
-const { ConsultPage } = require('../pages/ConsultPage');
+const { ConsultPage } = require('../pages/ConsultPagenew');
+const { NewPatient } = require('../pages/NewPatientPage'); 
 
 const {
+    validPatientData,
     consultBookingData,
     expectedAppointmentTypes,
-    bookingTimeouts
-} = require('../testdata/consultData.json');
+    addNewMenuOptions,
+    expectedDoctors,
+    bookingToast,
+    uiLabels
+} = require('../testdata/TC_002.json');
+
+// Import the dedicated timeout config
+const timeouts = require('../testdata/timeoutConfig.json');
+
+const { generateUniquePatientFullName } = require('../utils/RandomData');
 
 
 test.describe('WF_CALADN_02 - Validate Consult Appointment Booking', () => {
 
-    test.setTimeout(180000);
-
-    test.use({ viewport: { width: 1920, height: 1080 } });
-
     test('Flow 1 - Open Consult Booking And Apply Doctor, Consult And Date Filters', async ({ page }) => {
 
         const consultPage = new ConsultPage(page);
-
+        const newPatient = new NewPatient(page);
+        
         const data = { ...consultBookingData };
 
-        await consultPage.openConsultBooking();
+        // --- PRE-REQUISITE: QUICK CREATE UNIQUE PATIENT ---
+        const uniquePatientName = generateUniquePatientFullName();
+
+        await newPatient.openAddPatientForm();
+        await newPatient.enterPatientName(uniquePatientName);
+        await newPatient.selectSalutation(validPatientData.title);
+        await newPatient.enterMobileNumber(validPatientData.mobileNumber);
+        await newPatient.enterReferralBy(validPatientData.referralBy);
+        await newPatient.clickSave();
+        await consultPage.keywords.wait(page, timeouts.longWaitMs); 
+        // --------------------------------------------------
+
+        // --- STEP 2 VERIFICATION SEQUENCE ---
+        await consultPage.clickAddNewButton();
+        await consultPage.verifyAddNewMenuOptions(addNewMenuOptions);
+        await consultPage.clickAddConsultOption();
+        // ------------------------------------
 
         await consultPage.verifyPatientSearchBarLoaded();
 
         await consultPage.searchAndSelectPatient(
-            data.patientName,
-            bookingTimeouts.searchDebounce
+            uniquePatientName, 
+            timeouts.mediumWaitMs,
+            data.minExpectedResults
         );
 
         await consultPage.verifyBookingPanelOpened(
-            data.patientName,
+            uniquePatientName,
             data.appointmentType
         );
 
@@ -40,77 +64,115 @@ test.describe('WF_CALADN_02 - Validate Consult Appointment Booking', () => {
         );
 
         await consultPage.clearPreSelectedFilters(
-            bookingTimeouts.filterRefresh
+            timeouts.longWaitMs,
+            timeouts.mediumWaitMs,
+            timeouts.shortWaitMs,
+            timeouts.clearBufferAttempts
         );
+
+        // --- STEP 4 VERIFICATION ---
+        await consultPage.verifyDoctorDropdownOptions(
+            expectedDoctors, 
+            timeouts.mediumWaitMs
+        );
+        // ---------------------------
 
         await consultPage.selectDoctorByName(
             data.doctorName,
-            bookingTimeouts.filterRefresh
+            timeouts.longWaitMs,
+            data.minExpectedResults,
+            uiLabels.doctorFilter
         );
 
         await consultPage.selectConsultTypeByName(
             data.consultType,
-            bookingTimeouts.filterRefresh
+            timeouts.longWaitMs,
+            uiLabels.consultFilter
         );
 
-        await consultPage.selectBookingDatePreset(
-            data.datePreset,
-            data.bookingDateOffsetInDays,
-            bookingTimeouts.filterRefresh
+        await consultPage.verifyAppointmentResultsLoaded(
+            data.minExpectedResults
         );
 
-        await consultPage.verifyAppointmentResultsLoaded();
+        // ==========================================================
+        // NEW SLOT HUNTING LOGIC
+        // ==========================================================
+        const capturedBookingDate = await consultPage.findAvailableDateByClickingNext(
+            timeouts.calendarMaxAttempts,
+            timeouts.mediumWaitMs
+        );
+        
+        await consultPage.verifyAvailableSlots(
+            data.minSlotsToVerify,
+            data.maxSlotsToCheck
+        );
 
-        const selectedSlot =
-            await consultPage.selectAndCaptureAvailableSlot();
+        const selectedSlot = await consultPage.selectAndCaptureAvailableSlot(
+            data.minExpectedResults
+        );
+        // ==========================================================
 
         await consultPage.proceedToReviewAppointment();
-
-        await consultPage.verifyReviewAppointmentFee(
-            selectedSlot.feeAmount
+        await consultPage.verifyReviewAppointmentFee(selectedSlot.feeAmount);
+        
+        await consultPage.confirmBookingWithVerification(
+            bookingToast.title,
+            bookingToast.subtext,
+            timeouts.toastWaitTimeoutMs
         );
-
-        await consultPage.confirmBookingWithVerification();
-
+        
         await consultPage.dismissBookingConfirmationToastIfPresent();
 
-        await consultPage.openConsultBooking();
+        // ==========================================================
+        // FOLLOW-UP BOOKING (Using Captured Data to Force Overlap)
+        // ==========================================================
+        await consultPage.clickAddNewButton();
+        await consultPage.clickAddConsultOption();
 
         await consultPage.verifyPatientSearchBarLoaded();
 
         await consultPage.searchAndSelectPatient(
-            data.patientName,
-            bookingTimeouts.searchDebounce
+            uniquePatientName,
+            timeouts.mediumWaitMs,
+            data.minExpectedResults
         );
 
         await consultPage.verifyBookingPanelOpened(
-            data.patientName,
+            uniquePatientName,
             data.appointmentType
         );
 
         await consultPage.clearPreSelectedFilters(
-            bookingTimeouts.filterRefresh
+            timeouts.longWaitMs,
+            timeouts.mediumWaitMs,
+            timeouts.shortWaitMs,
+            timeouts.clearBufferAttempts
         );
 
         await consultPage.selectDoctorByName(
             data.doctorName,
-            bookingTimeouts.filterRefresh
+            timeouts.longWaitMs,
+            data.minExpectedResults,
+            uiLabels.doctorFilter
         );
 
         await consultPage.selectConsultTypeByName(
             data.followUpConsultType,
-            bookingTimeouts.filterRefresh
+            timeouts.longWaitMs,
+            uiLabels.consultFilter
         );
 
-        await consultPage.selectBookingDatePreset(
-            data.datePreset,
-            data.bookingDateOffsetInDays,
-            bookingTimeouts.filterRefresh
+        await consultPage.verifyAppointmentResultsLoaded(
+            data.minExpectedResults
         );
 
-        await consultPage.verifyAppointmentResultsLoaded();
+        await consultPage.navigateToSpecificDateOnCard(
+            capturedBookingDate,
+            timeouts.calendarMaxAttempts,
+            timeouts.mediumWaitMs
+        );
 
-                const followUpFee = await consultPage.captureFeeFromCard(
+        const followUpFee = await consultPage.captureFeeFromCard(
             data.followUpConsultType
         );
 
@@ -119,17 +181,41 @@ test.describe('WF_CALADN_02 - Validate Consult Appointment Booking', () => {
         );
 
         await consultPage.setCustomSlotStartTime(
-            selectedSlot.slotTimeText
+            selectedSlot.slotTimeText,
+            timeouts.shortWaitMs,
+            data.slotDurationMinutes,
+            data.expectedTimePickerColumns,
+            uiLabels
         );
 
         await consultPage.confirmCustomSlot();
-
+        
         await consultPage.proceedToReviewAppointment();
-
-        await consultPage.verifyReviewAppointmentFee(
-            followUpFee
+        await consultPage.verifyReviewAppointmentFee(followUpFee);
+        
+        await consultPage.confirmBookingWithVerification(
+            bookingToast.title,
+            bookingToast.subtext,
+            timeouts.toastWaitTimeoutMs
         );
+        
+        await consultPage.dismissBookingConfirmationToastIfPresent();
 
-        await consultPage.confirmBookingWithVerification();
+        // ==========================================================
+        // STEP 8 & STEP 6/11: WAITLIST & CALENDAR OVERLAP VALIDATION
+        // ==========================================================
+        await consultPage.clickCalendarWaitlistTab();
+
+        await consultPage.findPatientOnCalendar(
+            uniquePatientName,
+            timeouts.calendarMaxAttempts,
+            timeouts.mediumWaitMs
+        );
+        
+        await consultPage.verifyCalendarOverlap(
+            uniquePatientName,
+            data.expectedOverlapCount
+        );
+        // ==========================================================
     });
 });

@@ -284,7 +284,24 @@ export class Verify {
         }
     }
 
-
+    async forceClick(locator, timeout = 60000) {
+ 
+ 
+    await locator.waitFor({
+        state: 'attached',
+        timeout
+    });
+ 
+ 
+    await locator.scrollIntoViewIfNeeded();
+ 
+ 
+    await locator.click({
+        timeout,
+        force: true
+    });
+}
+ 
     static async inputValue(page, description, expected, locator, options = {}) {
 
         return await this._compare(

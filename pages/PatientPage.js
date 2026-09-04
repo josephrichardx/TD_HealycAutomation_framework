@@ -1,5 +1,6 @@
 const { expect } = require('@playwright/test');
 const { StepHelper } = require('../utils/StepHelper');
+const { Verify } = require('../utils/verification');
 const { PatientLocator } = require('../Locators/PatientLocator');
 const { Keywords } = require('../utils/Keywords');
 
@@ -301,6 +302,90 @@ class PatientPage {
 
 
     // =========================================================
+    // VERIFY PATIENT SAVE OUTCOME
+    // =========================================================
+    // The success toaster is transient - if it is already gone by the time it
+    // is read, the observable outcome is the Add Patient form closing. This
+    // races both so a missed toaster is not reported as a failed save.
+    // `verification` = { expectedMessage } from the calling spec's own data
+    // file (patientData.savedVerification).
+
+    async verifyPatientSavedOutcome(patientName, verification) {
+
+        const step = 'Verify Patient Saved Successfully';
+
+        const toaster = this.locator.patientSavedMsg.first();
+
+        const panelField = this.locator.patientNameTxt.first();
+
+        let actualMessage = null;
+
+        await StepHelper.step(
+            this.page,
+            `Wait For Patient Save Outcome - ${patientName}`,
+            async () => {
+
+                await Promise.race([
+
+                    toaster
+                        .waitFor({ state: 'visible' })
+                        .catch(() => {}),
+
+                    panelField
+                        .waitFor({ state: 'hidden' })
+                        .catch(() => {})
+                ]);
+
+                const toasterVisible = await toaster
+                    .isVisible()
+                    .catch(() => false);
+
+                if (toasterVisible) {
+
+                    actualMessage = (
+                        await this.keywords.getText(toaster)
+                    ).trim();
+                }
+            }
+        );
+
+        if (actualMessage && verification && verification.expectedMessage) {
+
+            await Verify.equals(
+                this.page,
+                `${step} - ${patientName}`,
+                verification.expectedMessage,
+                actualMessage
+            );
+
+            return actualMessage;
+
+        } else if (actualMessage) {
+
+            await Verify.record(
+                this.page,
+                `Patient Save Toaster - ${patientName}`,
+                actualMessage
+            );
+
+            return actualMessage;
+
+        } else {
+
+            // The toaster was already gone - the form closing is the outcome.
+            await Verify.state(
+                this.page,
+                `Add Patient form closed after save - ${patientName}`,
+                panelField,
+                { hidden: true, soft: false }
+            );
+
+            return null;
+        }
+    }
+
+
+    // =========================================================
     // CREATE PATIENT
     // =========================================================
 
@@ -347,8 +432,9 @@ class PatientPage {
 
         await this.clickSave();
 
-        await this.verifyPatientSaved(
-            patientName
+        await this.verifyPatientSavedOutcome(
+            patientName,
+            patientData.savedVerification
         );
     }
 

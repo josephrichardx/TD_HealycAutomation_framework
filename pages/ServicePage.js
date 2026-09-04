@@ -1,7 +1,9 @@
 const { expect } = require('@playwright/test');
 const { StepHelper } = require('../utils/StepHelper');
+const { Verify } = require('../utils/verification');
 const { ServiceLocator } = require('../Locators/ServiceLocator');
 const { Keywords } = require('../utils/Keywords');
+const { toasterMessages } = require('../testdata/toasterMessages.json');
 
 class ServicePage {
 
@@ -473,24 +475,24 @@ async selectFirstAvailableSlot() {
         );
     }
 
-    async verifyBookingConfirmation() {
-
+     async verifyBookingConfirmation() {
+ 
     await StepHelper.step(
         this.page,
         'Verify Service Booking Confirmation Message',
         async () => {
             await expect(
-                this.locator.bookingConfirmMsg
+                this.locator.ServicebookingConfirmMsg
             ).toBeVisible();
         }
     );
-
+ 
     await this.keywords.wait(
             this.page,
             5000
         );
-
-}
+ 
+    }
 
 
     async addService(

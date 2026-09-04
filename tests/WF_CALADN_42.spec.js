@@ -11,25 +11,21 @@ const { AppointmentPage } = require('../pages/AppointmentPage.js');
 const { WaitlistPage } = require('../pages/WaitlistPage.js');
 const { WaitlistCancellationPage } = require('../pages/WaitlistCancellationPage.js');
  
-const { cancelReasonData } = require('../testdata/CancellationData.json');
-const { patientData } = require('../testdata/patients.json');
-const { paymentData } = require('../testdata/payments.json');
-const { appoinmentData, waitlistBookingData } = require('../testdata/appointmentData.json');
-const { consultData } = require('../testdata/consultData.json');
-const { serviceData } = require('../testdata/serviceData.json');
-const { invoiceData } = require('../testdata/invoiceData.json');
+const {
+    patientData,
+    appoinmentData,
+    consultData,
+    cancelReasonData,
+    waitlistPatientOverrides,
+    waitlistCancellationVerificationData
+} = require('../testdata/TC_42.json');
  
  
-const { generatePatientName, generateShortPatientName } = require('../utils/RandomData.js');
+const { generateUniquePatientFullName } = require('../utils/RandomData.js');
  
  
 test('WF_CALADN_42 - Validate cancellation of a Waitlist booking', async ({ page }) => {
-    test.setTimeout(300000);
- 
-    const bookingDate = waitlistBookingData.standardBookingDate;
- 
- 
-    const patientName = generatePatientName();
+    const patientName = generateUniquePatientFullName();
  
  
     const patientPage = new PatientPage(page);
@@ -44,10 +40,10 @@ test('WF_CALADN_42 - Validate cancellation of a Waitlist booking', async ({ page
  
  
     // Step 12 - Create a fresh patient for the Waitlist path (new name, no reused
-    const waitlistPatientName = generateShortPatientName();
+    const waitlistPatientName = generateUniquePatientFullName();
     const waitlistPatientData = {
         ...patientData,
-        email: ''
+        ...waitlistPatientOverrides
     };
  
     await patientPage.createPatient(
@@ -63,7 +59,7 @@ test('WF_CALADN_42 - Validate cancellation of a Waitlist booking', async ({ page
     await consultPage.searchAndSelectPatient(waitlistPatientName);
     await consultPage.verifyBookingPanelOpened(
         waitlistPatientName,
-        'Consult'
+        consultData.appointmentType
     );
  
     // Clear any filters left over from an earlier booking in this session
@@ -79,17 +75,11 @@ test('WF_CALADN_42 - Validate cancellation of a Waitlist booking', async ({ page
         consultData.consultSlot
     );
  
-    // Open booking date picker
-    await appointmentPage.openBookingDatePicker();
- 
-    // Select booking date
-    await appointmentPage.selectBookingDate(
-        bookingDate
-    );
- 
-    // Apply selected date
-    await appointmentPage.applyBookingDate();
- 
+    // Select the booking date at runtime instead of trusting the static
+    // day-of-month from test data: walk dates forward from today and use
+    // the first one whose doctor card shows an available slot.
+    const bookingDate = await appointmentPage.selectRuntimeBookingDate();
+
     // Step 14 - Click hourglass
     await waitlistPage.clickHourglass();
  
@@ -101,8 +91,11 @@ test('WF_CALADN_42 - Validate cancellation of a Waitlist booking', async ({ page
     // Step 17 - Return to Calendar and open Waitlist
     await calendarPage.clickSidebarCalendarIcon();
     await waitlistPage.clickWaitlist();
-    // Step 18 - Move through calendar pages until the patient appears on the Waitlist
-    await waitlistPage.navigateToWaitlistEntry(
+    // The Waitlist list is filtered by the calendar date, so move the calendar
+    // to the booking date before looking for the entry.
+    await calendarPage.navigateToBookingDayOfMonth(bookingDate);
+    // Step 18 - Scroll the list until the patient appears on the Waitlist
+    await waitlistPage.findWaitlistEntry(
         waitlistPatientName
     );
     // Verify waitlist entry
@@ -119,6 +112,12 @@ test('WF_CALADN_42 - Validate cancellation of a Waitlist booking', async ({ page
  
     //click the cancel consult button to confirm cancellation
     await waitlistCancellationPage.clickCancelConsult();
+ 
+    //verify the cancelled consult is no longer on the waitlist
+    await waitlistCancellationPage.verifyWaitlistEntryRemoved(
+        waitlistPatientName,
+        waitlistCancellationVerificationData.consultCancelled
+    );
  
  
  

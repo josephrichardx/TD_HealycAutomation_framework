@@ -14,17 +14,12 @@
   "appoinmentData": {
     "doctorName": "Dr. Orthopedic"
   },
+  "waitlistBookingData": {
+    "standardBookingDate": "28"
+  },
   "consultData": {
-    "consultSlot": "First Consult"
-  },
-  "bookingData": {
-    "bookingDate": "27"
-  },
-  "serviceData": {
-    "serviceName": "Clear Aligners"
-  },
-  "DateData": {
-    "bookingDate": "27"
+    "consultSlot": "First Consult",
+    "appointmentType": "Consult"
   },
   "invoiceData": {
     "adjustmentAmount": "10",
@@ -32,14 +27,20 @@
     "adjustmentReason": "Consult Discount"
   },
   "paymentData": {
-    "paymentMethod": "UPI",
-    "amount": "500",
-    "transactionId": "TXN123456789",
-    "paymentType": "Cash",
-    "makeFullPayment": true,
     "invoicePrefix": "INV-00"
   },
-  "cancelReasonData": {
-  "cancelReason": "Emergency or unexpected issue"
+  "waitlistPatientOverrides": {
+    "email": ""
+  },
+  "waitlistVerificationData": {
+    "appointmentStatus": {
+      "expectedStatus": "Confirmed"
+    },
+    "invoiceGenerated": {
+      "expectedPattern": "^INV-00\\d+$"
+    },
+    "invoiceName": {
+      "expectedPrefix": "INV-00"
+    }
   }
 }
