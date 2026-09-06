@@ -891,27 +891,23 @@ export class NewPatient {
 
     async verifyPatientProfileNameMatches(patientName) {
 
-        await this.keywords.waitForElement(
+    await this.keywords.waitForElement(
+        this.locator.patientProfileNameText,
+        navigationTimeoutMs
+    );
 
-            this.locator.patientProfileNameText,
+    await expect(async () => {
+        const text = (await this.locator.patientProfileNameText.innerText()).trim();
+        expect(text).not.toBe('.');
+    }).toPass({ timeout: navigationTimeoutMs });
 
-            navigationTimeoutMs
-
-        );
-
-        await Verify.text(
-
-            this.page,
-
-            'Patient Profile Name Matches Created Patient',
-
-            patientName,
-
-            this.locator.patientProfileNameText
-
-        );
-
-    }
+    await Verify.text(
+        this.page,
+        'Patient Profile Name Matches Created Patient',
+        patientName,
+        this.locator.patientProfileNameText
+    );
+}
 
     async verifyPatientProfileDetails(patientData, dobData, options = {}) {
 
