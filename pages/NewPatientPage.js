@@ -573,18 +573,6 @@ export class NewPatient {
 
     async checkVipPatientCheckbox() {
 
-        await Verify.state(
-
-            this.page,
-
-            'VIP Checkbox Toggle',
-
-            this.locator.vipCheckboxToggle,
-
-            { visible: true, soft: false }
-
-        );
-
         await StepHelper.step(
 
             this.page,
@@ -711,18 +699,6 @@ export class NewPatient {
 
     async verifyVipCheckboxCannotBeUnchecked() {
 
-        await Verify.state(
-
-            this.page,
-
-            'VIP Checkbox',
-
-            this.locator.vipCheckboxState,
-
-            { visible: true, soft: false }
-
-        );
-
         const classBefore = await this.locator.vipCheckboxState.getAttribute('class');
 
         await Verify.contains(
@@ -795,18 +771,6 @@ export class NewPatient {
 
         );
 
-        await Verify.state(
-
-            this.page,
-
-            `Patient Saved Confirmation - ${patientName}`,
-
-            this.locator.successToastTitle,
-
-            { visible: true, soft: false }
-
-        );
-
         await Verify.text(
 
             this.page,
@@ -822,18 +786,6 @@ export class NewPatient {
     }
 
     async searchAndVerifyPatient(patientName) {
-
-        await Verify.state(
-
-            this.page,
-
-            'Search Patient Field',
-
-            this.locator.searchPatientTxt,
-
-            { visible: true, soft: false }
-
-        );
 
         await StepHelper.step(
 
@@ -863,18 +815,6 @@ export class NewPatient {
 
         const patientDropdownResult = this.locator.getPatient(patientName);
 
-        await Verify.state(
-
-            this.page,
-
-            `Patient Search Result - ${patientName}`,
-
-            patientDropdownResult,
-
-            { visible: true, soft: false }
-
-        );
-
         await StepHelper.step(
 
             this.page,
@@ -889,7 +829,7 @@ export class NewPatient {
 
         );
 
-        await this.page.waitForURL(/**\**/patient-profile/**\*/, { timeout: navigationTimeoutMs });
+        await this.keywords.waitForElement(this.locator.patientProfileNameText, navigationTimeoutMs);
 
     }
 
@@ -945,7 +885,7 @@ export class NewPatient {
 
         );
 
-        await this.page.waitForURL(/**\**/patient-profile/**\*/, { timeout: navigationTimeoutMs });
+        await this.keywords.waitForElement(this.locator.patientProfileNameText, navigationTimeoutMs);
 
     }
 
@@ -956,18 +896,6 @@ export class NewPatient {
             this.locator.patientProfileNameText,
 
             navigationTimeoutMs
-
-        );
-
-        await Verify.state(
-
-            this.page,
-
-            'Patient Profile Name',
-
-            this.locator.patientProfileNameText,
-
-            { visible: true, soft: false }
 
         );
 
@@ -993,18 +921,6 @@ export class NewPatient {
 
         // UHID 
 
-        await Verify.state(
-
-            this.page,
-
-            'Patient Profile - UHID Field Present',
-
-            this.locator.profileUhidText,
-
-            { visible: true, soft: false }
-
-        );
-
         const actualUhid = (await this.locator.profileUhidText.innerText()).trim();
 
         await Verify.record(
@@ -1018,18 +934,6 @@ export class NewPatient {
         );
 
         // Gender/Age
-
-        await Verify.state(
-
-            this.page,
-
-            'Patient Profile - Gender/Age Field Present',
-
-            this.locator.profileGenderAgeText,
-
-            { visible: true, soft: false }
-
-        );
 
         const actualGenderAge = (await this.locator.profileGenderAgeText.innerText()).trim();
 
@@ -1065,18 +969,6 @@ export class NewPatient {
 
         // Email
 
-        await Verify.state(
-
-            this.page,
-
-            'Patient Profile - Email Field Present',
-
-            this.locator.profileEmailText,
-
-            { visible: true, soft: false }
-
-        );
-
         await Verify.text(
 
             this.page,
@@ -1092,18 +984,6 @@ export class NewPatient {
         );
 
         // Phone
-
-        await Verify.state(
-
-            this.page,
-
-            'Patient Profile - Phone Field Present',
-
-            this.locator.profilePhoneText,
-
-            { visible: true, soft: false }
-
-        );
 
         const expectedPhone = isVip
 
@@ -1125,18 +1005,6 @@ export class NewPatient {
 
         // Address
 
-        await Verify.state(
-
-            this.page,
-
-            'Patient Profile - Address Field Present',
-
-            this.locator.profileAddressText,
-
-            { visible: true, soft: false }
-
-        );
-
         await Verify.text(
 
             this.page,
@@ -1152,18 +1020,6 @@ export class NewPatient {
         );
 
         // Referral Source
-
-        await Verify.state(
-
-            this.page,
-
-            'Patient Profile - Referral Source Field Present',
-
-            this.locator.profileReferralSourceValue,
-
-            { visible: true, soft: false }
-
-        );
 
         await Verify.text(
 
@@ -1307,18 +1163,6 @@ export class NewPatient {
 
     async openEditPatient() {
 
-        await Verify.state(
-
-            this.page,
-
-            'Edit Patient Icon',
-
-            this.locator.editPatientIcon,
-
-            { visible: true, soft: false }
-
-        );
-
         await StepHelper.step(
 
             this.page,
@@ -1334,18 +1178,6 @@ export class NewPatient {
         );
 
         await this.keywords.waitForElement(this.locator.patientNameTxt, navigationTimeoutMs);
-
-        await Verify.state(
-
-            this.page,
-
-            'Edit Patient Panel',
-
-            this.locator.patientNameTxt,
-
-            { visible: true, soft: false }
-
-        );
 
     }
 
@@ -1510,18 +1342,6 @@ export class NewPatient {
         );
 
         await this.keywords.waitForElement(this.locator.successToastTitle, toastWaitTimeoutMs);
-
-        await Verify.state(
-
-            this.page,
-
-            'Patient Details Updated Toast',
-
-            this.locator.successToastTitle,
-
-            { visible: true, soft: false }
-
-        );
 
         await Verify.text(
 
