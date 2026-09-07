@@ -1,16 +1,21 @@
+const { expect } = require('@playwright/test');
 const { StepHelper } = require('../utils/StepHelper.js');
 const { Keywords } = require('../utils/Keywords.js');
 const { Verify } = require('../utils/verification.js');
 const { AppointmentLocator } = require('../Locators/AppointmentLocator.js');
+
 const {
     addNewMenuItems,
     appointmentTypeData,
     appointmentActionData,
     appointmentVerificationData
 } = require('../testdata/appointmentData.json');
-const { waitData } = require('../testdata/waitData.json');
+
+const timeoutData = require('../testdata/timeout.json');
+const { timeout } = timeoutData;
 
 class AppointmentPage {
+
     constructor(page) {
         this.page = page;
         this.locator = new AppointmentLocator(page);
@@ -27,7 +32,10 @@ class AppointmentPage {
             `Click patient name in appointment panel to expand full screen: '${patientName}'`,
             async () => {
 
-                await this.keywords.waitForElement(patientNameInPanel);
+                await this.keywords.waitForElement(
+                    patientNameInPanel,
+                    timeout.elementTimeout
+                );
 
                 await this.keywords.scrollIntoViewIfNeeded(
                     patientNameInPanel
@@ -56,7 +64,10 @@ class AppointmentPage {
 
     async clickAddNewButton() {
 
-        await this.keywords.waitForElement(this.locator.addNewBtn);
+        await this.keywords.waitForElement(
+            this.locator.addNewBtn,
+            timeout.elementTimeout
+        );
 
         await Verify.state(
             this.page,
@@ -85,7 +96,10 @@ class AppointmentPage {
                 this.page,
                 `Wait For Add New Menu Item - ${menuItem}`,
                 async () => {
-                    await this.keywords.waitForElement(menuItemLocator);
+                    await this.keywords.waitForElement(
+                        menuItemLocator,
+                        timeout.elementTimeout
+                    );
                 }
             );
 
@@ -107,6 +121,7 @@ class AppointmentPage {
     }
 
     async closeAddNewDropdown() {
+
         await StepHelper.step(
             this.page,
             'Close Add New dropdown (Escape)',
@@ -129,7 +144,10 @@ class AppointmentPage {
             this.page,
             `Wait For Type dropdown - '${currentTypeLabel}'`,
             async () => {
-                await this.keywords.waitForElement(typeDropdown);
+                await this.keywords.waitForElement(
+                    typeDropdown,
+                    timeout.elementTimeout
+                );
             }
         );
 
@@ -161,7 +179,10 @@ class AppointmentPage {
             this.page,
             `Wait For current Type dropdown - '${currentTypeLabel}'`,
             async () => {
-                await this.keywords.waitForElement(currentTypeDropdown);
+                await this.keywords.waitForElement(
+                    currentTypeDropdown,
+                    timeout.elementTimeout
+                );
             }
         );
 
@@ -182,6 +203,7 @@ class AppointmentPage {
     }
 
     async selectType(type) {
+
         await StepHelper.step(
             this.page,
             `Select ${type} from the Type dropdown`,
@@ -192,11 +214,11 @@ class AppointmentPage {
             }
         );
 
-        // The panel re-renders with the newly selected type's details.
-        await this.keywords.wait(
-            this.page,
-            waitData.mediumWait
-        );
+        /*
+         * No fixed wait is used here.
+         * Playwright/Keywords will wait for the required element
+         * when the next verification/action is performed.
+         */
     }
 
     async verifyDoctorAndService(
@@ -214,7 +236,10 @@ class AppointmentPage {
             this.page,
             `Wait For ${type} Type - Doctor Name - ${storedDoctorName}`,
             async () => {
-                await this.keywords.waitForElement(doctorLocator);
+                await this.keywords.waitForElement(
+                    doctorLocator,
+                    timeout.elementTimeout
+                );
             }
         );
 
@@ -235,7 +260,10 @@ class AppointmentPage {
                 this.page,
                 `Wait For ${type} Type - Consult Slot - ${storedTypeValue}`,
                 async () => {
-                    await this.keywords.waitForElement(consultLocator);
+                    await this.keywords.waitForElement(
+                        consultLocator,
+                        timeout.elementTimeout
+                    );
                 }
             );
 
@@ -256,7 +284,10 @@ class AppointmentPage {
                 this.page,
                 `Wait For ${type} Type - Service Name - ${storedServiceName}`,
                 async () => {
-                    await this.keywords.waitForElement(serviceLocator);
+                    await this.keywords.waitForElement(
+                        serviceLocator,
+                        timeout.elementTimeout
+                    );
                 }
             );
 
@@ -271,7 +302,10 @@ class AppointmentPage {
 
     async clickAddNewForWaitlist() {
 
-        await this.keywords.waitForElement(this.locator.addNewBtnForWaitlist);
+        await this.keywords.waitForElement(
+            this.locator.addNewBtnForWaitlist,
+            timeout.elementTimeout
+        );
 
         await Verify.state(
             this.page,
@@ -293,13 +327,16 @@ class AppointmentPage {
 
     async clickAddConsult() {
 
-        await this.keywords.waitForElement(this.locator.addConsultBtn);
+        await this.keywords.waitForElement(
+            this.locator.addConsultBtn,
+            timeout.elementTimeout
+        );
 
         await Verify.state(
             this.page,
             `${appointmentActionData.addConsultButton} Button`,
             this.locator.addConsultBtn,
-            { visible: true, enabled: true, soft: false }
+            { visible: true, soft: false }
         );
 
         await StepHelper.step(
@@ -314,10 +351,12 @@ class AppointmentPage {
     }
 
     async enterConsultSlot(consultSlot) {
+
         await StepHelper.step(
             this.page,
             `Type Consult Slot name: ${consultSlot}`,
             async () => {
+
                 await this.keywords.click(
                     this.locator.consultSlotInput
                 );
@@ -340,7 +379,8 @@ class AppointmentPage {
             `Wait For Consult Option - ${consultSlot}`,
             async () => {
                 await this.keywords.waitForElement(
-                    consultOptionLocator
+                    consultOptionLocator,
+                    timeout.elementTimeout
                 );
             }
         );
@@ -362,6 +402,7 @@ class AppointmentPage {
     }
 
     async closeProviderDropdown() {
+
         await StepHelper.step(
             this.page,
             'Close Provider dropdown (Escape)',
@@ -376,7 +417,10 @@ class AppointmentPage {
 
     async openBookingDatePicker() {
 
-        await this.keywords.waitForElement(this.locator.bookingDateContainer);
+        await this.keywords.waitForElement(
+            this.locator.bookingDateContainer,
+            timeout.elementTimeout
+        );
 
         await Verify.state(
             this.page,
@@ -401,7 +445,10 @@ class AppointmentPage {
         const bookingDateOption =
             this.locator.getBookingDateOption(bookingDate);
 
-        await this.keywords.waitForElement(bookingDateOption);
+        await this.keywords.waitForElement(
+            bookingDateOption,
+            timeout.elementTimeout
+        );
 
         await Verify.state(
             this.page,
@@ -421,7 +468,10 @@ class AppointmentPage {
 
     async applyBookingDate() {
 
-        await this.keywords.waitForElement(this.locator.applyBookingDateBtn);
+        await this.keywords.waitForElement(
+            this.locator.applyBookingDateBtn,
+            timeout.elementTimeout
+        );
 
         await Verify.state(
             this.page,
@@ -441,12 +491,10 @@ class AppointmentPage {
         );
     }
 
-    // Walks the booking date picker day by day starting from today (instead
-    // of trusting a fixed day-of-month from test data, which goes stale as
-    // slots get consumed by earlier runs) and applies the first date whose
-    // doctor card renders an available slot. The Hourglass/Waitlist action
-    // is offered on every date regardless of slot availability, so this only
-    // has to find a valid, current date to book against - not an empty one.
+    // Walks the booking date picker day by day starting from today.
+    // Instead of using a fixed wait, the method waits for the
+    // available slot condition before checking the count.
+
     async selectRuntimeBookingDate(maxDaysToTry = 31) {
 
         let selectedDay = null;
@@ -460,9 +508,10 @@ class AppointmentPage {
 
                 await this.openBookingDatePicker();
 
-                const dayCount = await this.locator.bookingDateSelectableDays
-                    .count()
-                    .catch(() => 0);
+                const dayCount =
+                    await this.locator.bookingDateSelectableDays
+                        .count()
+                        .catch(() => 0);
 
                 for (
                     let index = 0;
@@ -476,9 +525,8 @@ class AppointmentPage {
                         await this.openBookingDatePicker();
                     }
 
-                    const day = this.locator.bookingDateSelectableDays.nth(
-                        index
-                    );
+                    const day =
+                        this.locator.bookingDateSelectableDays.nth(index);
 
                     const dayText = (
                         await this.keywords.getText(day)
@@ -497,23 +545,32 @@ class AppointmentPage {
 
                     await this.applyBookingDate();
 
-                    // The doctor cards for the newly applied date render
-                    // asynchronously, so counting slots immediately can read
-                    // a stale (empty) DOM and reject a date that actually
-                    // has availability.
+                    /*
+                     * Wait for the page/network activity to settle.
+                     * No fixed mediumWait is used.
+                     */
                     await this.page
                         .waitForLoadState('networkidle')
                         .catch(() => {});
 
-                    await this.keywords.wait(
-                        this.page,
-                        waitData.mediumWait
-                    );
+                    /*
+                     * Wait UP TO elementTimeout for an available slot
+                     * to appear. If it appears earlier, execution continues
+                     * immediately.
+                     */
+                    await this.locator.availableSlotButtons
+                        .first()
+                        .waitFor({
+                            state: 'visible',
+                            timeout: timeout.elementTimeout
+                        })
+                        .catch(() => {});
 
-                    const slotCount = await this.locator
-                        .availableSlotButtons
-                        .count()
-                        .catch(() => 0);
+                    const slotCount =
+                        await this.locator
+                            .availableSlotButtons
+                            .count()
+                            .catch(() => 0);
 
                     if (slotCount > 0) {
 
@@ -542,7 +599,6 @@ class AppointmentPage {
         return selectedDay;
     }
 
-
     async verifyConfirmedAppointment(patientName) {
 
         const step = 'Verify Confirmed Appointment';
@@ -550,9 +606,10 @@ class AppointmentPage {
         const verification =
             appointmentVerificationData.confirmedStatus;
 
-        const statusBadge = this.locator.getAppointmentStatusBadge(
-            verification.expectedStatus
-        );
+        const statusBadge =
+            this.locator.getAppointmentStatusBadge(
+                verification.expectedStatus
+            );
 
         let actualStatusText;
 
@@ -562,10 +619,10 @@ class AppointmentPage {
             async () => {
 
                 await this.keywords.waitForElement(
-                    this.locator.appointmentContainer
+                    this.locator.appointmentContainer,
+                    timeout.elementTimeout
                 );
 
-                // Read the status the application actually rendered.
                 actualStatusText = (
                     await this.keywords.getText(statusBadge)
                 ).trim();

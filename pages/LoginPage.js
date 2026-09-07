@@ -3,6 +3,9 @@ const { LoginLocator } = require('../Locators/LoginLocator');
 const { Keywords } = require('../utils/Keywords');
 const { loginData } = require('../testdata/users.json');
 
+const timeoutData = require('../testdata/timeout.json');
+const { timeout } = timeoutData;
+
 class LoginPage {
 
     constructor(page) {
@@ -11,14 +14,12 @@ class LoginPage {
         this.keywords = new Keywords();
     }
 
-
     async login(options = {}) {
 
         const {
             skipIfAuthenticated = true,
             waitForSuccess = true
         } = options;
-
 
         await StepHelper.step(
             this.page,
@@ -33,12 +34,10 @@ class LoginPage {
             }
         );
 
-
         const loginFormVisible =
             await this.locator.userName
                 .isVisible()
                 .catch(() => false);
-
 
         if (
             skipIfAuthenticated &&
@@ -47,7 +46,6 @@ class LoginPage {
             return;
         }
 
-
         await StepHelper.step(
             this.page,
             `Enter Username - ${loginData.username}`,
@@ -55,7 +53,7 @@ class LoginPage {
 
                 await this.keywords.waitForElement(
                     this.locator.userName,
-                    30000
+                    timeout.elementTimeout
                 );
 
                 await this.keywords.fill(
@@ -65,7 +63,6 @@ class LoginPage {
 
             }
         );
-
 
         await StepHelper.step(
             this.page,
@@ -80,7 +77,6 @@ class LoginPage {
             }
         );
 
-
         await StepHelper.step(
             this.page,
             'Click Sign In Button',
@@ -93,7 +89,6 @@ class LoginPage {
             }
         );
 
-
         if (waitForSuccess) {
 
             await StepHelper.step(
@@ -105,11 +100,10 @@ class LoginPage {
                         .waitForLoadState(
                             'networkidle',
                             {
-                                timeout: 30000
+                                timeout: timeout.navigationTimeout
                             }
                         )
                         .catch(() => {});
-
 
                     await this.page
                         .waitForURL(
@@ -117,7 +111,7 @@ class LoginPage {
                                 !url.pathname.includes('/login') &&
                                 !url.pathname.includes('login'),
                             {
-                                timeout: 30000
+                                timeout: timeout.navigationTimeout
                             }
                         )
                         .catch(() => {});
@@ -127,6 +121,5 @@ class LoginPage {
         }
     }
 }
-
 
 module.exports = { LoginPage };

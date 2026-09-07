@@ -8,13 +8,11 @@ const { InvoicePage } = require('../pages/InvoicePage.js');
 const { CalendarPage } = require('../pages/CalendarPage.js');
 const { CancellationPage } = require('../pages/CancellationPage.js');
 
-<<<<<<< HEAD
-const { patientData,appoinmentData,consultData,bookingData,serviceData,DateData,invoiceData,paymentData,cancelReasonData } = require('../testdata/TC_005.json');
-const { generatePatientName } = require('../utils/RandomData.js');
-=======
+// const { patientData,appoinmentData,consultData,bookingData,serviceData,DateData,invoiceData,paymentData,cancelReasonData } = require('../testdata/TC_005.json');
+// const { generatePatientName } = require('../utils/RandomData.js');
+
 const { patientData, appoinmentData, consultData, serviceData, invoiceData, paymentData } = require('../testdata/TC_005.json');
 const { generateUniquePatientFullName } = require('../utils/RandomData.js');
->>>>>>> 22603a3802c8f6f02250a5835f03619a435ed691
 
 
 // =====================================================

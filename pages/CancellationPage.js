@@ -3,10 +3,14 @@ const { StepHelper } = require('../utils/StepHelper');
 const { CancellationLocator } = require('../Locators/CancellationLocator');
 const { Keywords } = require('../utils/Keywords');
 const { Verify } = require('../utils/verification');
+
 const {
     cancellationData,
     cancellationVerificationData
 } = require('../testdata/CancellationData.json');
+
+const timeoutData = require('../testdata/timeout.json');
+const { timeout } = timeoutData;
 
 
 class CancellationPage {
@@ -18,9 +22,7 @@ class CancellationPage {
     }
 
 
-    // Captures the toaster message the application raises at runtime and
-    // verifies it against the expected text held in CancellationData.json.
-    // `verification` = { expectedMessage } from cancellationVerificationData.
+    // Captures and verifies payment success toaster message
     async verifyToasterMessage(verification) {
 
         const step = 'Verify Payment Recorded Successfully';
@@ -33,6 +35,11 @@ class CancellationPage {
             this.page,
             step,
             async () => {
+
+                await toaster.waitFor({
+                    state: 'visible',
+                    timeout: timeout.elementTimeout
+                });
 
                 actualMessage = (
                     await this.keywords.getText(toaster)
@@ -51,10 +58,7 @@ class CancellationPage {
     }
 
 
-    // Reads the cancelled status badge the application rendered at runtime and
-    // verifies it against the expected status held in CancellationData.json.
-    // `stepLabel` names the calling flow (e.g. "Verify Appointment Cancelled")
-    // since the same badge check backs several distinct cancellation flows.
+    // Verifies cancelled status
     async verifyCancelledStatus(stepLabel, verification) {
 
         const statusBadge = this.locator.cancelledStatus;
@@ -66,6 +70,11 @@ class CancellationPage {
             stepLabel,
             async () => {
 
+                await statusBadge.waitFor({
+                    state: 'visible',
+                    timeout: timeout.elementTimeout
+                });
+
                 actualStatus = (
                     await this.keywords.getText(statusBadge)
                 ).trim();
@@ -76,7 +85,10 @@ class CancellationPage {
             this.page,
             `${stepLabel} - status badge is displayed`,
             statusBadge,
-            { visible: true, soft: false }
+            {
+                visible: true,
+                soft: false
+            }
         );
 
         await Verify.equals(
@@ -96,6 +108,7 @@ class CancellationPage {
             this.page,
             'Click Make Payment',
             async () => {
+
                 await this.keywords.click(
                     this.locator.makePaymentActionBtn.last()
                 );
@@ -109,13 +122,15 @@ class CancellationPage {
         await this.locator.amountInput
             .nth(1)
             .waitFor({
-                state: "visible"
+                state: 'visible',
+                timeout: timeout.elementTimeout
             });
 
         await StepHelper.step(
             this.page,
             `Enter Amount - ${amount}`,
             async () => {
+
                 await this.keywords.fill(
                     this.locator.amountInput.nth(1),
                     amount
@@ -127,6 +142,7 @@ class CancellationPage {
             this.page,
             'Click Record Payment',
             async () => {
+
                 await this.keywords.click(
                     this.locator.recordPaymentBtn.nth(1)
                 );
@@ -142,13 +158,15 @@ class CancellationPage {
     async clickCancel() {
 
         await this.keywords.waitForElement(
-            this.locator.cancelBtn
+            this.locator.cancelBtn,
+            timeout.elementTimeout
         );
 
         await StepHelper.step(
             this.page,
             'Click Cancel',
             async () => {
+
                 await this.keywords.click(
                     this.locator.cancelBtn
                 );
@@ -163,6 +181,7 @@ class CancellationPage {
             this.page,
             'Enable Refund Option',
             async () => {
+
                 await this.keywords.click(
                     this.locator.refundThumb
                 );
@@ -173,6 +192,7 @@ class CancellationPage {
             this.page,
             'Open Cancellation Reason Dropdown',
             async () => {
+
                 await this.keywords.click(
                     this.locator.reasonDropdown
                 );
@@ -193,19 +213,26 @@ class CancellationPage {
             this.page,
             'Click Proceed To Refund',
             async () => {
+
                 await this.keywords.click(
                     this.locator.proceedToRefundBtn
                 );
             }
         );
 
-        await this.keywords.waitForElement(this.locator.refundPaymentOptionText);
+        await this.keywords.waitForElement(
+            this.locator.refundPaymentOptionText,
+            timeout.elementTimeout
+        );
 
         await Verify.state(
             this.page,
             'Refund/Payment Option screen is displayed',
             this.locator.refundPaymentOptionText,
-            { visible: true, soft: false }
+            {
+                visible: true,
+                soft: false
+            }
         );
     }
 
@@ -222,6 +249,7 @@ class CancellationPage {
             this.page,
             'Select No Refund',
             async () => {
+
                 await this.keywords.click(
                     this.locator.noRefundBtn
                 );
@@ -232,6 +260,7 @@ class CancellationPage {
             this.page,
             'Confirm Cancellation',
             async () => {
+
                 await this.keywords.click(
                     this.locator.confirmBtn
                 );
@@ -243,6 +272,7 @@ class CancellationPage {
             cancellationVerificationData.appointmentCancelled
         );
     }
+
 
     async cancelWithRefund(
         paymentType,
@@ -260,6 +290,7 @@ class CancellationPage {
             this.page,
             'Select Refund Option',
             async () => {
+
                 await this.keywords.click(
                     this.locator.refundBtn
                 );
@@ -275,6 +306,7 @@ class CancellationPage {
             this.page,
             `Enter Refund Amount - ${amount}`,
             async () => {
+
                 await this.keywords.fill(
                     this.locator.amountTxt,
                     amount.toString()
@@ -286,14 +318,13 @@ class CancellationPage {
             this.page,
             'Confirm Refund',
             async () => {
+
                 await this.keywords.click(
                     this.locator.confirmBtn
                 );
             }
         );
 
-        // Two toasts race here (payment recorded / cancelled), so verify the
-        // cancelled status badge, which is deterministic.
         await this.verifyCancelledStatus(
             'Verify Refund Recorded Successfully',
             cancellationVerificationData.refundRecorded
@@ -317,6 +348,7 @@ class CancellationPage {
             this.page,
             'Select Make Payment Option',
             async () => {
+
                 await this.keywords.click(
                     this.locator.makePaymentBtn
                 );
@@ -332,6 +364,7 @@ class CancellationPage {
             this.page,
             `Enter Payment Amount - ${amount}`,
             async () => {
+
                 await this.keywords.fill(
                     this.locator.amountTxt,
                     amount.toString()
@@ -343,247 +376,267 @@ class CancellationPage {
             this.page,
             'Confirm Payment',
             async () => {
+
                 await this.keywords.click(
                     this.locator.confirmBtn
                 );
             }
         );
 
-        // Two toasts race here (payment recorded / cancelled), so verify the
-        // cancelled status badge, which is deterministic.
         await this.verifyCancelledStatus(
             'Verify Make Payment Recorded Successfully',
             cancellationVerificationData.makePaymentRecorded
         );
     }
 
-   async cancellation(cancelReason) {
 
-    // Wait for payment success popup/toaster to disappear
-    await this.locator.paymentSuccessMessage.first().waitFor({
-        state: 'hidden'
-    });
+    async cancellation(cancelReason) {
 
-
-    await this.clickCancel();
-
-    await StepHelper.step(
-        this.page,
-        'Select Whole Package',
-        async () => {
-            await this.keywords.click(
-                this.locator.wholePackageBtn
-            );
-        }
-    );
-
-    await StepHelper.step(
-        this.page,
-        'Choose Cancellation Reason',
-        async () => {
-            await this.keywords.click(
-                this.locator.chooseReason
-            );
-        }
-    );
-
-
-    await StepHelper.step(
-        this.page,
-        'Select Cancellation Reason',
-        async () => {
-            await this.keywords.click(
-                this.locator.cancellationReason(
-                    cancellationData.cancellationReason
-                )
-            );
-        }
-    );
-
-    await StepHelper.step(
-        this.page,
-        'Continue Cancellation',
-        async () => {
-            await this.keywords.click(
-                this.locator.continueCancellationBtn
-            );
-        }
-    );
-
-    await StepHelper.step(
-        this.page,
-        'Select Cancellation Option',
-        async () => {
-            await this.keywords.click(
-                this.locator.cancellationOption
-            );
-        }
-    );
-
-    await StepHelper.step(
-        this.page,
-        'Continue',
-        async () => {
-            await this.keywords.click(
-                this.locator.continueBtn
-            );
-        }
-    );
-
-   await StepHelper.step(
-    this.page,
-    'Select Refund Option',
-    async () => {
-        await this.keywords.click(
-            this.locator.refundBtn
-        );
-    }
-);
-}
-
-async cancelPackageWithFullRefund(cancellationData){
- 
-await StepHelper.step(
-    this.page,
-    'Select Make Full Refund',
-    async () => {
-        await this.keywords.click(
-            this.locator.fullRefundCheckbox
-        );
-    }
-);
- 
-await StepHelper.step(
-    this.page,
-    'Review And Confirm Full Refund',
-    async () => {
-        await this.keywords.click(
-            this.locator.reviewConfirmBtn
-        );
-    }
-);
- 
-await StepHelper.step(
-    this.page,
-    'Confirm Cancellation',
-    async () => {
-        await this.keywords.click(
-            this.locator.confirmCancellationBtn
-        );
-    }
-);
-
-await StepHelper.step(
-        this.page,
-        'Verify Cancellation Success Message',
-        async () => {
-            await expect(
-                this.locator.cancellationSuccessMessage
-            ).toBeVisible({
-                timeout: 15000
+        // Wait for payment success popup/toaster to disappear
+        await this.locator.paymentSuccessMessage
+            .first()
+            .waitFor({
+                state: 'hidden',
+                timeout: timeout.elementTimeout
             });
-        }
-    );
 
-// await StepHelper.step(
-//     this.page,
-//     'Verify Cancellation Success Message',
-//     async () => {
-//         await expect(
-//             this.locator.cancelledStatus
-//         ).toContainText(
-//             cancellationData.expectedStatus
-//         );
-//     }
-// );
+        await this.clickCancel();
 
-await StepHelper.step(
-    this.page,
-    `Verify Cancellation Status - ${cancellationData.expectedStatus}`,
-    async () => {
-        await expect(
-            (await this.locator.cancelledStatus.innerText()).trim()
-        ).toBe(
-            cancellationData.expectedStatus
+        await StepHelper.step(
+            this.page,
+            'Select Whole Package',
+            async () => {
+
+                await this.keywords.click(
+                    this.locator.wholePackageBtn
+                );
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            'Choose Cancellation Reason',
+            async () => {
+
+                await this.keywords.click(
+                    this.locator.chooseReason
+                );
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            'Select Cancellation Reason',
+            async () => {
+
+                await this.keywords.click(
+                    this.locator.cancellationReason(
+                        cancellationData.cancellationReason
+                    )
+                );
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            'Continue Cancellation',
+            async () => {
+
+                await this.keywords.click(
+                    this.locator.continueCancellationBtn
+                );
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            'Select Cancellation Option',
+            async () => {
+
+                await this.keywords.click(
+                    this.locator.cancellationOption
+                );
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            'Continue',
+            async () => {
+
+                await this.keywords.click(
+                    this.locator.continueBtn
+                );
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            'Select Refund Option',
+            async () => {
+
+                await this.keywords.click(
+                    this.locator.refundBtn
+                );
+            }
         );
     }
-);
- 
-}
- 
-async cancelPackageWithPartialRefund(
-    paymentType,
-    amount,
-    transactionId = null,
-    expectedStatus,
-) {
- 
-    await StepHelper.step(
-        this.page,
-        'Select Refund Payment Mode',
-        async () => {
-            await this.selectPaymentMode(
-                paymentType,
-                transactionId
-            );
-        }
-    );
- 
-    await StepHelper.step(
-        this.page,
-        `Enter Refund Amount - ${amount}`,
-        async () => {
-            await this.keywords.fill(
-                this.locator.amountTxt,
-                amount.toString()
-            );
-        }
-    );
- 
-    await StepHelper.step(
-        this.page,
-        'Click Review & Confirm',
-        async () => {
-            await this.keywords.click(
-                this.locator.reviewConfirmBtn
-            );
-        }
-    );
- 
-    await StepHelper.step(
-        this.page,
-        'Click Confirm Cancellation',
-        async () => {
-            await this.keywords.click(
-                this.locator.confirmCancellationBtn
-            );
-        }
-    );
 
-    await StepHelper.step(
-        this.page,
-        'Verify Cancellation Success Message',
-        async () => {
-            await expect(
-                this.locator.cancellationSuccessMessage
-            ).toBeVisible({
-                timeout: 10000
-            });
-        }
-    );
- 
-    await StepHelper.step(
-        this.page,
-        `Verify Cancellation Status - ${expectedStatus}`,
-        async () => {
-            await expect(
-                (await this.locator.cancelledStatus.innerText()).trim()
-            ).toBe(expectedStatus);
-        }
-    );
-}
- 
 
+    async cancelPackageWithFullRefund(cancellationData) {
+
+        await StepHelper.step(
+            this.page,
+            'Select Make Full Refund',
+            async () => {
+
+                await this.keywords.click(
+                    this.locator.fullRefundCheckbox
+                );
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            'Review And Confirm Full Refund',
+            async () => {
+
+                await this.keywords.click(
+                    this.locator.reviewConfirmBtn
+                );
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            'Confirm Cancellation',
+            async () => {
+
+                await this.keywords.click(
+                    this.locator.confirmCancellationBtn
+                );
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            'Verify Cancellation Success Message',
+            async () => {
+
+                await expect(
+                    this.locator.cancellationSuccessMessage
+                ).toBeVisible({
+                    timeout: timeout.expectTimeout
+                });
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            `Verify Cancellation Status - ${cancellationData.expectedStatus}`,
+            async () => {
+
+                await this.locator.cancelledStatus.waitFor({
+                    state: 'visible',
+                    timeout: timeout.elementTimeout
+                });
+
+                await expect(
+                    (
+                        await this.locator.cancelledStatus.innerText()
+                    ).trim()
+                ).toBe(
+                    cancellationData.expectedStatus
+                );
+            }
+        );
+    }
+
+
+    async cancelPackageWithPartialRefund(
+        paymentType,
+        amount,
+        transactionId = null,
+        expectedStatus
+    ) {
+
+        await StepHelper.step(
+            this.page,
+            'Select Refund Payment Mode',
+            async () => {
+
+                await this.selectPaymentMode(
+                    paymentType,
+                    transactionId
+                );
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            `Enter Refund Amount - ${amount}`,
+            async () => {
+
+                await this.keywords.fill(
+                    this.locator.amountTxt,
+                    amount.toString()
+                );
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            'Click Review & Confirm',
+            async () => {
+
+                await this.keywords.click(
+                    this.locator.reviewConfirmBtn
+                );
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            'Click Confirm Cancellation',
+            async () => {
+
+                await this.keywords.click(
+                    this.locator.confirmCancellationBtn
+                );
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            'Verify Cancellation Success Message',
+            async () => {
+
+                await expect(
+                    this.locator.cancellationSuccessMessage
+                ).toBeVisible({
+                    timeout: timeout.expectTimeout
+                });
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            `Verify Cancellation Status - ${expectedStatus}`,
+            async () => {
+
+                await this.locator.cancelledStatus.waitFor({
+                    state: 'visible',
+                    timeout: timeout.elementTimeout
+                });
+
+                await expect(
+                    (
+                        await this.locator.cancelledStatus.innerText()
+                    ).trim()
+                ).toBe(expectedStatus);
+            }
+        );
+    }
 
 
     async selectPaymentMode(
@@ -599,6 +652,7 @@ async cancelPackageWithPartialRefund(
                     this.page,
                     'Select Payment Mode - Cash',
                     async () => {
+
                         await this.keywords.click(
                             this.locator.cashBtn
                         );
@@ -614,6 +668,7 @@ async cancelPackageWithPartialRefund(
                     this.page,
                     'Select Payment Mode - UPI',
                     async () => {
+
                         await this.keywords.click(
                             this.locator.upiBtn
                         );
@@ -633,6 +688,7 @@ async cancelPackageWithPartialRefund(
                     this.page,
                     'Select Payment Mode - Card',
                     async () => {
+
                         await this.keywords.click(
                             this.locator.cardBtn
                         );
@@ -652,6 +708,7 @@ async cancelPackageWithPartialRefund(
                     this.page,
                     'Select Payment Mode - Wallet',
                     async () => {
+
                         await this.keywords.click(
                             this.locator.walletBtn
                         );
@@ -673,6 +730,7 @@ async cancelPackageWithPartialRefund(
     async enterTransactionId(transactionId) {
 
         if (!transactionId) {
+
             throw new Error(
                 'Transaction ID is required for this payment type'
             );
@@ -687,7 +745,6 @@ async cancelPackageWithPartialRefund(
                     this.locator.transactionIdTxt,
                     transactionId
                 );
-
             }
         );
     }

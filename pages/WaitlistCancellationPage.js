@@ -5,6 +5,9 @@ const {
     WaitlistCancellationLocator
 } = require('../Locators/WaitlistCancellationLocator.js');
 
+const timeoutData = require('../testdata/timeout.json');
+const { timeout } = timeoutData;
+
 class WaitlistCancellationPage {
 
     constructor(page) {
@@ -23,13 +26,20 @@ class WaitlistCancellationPage {
         const cancelButton =
             this.locator.getCancelButtonForCard(patientName);
 
-        await this.keywords.waitForElement(cancelButton);
+        await this.keywords.waitForElement(
+            cancelButton,
+            timeout.elementTimeout
+        );
 
         await Verify.state(
             this.page,
             `Cancel button for waitlist record - ${patientName}`,
             cancelButton,
-            { visible: true, enabled: true, soft: false }
+            {
+                visible: true,
+                enabled: true,
+                soft: false
+            }
         );
 
         await StepHelper.step(
@@ -43,48 +53,68 @@ class WaitlistCancellationPage {
 
     async selectCancellationReason(reason) {
 
-        const cancellationReason = typeof reason === 'string'
-            ? reason
-            : reason.cancelReason;
+        const cancellationReason =
+            typeof reason === 'string'
+                ? reason
+                : reason.cancelReason;
 
         const reasonOption =
-            this.locator.getCancellationReasonOption(cancellationReason);
+            this.locator.getCancellationReasonOption(
+                cancellationReason
+            );
 
         await StepHelper.step(
             this.page,
             'Open Choose Reason dropdown',
             async () => {
-                await this.keywords.click(this.locator.chooseReason);
+                await this.keywords.click(
+                    this.locator.chooseReason
+                );
             }
         );
 
-        await this.keywords.waitForElement(reasonOption);
+        await this.keywords.waitForElement(
+            reasonOption,
+            timeout.elementTimeout
+        );
 
         await Verify.state(
             this.page,
             `Cancellation reason option - ${cancellationReason} is displayed`,
             reasonOption,
-            { visible: true, soft: false }
+            {
+                visible: true,
+                soft: false
+            }
         );
 
         await StepHelper.step(
             this.page,
             `Select cancellation reason: ${cancellationReason}`,
             async () => {
-                await this.keywords.click(reasonOption);
+                await this.keywords.click(
+                    reasonOption
+                );
             }
         );
     }
 
     async clickCancelConsult() {
 
-        await this.keywords.waitForElement(this.locator.cancelConsultButton);
+        await this.keywords.waitForElement(
+            this.locator.cancelConsultButton,
+            timeout.elementTimeout
+        );
 
         await Verify.state(
             this.page,
             'Cancel Consult button is displayed',
             this.locator.cancelConsultButton,
-            { visible: true, enabled: true, soft: false }
+            {
+                visible: true,
+                enabled: true,
+                soft: false
+            }
         );
 
         await StepHelper.step(
@@ -102,17 +132,28 @@ class WaitlistCancellationPage {
     // leaving the waitlist, so that is what gets verified.
     // `verification` = { expectedEntryState } from the calling spec's own
     // data file.
-    async verifyWaitlistEntryRemoved(patientName, verification) {
+    async verifyWaitlistEntryRemoved(
+        patientName,
+        verification
+    ) {
 
-        const step = 'Verify Waitlist Consult Cancelled';
+        const step =
+            'Verify Waitlist Consult Cancelled';
 
-        const card = this.locator.getWaitlistCard(patientName);
+        const card =
+            this.locator.getWaitlistCard(
+                patientName
+            );
 
         await StepHelper.step(
             this.page,
             `${step} - ${patientName}`,
             async () => {
-                await card.waitFor({ state: 'hidden' });
+
+                await card.waitFor({
+                    state: 'hidden',
+                    timeout: timeout.elementTimeout
+                });
             }
         );
 
@@ -120,19 +161,25 @@ class WaitlistCancellationPage {
             this.page,
             `${step} - ${patientName} is ${verification.expectedEntryState}`,
             card,
-            { hidden: true, soft: false }
+            {
+                hidden: true,
+                soft: false
+            }
         );
     }
-
 
     // Captures the toaster message the application raises at runtime and
     // compares it with the expected message held in the calling spec's own
     // data file. `verification` = { expectedMessage }.
-    async verifyCancellationToasterMessage(verification) {
+    async verifyCancellationToasterMessage(
+        verification
+    ) {
 
-        const step = 'Verify Cancellation Toaster Message';
+        const step =
+            'Verify Cancellation Toaster Message';
 
-        const toaster = this.locator.toasterMessage.first();
+        const toaster =
+            this.locator.toasterMessage.first();
 
         let actualMessage;
 
@@ -140,6 +187,11 @@ class WaitlistCancellationPage {
             this.page,
             step,
             async () => {
+
+                await toaster.waitFor({
+                    state: 'visible',
+                    timeout: timeout.expectTimeout
+                });
 
                 actualMessage = (
                     await this.keywords.getText(toaster)
@@ -162,4 +214,6 @@ class WaitlistCancellationPage {
     }
 }
 
-module.exports = { WaitlistCancellationPage };
+module.exports = {
+    WaitlistCancellationPage
+};

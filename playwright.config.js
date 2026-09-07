@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig, devices } from '@playwright/test';
-
+import timeoutData from './testdata/timeout.json';
+const { timeout } = timeoutData;
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -65,8 +66,11 @@ reporter: [
         video: 'retain-on-failure',
         //  video: 'on',
         trace: 'off',
-        actionTimeout: 30000,
-        navigationTimeout: 30000
+
+        // actionTimeout: 30000,
+        // navigationTimeout: 30000
+        actionTimeout: timeout.actionTimeout,
+        navigationTimeout: timeout.navigationTimeout
   },
   // End-to-end workflows (patient + consult + service + waitlist + calendar
   // verification) run long, so the per-test budget lives here rather than as a
