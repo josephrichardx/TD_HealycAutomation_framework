@@ -187,6 +187,16 @@ class IPDPage {
 
     async IPDInvoicePaymentSection() {
 
+        // console.log(
+        // 'Payment Due count:',
+        // await this.locator.paymentDue.count()
+        // );
+
+        // console.log(
+        //     'Current URL:',
+        //     this.page.url()
+        // );
+        
         await this.locator.paymentDue.waitFor({
             state: 'visible',
             timeout: timeout.elementTimeout
