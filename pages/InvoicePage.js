@@ -1523,8 +1523,7 @@ class InvoicePage {
         patientName,
         appointmentTime,
         arrivalTime,
-        appointmentDate,
-        visitingSlipData
+        appointmentDate
     ) {
 
         const constants =
@@ -2068,7 +2067,7 @@ class InvoicePage {
         );
     }
 
-    async generateInvoiceAddAdmission(invoiceData) {
+    async generateInvoiceAddAdmission() {
 
         await this.Financials();
 

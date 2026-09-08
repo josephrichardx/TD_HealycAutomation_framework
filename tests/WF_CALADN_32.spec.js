@@ -133,7 +133,7 @@ test('Add Admission - Generate Invoice', async ({ page }) => {
     // ==========================================
 
     // await invoicePage.generateInvoiceAddAdmission();
-    await invoicePage.generateInvoiceAddAdmission(invoiceData);//updated
+    await invoicePage.generateInvoiceAddAdmission();//updated
     // ==========================================
     // 12. Get Invoice Details
     // ==========================================
