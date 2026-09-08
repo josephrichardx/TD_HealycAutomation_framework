@@ -1,0 +1,53 @@
+{
+  "validPatientData": {
+    "title": "Mr",
+    "mobileNumber": "9876543210",
+    "updatedMobileNumber": "9876501234",
+    "referralBy": "test",
+    "email": "test@gmail.com",
+    "minDobYear": 1990,
+    "maxDobYear": 2005,
+    "gender": "Male",
+    "address": "address",
+    "expectedVipTooltipText": "Enabling this will mask the patient's mobile and WhatsApp numbers. Once marked as VIP, this cannot be changed later.",
+    "additionalDetails": {
+      "treatingDoctor": "test doctor",
+      "medicalCondition": "None",
+      "pincode": "1234",
+      "patientCategory": "patient"
+    }
+  },
+  "dobYearRange": {
+    "minYear": 1990,
+    "maxYear": 2002
+  },
+  "toastMessages": {
+    "patientSavedSuccess": "Patient Saved successfully",
+    "patientUpdatedSuccess": "Patient details updated successfully"
+  },
+  "packageData": {
+    "packageName": "Neuro PT (30 sessions)",
+    "packageShortName": "Neuro PT"
+  },
+  "statusData": {
+    "expectedStatus": "Confirmed"
+  },
+  "invoiceData": {
+    "adjustmentAmount": "10",
+    "adjustmentName": "Discount",
+    "adjustmentReason": "Consult Discount",
+    "paymentMode": "Cash"
+  },
+  "cancellationData": {
+    "cancellationReason": "Emergency or unexpected issue",
+    "refundAmount": 300,
+    "refundPaymentMethod": "Cash",
+    "expectedStatus": "Cancelled"
+  },
+  "timeouts": {
+    "fieldReadTimeoutMs": 3000,
+    "networkIdleTimeoutMs": 15000,
+    "toastWaitTimeoutMs": 15000,
+    "cancellationStatusTimeoutMs": 30000
+  }
+}

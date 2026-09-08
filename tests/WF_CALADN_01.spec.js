@@ -191,10 +191,10 @@ test.describe('WF_CALADN_01 - Add Patient Profile Workflow', () => {
         // 5. Open Edit Drawer and Verify values
         await newPatient.openEditPatient();
 
-        // 5.5 Edit Name and Mobile Number dynamically using random generators
+        // 5.5 Edit Name, Mobile, and Referral
         const updatedPatientName = generateUniquePatientFullName();
         const updatedMobileNumber = generateRandomMobileNumber();
-        await newPatient.updatePatientNameAndMobile(updatedPatientName, updatedMobileNumber);
+        await newPatient.updatePatientNameAndMobile(updatedPatientName, updatedMobileNumber, validPatientData.updatedReferralBy);
 
         // 6. Upgrade to VIP and Save
         await newPatient.enableVipAndSave(toastMessages.patientUpdatedSuccess);
@@ -205,7 +205,8 @@ test.describe('WF_CALADN_01 - Add Patient Profile Workflow', () => {
         // 8. Verify the read-only Profile details match the new data and VIP masking is applied
         const updatedPatientData = {
             ...validPatientData,
-            mobileNumber: updatedMobileNumber 
+            mobileNumber: updatedMobileNumber,
+            referralBy: validPatientData.updatedReferralBy
         };
 
         await newPatient.verifyPatientProfileDetails(
@@ -255,12 +256,28 @@ test.describe('WF_CALADN_01 - Add Patient Profile Workflow', () => {
 
         const updatedVipPatientName = generateUniquePatientFullName();
         const updatedVipMobileNumber = generateRandomMobileNumber();
-        await newPatient.updatePatientNameAndMobile(updatedVipPatientName, updatedVipMobileNumber);
+        await newPatient.updatePatientNameAndMobile(updatedVipPatientName, updatedVipMobileNumber, validPatientData.updatedReferralBy);
 
         await newPatient.verifyVipCheckboxCannotBeUnchecked();
 
         // 6. Save and verify update success toast
         await newPatient.saveEditPatientAndVerify(toastMessages.patientUpdatedSuccess);
+
+        // 7. Verify the newly updated Name appears on the Profile Page
+        await newPatient.verifyPatientProfileNameMatches(updatedVipPatientName);
+
+        // 8. Verify the read-only Profile details match the new data and VIP masking is retained
+        const updatedVipPatientData = {
+            ...validPatientData,
+            mobileNumber: updatedVipMobileNumber,
+            referralBy: validPatientData.updatedReferralBy
+        };
+
+        await newPatient.verifyPatientProfileDetails(
+            updatedVipPatientData, 
+            dobData, 
+            { isVip: true }
+        );
     });
 
 });

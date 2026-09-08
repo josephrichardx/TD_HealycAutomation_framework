@@ -897,9 +897,9 @@ export class NewPatient {
     );
 
     await expect(async () => {
-        const text = (await this.locator.patientProfileNameText.innerText()).trim();
-        expect(text).not.toBe('.');
-    }).toPass({ timeout: navigationTimeoutMs });
+    const text = (await this.keywords.getText(this.locator.patientProfileNameText)).trim();
+    expect(text).not.toBe('.');
+}).toPass({ timeout: navigationTimeoutMs });
 
     await Verify.text(
         this.page,
@@ -910,57 +910,40 @@ export class NewPatient {
 }
 
     async verifyPatientProfileDetails(patientData, dobData, options = {}) {
+    const isVip = options.isVip || false;
+    
 
-        const { calculateAgeFromDate } = require('../utils/RandomData');
+    
 
-        const isVip = options.isVip || false;
+        const actualUhid = (await this.keywords.getText(this.locator.profileUhidText)).trim();
 
-        // UHID 
-
-        const actualUhid = (await this.locator.profileUhidText.innerText()).trim();
-
-        await Verify.record(
-
-            this.page,
-
-            'Patient Profile - UHID',
-
-            actualUhid
-
-        );
+await Verify.record(
+    this.page,
+    patientData.uhidLogText,
+    actualUhid
+);
 
         // Gender/Age
-
-        const actualGenderAge = (await this.locator.profileGenderAgeText.innerText()).trim();
-
+        const rawGenderAge = (await this.keywords.getText(this.locator.profileGenderAgeText)).trim();
         const expectedAge = calculateAgeFromDate(dobData.dateObj);
+        
+        // Split the string using the '|' separator shown in the logs
+        const [actualGender, actualAge] = rawGenderAge.split('|').map(item => item.trim());
 
         await StepHelper.step(
-
             this.page,
-
-            `Verify Patient Profile Gender | Expected to contain: ${patientData.gender} | Actual: ${actualGenderAge}`,
-
+            `Verify Patient Profile Gender | Expected: ${patientData.gender} | Actual: ${actualGender}`,
             async () => {
-
-                expect(actualGenderAge).toContain(patientData.gender);
-
+                expect(actualGender).toBe(patientData.gender);
             }
-
         );
 
         await StepHelper.step(
-
             this.page,
-
-            `Verify Patient Profile Age | Expected to contain: ${expectedAge} Years | Actual: ${actualGenderAge}`,
-
+            `Verify Patient Profile Age | Expected: ${expectedAge} Years | Actual: ${actualAge}`,
             async () => {
-
-                expect(actualGenderAge).toContain(`${expectedAge} Years`);
-
+                expect(actualAge).toBe(`${expectedAge} Years`);
             }
-
         );
 
         // Email
@@ -1178,10 +1161,8 @@ export class NewPatient {
     }
 
     async verifyEditPatientFieldsMatch(patientData, dobData) {
-
-        const { calculateAgeFromDate } = require('../utils/RandomData');
-
-        await Verify.inputValue(
+    await Verify.inputValue(
+    
 
             this.page,
 
@@ -1285,17 +1266,12 @@ export class NewPatient {
 
         }
 
-        const salutationText = (await this.locator.salutationDropdownBtn.innerText()).trim();
-
-        await Verify.record(
-
-            this.page,
-
-            'Edit Panel - Salutation Dropdown Displays',
-
-            salutationText
-
-        );
+        await Verify.text(
+    this.page,
+    'Edit Panel - Salutation Dropdown Displays',
+    patientData.title,
+    this.locator.salutationDropdownBtn
+);
 
         await Verify.record(
 
@@ -1357,13 +1333,17 @@ export class NewPatient {
 
         const classBeforeEdit = await this.locator.vipCheckboxState.getAttribute('class');
 
-        await Verify.record(
+        await StepHelper.step(
 
             this.page,
 
-            'VIP Checkbox State Before Enabling VIP',
+            'Verify VIP Checkbox Is Unchecked Before Enabling VIP',
 
-            classBeforeEdit
+            async () => {
+
+                expect(classBeforeEdit).not.toContain('checked');
+
+            }
 
         );
 
@@ -1455,48 +1435,35 @@ export class NewPatient {
 
     }
 
-    async updatePatientNameAndMobile(newName, newMobile) {
+    async updatePatientNameAndMobile(newName, newMobile, newReferral) {
 
         await StepHelper.step(
-
             this.page,
-
             `Edit Patient Name to - ${newName}`,
-
             async () => {
-
-                await this.locator.patientNameTxt.click();
-
-                await this.locator.patientNameTxt.press('Control+A');
-
-                await this.locator.patientNameTxt.press('Backspace');
-
+                // Explicitly clear using your custom keyword, then fill
+                await this.keywords.clear(this.locator.patientNameTxt);
                 await this.keywords.fill(this.locator.patientNameTxt, newName);
-
             }
-
         );
 
         await StepHelper.step(
-
             this.page,
-
             `Edit Mobile Number to - ${newMobile}`,
-
             async () => {
-
-                await this.locator.mobileNumberTxt.click();
-
-                await this.locator.mobileNumberTxt.press('Control+A');
-
-                await this.locator.mobileNumberTxt.press('Backspace');
-
+                await this.keywords.clear(this.locator.mobileNumberTxt);
                 await this.keywords.fill(this.locator.mobileNumberTxt, newMobile);
-
             }
-
         );
 
+        await StepHelper.step(
+            this.page,
+            `Edit Referral By to - ${newReferral}`,
+            async () => {
+                await this.keywords.clear(this.locator.referralByTxt);
+                await this.keywords.fill(this.locator.referralByTxt, newReferral);
+            }
+        );
     }
 
     async createValidPatient(patientName, patientData, dobData, options = {}) {
