@@ -5,6 +5,9 @@ const { ServiceLocator } = require('../Locators/ServiceLocator');
 const { Keywords } = require('../utils/Keywords');
 const { toasterMessages } = require('../testdata/toasterMessages.json');
 
+const timeoutData = require('../testdata/timeout.json');
+const { timeout } = timeoutData;
+
 class ServicePage {
 
     constructor(page) {
@@ -12,7 +15,6 @@ class ServicePage {
         this.locator = new ServiceLocator(page);
         this.keywords = new Keywords();
     }
-
 
     async clickAddService() {
 
@@ -37,7 +39,6 @@ class ServicePage {
         );
     }
 
-
     async searchPatient(patientName) {
 
         await StepHelper.step(
@@ -51,17 +52,15 @@ class ServicePage {
             }
         );
 
-
         const patient =
             this.locator.getPatient(
                 patientName
             );
 
-
         await this.keywords.waitForElement(
-            patient
+            patient,
+            timeout.elementTimeout
         );
-
 
         await StepHelper.step(
             this.page,
@@ -74,13 +73,12 @@ class ServicePage {
         );
     }
 
-
     async searchExistingPatient(patientName) {
 
         await this.keywords.waitForElement(
-            this.locator.patientSearchTxt
+            this.locator.patientSearchTxt,
+            timeout.elementTimeout
         );
-
 
         await StepHelper.step(
             this.page,
@@ -94,21 +92,13 @@ class ServicePage {
             }
         );
 
-
-        await this.keywords.wait(
-            this.page,
-            1000
-        );
-
-
         const existingPatient =
             this.locator.getExistingPatient();
 
-
         await this.keywords.waitForElement(
-            existingPatient
+            existingPatient,
+            timeout.elementTimeout
         );
-
 
         await StepHelper.step(
             this.page,
@@ -121,17 +111,15 @@ class ServicePage {
         );
     }
 
-
     async selectProvider(
         serviceName,
         bookingDate
     ) {
 
-        await this.keywords.wait(
-            this.page,
-            3000
+        await this.keywords.waitForElement(
+            this.locator.providerDropdown,
+            timeout.elementTimeout
         );
-
 
         await StepHelper.step(
             this.page,
@@ -142,7 +130,6 @@ class ServicePage {
                 );
             }
         );
-
 
         await StepHelper.step(
             this.page,
@@ -160,18 +147,15 @@ class ServicePage {
             }
         );
 
-
         const serviceOption =
             this.locator.getServiceOption(
                 serviceName
             );
 
-
         await serviceOption.waitFor({
             state: 'visible',
-            timeout: 1000
+            timeout: timeout.elementTimeout
         });
-
 
         await StepHelper.step(
             this.page,
@@ -183,7 +167,6 @@ class ServicePage {
             }
         );
 
-
         await StepHelper.step(
             this.page,
             'Close Service Dropdown',
@@ -193,147 +176,61 @@ class ServicePage {
                 );
             }
         );
-
-
-        // await StepHelper.step(
-        //     this.page,
-        //     'Open Booking Date',
-        //     async () => {
-        //         await this.keywords.click(
-        //             this.locator.bookingDateContainer
-        //         );
-        //     }
-        // );
-
-
-        // await StepHelper.step(
-        //     this.page,
-        //     `Select Booking Date - ${bookingDate}`,
-        //     async () => {
-
-        //         await this.keywords.click(
-        //             this.locator.currentMonth.getByText(
-        //                 bookingDate,
-        //                 {
-        //                     exact: true
-        //                 }
-        //             )
-        //         );
-        //     }
-        // );
-
-
-        // await StepHelper.step(
-        //     this.page,
-        //     'Apply Booking Date',
-        //     async () => {
-        //         await this.keywords.click(
-        //             this.locator.applyBtn
-        //         );
-        //     }
-        // );
-
-
-        // await StepHelper.step(
-        //     this.page,
-        //     'Select First Available Slot',
-        //     async () => {
-
-        //         await this.keywords.click(
-        //             this.locator.slotButton.first()
-        //         );
-        //     }
-        // );
     }
 
-async selectFirstAvailableSlot() {
-    await StepHelper.step(
-        this.page,
-        'Select First Available Slot',
-        async () => {
-            while (true) {
-                const slotCount = await this.locator.slotButton.count();
+    async selectFirstAvailableSlot() {
 
-                if (slotCount > 0) {
+        await StepHelper.step(
+            this.page,
+            'Select First Available Slot',
+            async () => {
+
+                while (true) {
+
+                    const slotCount =
+                        await this.locator.slotButton.count();
+
+                    if (slotCount > 0) {
+
+                        const firstSlot =
+                            this.locator.slotButton.first();
+
+                        await firstSlot.waitFor({
+                            state: 'visible',
+                            timeout: timeout.elementTimeout
+                        });
+
+                        await this.keywords.click(
+                            firstSlot
+                        );
+
+                        break;
+                    }
+
+                    const nextDateButton =
+                        this.locator.nextDateBtn;
+
+                    await nextDateButton.waitFor({
+                        state: 'visible',
+                        timeout: timeout.elementTimeout
+                    });
+
                     await this.keywords.click(
-                        this.locator.slotButton.first()
+                        nextDateButton
                     );
-                    break;
                 }
-
-                await this.keywords.click(
-                    this.locator.nextDateBtn
-                );
-
-                await this.keywords.wait(
-                    this.page,
-                    500
-                );
             }
-        }
-    );
-}
-
-// async selectFirstAvailableSlot() {
-//     await StepHelper.step(
-//         this.page,
-//         'Select First Available Slot',
-//         async () => {
-
-//             while (true) {
-
-//                 const slotCount =
-//                     await this.locator.slotButton.count();
-
-//                 console.log('==============================');
-//                 console.log('Slot count:', slotCount);
-//                 console.log('Current URL:', this.page.url());
-
-//                 if (slotCount > 0) {
-
-//                     const slot =
-//                         this.locator.slotButton.first();
-
-//                     console.log(
-//                         'Slot visible:',
-//                         await slot.isVisible().catch(() => false)
-//                     );
-
-//                     console.log(
-//                         'Slot text:',
-//                         await slot.textContent().catch(() => null)
-//                     );
-
-//                     await slot.screenshot({
-//                         path: 'slot-debug.png'
-//                     }).catch(() => {});
-
-//                     await slot.click({
-//                         timeout: 60000
-//                     });
-
-//                     break;
-//                 }
-
-//                 console.log('No slot found - clicking next date');
-
-//                 await this.keywords.click(
-//                     this.locator.nextDateBtn
-//                 );
-//             }
-//         }
-//     );
-// }
+        );
+    }
 
     async selectMultipleServices(
         serviceNames
     ) {
 
-        await this.keywords.wait(
-            this.page,
-            3000
+        await this.keywords.waitForElement(
+            this.locator.providerDropdown,
+            timeout.elementTimeout
         );
-
 
         await StepHelper.step(
             this.page,
@@ -344,7 +241,6 @@ async selectFirstAvailableSlot() {
                 );
             }
         );
-
 
         for (const serviceName of serviceNames) {
 
@@ -374,18 +270,15 @@ async selectFirstAvailableSlot() {
                 }
             );
 
-
             const serviceOption =
                 this.locator.getServiceOption(
                     serviceName
                 );
 
-
             await serviceOption.waitFor({
                 state: 'visible',
-                timeout: 5000
+                timeout: timeout.elementTimeout
             });
-
 
             await StepHelper.step(
                 this.page,
@@ -397,13 +290,9 @@ async selectFirstAvailableSlot() {
                 }
             );
 
-
-            await this.keywords.wait(
-                this.page,
-                1000
-            );
+            // Fixed 1000ms wait removed.
+            // Continue immediately after service option is selected.
         }
-
 
         await StepHelper.step(
             this.page,
@@ -416,7 +305,6 @@ async selectFirstAvailableSlot() {
             }
         );
 
-
         await StepHelper.step(
             this.page,
             'Open Booking Date',
@@ -426,7 +314,6 @@ async selectFirstAvailableSlot() {
                 );
             }
         );
-
 
         await StepHelper.step(
             this.page,
@@ -438,7 +325,6 @@ async selectFirstAvailableSlot() {
             }
         );
 
-
         await StepHelper.step(
             this.page,
             'Apply Booking Date',
@@ -449,7 +335,6 @@ async selectFirstAvailableSlot() {
             }
         );
     }
-
 
     async confirmServiceBooking() {
 
@@ -463,7 +348,6 @@ async selectFirstAvailableSlot() {
             }
         );
 
-
         await StepHelper.step(
             this.page,
             'Click Confirm Booking',
@@ -475,25 +359,21 @@ async selectFirstAvailableSlot() {
         );
     }
 
-     async verifyBookingConfirmation() {
- 
-    await StepHelper.step(
-        this.page,
-        'Verify Service Booking Confirmation Message',
-        async () => {
-            await expect(
-                this.locator.ServicebookingConfirmMsg
-            ).toBeVisible();
-        }
-    );
- 
-    await this.keywords.wait(
-            this.page,
-            5000
-        );
- 
-    }
+    async verifyBookingConfirmation() {
 
+        await StepHelper.step(
+            this.page,
+            'Verify Service Booking Confirmation Message',
+            async () => {
+
+                await expect(
+                    this.locator.ServicebookingConfirmMsg
+                ).toBeVisible({
+                    timeout: timeout.expectTimeout
+                });
+            }
+        );
+    }
 
     async addService(
         patientName,
@@ -519,7 +399,6 @@ async selectFirstAvailableSlot() {
         await this.verifyBookingConfirmation();
     }
 
-
     async addServiceForExistingPatient(
         patientName,
         serviceName,
@@ -540,6 +419,5 @@ async selectFirstAvailableSlot() {
         await this.confirmServiceBooking();
     }
 }
-
 
 module.exports = { ServicePage };

@@ -992,124 +992,121 @@ class E2EPage {
     }
 
         async selectFirstAvailableSlot() {
-            
-        await this.page
-            .waitForLoadState('networkidle', { timeout: networkIdleTimeoutMs })
-            .catch(() => {
-                
-            });
-
-        let availableSlotCount =
-            await this.locator.slotButton.count();
-
+       
+        const maxDaysToSearch = 30;
+        let daysSearched = 0;
         let daysAdvanced = 0;
-        const maxDaysToTry = 3;
-
-        while (availableSlotCount === 0 && daysAdvanced < maxDaysToTry) {
-
-            await StepHelper.step(
-                this.page,
-                `No Slots Today - Click Next Day (attempt ${daysAdvanced + 1})`,
-                async () => {
-
-                    await this.keywords.click(
-                        this.locator.nextDayBtn
-                    );
-                }
-            );
-
-            daysAdvanced++;
-
-            await this.page
-                .waitForLoadState('networkidle', { timeout: networkIdleTimeoutMs })
-                .catch(() => {});
-
-            availableSlotCount =
-                await this.locator.slotButton.count();
-        }
-
-        if (availableSlotCount > 0) {
-
-            await StepHelper.step(
-                this.page,
-                'Select First Available Slot',
-                async () => {
-
-                    const deadline = Date.now() + 30000;
-                    let lastError;
-
-                    while (Date.now() < deadline) {
-
-                        try {
-
-                            await this.keywords.click(
-                                this.locator.slotButton.first()
+ 
+        await StepHelper.step(
+            this.page,
+            'Select First Available Slot',
+            async () => {
+ 
+                // 1. RESTORED: Wait for the page network to settle BEFORE checking slots
+                await this.page
+                    .waitForLoadState('networkidle', { timeout: networkIdleTimeoutMs })
+                    .catch(() => {});
+ 
+                while (daysSearched < maxDaysToSearch) {
+ 
+                    // 2. NEW SAFETY: Explicitly wait up to 5 seconds for a slot to appear.
+                    // This stops the script from seeing "0 slots" and skipping days
+                    // just because the UI is slightly slow to render in CI environments.
+                    await this.locator.slotButton.first()
+                        .waitFor({ state: 'visible', timeout: 5000 })
+                        .catch(() => {});
+ 
+                    const slotCount = await this.locator.slotButton.count();
+ 
+                    console.log(`Available Slots: ${slotCount}`);
+ 
+                    if (slotCount > 0) {
+ 
+                        const firstSlot = this.locator.slotButton.first();
+                       
+                        const appointmentCard = this.locator.slotAppointmentCard(firstSlot);
+ 
+                        const cardText = await this.keywords.getText(appointmentCard);
+ 
+                        console.log(`Appointment Card Text: ${cardText}`);
+ 
+                        const dateMatch = cardText.match(/\d{1,2}\s+[A-Za-z]{3},\s+\d{4}/);
+ 
+                        if (!dateMatch) {
+                            throw new Error(
+                                `Unable to read slot date from appointment card: ${cardText}`
                             );
-
-                            return;
-
-                        } catch (error) {
-
-                            lastError = error;
-
-                            if (
-                                !/not attached|not stable|detached/i.test(
-                                    error.message || ''
-                                )
-                            ) {
-                                throw error;
-                            }
-
-                            await this.page.waitForTimeout(500);
                         }
+ 
+                        this.selectedSlotDate = dateMatch[0];
+ 
+                        console.log(`Selected Slot Date: ${this.selectedSlotDate}`);
+ 
+                        const deadline = Date.now() + 15000;
+                        let clicked = false;
+                        let lastError;
+ 
+                        while (Date.now() < deadline) {
+                            try {
+                                await this.keywords.click(firstSlot);
+                                clicked = true;
+                                break;
+                            } catch (error) {
+                                lastError = error;
+                                if (!/not attached|not stable|detached/i.test(error.message || '')) {
+                                    throw error;
+                                }
+                                await this.page.waitForTimeout(500);
+                            }
+                        }
+ 
+                        if (!clicked) {
+                            throw lastError;
+                        }
+ 
+                        break;
                     }
-
-                    throw lastError;
-                }
-            );
-
-        } else {
-
-            await StepHelper.step(
-                this.page,
-                'No Available Slots Found - Click Add Custom Slots',
-                async () => {
-
-                    await this.keywords.click(
-                        this.locator.addCustomSlotsBtn
+ 
+                    await StepHelper.step(
+                        this.page,
+                        'Move To Next Available Date',
+                        async () => {
+                            await this.keywords.click(this.locator.nextDayBtn);
+                        }
                     );
+ 
+                    daysSearched++;
+                    daysAdvanced++;
+ 
+                    await this.page
+                        .waitForLoadState('networkidle', { timeout: networkIdleTimeoutMs })
+                        .catch(() => {});
                 }
-            );
-
-            await StepHelper.step(
-                this.page,
-                'Accept Default Custom Slot Time (Click Update)',
-                async () => {
-
-                    await this.keywords.click(
-                        this.locator.customSlotUpdateBtn
-                    );
+ 
+                if (daysSearched >= maxDaysToSearch) {
+                    throw new Error(`No available slots found after searching ${maxDaysToSearch} days forward.`);
                 }
-            );
-        }
-
-        return daysAdvanced;
+            }
+        );
+ 
+        return {
+    selectedSlotDate: this.selectedSlotDate,
+    daysAdvanced
+};
     }
-
     async clickNext() {
-
+ 
         await StepHelper.step(
             this.page,
             'Click Next',
             async () => {
-
+ 
                 await this.keywords.click(
                     this.locator.nextBtn
                 );
             }
         );
     }
-
     async clickConfirm() {
 
         await StepHelper.step(
@@ -1138,18 +1135,36 @@ class E2EPage {
         );
     }
 
+    // async bookSingleSessionFromAddPackage() {
+
+    //     await this.selectPendingServiceItem();
+
+    //     const daysAdvanced = await this.selectFirstAvailableSlot();
+
+    //     await this.clickNext();
+
+    //     await this.clickConfirmPackageBooking();
+
+    //     return daysAdvanced;
+    // }
+
     async bookSingleSessionFromAddPackage() {
 
-        await this.selectPendingServiceItem();
+    await this.selectPendingServiceItem();
 
-        const daysAdvanced = await this.selectFirstAvailableSlot();
+    const {
+        selectedSlotDate,
+        daysAdvanced
+    } = await this.selectFirstAvailableSlot();
 
-        await this.clickNext();
+    await this.clickNext();
+    await this.clickConfirmPackageBooking();
 
-        await this.clickConfirmPackageBooking();
-
-        return daysAdvanced;
-    }
+    return {
+        selectedSlotDate,
+        daysAdvanced
+    };
+}
 
     async verifyServicesAddedToast() {
 

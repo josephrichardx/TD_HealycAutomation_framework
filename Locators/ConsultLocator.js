@@ -14,6 +14,25 @@ class ConsultLocator {
         this.ConsultbookingConfirmMsg = page.getByText(
             'Booking confirm'
         );
+
+        this.consultationStatusDropdown =
+        page.locator("(//div[@class='field-dropdown'])[2]");
+
+        this.checkedInOption =
+            page.locator("(//span[text()='Checked-In'])[2]");
+
+        this.consultationRoomDropdown =
+            page.locator("(//div[@class='name-consultRoom'])[2]");
+
+        this.consultationRoomOption = (room) =>
+            page.locator(`(//div[text()=' ${room} '])[2]`);
+
+        this.consultationRoomSuccessToast =
+            page.locator("//div[@class='toaster-wrapper success']");
+    
+// this.consultationRoomSuccessToast =
+//     page.locator("//div[@class='toaster-wrapper success']//div[@class='text-content']");
+
         this.patientSearchTxt = page.getByRole('textbox', {
             name: 'Search with patient name or'
         });
@@ -41,6 +60,9 @@ class ConsultLocator {
         this.bookingConfirmMsg = page.getByText(
             'Booking confirm'
         );
+
+
+        
 
         this.addCustomSlotsBtn = page.getByText(
             'Add custom slots'
@@ -135,6 +157,10 @@ class ConsultLocator {
             "//div[@class='dropdown-option']"
         );
 
+        // this.dropdownOptions = page.locator(
+        //     "//div[contains(@class,'dropdown-option')]"
+        // );
+
         this.datePickerApplyBtn = page.getByText(
             'Apply'
         ).last();
@@ -193,7 +219,7 @@ class ConsultLocator {
             'button.activeButon:visible'
         ).first();
 
-         this.nextDateBtn = page.locator('div.NextListButton').first();
+        this.nextDateBtn = page.locator('div.NextListButton').first();
  
         this.calendarDate = page
             .locator('.fc-col-header-cell-cushion')
@@ -204,21 +230,6 @@ class ConsultLocator {
         this.slotTimeText = page.locator('.slotButton span.slot-time');
         this.calendarNextBtn = page.locator('.fc-next-button');
         this.waitlistBtn = page.locator('.waitingListButton');
-
-        this.consultationStatusDropdown =
-        page.locator("(//div[@class='field-dropdown'])[2]");
- 
-        this.checkedInOption =
-            page.locator("(//span[text()='Checked-In'])[2]");
- 
-        this.consultationRoomDropdown =
-            page.locator("(//div[@class='name-consultRoom'])[2]");
- 
-        this.consultationRoomOption = (room) =>
-            page.locator(`(//div[text()=' ${room} '])[2]`);
- 
-        this.consultationRoomSuccessToast =
-            page.locator("//div[@class='toaster-wrapper success']");
     }
 
     // --- NEWLY ADDED METHODS ---

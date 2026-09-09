@@ -49,10 +49,7 @@ this.doctorOption = (doctorName) =>
 this.otOption = (otName) =>
     page.locator(`//span[text()='${otName}']`);
 
-this.specificRoomCategoryOption = (roomCategoryName) => 
-    this.roomCategoryDropdownList
-        .locator('.dropdown-item span.status-text')
-        .filter({ hasText: new RegExp(`^${roomCategoryName}$`) });
+
 
 
 
@@ -164,7 +161,6 @@ this.specificRoomCategoryOption = (roomCategoryName) =>
     get roomCategoryOptions() {
         return this.roomCategoryDropdownList.locator('div.dropdown-item span.status-text');
     }
-
 
     get step2Container() {
         return this.page.locator('app-admission-details');

@@ -16,18 +16,18 @@
 // preserved here under the distinct name `invoiceAmountTxt`, and the invoice
 // methods in E2EPage.js reference that name. Both elements remain reachable.
 // ============================================================================
-
+ 
 class E2ELocator {
-
+ 
     constructor(page) {
-
+ 
         this.page = page;
-
-
+ 
+ 
         // --------------------------------------------------------------
         //  PATIENT  (Add Patient form + Patient Profile)
         // --------------------------------------------------------------
-
+ 
         this.addNewBtn = page.getByRole('button', { name: 'Add New' });
         this.addPatientBtn = page.getByRole('button', { name: 'Add Patient' });
         this.patientNameTxt = page.getByPlaceholder('Enter patient name');
@@ -69,12 +69,12 @@ class E2ELocator {
                 hasText: 'Patient referral source'
             })
         }).locator('div.info-value');
-
-
+ 
+ 
         // --------------------------------------------------------------
         //  CALENDAR  (dashboard, search, appointment cards)
         // --------------------------------------------------------------
-
+ 
         this.sidebarCalendarIcon = page.locator('#calendar-toggle');
         this.patientSearch = page.getByPlaceholder(
             'Search or register patient'
@@ -101,12 +101,12 @@ class E2ELocator {
         this.cancelledAppointmentCard = (patientName) =>
             page.locator('div.slot.custom-events-cards')
                 .filter({ hasText: patientName });
-
-
+ 
+ 
         // --------------------------------------------------------------
         //  PACKAGE  (add / activate / schedule / book)
         // --------------------------------------------------------------
-
+ 
         this.addPackageBtn =
             page.getByRole('button', { name: 'Add Package' });
         // Patient search box INSIDE the Add Package drawer. Distinct from the
@@ -116,7 +116,7 @@ class E2ELocator {
             page.getByRole('textbox', {
                 name: 'Search with patient name or'
             });
-
+ 
         this.proceedBtn =
             page.getByText('Proceed');
         this.activateSchedulePackageBtn = page.getByText(
@@ -167,12 +167,15 @@ class E2ELocator {
         this.packageActiveStatusBtn = page.locator(
             'div.headingDiv button.activated'
         );
-
-
+ 
+        this.slotAppointmentCard = (slot) =>
+        slot.locator('xpath=ancestor::div[contains(@class,"bookappointmentBodyCard")]');
+ 
+ 
         // --------------------------------------------------------------
         //  INVOICE  (generate, totals, PDF fields)
         // --------------------------------------------------------------
-
+ 
         this.generateInvoiceLink =
             page.getByText('Generate invoice').nth(1);
         this.finalGenerateInvoiceBtn =
@@ -340,19 +343,19 @@ class E2ELocator {
     ).first();
         this.receiptInvoiceNumberPdf = (invoiceNumber) =>
     this.pdfBody.getByText(invoiceNumber).first();
-
+ 
         // Invoice adjustment amount field - renamed to avoid colliding with the
         // cancellation refund `amountTxt` above. See file header.
         this.invoiceAmountTxt =
             page.getByRole('textbox', {
                 name: 'Amount'
             });
-
-
+ 
+ 
         // --------------------------------------------------------------
         //  PAYMENT  (financials, invoice + payment history)
         // --------------------------------------------------------------
-
+ 
         this.financialsTab = page.getByText(
             'Financials'
         );
@@ -375,12 +378,12 @@ class E2ELocator {
         this.financialsPaymentHistoryRows = page.locator(
             'div.financials-table-wrapper table tbody tr'
         );
-
-
+ 
+ 
         // --------------------------------------------------------------
         //  CANCELLATION  (cancel package, refund, confirm)
         // --------------------------------------------------------------
-
+ 
         this.cancelBtn = page.getByText('Cancel').nth(3);
         this.refundBtn = page.getByRole('button', {
             name: 'Refund',
@@ -459,13 +462,13 @@ class E2ELocator {
     name: 'Back',
     exact: true
 }).last();
-
+ 
     }
-
+ 
     // ------------------------------------------------------------------------
     //  Dynamic / derived locators
     // ------------------------------------------------------------------------
-
+ 
     get calendarMonthYearPopup() {
         return this.page.locator(
             'button.calendar-header-options-section-monthName-button'
@@ -473,80 +476,80 @@ class E2ELocator {
             'xpath=ancestor::*[.//button[normalize-space()="Cancel"] and .//button[normalize-space()="Save"]][1]'
         );
     }
-
+ 
     getAdditionalDetailField(labelText) {
         return this.page.locator('div.form-group.mb-3')
             .filter({ has: this.page.locator('label', { hasText: labelText }) })
             .locator('input.form-control');
     }
-
+ 
     getDayLocator(day) {
         return this.page.locator('div.calendar-day:not(.greyed-out-day)')
             .filter({ hasText: new RegExp(`^\\s*${day}\\s*$`) });
     }
-
+ 
     getMonthButton(monthName) {
         return this.calendarMonthYearPopup
             .locator('button')
             .filter({ hasText: new RegExp(`^\\s*${monthName}\\s*$`) });
     }
-
+ 
     getPatient(patientName) {
         return this.page.locator(
             `//div[@title="${patientName}"]`
         );
     }
-
+ 
     getPackage(packageName) {
-
+ 
         return this.page.getByText(
             packageName,
             { exact: true }
         );
     }
-
+ 
     getSalutationOption(salutation) {
         return this.salutationDropdownList
             .locator('div.dropdown-item')
             .filter({ hasText: new RegExp(`^\\s*${salutation}\\s*$`) });
     }
-
+ 
     getStatus(status) {
-
+ 
         return this.page.locator(
             `(//div[@class='status']//following::div[contains(text(),' ${status} ')])[3]`
         );
     }
-
+ 
     getYearButton(year) {
         return this.calendarMonthYearPopup
             .locator('button')
             .filter({ hasText: new RegExp(`^\\s*${year}\\s*$`) });
     }
-
+ 
     get medicalConditionTxt() {
         return this.getAdditionalDetailField('Medical Condition');
     }
-
+ 
     get patientCategoryTxt() {
         return this.getAdditionalDetailField('Patient Category');
     }
-
+ 
     get pincodeTxt() {
         return this.getAdditionalDetailField('Pincode');
     }
-
+ 
     get saveDateBtn() {
         return this.calendarMonthYearPopup.getByRole('button', {
             name: 'Save',
             exact: true
         });
     }
-
+ 
     get treatingDoctorTxt() {
         return this.getAdditionalDetailField('Treating Doctor');
     }
-
+ 
 }
-
+ 
 module.exports = { E2ELocator };

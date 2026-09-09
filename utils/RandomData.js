@@ -53,7 +53,6 @@ function getAdmissionData() {
         doctorName: 'Default Doctor'
     };
 }
- 
 const firstNames = [
     'John', 'James', 'Robert', 'Michael', 'David',
     'Sarah', 'Emily', 'Jessica', 'Ashley', 'Amanda',
@@ -70,7 +69,6 @@ const firstNames = [
     'Samantha', 'Elizabeth', 'Natalie', 'Luna', 'Savannah',
     'Brooklyn', 'Leah', 'Zoe', 'Stella', 'Hazel',
     'Violet', 'Penelope', 'Lucy', 'Claire', 'Ellie'
-
 ];
  
 const lastNames = [
@@ -89,7 +87,6 @@ const lastNames = [
     'Morales', 'Murphy', 'Cook', 'Rogers', 'Gutierrez',
     'Ortiz', 'Morgan', 'Cooper', 'Peterson', 'Bailey',
     'Reed', 'Kelly', 'Howard', 'Ramos', 'Kim'
-
 ];
  
 function generateUniquePatientFullName() {

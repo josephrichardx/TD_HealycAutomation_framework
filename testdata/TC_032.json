@@ -18,7 +18,6 @@
   
    "admissionPatientData": {
     "location": "Healync Kolkata",
-    "roomCategory": "Daycare",
     "surgeryName": "Total Knee Replacement (TKR)",
     "doctorName": "Default Doctor",
     "otName": "OT_1",

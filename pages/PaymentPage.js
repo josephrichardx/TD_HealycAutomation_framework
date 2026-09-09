@@ -2,7 +2,11 @@ const { expect } = require('@playwright/test');
 const { StepHelper } = require('../utils/StepHelper');
 const { PaymentLocator } = require('../Locators/PaymentLocator');
 const { Keywords } = require('../utils/Keywords');
+
 import { Verify } from '../utils/verification.js';
+
+const timeoutData = require('../testdata/timeout.json');
+const { timeout } = timeoutData;
 
 class PaymentPage {
 
@@ -13,22 +17,22 @@ class PaymentPage {
     }
 
 
-    async openFinancials(patientName) {
+    // =========================================================
+    // OPEN FINANCIALS
+    // =========================================================
 
-        await this.keywords.wait(
-            this.page,
-            3000
-        );
+    async openFinancials(patientName) {
 
         await this.locator.loaderOverlay.waitFor({
             state: 'hidden',
-            timeout: 60000
+            timeout: timeout.elementTimeout
         });
 
         await StepHelper.step(
             this.page,
             `Open Patient Profile - ${patientName}`,
             async () => {
+
                 await this.keywords.click(
                     this.locator.patientProfile(patientName)
                 );
@@ -39,6 +43,7 @@ class PaymentPage {
             this.page,
             'Open Financials Tab',
             async () => {
+
                 await this.keywords.click(
                     this.locator.financialsTab
                 );
@@ -47,17 +52,22 @@ class PaymentPage {
     }
 
 
+    // =========================================================
+    // MAKE PAYMENT
+    // =========================================================
+
     async clickMakePayment() {
 
         await this.locator.makePaymentBtn.waitFor({
             state: 'visible',
-            timeout: 60000
+            timeout: timeout.elementTimeout
         });
 
         await StepHelper.step(
             this.page,
             'Click Make Payment',
             async () => {
+
                 await this.keywords.click(
                     this.locator.makePaymentBtn
                 );
@@ -65,6 +75,10 @@ class PaymentPage {
         );
     }
 
+
+    // =========================================================
+    // SELECT PAYMENT TYPE
+    // =========================================================
 
     async selectPaymentType(paymentType) {
 
@@ -76,6 +90,7 @@ class PaymentPage {
                     this.page,
                     'Select Payment Type - Cash',
                     async () => {
+
                         await this.keywords.click(
                             this.locator.cashBtn
                         );
@@ -91,6 +106,7 @@ class PaymentPage {
                     this.page,
                     'Select Payment Type - UPI',
                     async () => {
+
                         await this.keywords.click(
                             this.locator.upiBtn
                         );
@@ -106,6 +122,7 @@ class PaymentPage {
                     this.page,
                     'Select Payment Type - Card',
                     async () => {
+
                         await this.keywords.click(
                             this.locator.cardBtn
                         );
@@ -121,6 +138,7 @@ class PaymentPage {
                     this.page,
                     'Select Payment Type - Wallet',
                     async () => {
+
                         await this.keywords.click(
                             this.locator.walletBtn
                         );
@@ -139,12 +157,17 @@ class PaymentPage {
     }
 
 
+    // =========================================================
+    // TRANSACTION ID
+    // =========================================================
+
     async enterTransactionId(transactionId) {
 
         await StepHelper.step(
             this.page,
             `Enter Transaction ID - ${transactionId}`,
             async () => {
+
                 await this.keywords.fill(
                     this.locator.transactionIdTxt,
                     transactionId
@@ -154,12 +177,17 @@ class PaymentPage {
     }
 
 
+    // =========================================================
+    // AMOUNT
+    // =========================================================
+
     async enterAmount(amount) {
 
         await StepHelper.step(
             this.page,
             `Enter Amount - ${amount}`,
             async () => {
+
                 await this.keywords.fill(
                     this.locator.amountTxt,
                     amount.toString()
@@ -169,12 +197,17 @@ class PaymentPage {
     }
 
 
+    // =========================================================
+    // RECORD PAYMENT
+    // =========================================================
+
     async recordPayment() {
 
         await StepHelper.step(
             this.page,
             'Click Record Payment',
             async () => {
+
                 await this.keywords.click(
                     this.locator.recordPaymentBtn
                 );
@@ -183,12 +216,17 @@ class PaymentPage {
     }
 
 
+    // =========================================================
+    // COMPLETE PAYMENT
+    // =========================================================
+
     async completePayment() {
 
         await StepHelper.step(
             this.page,
             'Click Complete Payment',
             async () => {
+
                 await this.keywords.click(
                     this.locator.completePaymentBtn
                 );
@@ -196,6 +234,10 @@ class PaymentPage {
         );
     }
 
+
+    // =========================================================
+    // VERIFY PAYMENT SUCCESS
+    // =========================================================
 
     async verifyPaymentSuccess(
         paymentType,
@@ -210,13 +252,16 @@ class PaymentPage {
                 await expect(
                     this.locator.paymentSuccessMsg
                 ).toBeVisible({
-                    timeout: 10000
+                    timeout: timeout.expectTimeout
                 });
-
             }
         );
     }
 
+
+    // =========================================================
+    // RECORD WALLET DEPOSIT
+    // =========================================================
 
     async recordWalletDeposit(amount) {
 
@@ -228,9 +273,8 @@ class PaymentPage {
                 await expect(
                     this.locator.recordDepositBtn
                 ).toBeVisible({
-                    timeout: 30000
+                    timeout: timeout.expectTimeout
                 });
-
             }
         );
 
@@ -239,6 +283,7 @@ class PaymentPage {
             this.page,
             'Click Record Deposit',
             async () => {
+
                 await this.keywords.click(
                     this.locator.recordDepositBtn
                 );
@@ -253,6 +298,7 @@ class PaymentPage {
             this.page,
             'Confirm Wallet Deposit',
             async () => {
+
                 await this.keywords.click(
                     this.locator.recordDepositBtn
                 );
@@ -261,10 +307,17 @@ class PaymentPage {
 
 
         await this.page.waitForLoadState(
-            'networkidle'
+            'networkidle',
+            {
+                timeout: timeout.navigationTimeout
+            }
         );
     }
 
+
+    // =========================================================
+    // MAKE PAYMENT
+    // =========================================================
 
     async makePayment(
         paymentType,
@@ -293,9 +346,8 @@ class PaymentPage {
                     await expect(
                         this.locator.walletBtn
                     ).toBeVisible({
-                        timeout: 10000
+                        timeout: timeout.expectTimeout
                     });
-
                 }
             );
 
@@ -346,7 +398,12 @@ class PaymentPage {
         await this.recordPayment();
     }
 
-     async IPDMakePayment(
+
+    // =========================================================
+    // IPD MAKE PAYMENT
+    // =========================================================
+
+    async IPDMakePayment(
         paymentType,
         amount,
         transactionId = null
@@ -373,9 +430,8 @@ class PaymentPage {
                     await expect(
                         this.locator.walletBtn
                     ).toBeVisible({
-                        timeout: 10000
+                        timeout: timeout.expectTimeout
                     });
-
                 }
             );
 
@@ -423,435 +479,431 @@ class PaymentPage {
         await this.recordPayment();
     }
 
-    
- async verifyPayment(paymentAmount) {
 
-    const expectedPaidAmount =
-        parseFloat(paymentAmount);
+    // =========================================================
+    // VERIFY PAYMENT
+    // =========================================================
 
-    await StepHelper.step(
-        this.page,
-        `Verify Payment - ₹${expectedPaidAmount}`,
-        async () => {
+    async verifyPayment(paymentAmount) {
 
-            // ==========================================
-            // 1. Verify Total Paid
-            // ==========================================
+        const expectedPaidAmount =
+            parseFloat(paymentAmount);
 
-            await expect(
-                this.locator.totalPaidLabel
-            ).toBeVisible({
-                timeout: 30000
-            });
+        await StepHelper.step(
+            this.page,
+            `Verify Payment - ₹${expectedPaidAmount}`,
+            async () => {
 
-            const totalPaidCard =
-                this.locator.getTotalPaidCard();
+                // =====================================================
+                // 1. VERIFY TOTAL PAID
+                // =====================================================
 
-            await expect(
-                totalPaidCard
-            ).toContainText(
-                `₹${expectedPaidAmount}`,
-                {
-                    timeout: 30000
-                }
-            );
+                await expect(
+                    this.locator.totalPaidLabel
+                ).toBeVisible({
+                    timeout: timeout.expectTimeout
+                });
 
-            const totalPaidText =
-                await this.keywords.getText(
+
+                const totalPaidCard =
+                    this.locator.getTotalPaidCard();
+
+
+                await expect(
                     totalPaidCard
+                ).toContainText(
+                    `₹${expectedPaidAmount}`,
+                    {
+                        timeout: timeout.expectTimeout
+                    }
                 );
 
-            const paidAmountMatch =
-                totalPaidText.match(
-                    /₹\s*([\d,]+(?:\.\d+)?)/
-                );
 
-            if (!paidAmountMatch) {
-                throw new Error(
-                    `Unable to find paid amount from: ${totalPaidText}`
-                );
-            }
+                const totalPaidText =
+                    await this.keywords.getText(
+                        totalPaidCard
+                    );
 
-            const actualPaidAmount =
-                parseFloat(
-                    paidAmountMatch[1]
-                        .replace(/,/g, '')
-                );
 
-            await StepHelper.step(
-                this.page,
-                `Verify Total Paid | Expected: ₹${expectedPaidAmount} | Actual: ₹${actualPaidAmount}`,
-                async () => {
-                    expect(
-                        actualPaidAmount
-                    ).toBe(
-                        expectedPaidAmount
+                const paidAmountMatch =
+                    totalPaidText.match(
+                        /₹\s*([\d,]+(?:\.\d+)?)/
+                    );
+
+
+                if (!paidAmountMatch) {
+
+                    throw new Error(
+                        `Unable to find paid amount from: ${totalPaidText}`
                     );
                 }
-            );
 
 
-            // ==========================================
-            // 2. Open Invoice History
-            // ==========================================
-
-            await expect(
-                this.locator.invoiceHistoryTab
-            ).toBeVisible({
-                timeout: 30000
-            });
-
-            await this.keywords.click(
-                this.locator.invoiceHistoryTab
-            );
-
-
-            // ==========================================
-            // 3. Get Invoice Total Amount
-            // ==========================================
-
-            const totalAmountLocator =
-                this.locator.totalAmountValue;
-
-            await expect(
-                totalAmountLocator
-            ).toBeVisible({
-                timeout: 30000
-            });
-
-            const totalAmountText =
-                await this.keywords.getText(
-                    totalAmountLocator
-                );
-
-            const totalAmount =
-                parseFloat(
-                    totalAmountText.replace(
-                        /[₹,\s]/g,
-                        ''
-                    )
-                );
-
-            await StepHelper.step(
-                this.page,
-                `Verify Invoice Total Amount | ₹${totalAmount}`,
-                async () => {
-                    await expect(
-                        totalAmountLocator
-                    ).toBeVisible({
-                        timeout: 30000
-                    });
-                }
-            );
-
-
-            // ==========================================
-            // 4. Calculate Expected Remaining Amount
-            // ==========================================
-
-            const expectedRemainingAmount =
-                totalAmount -
-                expectedPaidAmount;
-
-            await StepHelper.step(
-                this.page,
-                `Calculate Remaining Amount | ₹${totalAmount} - ₹${expectedPaidAmount} = ₹${expectedRemainingAmount}`,
-                async () => {
-                //     // Calculation is already performed above.
-                }
-            );
-
-
-            // ==========================================
-            // 5. Get Actual Remaining Amount
-            // ==========================================
-
-            const remainingAmountLocator =
-                this.locator.remainingAmountValue;
-
-            await expect(
-                remainingAmountLocator
-            ).toBeVisible({
-                timeout: 30000
-            });
-
-            const remainingAmountText =
-                await this.keywords.getText(
-                    remainingAmountLocator
-                );
-
-            const actualRemainingAmount =
-                parseFloat(
-                    remainingAmountText.replace(
-                        /[₹,\s]/g,
-                        ''
-                    )
-                );
-
-
-            // ==========================================
-            // 6. Verify Remaining Amount
-            // ==========================================
-
-            await StepHelper.step(
-                this.page,
-                `Verify Remaining Amount | Expected: ₹${expectedRemainingAmount} | Actual: ₹${actualRemainingAmount}`,
-                async () => {
-                    expect(
-                        actualRemainingAmount
-                    ).toBe(
-                        expectedRemainingAmount
+                const actualPaidAmount =
+                    parseFloat(
+                        paidAmountMatch[1]
+                            .replace(/,/g, '')
                     );
-                }
-            );
-        }
-    );
-}
-
-async getLatestReceivedAmount() {
-
-    return (
-        await this.keywords.getText(
-            this.locator.latestReceivedAmount
-        )
-    ).trim();
-}
-
-async getLatestPaymentMode() {
-
-    return (
-        await this.keywords.getText(
-            this.locator.latestPaymentMode
-        )
-    ).trim();
-}
-
-async clickPaymentHistory() {
-
-    await StepHelper.step(
-        this.page,
-        'Click Payment History',
-        async () => {
-            await this.keywords.click(
-                this.locator.paymentHistoryTab
-            );
-        }
-    );
-}
-
-async verifyPaymentHistory(
-    expectedPaymentMethod,
-    expectedAmount
-) {
-
-    const actualReceivedAmount =
-        await this.getLatestReceivedAmount();
-
-    const actualPaymentMode =
-        await this.getLatestPaymentMode();
-
-    const expectedReceivedAmount =
-        `₹${expectedAmount}`;
-
-    await StepHelper.step(
-        this.page,
-        `Verify Received Amount | Expected: ${expectedReceivedAmount} | Actual: ${actualReceivedAmount}`,
-        async () => {
-            expect(
-                actualReceivedAmount
-            ).toBe(
-                expectedReceivedAmount
-            );
-        }
-    );
-
-    await StepHelper.step(
-        this.page,
-        `Verify Payment Mode | Expected: ${expectedPaymentMethod} | Actual: ${actualPaymentMode}`,
-        async () => {
-            expect(
-                actualPaymentMode.trim().toLowerCase()
-            ).toBe(
-                expectedPaymentMethod.trim().toLowerCase()
-            );
-        }
-    );
-}
-
-// async IPDVerifyPayment(paymentMethod, amount) {
-
-//     await StepHelper.step(
-//         this.page,
-//         'Verify Payment History',
-//         async () => {
-
-//             // Get the latest payment history row
-//             const paymentRow = this.page
-//                 .locator('table tbody tr')
-//                 .last();
-
-//             // Get actual payment method from UI
-//             const actualPaymentMethod =
-//                 (await paymentRow.locator('td').nth(2).innerText())
-//                     .trim();
-
-//             // Get actual payment amount from UI
-//             const actualPaymentAmount =
-//                 (await paymentRow.locator('td').nth(3).innerText())
-//                     .trim()
-//                     .replace(/[₹,\s]/g, '');
-
-//             const expectedAmount =
-//                 Number(amount).toFixed(2);
-
-//             const actualAmount =
-//                 Number(actualPaymentAmount).toFixed(2);
-
-//             // Verify Payment Method
-//             await StepHelper.step(
-//             this.page,
-//             `Verify Payment Method | Expected: ${paymentMethod} | Actual: ${actualPaymentMethod}`,
-//             async () => {
-
-//                 const expected =
-//                     String(paymentMethod).trim().toLowerCase();
-
-//                 const actual =
-//                     String(actualPaymentMethod).trim().toLowerCase();
-
-//                 if (expected !== actual) {
-//                     throw new Error(
-//                         `Payment Method mismatch - Expected: ${paymentMethod}, Actual: ${actualPaymentMethod}`
-//                     );
-//                 }
-//             }
-//             );
-
-//             // Verify Payment Amount
-//             await Verify.equals(
-//                 this.page,
-//                 'Verify Payment Amount',
-//                 expectedAmount,
-//                 actualAmount,
-//                 {
-//                     soft: false
-//                 }
-//             );
-//         }
-//     );
-// }
-async IPDVerifyPayment(
-    paymentMethod,
-    amount
-) {
-
-    await StepHelper.step(
-        this.page,
-        'Verify Payment History',
-        async () => {
-
-            // =========================================================
-            // GET LATEST PAYMENT HISTORY ROW
-            // =========================================================
-
-            const paymentRow =
-                this.locator.paymentHistoryRow;
-
-            await paymentRow.waitFor({
-                state: 'visible',
-                timeout: 30000
-            });
 
 
-            // =========================================================
-            // GET ACTUAL PAYMENT METHOD
-            // =========================================================
+                await StepHelper.step(
+                    this.page,
+                    `Verify Total Paid | Expected: ₹${expectedPaidAmount} | Actual: ₹${actualPaidAmount}`,
+                    async () => {
 
-            const actualPaymentMethod =
-                (
-                    await paymentRow
-                        .locator('td')
-                        .nth(2)
-                        .innerText()
-                ).trim();
-
-
-            // =========================================================
-            // GET ACTUAL PAYMENT AMOUNT
-            // =========================================================
-
-            const actualPaymentAmount =
-                (
-                    await paymentRow
-                        .locator('td')
-                        .nth(3)
-                        .innerText()
-                )
-                    .trim()
-                    .replace(/[₹,\s]/g, '');
-
-
-            const expectedAmount =
-                Number(amount).toFixed(2);
-
-            const actualAmount =
-                Number(actualPaymentAmount).toFixed(2);
-
-
-            // =========================================================
-            // VERIFY PAYMENT METHOD
-            // =========================================================
-
-            await StepHelper.step(
-                this.page,
-                `Verify Payment Method | Expected: ${paymentMethod} | Actual: ${actualPaymentMethod}`,
-                async () => {
-
-                    const expected =
-                        String(paymentMethod)
-                            .trim()
-                            .toLowerCase();
-
-                    const actual =
-                        String(actualPaymentMethod)
-                            .trim()
-                            .toLowerCase();
-
-                    if (expected !== actual) {
-
-                        throw new Error(
-                            `Payment Method mismatch - Expected: ${paymentMethod}, Actual: ${actualPaymentMethod}`
+                        expect(
+                            actualPaidAmount
+                        ).toBe(
+                            expectedPaidAmount
                         );
                     }
-                }
-            );
+                );
 
 
-            // =========================================================
-            // VERIFY PAYMENT AMOUNT
-            // =========================================================
+                // =====================================================
+                // 2. OPEN INVOICE HISTORY
+                // =====================================================
 
-            await StepHelper.step(
-                this.page,
-                `Verify Payment Amount | Expected: ${expectedAmount} | Actual: ${actualAmount}`,
-                async () => {
+                await expect(
+                    this.locator.invoiceHistoryTab
+                ).toBeVisible({
+                    timeout: timeout.expectTimeout
+                });
 
-                    await Verify.equals(
-                        this.page,
-                        'Payment Amount',
-                        expectedAmount,
-                        actualAmount,
-                        {
-                            soft: false
-                        }
+
+                await this.keywords.click(
+                    this.locator.invoiceHistoryTab
+                );
+
+
+                // =====================================================
+                // 3. GET INVOICE TOTAL AMOUNT
+                // =====================================================
+
+                const totalAmountLocator =
+                    this.locator.totalAmountValue;
+
+
+                await expect(
+                    totalAmountLocator
+                ).toBeVisible({
+                    timeout: timeout.expectTimeout
+                });
+
+
+                const totalAmountText =
+                    await this.keywords.getText(
+                        totalAmountLocator
                     );
-                }
-            );
-        }
-    );
-}//update
 
 
+                const totalAmount =
+                    parseFloat(
+                        totalAmountText.replace(
+                            /[₹,\s]/g,
+                            ''
+                        )
+                    );
+
+
+                await StepHelper.step(
+                    this.page,
+                    `Verify Invoice Total Amount | ₹${totalAmount}`,
+                    async () => {
+
+                        await expect(
+                            totalAmountLocator
+                        ).toBeVisible({
+                            timeout: timeout.expectTimeout
+                        });
+                    }
+                );
+
+
+                // =====================================================
+                // 4. CALCULATE EXPECTED REMAINING AMOUNT
+                // =====================================================
+
+                const expectedRemainingAmount =
+                    totalAmount -
+                    expectedPaidAmount;
+
+
+                await StepHelper.step(
+                    this.page,
+                    `Calculate Remaining Amount | ₹${totalAmount} - ₹${expectedPaidAmount} = ₹${expectedRemainingAmount}`,
+                    async () => {
+                        // Calculation completed above.
+                    }
+                );
+
+
+                // =====================================================
+                // 5. GET ACTUAL REMAINING AMOUNT
+                // =====================================================
+
+                const remainingAmountLocator =
+                    this.locator.remainingAmountValue;
+
+
+                await expect(
+                    remainingAmountLocator
+                ).toBeVisible({
+                    timeout: timeout.expectTimeout
+                });
+
+
+                const remainingAmountText =
+                    await this.keywords.getText(
+                        remainingAmountLocator
+                    );
+
+
+                const actualRemainingAmount =
+                    parseFloat(
+                        remainingAmountText.replace(
+                            /[₹,\s]/g,
+                            ''
+                        )
+                    );
+
+
+                // =====================================================
+                // 6. VERIFY REMAINING AMOUNT
+                // =====================================================
+
+                await StepHelper.step(
+                    this.page,
+                    `Verify Remaining Amount | Expected: ₹${expectedRemainingAmount} | Actual: ₹${actualRemainingAmount}`,
+                    async () => {
+
+                        expect(
+                            actualRemainingAmount
+                        ).toBe(
+                            expectedRemainingAmount
+                        );
+                    }
+                );
+            }
+        );
+    }
+
+
+    // =========================================================
+    // GET LATEST RECEIVED AMOUNT
+    // =========================================================
+
+    async getLatestReceivedAmount() {
+
+        return (
+            await this.keywords.getText(
+                this.locator.latestReceivedAmount
+            )
+        ).trim();
+    }
+
+
+    // =========================================================
+    // GET LATEST PAYMENT MODE
+    // =========================================================
+
+    async getLatestPaymentMode() {
+
+        return (
+            await this.keywords.getText(
+                this.locator.latestPaymentMode
+            )
+        ).trim();
+    }
+
+
+    // =========================================================
+    // CLICK PAYMENT HISTORY
+    // =========================================================
+
+    async clickPaymentHistory() {
+
+        await StepHelper.step(
+            this.page,
+            'Click Payment History',
+            async () => {
+
+                await this.keywords.click(
+                    this.locator.paymentHistoryTab
+                );
+            }
+        );
+    }
+
+
+    // =========================================================
+    // VERIFY PAYMENT HISTORY
+    // =========================================================
+
+    async verifyPaymentHistory(
+        expectedPaymentMethod,
+        expectedAmount
+    ) {
+
+        const actualReceivedAmount =
+            await this.getLatestReceivedAmount();
+
+        const actualPaymentMode =
+            await this.getLatestPaymentMode();
+
+        const expectedReceivedAmount =
+            `₹${expectedAmount}`;
+
+
+        await StepHelper.step(
+            this.page,
+            `Verify Received Amount | Expected: ${expectedReceivedAmount} | Actual: ${actualReceivedAmount}`,
+            async () => {
+
+                expect(
+                    actualReceivedAmount
+                ).toBe(
+                    expectedReceivedAmount
+                );
+            }
+        );
+
+
+        await StepHelper.step(
+            this.page,
+            `Verify Payment Mode | Expected: ${expectedPaymentMethod} | Actual: ${actualPaymentMode}`,
+            async () => {
+
+                expect(
+                    actualPaymentMode
+                        .trim()
+                        .toLowerCase()
+                ).toBe(
+                    expectedPaymentMethod
+                        .trim()
+                        .toLowerCase()
+                );
+            }
+        );
+    }
+
+
+    // =========================================================
+    // IPD VERIFY PAYMENT
+    // =========================================================
+
+    async IPDVerifyPayment(
+        paymentMethod,
+        amount
+    ) {
+
+        await StepHelper.step(
+            this.page,
+            'Verify Payment History',
+            async () => {
+
+                // =====================================================
+                // GET LATEST PAYMENT HISTORY ROW
+                // =====================================================
+
+                const paymentRow =
+                    this.locator.paymentHistoryRow;
+
+
+                await paymentRow.waitFor({
+                    state: 'visible',
+                    timeout: timeout.elementTimeout
+                });
+
+
+                // =====================================================
+                // GET ACTUAL PAYMENT METHOD
+                // =====================================================
+
+                const actualPaymentMethod =
+                    (
+                        await paymentRow
+                            .locator('td')
+                            .nth(2)
+                            .innerText()
+                    ).trim();
+
+
+                // =====================================================
+                // GET ACTUAL PAYMENT AMOUNT
+                // =====================================================
+
+                const actualPaymentAmount =
+                    (
+                        await paymentRow
+                            .locator('td')
+                            .nth(3)
+                            .innerText()
+                    )
+                        .trim()
+                        .replace(/[₹,\s]/g, '');
+
+
+                const expectedAmount =
+                    Number(amount).toFixed(2);
+
+                const actualAmount =
+                    Number(actualPaymentAmount).toFixed(2);
+
+
+                // =====================================================
+                // VERIFY PAYMENT METHOD
+                // =====================================================
+
+                await StepHelper.step(
+                    this.page,
+                    `Verify Payment Method | Expected: ${paymentMethod} | Actual: ${actualPaymentMethod}`,
+                    async () => {
+
+                        const expected =
+                            String(paymentMethod)
+                                .trim()
+                                .toLowerCase();
+
+                        const actual =
+                            String(actualPaymentMethod)
+                                .trim()
+                                .toLowerCase();
+
+
+                        if (expected !== actual) {
+
+                            throw new Error(
+                                `Payment Method mismatch - Expected: ${paymentMethod}, Actual: ${actualPaymentMethod}`
+                            );
+                        }
+                    }
+                );
+
+
+                // =====================================================
+                // VERIFY PAYMENT AMOUNT
+                // =====================================================
+
+                await StepHelper.step(
+                    this.page,
+                    `Verify Payment Amount | Expected: ${expectedAmount} | Actual: ${actualAmount}`,
+                    async () => {
+
+                        await Verify.equals(
+                            this.page,
+                            'Payment Amount',
+                            expectedAmount,
+                            actualAmount,
+                            {
+                                soft: false
+                            }
+                        );
+                    }
+                );
+            }
+        );
+    }
 }
 
 

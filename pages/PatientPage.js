@@ -4,6 +4,9 @@ const { Verify } = require('../utils/verification');
 const { PatientLocator } = require('../Locators/PatientLocator');
 const { Keywords } = require('../utils/Keywords');
 
+const timeoutData = require('../testdata/timeout.json');
+const { timeout } = timeoutData;
+
 class PatientPage {
 
     constructor(page) {
@@ -88,7 +91,6 @@ class PatientPage {
             }
         );
 
-
         switch (title) {
 
             case 'Mr':
@@ -105,7 +107,6 @@ class PatientPage {
                 );
 
                 break;
-
 
             default:
 
@@ -225,7 +226,6 @@ class PatientPage {
             );
         }
 
-
         if (gender === 'Female') {
 
             await StepHelper.step(
@@ -294,7 +294,9 @@ class PatientPage {
 
                 await expect(
                     this.locator.patientSavedMsg
-                ).toBeVisible();
+                ).toBeVisible({
+                    timeout: timeout.expectTimeout
+                });
 
             }
         );
@@ -304,19 +306,17 @@ class PatientPage {
     // =========================================================
     // VERIFY PATIENT SAVE OUTCOME
     // =========================================================
-    // The success toaster is transient - if it is already gone by the time it
-    // is read, the observable outcome is the Add Patient form closing. This
-    // races both so a missed toaster is not reported as a failed save.
-    // `verification` = { expectedMessage } from the calling spec's own data
-    // file (patientData.savedVerification).
 
     async verifyPatientSavedOutcome(patientName, verification) {
 
-        const step = 'Verify Patient Saved Successfully';
+        const step =
+            'Verify Patient Saved Successfully';
 
-        const toaster = this.locator.patientSavedMsg.first();
+        const toaster =
+            this.locator.patientSavedMsg.first();
 
-        const panelField = this.locator.patientNameTxt.first();
+        const panelField =
+            this.locator.patientNameTxt.first();
 
         let actualMessage = null;
 
@@ -328,28 +328,41 @@ class PatientPage {
                 await Promise.race([
 
                     toaster
-                        .waitFor({ state: 'visible' })
+                        .waitFor({
+                            state: 'visible',
+                            timeout: timeout.elementTimeout
+                        })
                         .catch(() => {}),
 
                     panelField
-                        .waitFor({ state: 'hidden' })
+                        .waitFor({
+                            state: 'hidden',
+                            timeout: timeout.elementTimeout
+                        })
                         .catch(() => {})
                 ]);
 
-                const toasterVisible = await toaster
-                    .isVisible()
-                    .catch(() => false);
+                const toasterVisible =
+                    await toaster
+                        .isVisible()
+                        .catch(() => false);
 
                 if (toasterVisible) {
 
                     actualMessage = (
-                        await this.keywords.getText(toaster)
+                        await this.keywords.getText(
+                            toaster
+                        )
                     ).trim();
                 }
             }
         );
 
-        if (actualMessage && verification && verification.expectedMessage) {
+        if (
+            actualMessage &&
+            verification &&
+            verification.expectedMessage
+        ) {
 
             await Verify.equals(
                 this.page,
@@ -372,12 +385,14 @@ class PatientPage {
 
         } else {
 
-            // The toaster was already gone - the form closing is the outcome.
             await Verify.state(
                 this.page,
                 `Add Patient form closed after save - ${patientName}`,
                 panelField,
-                { hidden: true, soft: false }
+                {
+                    hidden: true,
+                    soft: false
+                }
             );
 
             return null;
@@ -457,17 +472,15 @@ class PatientPage {
             }
         );
 
-
         const patient =
             this.locator.getPatient(
                 patientName
             );
 
-
         await this.keywords.waitForElement(
-            patient
+            patient,
+            timeout.elementTimeout
         );
-
 
         await StepHelper.step(
             this.page,

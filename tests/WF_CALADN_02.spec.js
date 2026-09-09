@@ -50,7 +50,7 @@ test.describe('WF_CALADN_02 - Validate Consult Appointment Booking', () => {
 
         await consultPage.searchAndSelectPatient(
             uniquePatientName, 
-            timeouts.mediumWaitMs,
+            // timeouts.mediumWaitMs,
             data.minExpectedResults
         );
 
@@ -64,29 +64,29 @@ test.describe('WF_CALADN_02 - Validate Consult Appointment Booking', () => {
         );
 
         await consultPage.clearPreSelectedFilters(
-            timeouts.longWaitMs,
-            timeouts.mediumWaitMs,
-            timeouts.shortWaitMs,
+            // timeouts.longWaitMs,
+            // timeouts.mediumWaitMs,
+            // timeouts.shortWaitMs,
             timeouts.clearBufferAttempts
         );
 
         // --- STEP 4 VERIFICATION ---
         await consultPage.verifyDoctorDropdownOptions(
             expectedDoctors, 
-            timeouts.mediumWaitMs
+            // timeouts.mediumWaitMs
         );
         // ---------------------------
 
         await consultPage.selectDoctorByName(
             data.doctorName,
-            timeouts.longWaitMs,
+            // timeouts.longWaitMs,
             data.minExpectedResults,
             uiLabels.doctorFilter
         );
 
         await consultPage.selectConsultTypeByName(
             data.consultType,
-            timeouts.longWaitMs,
+            // timeouts.longWaitMs,
             uiLabels.consultFilter
         );
 
@@ -99,7 +99,7 @@ test.describe('WF_CALADN_02 - Validate Consult Appointment Booking', () => {
         // ==========================================================
         const capturedBookingDate = await consultPage.findAvailableDateByClickingNext(
             timeouts.calendarMaxAttempts,
-            timeouts.mediumWaitMs
+            // timeouts.mediumWaitMs
         );
         
         await consultPage.verifyAvailableSlots(
@@ -118,7 +118,7 @@ test.describe('WF_CALADN_02 - Validate Consult Appointment Booking', () => {
         await consultPage.confirmBookingWithVerification(
             bookingToast.title,
             bookingToast.subtext,
-            timeouts.toastWaitTimeoutMs
+            // timeouts.toastWaitTimeoutMs
         );
         
         await consultPage.dismissBookingConfirmationToastIfPresent();
@@ -133,7 +133,7 @@ test.describe('WF_CALADN_02 - Validate Consult Appointment Booking', () => {
 
         await consultPage.searchAndSelectPatient(
             uniquePatientName,
-            timeouts.mediumWaitMs,
+            // timeouts.mediumWaitMs,
             data.minExpectedResults
         );
 
@@ -143,22 +143,22 @@ test.describe('WF_CALADN_02 - Validate Consult Appointment Booking', () => {
         );
 
         await consultPage.clearPreSelectedFilters(
-            timeouts.longWaitMs,
-            timeouts.mediumWaitMs,
-            timeouts.shortWaitMs,
+            // timeouts.longWaitMs,
+            // timeouts.mediumWaitMs,
+            // timeouts.shortWaitMs,
             timeouts.clearBufferAttempts
         );
 
         await consultPage.selectDoctorByName(
             data.doctorName,
-            timeouts.longWaitMs,
+            // timeouts.longWaitMs,
             data.minExpectedResults,
             uiLabels.doctorFilter
         );
 
         await consultPage.selectConsultTypeByName(
             data.followUpConsultType,
-            timeouts.longWaitMs,
+            // timeouts.longWaitMs,
             uiLabels.consultFilter
         );
 
@@ -169,7 +169,7 @@ test.describe('WF_CALADN_02 - Validate Consult Appointment Booking', () => {
         await consultPage.navigateToSpecificDateOnCard(
             capturedBookingDate,
             timeouts.calendarMaxAttempts,
-            timeouts.mediumWaitMs
+            // timeouts.mediumWaitMs
         );
 
         const followUpFee = await consultPage.captureFeeFromCard(
@@ -182,7 +182,7 @@ test.describe('WF_CALADN_02 - Validate Consult Appointment Booking', () => {
 
         await consultPage.setCustomSlotStartTime(
             selectedSlot.slotTimeText,
-            timeouts.shortWaitMs,
+            // timeouts.shortWaitMs,
             data.slotDurationMinutes,
             data.expectedTimePickerColumns,
             uiLabels
@@ -196,7 +196,7 @@ test.describe('WF_CALADN_02 - Validate Consult Appointment Booking', () => {
         await consultPage.confirmBookingWithVerification(
             bookingToast.title,
             bookingToast.subtext,
-            timeouts.toastWaitTimeoutMs
+            // timeouts.toastWaitTimeoutMs
         );
         
         await consultPage.dismissBookingConfirmationToastIfPresent();
@@ -209,7 +209,7 @@ test.describe('WF_CALADN_02 - Validate Consult Appointment Booking', () => {
         await consultPage.findPatientOnCalendar(
             uniquePatientName,
             timeouts.calendarMaxAttempts,
-            timeouts.mediumWaitMs
+            // timeouts.mediumWaitMs
         );
         
         await consultPage.verifyCalendarOverlap(

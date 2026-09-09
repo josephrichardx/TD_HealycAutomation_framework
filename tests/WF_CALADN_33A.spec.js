@@ -65,8 +65,7 @@ test('IPD - Make Payment', async ({ page }) => {
     // 5. Select Room / Bed
     // ==========================================
 
-    // await admissionPage.selectRandomRoomCategory();
-    await admissionPage.selectSpecificRoomCategory(admissionPatientData.roomCategory);
+    await admissionPage.selectRandomRoomCategory();
     await admissionPage.selectRandomRoomNumber();
     await admissionPage.selectRandomBedNumber();
 

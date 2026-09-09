@@ -6,12 +6,13 @@ const { ConsultPage } = require('../pages/ConsultPage');
 const { InvoicePage } = require('../pages/InvoicePage');
 const { CalendarPage } = require('../pages/CalendarPage');
 const { PrescriptionPage } = require('../pages/PrescriptionPage');
+
  
-const { patientData,appoinmentData,consultData,prescriptionData } = require('../testdata/TC_EMR012.json');
+const { patientData,appoinmentData,consultData,prescriptionData,templateData,loginData,marginData,observationData,template } = require('../testdata/TC_EMR012.json');
 const { generateUniquePatientFullName } = require('../utils/RandomData');
 
 test('EMR Prescription', async ({ page }) => {
- 
+
     // const patientName = patientData.patientName;
     const patientName = generateUniquePatientFullName();
     const patientPage = new PatientPage(page);
@@ -19,6 +20,7 @@ test('EMR Prescription', async ({ page }) => {
     const invoicePage = new InvoicePage(page);
     const calendarPage = new CalendarPage(page);
     const prescriptionPage = new PrescriptionPage(page);
+   
  
      await patientPage.createPatient(
         patientName,
@@ -37,21 +39,69 @@ test('EMR Prescription', async ({ page }) => {
     bookingDate
     );
 
-    await prescriptionPage.PrescriptionofObservation(
-    prescriptionData.drugs1,
-    prescriptionData.drugs2
+    await prescriptionPage.clickWritePrescription();
+
+    await prescriptionPage.applyTheTemplate(
+    template.formatValue,
+    template.templateName
     );
- 
-    
-
-
-    
 
 
 
 
+//release UAT:
 
+    // await prescriptionPage.ApplyTemplate(
+    //         templateData.templateName,
+    //         templateData.searchKey,
+    //         templateData.templateAppliedMessage
+    //     );//release UAT
 
+    // await prescriptionPage.fillObservation(
+    // observationData
+    // // timeout.time
+    // );
+
+    // // await prescriptionPage.PrescriptionObservation(
+    // // templateData.templateName,
+    // // templateData.searchKey,
+    // // timeout.time,
+    // // prescriptionData.addRows,
+    // // prescriptionData.drugs
+    // // );
+
+    // await prescriptionPage.clickSidebarEdgeToggle();
+
+    // await prescriptionPage.fillMarginValues(
+    // marginData.top,
+    // marginData.bottom,
+    // marginData.leftRight,
+    // // timeout.time,
+    // );
+
+    // const newTab = await prescriptionPage.openSameUrlInNewTab(
+    // loginData.url,
+    // // timeout.time
+    // );
+
+    // const newCalendarPage = new CalendarPage(newTab);
+
+    // await newCalendarPage.selectPatientFromCalendar(
+    //     patientName,
+    //     bookingDate
+    // );
+
+    // const newPrescriptionPage =
+    // new PrescriptionPage(newTab);
+
+    // await newPrescriptionPage.clickWritePrescription();
+
+    // await newPrescriptionPage.verifyNewTabObservationData(
+    // observationData,
+    // // timeout.time
+    // );
+
+    // await newPrescriptionPage.generateAndViewPrescription();
 
     
 });

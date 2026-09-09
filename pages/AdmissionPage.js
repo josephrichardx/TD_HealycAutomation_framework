@@ -3,6 +3,9 @@ import { StepHelper } from '../utils/StepHelper.js';
 import { Verify } from '../utils/verification.js';
 import { AdmissionLocator } from '../Locators/AdmissionLocator.js';
 import { Keywords } from '../utils/Keywords.js';
+import timeoutData from '../testdata/timeout.json';
+
+const { timeout } = timeoutData;
 
 export class AdmissionPage {
 
@@ -89,38 +92,43 @@ export class AdmissionPage {
     // }
 
     async searchPatient(patientName) {
-    await StepHelper.step(
-        this.page,
-        `Search Patient - ${patientName}`,
-        async () => {
-            await this.keywords.fill(
-                this.locator.patientSearchTxt,
-                patientName
-            );
-        }
-    );
 
-    await this.keywords.wait(this.page, 1000);
+        await StepHelper.step(
+            this.page,
+            `Search Patient - ${patientName}`,
+            async () => {
+                await this.keywords.fill(
+                    this.locator.patientSearchTxt,
+                    patientName
+                );
+            }
+        );
 
-    const patient = this.locator.getPatient(patientName);
+        // await this.keywords.wait(this.page, 1000);
+        await this.keywords.wait(
+            this.page,
+            timeout.testTimeout
+        );
 
-    await this.keywords.waitForElement(patient);
+        const patient = this.locator.getPatient(patientName);
 
-    await Verify.state(
-        this.page,
-        `Patient Result - ${patientName}`,
-        patient,
-        { visible: true, soft: false }
-    );
+        await this.keywords.waitForElement(patient);
 
-    await StepHelper.step(
-        this.page,
-        `Select Patient - ${patientName}`,
-        async () => {
-            await this.keywords.click(patient);
-        }
-    );
-}
+        await Verify.state(
+            this.page,
+            `Patient Result - ${patientName}`,
+            patient,
+            { visible: true, soft: false }
+        );
+
+        await StepHelper.step(
+            this.page,
+            `Select Patient - ${patientName}`,
+            async () => {
+                await this.keywords.click(patient);
+            }
+        );
+    }
 
     async openLocationDropdown() {
 
@@ -152,15 +160,15 @@ export class AdmissionPage {
         const locationOption = this.locator.getLocationOption(locationName);
 
         await StepHelper.step(
-        this.page,
-        `Wait for Location Option - ${locationName}`,
-        async () => {
-            await locationOption.waitFor({
-                state: 'visible',
-                timeout: 10000
-            });
-        }
-    );
+            this.page,
+            `Wait for Location Option - ${locationName}`,
+            async () => {
+                await locationOption.waitFor({
+                    state: 'visible',
+                    timeout: timeout.elementTimeout
+                });
+            }
+        );
 
         await Verify.state(
             this.page,
@@ -384,7 +392,7 @@ export class AdmissionPage {
         );
 
         await expect(options.first()).toBeVisible({
-            timeout: 10000
+            timeout: timeout.elementTimeout
         });
 
         const count = await options.count();
@@ -434,20 +442,6 @@ export class AdmissionPage {
         });
     }
 
-    // async selectSpecificRoomCategory(roomCategoryName) {
-    //     // 1. Click to open the room category dropdown
-    //     await this.locator.roomCategoryDropdownBtn.click();
-
-    //     // 2. Target the exact text inside the dropdown list
-    //     // Using RegExp ensures it matches the exact word (e.g. "Single") and avoids partial matches
-    //     const specificOption = this.locator.roomCategoryDropdownList
-    //         .locator('.dropdown-item span.status-text')
-    //         .filter({ hasText: new RegExp(`^${roomCategoryName}$`) });
-
-    //     // 3. Click the target option
-    //     await specificOption.click();
-    // }
-
     async selectRandomRoomNumber() {
         return await this._selectRandomDropdownOption({
             label: 'Room Number',
@@ -455,11 +449,6 @@ export class AdmissionPage {
             dropdownList: this.locator.roomNumberDropdownList,
             options: this.locator.roomNumberOptions
         });
-    }
-
-    async selectSpecificRoomCategory(roomCategoryName) {
-    await this.locator.roomCategoryDropdownBtn.click();
-    await this.locator.specificRoomCategoryOption(roomCategoryName).click();
     }
 
     async selectRandomBedNumber() {
@@ -555,7 +544,10 @@ export class AdmissionPage {
             }
         );
 
-        await this.keywords.waitForElement(this.locator.testChips.first(), 10000);
+        await this.keywords.waitForElement(
+            this.locator.testChips.first(),
+            timeout.elementTimeout
+        );
 
         await Verify.state(
             this.page,
@@ -640,20 +632,20 @@ export class AdmissionPage {
 
     async addSurgery(surgeryData) {
         
-    await this.locator.addSurgeryBtn.click();
+        await this.locator.addSurgeryBtn.click();
 
-    await this.locator.surgeryNameInput.click();
-    await this.locator.surgeryOption(surgeryData.surgeryName).click();
+        await this.locator.surgeryNameInput.click();
+        await this.locator.surgeryOption(surgeryData.surgeryName).click();
 
-    await this.locator.doctorInput.click();
-    await this.locator.doctorOption(surgeryData.doctorName).click();
+        await this.locator.doctorInput.click();
+        await this.locator.doctorOption(surgeryData.doctorName).click();
 
-    await this.locator.otDropdown.click();
-    await this.locator.otOption(surgeryData.otName).click();
+        await this.locator.otDropdown.click();
+        await this.locator.otOption(surgeryData.otName).click();
 
-    await this.locator.linkSurgeryBtn.click();
-    
-}
+        await this.locator.linkSurgeryBtn.click();
+        
+    }
 
     // async addTests(maxCount = 3) {
     //     return await this._selectRandomChipsAndLink({
@@ -674,22 +666,22 @@ export class AdmissionPage {
     // }
 
     async addTests(testCount) {
-    return await this._selectRandomChipsAndLink({
-        label: 'Test',
-        addBtn: this.locator.addTestBtn,
-        linkBtn: this.locator.linkTestBtn,
-        maxCount: testCount
-    });
-}
+        return await this._selectRandomChipsAndLink({
+            label: 'Test',
+            addBtn: this.locator.addTestBtn,
+            linkBtn: this.locator.linkTestBtn,
+            maxCount: testCount
+        });
+    }
 
-async addConsumables(consumableCount) {
-    return await this._selectRandomChipsAndLink({
-        label: 'Consumable',
-        addBtn: this.locator.addConsumableBtn,
-        linkBtn: this.locator.linkConsumablesBtn,
-        maxCount: consumableCount
-    });
-}
+    async addConsumables(consumableCount) {
+        return await this._selectRandomChipsAndLink({
+            label: 'Consumable',
+            addBtn: this.locator.addConsumableBtn,
+            linkBtn: this.locator.linkConsumablesBtn,
+            maxCount: consumableCount
+        });
+    }
 
     // async fillEmergencyDetailsAndContinue(
     //     contactName = 'emergency',
@@ -758,70 +750,70 @@ async addConsumables(consumableCount) {
     // }
 
     async fillEmergencyDetailsAndContinue(
-    contactName,
-    phoneNumber,
-    physicianName
-) {
-
-    await this.page.waitForLoadState('domcontentloaded');
-
-    const contactInput = this.locator.emergencyContactTxt;
-
-    await Verify.state(
-        this.page,
-        'Emergency Contact Field',
-        contactInput,
-        { visible: true, soft: false }
-    );
-
-    await StepHelper.step(
-        this.page,
-        'Enter Emergency Details',
-        async () => {
-            await contactInput.fill(contactName);
-            await this.locator.emergencyPhoneTxt.fill(phoneNumber);
-            await this.locator.referringPhysicianTxt.fill(physicianName);
-        }
-    );
-
-    await Verify.inputValue(
-        this.page,
-        'Emergency Contact Field Value',
         contactName,
-        contactInput
-    );
-
-    await Verify.inputValue(
-        this.page,
-        'Emergency Phone Field Value',
         phoneNumber,
-        this.locator.emergencyPhoneTxt
-    );
+        physicianName
+    ) {
 
-    await Verify.inputValue(
-        this.page,
-        'Referring Physician Field Value',
-        physicianName,
-        this.locator.referringPhysicianTxt
-    );
+        await this.page.waitForLoadState('domcontentloaded');
 
-    const btn = this.locator.step2ContinueBtn;
+        const contactInput = this.locator.emergencyContactTxt;
 
-    await Verify.state(
-        this.page,
-        'Step 2 Continue Button',
-        btn,
-        { enabled: true, soft: false }
-    );
+        await Verify.state(
+            this.page,
+            'Emergency Contact Field',
+            contactInput,
+            { visible: true, soft: false }
+        );
 
-    await StepHelper.step(
-        this.page,
-        'Click Step 2 Continue Button',
-        async () => {
-            await btn.click();
-        }
-    );
-}
+        await StepHelper.step(
+            this.page,
+            'Enter Emergency Details',
+            async () => {
+                await contactInput.fill(contactName);
+                await this.locator.emergencyPhoneTxt.fill(phoneNumber);
+                await this.locator.referringPhysicianTxt.fill(physicianName);
+            }
+        );
+
+        await Verify.inputValue(
+            this.page,
+            'Emergency Contact Field Value',
+            contactName,
+            contactInput
+        );
+
+        await Verify.inputValue(
+            this.page,
+            'Emergency Phone Field Value',
+            phoneNumber,
+            this.locator.emergencyPhoneTxt
+        );
+
+        await Verify.inputValue(
+            this.page,
+            'Referring Physician Field Value',
+            physicianName,
+            this.locator.referringPhysicianTxt
+        );
+
+        const btn = this.locator.step2ContinueBtn;
+
+        await Verify.state(
+            this.page,
+            'Step 2 Continue Button',
+            btn,
+            { enabled: true, soft: false }
+        );
+
+        await StepHelper.step(
+            this.page,
+            'Click Step 2 Continue Button',
+            async () => {
+                await btn.click();
+            }
+        );
+    }
 
     // async fillInsuranceDetailsAndContinue(
     //     companyName = 'insurance',
@@ -890,70 +882,70 @@ async addConsumables(consumableCount) {
     // }
 
     async fillInsuranceDetailsAndContinue(
-    companyName,
-    policyNumber,
-    policyType
-) {
-
-    await this.page.waitForLoadState('domcontentloaded');
-
-    const companyInput = this.locator.insuranceCompanyNameTxt;
-
-    await Verify.state(
-        this.page,
-        'Insurance Company Name Field',
-        companyInput,
-        { visible: true, soft: false }
-    );
-
-    await StepHelper.step(
-        this.page,
-        'Enter Insurance Details',
-        async () => {
-            await companyInput.fill(companyName);
-            await this.locator.policyNumberTxt.fill(policyNumber);
-            await this.locator.policyTypeTxt.fill(policyType);
-        }
-    );
-
-    await Verify.inputValue(
-        this.page,
-        'Insurance Company Name Field Value',
         companyName,
-        companyInput
-    );
-
-    await Verify.inputValue(
-        this.page,
-        'Policy Number Field Value',
         policyNumber,
-        this.locator.policyNumberTxt
-    );
+        policyType
+    ) {
 
-    await Verify.inputValue(
-        this.page,
-        'Policy Type Field Value',
-        policyType,
-        this.locator.policyTypeTxt
-    );
+        await this.page.waitForLoadState('domcontentloaded');
 
-    const btn = this.locator.step3ContinueBtn;
+        const companyInput = this.locator.insuranceCompanyNameTxt;
 
-    await Verify.state(
-        this.page,
-        'Step 3 Continue Button',
-        btn,
-        { enabled: true, soft: false }
-    );
+        await Verify.state(
+            this.page,
+            'Insurance Company Name Field',
+            companyInput,
+            { visible: true, soft: false }
+        );
 
-    await StepHelper.step(
-        this.page,
-        'Click Step 3 Continue Button',
-        async () => {
-            await btn.click();
-        }
-    );
-}
+        await StepHelper.step(
+            this.page,
+            'Enter Insurance Details',
+            async () => {
+                await companyInput.fill(companyName);
+                await this.locator.policyNumberTxt.fill(policyNumber);
+                await this.locator.policyTypeTxt.fill(policyType);
+            }
+        );
+
+        await Verify.inputValue(
+            this.page,
+            'Insurance Company Name Field Value',
+            companyName,
+            companyInput
+        );
+
+        await Verify.inputValue(
+            this.page,
+            'Policy Number Field Value',
+            policyNumber,
+            this.locator.policyNumberTxt
+        );
+
+        await Verify.inputValue(
+            this.page,
+            'Policy Type Field Value',
+            policyType,
+            this.locator.policyTypeTxt
+        );
+
+        const btn = this.locator.step3ContinueBtn;
+
+        await Verify.state(
+            this.page,
+            'Step 3 Continue Button',
+            btn,
+            { enabled: true, soft: false }
+        );
+
+        await StepHelper.step(
+            this.page,
+            'Click Step 3 Continue Button',
+            async () => {
+                await btn.click();
+            }
+        );
+    }
 
     // async verifyAdmissionSummaryAndContinue(admissionDate, admissionTime) {
 
@@ -1023,10 +1015,12 @@ async addConsumables(consumableCount) {
     //     );
     // }
 
-    async verifyAdmissionSummaryAndContinue(admissionDate,
-    admissionTime,
-    dateLabel,
-    timeLabel) {
+    async verifyAdmissionSummaryAndContinue(
+        admissionDate,
+        admissionTime,
+        dateLabel,
+        timeLabel
+    ) {
 
         await this.page.waitForLoadState('domcontentloaded');
 
@@ -1042,9 +1036,8 @@ async addConsumables(consumableCount) {
 
         await dateValue.waitFor({
             state: 'visible',
-            timeout: 30000
+            timeout: timeout.elementTimeout
         });
-
 
         await Verify.state(
             this.page,

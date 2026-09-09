@@ -10,7 +10,7 @@ const { patientData,invoiceData,admissionPatientData } = require('../testdata/TC
 const { generateUniquePatientFullName } = require('../utils/RandomData.js'); 
 import {generateAdmissionDate,generateAdmissionTime,getAdmissionData} from '../utils/RandomData.js';
 
- 
+
  
 test('IPD - Generate Invoice', async ({ page }) => {
  
@@ -64,8 +64,7 @@ test('IPD - Generate Invoice', async ({ page }) => {
     // 5. Select Room / Bed
     // ==========================================
 
-    // await admissionPage.selectRandomRoomCategory();
-    await admissionPage.selectSpecificRoomCategory(admissionPatientData.roomCategory);
+    await admissionPage.selectRandomRoomCategory();
     await admissionPage.selectRandomRoomNumber();
     await admissionPage.selectRandomBedNumber();
 

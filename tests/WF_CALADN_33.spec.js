@@ -66,8 +66,7 @@ test('Add Admission - Make Payment', async ({ page }) => {
     // 5. Select Room / Bed
     // ==========================================
 
-    // await admissionPage.selectRandomRoomCategory();
-    await admissionPage.selectSpecificRoomCategory(admissionPatientData.roomCategory);
+    await admissionPage.selectRandomRoomCategory();
     await admissionPage.selectRandomRoomNumber();
     await admissionPage.selectRandomBedNumber();
 
@@ -136,8 +135,8 @@ test('Add Admission - Make Payment', async ({ page }) => {
     // 11. Generate Invoice
     // ==========================================
 
-    await invoicePage.generateInvoiceAddAdmission();
-
+    // await invoicePage.generateInvoiceAddAdmission();
+    await invoicePage.generateInvoiceAddAdmission(invoiceData);
     // ==========================================
     // 12. Get Invoice Details
     // ==========================================

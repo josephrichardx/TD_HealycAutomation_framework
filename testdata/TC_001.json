@@ -19,12 +19,12 @@
       "patientCategory": "patient"
     }
   },
-
+ 
   "dobYearRange": {
     "minYear": 1990,
     "maxYear": 2002
   },
-
+ 
   "validationErrors": {
     "missingSalutationTitle": "Incomplete details",
     "missingSalutationSubtext": "Salutations are important",
@@ -40,7 +40,7 @@
     "missingReferralTitle": "Incomplete details",
     "missingReferralSubtext": "Patient referral is important"
   },
-
+ 
   "invalidPatientData": {
     "specialCharName": "^%#&$",
     "alphanumericMobile": "abc!@#1234567890",
@@ -50,7 +50,7 @@
     "invalidEmailFormat": "test.com",
     "futureTestDay": "15"
   },
-  
+ 
   "excessiveLengthData": {
     "nameChar": "John ",
     "nameLength": 25,
@@ -59,16 +59,17 @@
     "addressChar": "Main St ",
     "addressLength": 70
   },
-
+ 
   "leapYearDob": {
     "day": "29",
     "monthName": "February",
     "monthIndex": 1,
     "year": "2020"
   },
-
+ 
   "toastMessages": {
     "patientSavedSuccess": "Patient Saved successfully",
     "patientUpdatedSuccess": "Patient details updated successfully"
   }
 }
+ 
