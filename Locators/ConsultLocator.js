@@ -157,6 +157,10 @@ class ConsultLocator {
             "//div[@class='dropdown-option']"
         );
 
+        // this.dropdownOptions = page.locator(
+        //     "//div[contains(@class,'dropdown-option')]"
+        // );
+
         this.datePickerApplyBtn = page.getByText(
             'Apply'
         ).last();

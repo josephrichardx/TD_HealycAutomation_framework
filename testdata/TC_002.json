@@ -30,7 +30,7 @@
     "minExpectedResults": 1,
     "expectedTimePickerColumns": 3
   },
-
+ 
   "uiLabels": {
     "doctorFilter": "Doctor",
     "consultFilter": "Consult",
@@ -41,7 +41,7 @@
     "minuteCol": "Minute",
     "amPmCol": "AM/PM"
   },
-
+ 
   "bookingToast": {
     "title": "Booking confirm",
     "subtext": "Your appointment have been booked."
