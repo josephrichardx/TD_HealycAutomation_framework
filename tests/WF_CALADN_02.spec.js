@@ -67,7 +67,7 @@ test.describe('WF_CALADN_02 - Validate Consult Appointment Booking', () => {
             // timeouts.longWaitMs,
             // timeouts.mediumWaitMs,
             // timeouts.shortWaitMs,
-            // timeouts.clearBufferAttempts
+            timeouts.clearBufferAttempts
         );
 
         // --- STEP 4 VERIFICATION ---
@@ -146,7 +146,7 @@ test.describe('WF_CALADN_02 - Validate Consult Appointment Booking', () => {
             // timeouts.longWaitMs,
             // timeouts.mediumWaitMs,
             // timeouts.shortWaitMs,
-            // timeouts.clearBufferAttempts
+            timeouts.clearBufferAttempts
         );
 
         await consultPage.selectDoctorByName(
