@@ -1,36 +1,44 @@
 const { expect } = require('@playwright/test');
 
 const { StepHelper } = require('../utils/StepHelper');
+
 const { Verify } = require('../utils/verification');
+
 const { ConsultLocator } = require('../Locators/ConsultLocator');
+
 const { Keywords } = require('../utils/Keywords');
+
 const { generateAdmissionDate } = require('../utils/RandomData');
 
 const timeoutData = require('../testdata/timeout.json');
 const { timeout } = timeoutData;
 
-
 class ConsultPage {
 
     constructor(page) {
-        this.page = page;
-        this.locator = new ConsultLocator(page);
-        this.keywords = new Keywords();
-    }
 
+        this.page = page;
+
+        this.locator = new ConsultLocator(page);
+
+        this.keywords = new Keywords();
+
+    }
 
     _requireLocator(value, locatorName) {
 
         if (!value) {
+
             throw new Error(
                 `[ConsultPage] Locator "${locatorName}" is not configured yet. ` +
                 `Uncomment and fill it in Locators/ConsultLocator.js.`
             );
+
         }
 
         return value;
-    }
 
+    }
 
     async clickCalendarWaitlistTab() {
 
@@ -43,21 +51,20 @@ class ConsultPage {
             this.page,
             'Calendar Waitlist Tab',
             tab,
-            {
-                visible: true,
-                soft: false
-            }
+            { visible: true, soft: false }
         );
 
         await StepHelper.step(
             this.page,
             'Click Calendar Waitlist Tab',
             async () => {
+
                 await this.keywords.click(tab);
+
             }
         );
-    }
 
+    }
 
     async clickAddConsult() {
 
@@ -65,9 +72,9 @@ class ConsultPage {
             this.page,
             'Click Add New Button',
             async () => {
-                await this.keywords.click(
-                    this.locator.addNewBtn
-                );
+
+                await this.keywords.click(this.locator.addNewBtn);
+
             }
         );
 
@@ -75,13 +82,13 @@ class ConsultPage {
             this.page,
             'Click Add Consult Button',
             async () => {
-                await this.keywords.click(
-                    this.locator.addConsultBtn
-                );
+
+                await this.keywords.click(this.locator.addConsultBtn);
+
             }
         );
-    }
 
+    }
 
     async clickAddNewButton() {
 
@@ -100,18 +107,15 @@ class ConsultPage {
             this.page,
             'Click + Add New Button',
             async () => {
-                await this.keywords.click(
-                    this.locator.addNewBtn
-                );
+
+                await this.keywords.click(this.locator.addNewBtn);
+
             }
         );
+
     }
 
-
-    async verifyAvailableSlots(
-        minSlots,
-        maxSlotsToCheck
-    ) {
+    async verifyAvailableSlots(minSlots, maxSlotsToCheck) {
 
         await Verify.state(
             this.page,
@@ -128,13 +132,12 @@ class ConsultPage {
             'slotTimeText'
         );
 
-        await slotLocators.first().waitFor({
-            state: 'visible',
-            timeout: timeout.elementTimeout
-        });
+        await this.keywords.waitForElement(
+            slotLocators.first(),
+            timeout.elementTimeout
+        );
 
-        const slotCount =
-            await slotLocators.count();
+        const slotCount = await slotLocators.count();
 
         await Verify.countAtLeast(
             this.page,
@@ -146,30 +149,17 @@ class ConsultPage {
         const timeFormatRegex =
             /^\d{2}:\d{2}\s-\s\d{2}:\d{2}\s(AM|PM)$/i;
 
-        const maxToCheck =
-            Math.min(
-                slotCount,
-                maxSlotsToCheck
-            );
+        const maxToCheck = Math.min(
+            slotCount,
+            maxSlotsToCheck
+        );
 
-        for (
-            let i = 0;
-            i < maxToCheck;
-            i++
-        ) {
+        for (let i = 0; i < maxToCheck; i++) {
 
-            const slot =
-                slotLocators.nth(i);
-
-            await slot.waitFor({
-                state: 'visible',
-                timeout: timeout.elementTimeout
-            });
+            const slot = slotLocators.nth(i);
 
             const slotText =
-                (
-                    await this.keywords.getText(slot)
-                ).trim();
+                (await this.keywords.getText(slot)).trim();
 
             const isValidFormat =
                 timeFormatRegex.test(slotText);
@@ -180,20 +170,17 @@ class ConsultPage {
                 true,
                 isValidFormat
             );
+
         }
+
     }
 
+    async findPatientOnCalendar(patientName, maxAttempts) {
 
-    async findPatientOnCalendar(
-        patientName,
-        maxAttempts
-    ) {
-
-        const nextBtn =
-            this._requireLocator(
-                this.locator.calendarNextBtn,
-                'calendarNextBtn'
-            );
+        const nextBtn = this._requireLocator(
+            this.locator.calendarNextBtn,
+            'calendarNextBtn'
+        );
 
         let found = false;
 
@@ -203,19 +190,12 @@ class ConsultPage {
             patientName
         );
 
-        for (
-            let i = 0;
-            i < maxAttempts;
-            i++
-        ) {
+        for (let i = 0; i < maxAttempts; i++) {
 
             const patientCards =
-                this.locator.getPatientCalendarCards(
-                    patientName
-                );
+                this.locator.getPatientCalendarCards(patientName);
 
-            const count =
-                await patientCards.count();
+            const count = await patientCards.count();
 
             if (count > 0) {
 
@@ -226,6 +206,7 @@ class ConsultPage {
                 );
 
                 break;
+
             }
 
             await StepHelper.step(
@@ -233,46 +214,39 @@ class ConsultPage {
                 `Patient not in current view. Clicking Calendar Next (Attempt ${i + 1})`,
                 async () => {
 
-                    await this.keywords.click(
-                        nextBtn
-                    );
+                    await this.keywords.click(nextBtn);
+
                 }
             );
 
-            /*
-             * No fixed wait here.
-             * Playwright click automatically waits for the
-             * button to be actionable.
-             */
+            await nextBtn.waitFor({
+                state: 'visible',
+                timeout: timeout.elementTimeout
+            });
+
         }
 
         if (!found) {
 
             throw new Error(
-                `[ConsultPage] Could not find patient "${patientName}" ` +
-                `on the calendar after ${maxAttempts} clicks.`
+                `[ConsultPage] Could not find patient "${patientName}" on the calendar after ${maxAttempts} clicks.`
             );
+
         }
+
     }
 
-
-    async verifyCalendarOverlap(
-        patientName,
-        expectedCount
-    ) {
+    async verifyCalendarOverlap(patientName, expectedCount) {
 
         const patientCards =
-            this.locator.getPatientCalendarCards(
-                patientName
-            );
+            this.locator.getPatientCalendarCards(patientName);
 
-        await patientCards.first().waitFor({
-            state: 'visible',
-            timeout: timeout.elementTimeout
-        });
+        await this.keywords.waitForElement(
+            patientCards.first(),
+            timeout.elementTimeout
+        );
 
-        const count =
-            await patientCards.count();
+        const count = await patientCards.count();
 
         await Verify.equals(
             this.page,
@@ -286,24 +260,15 @@ class ConsultPage {
             'Overlap Validation Successful',
             `${expectedCount} appointment cards rendered simultaneously on the calendar grid.`
         );
+
     }
 
-
-    async verifyAddNewMenuOptions(
-        expectedOptions
-    ) {
+    async verifyAddNewMenuOptions(expectedOptions) {
 
         for (const option of expectedOptions) {
 
             const optionLocator =
-                this.locator.getAddNewMenuOption(
-                    option
-                );
-
-            await optionLocator.waitFor({
-                state: 'visible',
-                timeout: timeout.elementTimeout
-            });
+                this.locator.getAddNewMenuOption(option);
 
             await this.keywords.scrollIntoViewIfNeeded(
                 optionLocator
@@ -318,30 +283,29 @@ class ConsultPage {
                     soft: false
                 }
             );
-        }
-    }
 
+        }
+
+    }
 
     async clickAddConsultOption() {
 
-        const addConsultBtn =
-            this._requireLocator(
-                this.locator.addConsultMenuBtn,
-                'addConsultMenuBtn'
-            );
+        const addConsultBtn = this._requireLocator(
+            this.locator.addConsultMenuBtn,
+            'addConsultMenuBtn'
+        );
 
         await StepHelper.step(
             this.page,
             'Click Add Consult Option',
             async () => {
 
-                await this.keywords.click(
-                    addConsultBtn
-                );
+                await this.keywords.click(addConsultBtn);
+
             }
         );
-    }
 
+    }
 
     async searchPatient(patientName) {
 
@@ -354,40 +318,36 @@ class ConsultPage {
                     this.locator.patientSearchTxt,
                     patientName
                 );
+
             }
         );
 
         const patient =
-            this.locator.getPatientDiv(
-                patientName
-            );
+            this.locator.getPatientDiv(patientName);
 
-        await patient.waitFor({
-            state: 'visible',
-            timeout: timeout.elementTimeout
-        });
+        await this.keywords.waitForElement(
+            patient,
+            timeout.elementTimeout
+        );
 
         await StepHelper.step(
             this.page,
             `Select Patient - ${patientName}`,
             async () => {
 
-                await this.keywords.click(
-                    patient
-                );
+                await this.keywords.click(patient);
+
             }
         );
+
     }
 
+    async searchExistingPatient(patientName) {
 
-    async searchExistingPatient(
-        patientName
-    ) {
-
-        await this.locator.patientSearchTxt.waitFor({
-            state: 'visible',
-            timeout: timeout.elementTimeout
-        });
+        await this.keywords.waitForElement(
+            this.locator.patientSearchTxt,
+            timeout.elementTimeout
+        );
 
         await StepHelper.step(
             this.page,
@@ -398,13 +358,14 @@ class ConsultPage {
                     this.locator.patientSearchTxt,
                     patientName
                 );
+
             }
         );
 
-        await this.locator.existingPatient.first().waitFor({
-            state: 'visible',
-            timeout: timeout.elementTimeout
-        });
+        await this.keywords.waitForElement(
+            this.locator.existingPatient,
+            timeout.elementTimeout
+        );
 
         await StepHelper.step(
             this.page,
@@ -414,10 +375,11 @@ class ConsultPage {
                 await this.keywords.click(
                     this.locator.existingPatient
                 );
+
             }
         );
-    }
 
+    }
 
     async selectProvider() {
 
@@ -429,15 +391,13 @@ class ConsultPage {
                 await this.keywords.click(
                     this.locator.providerDropdown
                 );
+
             }
         );
+
     }
 
-
-    async selectConsultSlot(
-        consultSlot,
-        bookingDate
-    ) {
+    async selectConsultSlot(consultSlot, bookingDate) {
 
         await StepHelper.step(
             this.page,
@@ -452,13 +412,12 @@ class ConsultPage {
                     this.locator.consultInput,
                     consultSlot
                 );
+
             }
         );
 
         const serviceOption =
-            this.locator.getServiceOption(
-                consultSlot
-            );
+            this.locator.getServiceOption(consultSlot);
 
         await serviceOption.waitFor({
             state: 'visible',
@@ -470,9 +429,8 @@ class ConsultPage {
             `Select Consult Service - ${consultSlot}`,
             async () => {
 
-                await this.keywords.click(
-                    serviceOption
-                );
+                await this.keywords.click(serviceOption);
+
             }
         );
 
@@ -485,6 +443,7 @@ class ConsultPage {
                     this.page,
                     'Escape'
                 );
+
             }
         );
 
@@ -496,21 +455,9 @@ class ConsultPage {
                 await this.keywords.click(
                     this.locator.bookingDateContainer
                 );
+
             }
         );
-
-        const bookingDateLocator =
-            this.locator.currentMonth.getByText(
-                bookingDate,
-                {
-                    exact: true
-                }
-            );
-
-        await bookingDateLocator.waitFor({
-            state: 'visible',
-            timeout: timeout.elementTimeout
-        });
 
         await StepHelper.step(
             this.page,
@@ -518,8 +465,14 @@ class ConsultPage {
             async () => {
 
                 await this.keywords.click(
-                    bookingDateLocator
+                    this.locator.currentMonth.getByText(
+                        bookingDate,
+                        {
+                            exact: true
+                        }
+                    )
                 );
+
             }
         );
 
@@ -531,13 +484,9 @@ class ConsultPage {
                 await this.keywords.click(
                     this.locator.applyBtn
                 );
+
             }
         );
-
-        await this.locator.slotButton.first().waitFor({
-            state: 'visible',
-            timeout: timeout.elementTimeout
-        });
 
         await StepHelper.step(
             this.page,
@@ -547,14 +496,13 @@ class ConsultPage {
                 await this.keywords.click(
                     this.locator.slotButton.first()
                 );
+
             }
         );
+
     }
 
-
-    async selectDoctor(
-        doctorName
-    ) {
+    async selectDoctor(doctorName) {
 
         await StepHelper.step(
             this.page,
@@ -564,13 +512,14 @@ class ConsultPage {
                 await this.keywords.click(
                     this.locator.doctorDropdown
                 );
+
             }
         );
 
-        await this.locator.doctorSearch.waitFor({
-            state: 'visible',
-            timeout: timeout.elementTimeout
-        });
+        await this.keywords.waitForElement(
+            this.locator.doctorSearch,
+            timeout.elementTimeout
+        );
 
         await StepHelper.step(
             this.page,
@@ -585,16 +534,14 @@ class ConsultPage {
                     this.locator.doctorSearch,
                     doctorName
                 );
+
             }
         );
 
-        const doctorOption =
-            this.locator.doctorOption.first();
-
-        await doctorOption.waitFor({
-            state: 'visible',
-            timeout: timeout.elementTimeout
-        });
+        await this.keywords.waitForElement(
+            this.locator.doctorOption,
+            timeout.elementTimeout
+        );
 
         await StepHelper.step(
             this.page,
@@ -602,12 +549,13 @@ class ConsultPage {
             async () => {
 
                 await this.keywords.click(
-                    doctorOption
+                    this.locator.doctorOption
                 );
+
             }
         );
-    }
 
+    }
 
     async confirmConsultBooking() {
 
@@ -619,6 +567,7 @@ class ConsultPage {
                 await this.keywords.click(
                     this.locator.proceedBtn
                 );
+
             }
         );
 
@@ -630,15 +579,17 @@ class ConsultPage {
                 await this.keywords.click(
                     this.locator.confirmBookingBtn
                 );
+
             }
         );
 
         await this.keywords.waitForLoadState(
             this.page,
-            'networkidle'
+            'networkidle',
+            timeout.navigationTimeout
         );
-    }
 
+    }
 
     async addConsult(
         patientName,
@@ -649,13 +600,9 @@ class ConsultPage {
 
         await this.clickAddConsult();
 
-        await this.searchPatient(
-            patientName
-        );
+        await this.searchPatient(patientName);
 
-        await this.selectDoctor(
-            doctorName
-        );
+        await this.selectDoctor(doctorName);
 
         await this.selectProvider();
 
@@ -675,10 +622,11 @@ class ConsultPage {
                     waitUntil: 'load',
                     timeout: timeout.navigationTimeout
                 });
+
             }
         );
-    }
 
+    }
 
     async addConsultForExistingPatient(
         patientName,
@@ -705,8 +653,8 @@ class ConsultPage {
         );
 
         await this.confirmConsultBooking();
-    }
 
+    }
 
     async openConsultBooking() {
 
@@ -729,6 +677,7 @@ class ConsultPage {
                 await this.keywords.click(
                     this.locator.addNewBtn
                 );
+
             }
         );
 
@@ -750,20 +699,21 @@ class ConsultPage {
                 await this.keywords.click(
                     this.locator.addConsultBtn
                 );
+
             }
         );
-    }
 
+    }
 
     async verifyPatientSearchBarLoaded() {
 
         const searchInput =
             this.locator.patientSearchTxt;
 
-        await searchInput.waitFor({
-            state: 'visible',
-            timeout: timeout.elementTimeout
-        });
+        await this.keywords.waitForElement(
+            searchInput,
+            timeout.elementTimeout
+        );
 
         await Verify.state(
             this.page,
@@ -783,8 +733,8 @@ class ConsultPage {
             '',
             searchInput
         );
-    }
 
+    }
 
     async searchAndSelectPatient(
         patientName,
@@ -796,6 +746,7 @@ class ConsultPage {
             throw new Error(
                 '[ConsultPage] patientName is required and must come from test data.'
             );
+
         }
 
         const searchInput =
@@ -818,6 +769,7 @@ class ConsultPage {
                     searchInput,
                     patientName
                 );
+
             }
         );
 
@@ -828,30 +780,27 @@ class ConsultPage {
             searchInput
         );
 
-        const suggestions =
-            this.locator.suggestedPatients;
-
-        await suggestions.first().waitFor({
-            state: 'visible',
-            timeout: timeout.elementTimeout
-        });
+        await this.keywords.waitForElement(
+            this.locator.suggestedPatients.first(),
+            timeout.elementTimeout
+        );
 
         await Verify.countAtLeast(
             this.page,
             'Patient Search Results Returned',
             minExpectedResults,
-            suggestions
+            this.locator.suggestedPatients
         );
 
         const patient =
-            this.locator
-                .getPatientResult(patientName)
-                .first();
+            this.locator.getPatientResult(
+                patientName
+            ).first();
 
-        await patient.waitFor({
-            state: 'visible',
-            timeout: timeout.elementTimeout
-        });
+        await this.keywords.waitForElement(
+            patient,
+            timeout.elementTimeout
+        );
 
         await Verify.state(
             this.page,
@@ -878,10 +827,11 @@ class ConsultPage {
                 await this.keywords.click(
                     patient
                 );
+
             }
         );
-    }
 
+    }
 
     async verifyBookingPanelOpened(
         patientName,
@@ -891,10 +841,10 @@ class ConsultPage {
         const title =
             this.locator.bookingPanelTitle.first();
 
-        await title.waitFor({
-            state: 'visible',
-            timeout: timeout.elementTimeout
-        });
+        await this.keywords.waitForElement(
+            title,
+            timeout.elementTimeout
+        );
 
         await Verify.state(
             this.page,
@@ -919,8 +869,8 @@ class ConsultPage {
             appointmentType,
             title
         );
-    }
 
+    }
 
     async verifyAppointmentTypeTabs(
         expectedTypes
@@ -934,6 +884,7 @@ class ConsultPage {
             throw new Error(
                 '[ConsultPage] expectedTypes must be a non-empty array from test data.'
             );
+
         }
 
         await Verify.state(
@@ -953,11 +904,6 @@ class ConsultPage {
                     .getAppointmentTypeTab(type)
                     .first();
 
-            await tab.waitFor({
-                state: 'visible',
-                timeout: timeout.elementTimeout
-            });
-
             await Verify.state(
                 this.page,
                 `Appointment Type Tab - ${type}`,
@@ -966,17 +912,22 @@ class ConsultPage {
                     visible: true
                 }
             );
-        }
-    }
 
+        }
+
+    }
 
     async clearPreSelectedFilters() {
 
-        const chips =
-            this._requireLocator(
-                this.locator.selectedFilterChips,
-                'selectedFilterChips'
-            );
+        const chips = this._requireLocator(
+            this.locator.selectedFilterChips,
+            'selectedFilterChips'
+        );
+
+        await chips.first().waitFor({
+            state: 'attached',
+            timeout: timeout.elementTimeout
+        }).catch(() => {});
 
         const initialCount =
             await chips.count();
@@ -997,6 +948,7 @@ class ConsultPage {
             chipTextArray.push(
                 currentText.trim()
             );
+
         }
 
         const preSelectedLogText =
@@ -1011,13 +963,13 @@ class ConsultPage {
         );
 
         if (initialCount === 0) {
+
             return 0;
+
         }
 
         const canUseClearAll =
-            Boolean(
-                this.locator.clearAllFiltersBtn
-            ) &&
+            Boolean(this.locator.clearAllFiltersBtn) &&
             await this.locator
                 .clearAllFiltersBtn
                 .first()
@@ -1036,6 +988,7 @@ class ConsultPage {
                             .clearAllFiltersBtn
                             .first()
                     );
+
                 }
             );
 
@@ -1047,7 +1000,7 @@ class ConsultPage {
                 async () => {
 
                     const maxAttempts =
-                        initialCount + 5;
+                        initialCount + 3;
 
                     for (
                         let attempt = 0;
@@ -1076,25 +1029,26 @@ class ConsultPage {
                             removeBtn
                         );
 
-                        /*
-                         * Wait only until the removed chip
-                         * becomes hidden.
-                         */
-                        await chip.waitFor({
-                            state: 'hidden',
-                            timeout: timeout.elementTimeout
-                        }).catch(() => {});
+                        await expect.poll(
+                            async () => await chips.count(),
+                            {
+                                timeout: timeout.expectTimeout
+                            }
+                        ).toBeLessThan(remaining);
+
                     }
+
                 }
             );
+
         }
 
-        await expect(chips).toHaveCount(
-            0,
+        await expect.poll(
+            async () => await chips.count(),
             {
                 timeout: timeout.expectTimeout
             }
-        );
+        ).toBe(0);
 
         await Verify.count(
             this.page,
@@ -1104,8 +1058,8 @@ class ConsultPage {
         );
 
         return initialCount;
-    }
 
+    }
 
     async verifyDoctorDropdownOptions(
         expectedDoctors
@@ -1130,13 +1084,14 @@ class ConsultPage {
                 await this.keywords.click(
                     this.locator.doctorDropdown
                 );
+
             }
         );
 
-        await this.locator.dropdownOptions.first().waitFor({
-            state: 'visible',
-            timeout: timeout.elementTimeout
-        });
+        await this.keywords.waitForElement(
+            this.locator.dropdownOptions.first(),
+            timeout.elementTimeout
+        );
 
         for (const doctor of expectedDoctors) {
 
@@ -1144,11 +1099,6 @@ class ConsultPage {
                 this.locator
                     .getDoctorOption(doctor)
                     .first();
-
-            await doctorOption.waitFor({
-                state: 'visible',
-                timeout: timeout.elementTimeout
-            });
 
             await this.keywords.scrollIntoViewIfNeeded(
                 doctorOption
@@ -1163,6 +1113,7 @@ class ConsultPage {
                     soft: false
                 }
             );
+
         }
 
         await StepHelper.step(
@@ -1173,10 +1124,11 @@ class ConsultPage {
                 await this.keywords.click(
                     this.locator.doctorDropdown
                 );
+
             }
         );
-    }
 
+    }
 
     async selectDoctorByName(
         doctorName,
@@ -1189,6 +1141,7 @@ class ConsultPage {
             throw new Error(
                 '[ConsultPage] doctorName is required and must come from test data.'
             );
+
         }
 
         await Verify.state(
@@ -1210,13 +1163,14 @@ class ConsultPage {
                 await this.keywords.click(
                     this.locator.doctorDropdown
                 );
+
             }
         );
 
-        await this.locator.dropdownOptions.first().waitFor({
-            state: 'visible',
-            timeout: timeout.elementTimeout
-        });
+        await this.keywords.waitForElement(
+            this.locator.dropdownOptions.first(),
+            timeout.elementTimeout
+        );
 
         await Verify.countAtLeast(
             this.page,
@@ -1230,10 +1184,10 @@ class ConsultPage {
                 .getDoctorOption(doctorName)
                 .first();
 
-        await doctorOption.waitFor({
-            state: 'visible',
-            timeout: timeout.elementTimeout
-        });
+        await this.keywords.waitForElement(
+            doctorOption,
+            timeout.elementTimeout
+        );
 
         await Verify.state(
             this.page,
@@ -1263,6 +1217,7 @@ class ConsultPage {
                 await this.keywords.click(
                     doctorOption
                 );
+
             }
         );
 
@@ -1293,6 +1248,7 @@ class ConsultPage {
                 `Doctor Checkbox - ${doctorName}`,
                 'no checkbox in option - verified via filter chip instead'
             );
+
         }
 
         await StepHelper.step(
@@ -1304,6 +1260,7 @@ class ConsultPage {
                     this.page,
                     'Escape'
                 );
+
             }
         );
 
@@ -1311,8 +1268,8 @@ class ConsultPage {
             doctorName,
             filterLabel
         );
-    }
 
+    }
 
     async selectConsultTypeByName(
         consultType,
@@ -1324,6 +1281,7 @@ class ConsultPage {
             throw new Error(
                 '[ConsultPage] consultType is required and must come from test data.'
             );
+
         }
 
         await Verify.state(
@@ -1345,6 +1303,7 @@ class ConsultPage {
                 await this.keywords.click(
                     this.locator.providerDropdown
                 );
+
             }
         );
 
@@ -1353,10 +1312,10 @@ class ConsultPage {
                 .getConsultOption(consultType)
                 .first();
 
-        await consultOption.waitFor({
-            state: 'visible',
-            timeout: timeout.elementTimeout
-        });
+        await this.keywords.waitForElement(
+            consultOption,
+            timeout.elementTimeout
+        );
 
         await Verify.state(
             this.page,
@@ -1383,6 +1342,7 @@ class ConsultPage {
                 await this.keywords.click(
                     consultOption
                 );
+
             }
         );
 
@@ -1395,6 +1355,7 @@ class ConsultPage {
                     this.page,
                     'Escape'
                 );
+
             }
         );
 
@@ -1402,8 +1363,8 @@ class ConsultPage {
             consultType,
             filterLabel
         );
-    }
 
+    }
 
     async selectBookingDatePreset(
         presetLabel,
@@ -1412,9 +1373,7 @@ class ConsultPage {
     ) {
 
         const targetDate =
-            generateAdmissionDate(
-                offsetInDays
-            );
+            generateAdmissionDate(offsetInDays);
 
         const targetDay =
             targetDate.getDate();
@@ -1444,6 +1403,7 @@ class ConsultPage {
                 await this.keywords.click(
                     this.locator.bookingDateContainer
                 );
+
             }
         );
 
@@ -1471,7 +1431,9 @@ class ConsultPage {
             } catch (error) {
 
                 presetConfigured = false;
+
             }
+
         }
 
         if (presetConfigured) {
@@ -1479,10 +1441,10 @@ class ConsultPage {
             const preset =
                 presetLocator.first();
 
-            await preset.waitFor({
-                state: 'visible',
-                timeout: timeout.elementTimeout
-            });
+            await this.keywords.waitForElement(
+                preset,
+                timeout.elementTimeout
+            );
 
             await Verify.state(
                 this.page,
@@ -1509,6 +1471,7 @@ class ConsultPage {
                     await this.keywords.click(
                         preset
                     );
+
                 }
             );
 
@@ -1519,10 +1482,10 @@ class ConsultPage {
                     .getCalendarDayCell(targetDay)
                     .first();
 
-            await dayCell.waitFor({
-                state: 'visible',
-                timeout: timeout.elementTimeout
-            });
+            await this.keywords.waitForElement(
+                dayCell,
+                timeout.elementTimeout
+            );
 
             await Verify.state(
                 this.page,
@@ -1542,8 +1505,10 @@ class ConsultPage {
                     await this.keywords.click(
                         dayCell
                     );
+
                 }
             );
+
         }
 
         const applyVisible =
@@ -1570,8 +1535,10 @@ class ConsultPage {
                     await this.keywords.click(
                         this.locator.datePickerApplyBtn
                     );
+
                 }
             );
+
         }
 
         const chipLabelToVerify =
@@ -1585,22 +1552,20 @@ class ConsultPage {
         );
 
         return targetDate;
-    }
 
+    }
 
     async verifyAppointmentResultsLoaded(
         minExpectedResults
     ) {
 
         const countLabel =
-            this.locator
-                .appointmentResultsCount
-                .first();
+            this.locator.appointmentResultsCount.first();
 
-        await countLabel.waitFor({
-            state: 'visible',
-            timeout: timeout.elementTimeout
-        });
+        await this.keywords.waitForElement(
+            countLabel,
+            timeout.elementTimeout
+        );
 
         const numericDigitRegex =
             /\d+/;
@@ -1623,8 +1588,8 @@ class ConsultPage {
             minExpectedResults,
             this.locator.appointmentResultCards
         );
-    }
 
+    }
 
     async selectAndCaptureAvailableSlot(
         minExpectedResults
@@ -1653,14 +1618,10 @@ class ConsultPage {
         );
 
         const cardText =
-            await this.keywords.getText(
-                card
-            );
+            await this.keywords.getText(card);
 
         const feeAmount =
-            this._extractFeeAmount(
-                cardText
-            );
+            this._extractFeeAmount(cardText);
 
         await Verify.record(
             this.page,
@@ -1674,11 +1635,6 @@ class ConsultPage {
             this.locator
                 .getSlotButtonFromCard(card)
                 .first();
-
-        await slot.waitFor({
-            state: 'visible',
-            timeout: timeout.elementTimeout
-        });
 
         await Verify.state(
             this.page,
@@ -1717,6 +1673,7 @@ class ConsultPage {
                 await this.keywords.click(
                     slot
                 );
+
             }
         );
 
@@ -1724,8 +1681,8 @@ class ConsultPage {
             feeAmount,
             slotTimeText
         };
-    }
 
+    }
 
     async proceedToReviewAppointment() {
 
@@ -1748,13 +1705,14 @@ class ConsultPage {
                 await this.keywords.click(
                     this.locator.proceedBtn
                 );
+
             }
         );
 
-        await this.locator.reviewPageTitle.waitFor({
-            state: 'visible',
-            timeout: timeout.elementTimeout
-        });
+        await this.keywords.waitForElement(
+            this.locator.reviewPageTitle,
+            timeout.elementTimeout
+        );
 
         await Verify.state(
             this.page,
@@ -1765,8 +1723,8 @@ class ConsultPage {
                 soft: false
             }
         );
-    }
 
+    }
 
     async verifyReviewAppointmentFee(
         expectedFeeAmount
@@ -1777,10 +1735,10 @@ class ConsultPage {
                 .reviewAppointmentFee
                 .first();
 
-        await feeElement.waitFor({
-            state: 'visible',
-            timeout: timeout.elementTimeout
-        });
+        await this.keywords.waitForElement(
+            feeElement,
+            timeout.elementTimeout
+        );
 
         await Verify.state(
             this.page,
@@ -1798,9 +1756,8 @@ class ConsultPage {
             );
 
         const actualFeeAmount =
-            this._extractFeeAmount(
-                feeText
-            ) ?? feeText.trim();
+            this._extractFeeAmount(feeText) ??
+            feeText.trim();
 
         if (
             expectedFeeAmount === null ||
@@ -1814,6 +1771,7 @@ class ConsultPage {
             );
 
             return actualFeeAmount;
+
         }
 
         await Verify.equals(
@@ -1824,8 +1782,8 @@ class ConsultPage {
         );
 
         return actualFeeAmount;
-    }
 
+    }
 
     async confirmBookingWithVerification(
         expectedTitle,
@@ -1851,20 +1809,20 @@ class ConsultPage {
                 await this.keywords.click(
                     this.locator.confirmBookingBtn
                 );
+
             }
         );
 
         await this.keywords.waitForLoadState(
             this.page,
-            'networkidle'
+            'networkidle',
+            timeout.navigationTimeout
         );
 
-        await this.locator
-            .bookingConfirmToastTitle
-            .waitFor({
-                state: 'visible',
-                timeout: timeout.elementTimeout
-            });
+        await this.keywords.waitForElement(
+            this.locator.bookingConfirmToastTitle,
+            timeout.elementTimeout
+        );
 
         await Verify.state(
             this.page,
@@ -1889,8 +1847,8 @@ class ConsultPage {
             expectedSubtext,
             this.locator.bookingConfirmToastSubtext
         );
-    }
 
+    }
 
     async dismissBookingConfirmationToastIfPresent() {
 
@@ -1911,9 +1869,7 @@ class ConsultPage {
                 : 'not visible - nothing to dismiss'
         );
 
-        if (!isVisible) {
-            return;
-        }
+        if (!isVisible) return;
 
         await StepHelper.step(
             this.page,
@@ -1923,10 +1879,11 @@ class ConsultPage {
                 await this.keywords.click(
                     dismissLink.first()
                 );
+
             }
         );
-    }
 
+    }
 
     async clickWaitlistButton() {
 
@@ -1954,10 +1911,11 @@ class ConsultPage {
                 await this.keywords.click(
                     waitlistBtn
                 );
+
             }
         );
-    }
 
+    }
 
     async selectAddCustomSlotsForConsultType(
         consultTypeLabel
@@ -1968,6 +1926,7 @@ class ConsultPage {
             throw new Error(
                 '[ConsultPage] consultTypeLabel is required and must come from test data.'
             );
+
         }
 
         const card =
@@ -1977,10 +1936,10 @@ class ConsultPage {
                 )
                 .first();
 
-        await card.waitFor({
-            state: 'visible',
-            timeout: timeout.elementTimeout
-        });
+        await this.keywords.waitForElement(
+            card,
+            timeout.elementTimeout
+        );
 
         await Verify.state(
             this.page,
@@ -1996,11 +1955,6 @@ class ConsultPage {
             this.locator
                 .getAddCustomSlotsButton(card)
                 .first();
-
-        await addCustomSlotsBtn.waitFor({
-            state: 'visible',
-            timeout: timeout.elementTimeout
-        });
 
         await Verify.state(
             this.page,
@@ -2020,10 +1974,11 @@ class ConsultPage {
                 await this.keywords.click(
                     addCustomSlotsBtn
                 );
+
             }
         );
-    }
 
+    }
 
     _parseTimeLabel(label) {
 
@@ -2039,6 +1994,7 @@ class ConsultPage {
             throw new Error(
                 `[ConsultPage] Unable to parse time label: "${label}"`
             );
+
         }
 
         let hour =
@@ -2063,14 +2019,15 @@ class ConsultPage {
         ) {
 
             hour += 12;
+
         }
 
         return {
             hour24: hour,
             minute
         };
-    }
 
+    }
 
     _formatTimeLabel(
         hour24,
@@ -2089,12 +2046,9 @@ class ConsultPage {
             hour12 = 12;
         }
 
-        return (
-            `${String(hour12).padStart(2, '0')}:` +
-            `${String(minute).padStart(2, '0')} ${period}`
-        );
-    }
+        return `${String(hour12).padStart(2, '0')}:${String(minute).padStart(2, '0')} ${period}`;
 
+    }
 
     _addMinutesToTimeLabel(
         label,
@@ -2126,8 +2080,8 @@ class ConsultPage {
             ),
             totalMinutes % 60
         );
-    }
 
+    }
 
     _parseSlotRangeStartLabel(
         slotTimeText
@@ -2143,6 +2097,7 @@ class ConsultPage {
             throw new Error(
                 `[ConsultPage] Unable to parse slot time range: "${slotTimeText}"`
             );
+
         }
 
         const periodMatch =
@@ -2155,14 +2110,12 @@ class ConsultPage {
             throw new Error(
                 `[ConsultPage] Unable to determine AM/PM from slot time range: "${slotTimeText}"`
             );
+
         }
 
-        return (
-            `${parts[0]} ` +
-            `${periodMatch[1].toUpperCase()}`
-        );
-    }
+        return `${parts[0]} ${periodMatch[1].toUpperCase()}`;
 
+    }
 
     _getTimePickerTargetParts(
         timeLabel
@@ -2183,21 +2136,14 @@ class ConsultPage {
         }
 
         return {
-            hour:
-                String(hour12)
-                    .padStart(2, '0'),
-
-            minute:
-                String(minute)
-                    .padStart(2, '0'),
-
-            period:
-                hour24 >= 12
-                    ? 'PM'
-                    : 'AM'
+            hour: String(hour12).padStart(2, '0'),
+            minute: String(minute).padStart(2, '0'),
+            period: hour24 >= 12
+                ? 'PM'
+                : 'AM'
         };
-    }
 
+    }
 
     _extractFeeAmount(text) {
 
@@ -2209,8 +2155,8 @@ class ConsultPage {
         return match
             ? match[1].replace(/,/g, '')
             : null;
-    }
 
+    }
 
     async setCustomSlotStartTime(
         previousSlotTimeText,
@@ -2224,6 +2170,7 @@ class ConsultPage {
             throw new Error(
                 '[ConsultPage] previousSlotTimeText is required.'
             );
+
         }
 
         if (!slotDurationMinutes) {
@@ -2231,6 +2178,7 @@ class ConsultPage {
             throw new Error(
                 '[ConsultPage] slotDurationMinutes is required from test data.'
             );
+
         }
 
         await Verify.state(
@@ -2293,6 +2241,7 @@ class ConsultPage {
                 await this.keywords.click(
                     startInputBox
                 );
+
             }
         );
 
@@ -2301,10 +2250,10 @@ class ConsultPage {
                 startPicker
             );
 
-        await popup.waitFor({
-            state: 'visible',
-            timeout: timeout.elementTimeout
-        });
+        await this.keywords.waitForElement(
+            popup,
+            timeout.elementTimeout
+        );
 
         const columns =
             this.locator.getTimePickerColumns(
@@ -2319,19 +2268,16 @@ class ConsultPage {
         );
 
         const columnTargets = [
-
             {
                 index: 0,
                 label: labels.hourCol,
                 value: targetParts.hour
             },
-
             {
                 index: 1,
                 label: labels.minuteCol,
                 value: targetParts.minute
             },
-
             {
                 index: 2,
                 label: labels.amPmCol,
@@ -2342,20 +2288,13 @@ class ConsultPage {
         for (const target of columnTargets) {
 
             const column =
-                columns.nth(
-                    target.index
-                );
+                columns.nth(target.index);
 
             const option =
                 this.locator.getTimePickerOption(
                     column,
                     target.value
                 );
-
-            await option.waitFor({
-                state: 'visible',
-                timeout: timeout.elementTimeout
-            });
 
             await this.keywords.scrollIntoViewIfNeeded(
                 option
@@ -2379,8 +2318,10 @@ class ConsultPage {
                     await this.keywords.click(
                         option
                     );
+
                 }
             );
+
         }
 
         const setBtn =
@@ -2407,13 +2348,19 @@ class ConsultPage {
                 await this.keywords.click(
                     setBtn
                 );
+
             }
         );
 
-        await popup.waitFor({
-            state: 'hidden',
-            timeout: timeout.elementTimeout
-        });
+        await Verify.state(
+            this.page,
+            'Start Time Picker Popup Closed After Set',
+            popup,
+            {
+                hidden: true,
+                soft: false
+            }
+        );
 
         await Verify.text(
             this.page,
@@ -2449,18 +2396,18 @@ class ConsultPage {
             startLabel,
             expectedEndLabel
         };
-    }
 
+    }
 
     async confirmCustomSlot() {
 
         const updateBtn =
             this.locator.customSlotUpdateBtn;
 
-        await updateBtn.waitFor({
-            state: 'visible',
-            timeout: timeout.elementTimeout
-        });
+        await this.keywords.waitForElement(
+            updateBtn,
+            timeout.elementTimeout
+        );
 
         await Verify.state(
             this.page,
@@ -2481,13 +2428,9 @@ class ConsultPage {
                 await this.keywords.click(
                     updateBtn
                 );
+
             }
         );
-
-        await this.locator.customSlotModal.waitFor({
-            state: 'hidden',
-            timeout: timeout.elementTimeout
-        });
 
         await Verify.state(
             this.page,
@@ -2497,8 +2440,8 @@ class ConsultPage {
                 hidden: true
             }
         );
-    }
 
+    }
 
     async captureFeeFromCard(
         consultTypeLabel
@@ -2511,20 +2454,16 @@ class ConsultPage {
                 )
                 .first();
 
-        await card.waitFor({
-            state: 'visible',
-            timeout: timeout.elementTimeout
-        });
+        await this.keywords.waitForElement(
+            card,
+            timeout.elementTimeout
+        );
 
         const cardText =
-            await this.keywords.getText(
-                card
-            );
+            await this.keywords.getText(card);
 
         const feeAmount =
-            this._extractFeeAmount(
-                cardText
-            );
+            this._extractFeeAmount(cardText);
 
         await Verify.record(
             this.page,
@@ -2535,8 +2474,8 @@ class ConsultPage {
         );
 
         return feeAmount;
-    }
 
+    }
 
     async _verifyFilterChipApplied(
         value,
@@ -2555,17 +2494,13 @@ class ConsultPage {
             );
 
             return;
+
         }
 
         const chip =
             this.locator
                 .getFilterChip(value)
                 .first();
-
-        await chip.waitFor({
-            state: 'visible',
-            timeout: timeout.elementTimeout
-        });
 
         await Verify.state(
             this.page,
@@ -2582,8 +2517,8 @@ class ConsultPage {
             value,
             chip
         );
-    }
 
+    }
 
     async findAvailableDateByClickingNext(
         maxAttempts
@@ -2594,10 +2529,10 @@ class ConsultPage {
                 .appointmentResultCards
                 .first();
 
-        await firstCard.waitFor({
-            state: 'visible',
-            timeout: timeout.elementTimeout
-        });
+        await this.keywords.waitForElement(
+            firstCard,
+            timeout.elementTimeout
+        );
 
         const nextBtn =
             this.locator.getNextListBtn(
@@ -2615,7 +2550,8 @@ class ConsultPage {
             );
 
         let found = false;
-        let finalDateText = '';
+
+        let finalDateText = "";
 
         await Verify.record(
             this.page,
@@ -2642,14 +2578,8 @@ class ConsultPage {
                     );
 
                 break;
-            }
 
-            const previousDate =
-                (
-                    await this.keywords.getText(
-                        dateLocator
-                    )
-                ).trim();
+            }
 
             await StepHelper.step(
                 this.page,
@@ -2659,28 +2589,15 @@ class ConsultPage {
                     await this.keywords.click(
                         nextBtn
                     );
+
                 }
             );
 
-            /*
-             * Wait for the date text to change.
-             * This is condition-based, not a fixed sleep.
-             */
-            await expect
-                .poll(
-                    async () =>
-                        (
-                            await this.keywords.getText(
-                                dateLocator
-                            )
-                        ).trim(),
-                    {
-                        timeout: timeout.elementTimeout
-                    }
-                )
-                .not.toBe(
-                    previousDate
-                );
+            await nextBtn.waitFor({
+                state: 'visible',
+                timeout: timeout.elementTimeout
+            });
+
         }
 
         if (!found) {
@@ -2688,6 +2605,7 @@ class ConsultPage {
             throw new Error(
                 `[ConsultPage] Exhausted ${maxAttempts} clicks and found no available slots.`
             );
+
         }
 
         await Verify.record(
@@ -2697,8 +2615,8 @@ class ConsultPage {
         );
 
         return finalDateText.trim();
-    }
 
+    }
 
     async navigateToSpecificDateOnCard(
         targetDate,
@@ -2710,10 +2628,10 @@ class ConsultPage {
                 .appointmentResultCards
                 .first();
 
-        await firstCard.waitFor({
-            state: 'visible',
-            timeout: timeout.elementTimeout
-        });
+        await this.keywords.waitForElement(
+            firstCard,
+            timeout.elementTimeout
+        );
 
         const nextBtn =
             this.locator.getNextListBtn(
@@ -2752,7 +2670,9 @@ class ConsultPage {
             ) {
 
                 found = true;
+
                 break;
+
             }
 
             await StepHelper.step(
@@ -2763,35 +2683,23 @@ class ConsultPage {
                     await this.keywords.click(
                         nextBtn
                     );
+
                 }
             );
 
-            /*
-             * Wait only until the calendar/card date changes.
-             */
-            await expect
-                .poll(
-                    async () =>
-                        (
-                            await this.keywords.getText(
-                                dateLocator
-                            )
-                        ).trim(),
-                    {
-                        timeout: timeout.elementTimeout
-                    }
-                )
-                .not.toBe(
-                    currentDateText
-                );
+            await dateLocator.waitFor({
+                state: 'visible',
+                timeout: timeout.elementTimeout
+            });
+
         }
 
         if (!found) {
 
             throw new Error(
-                `[ConsultPage] Could not find target date "${targetDate}" ` +
-                `after ${maxAttempts} clicks.`
+                `[ConsultPage] Could not find target date "${targetDate}" after ${maxAttempts} clicks.`
             );
+
         }
 
         await Verify.state(
@@ -2803,10 +2711,9 @@ class ConsultPage {
                 soft: false
             }
         );
+
     }
+
 }
 
-
-module.exports = {
-    ConsultPage
-};
+module.exports = { ConsultPage };
