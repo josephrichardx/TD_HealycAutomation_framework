@@ -43,7 +43,7 @@ test('Healync_E2E - Cancel with Full Refund (single session package)', async ({ 
 
     await e2e.verifySavedToastAndGoToProfile(toastMessages.patientSavedSuccess);
 
-    await this.page.waitForTimeout(6000);
+    await page.waitForTimeout(6000);
     await e2e.verifyPatientProfileNameMatches(
         patientName
     );
