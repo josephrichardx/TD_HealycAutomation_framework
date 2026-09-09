@@ -10,7 +10,7 @@ const { patientData,invoiceData,admissionPatientData } = require('../testdata/TC
 const { generateUniquePatientFullName } = require('../utils/RandomData.js'); 
 import {generateAdmissionDate,generateAdmissionTime,getAdmissionData} from '../utils/RandomData.js';
 
- 
+
  
 test('IPD - Generate Invoice', async ({ page }) => {
  

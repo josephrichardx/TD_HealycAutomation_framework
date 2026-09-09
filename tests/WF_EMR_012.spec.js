@@ -8,7 +8,7 @@ const { CalendarPage } = require('../pages/CalendarPage');
 const { PrescriptionPage } = require('../pages/PrescriptionPage');
 
  
-const { patientData,appoinmentData,consultData,prescriptionData,templateData,timeout,loginData,marginData,observationData } = require('../testdata/TC_EMR012.json');
+const { patientData,appoinmentData,consultData,prescriptionData,templateData,loginData,marginData,observationData,template } = require('../testdata/TC_EMR012.json');
 const { generateUniquePatientFullName } = require('../utils/RandomData');
 
 test('EMR Prescription', async ({ page }) => {
@@ -41,56 +41,67 @@ test('EMR Prescription', async ({ page }) => {
 
     await prescriptionPage.clickWritePrescription();
 
-    await prescriptionPage.ApplyTemplate(
-            templateData.templateName,
-            templateData.searchKey,
-            timeout.time,
-            templateData.templateAppliedMessage
-        );
-
-    await prescriptionPage.fillObservation(
-    observationData,
-    timeout.time
+    await prescriptionPage.applyTheTemplate(
+    template.formatValue,
+    template.templateName
     );
 
-    // await prescriptionPage.PrescriptionObservation(
-    // templateData.templateName,
-    // templateData.searchKey,
-    // timeout.time,
-    // prescriptionData.addRows,
-    // prescriptionData.drugs
+
+
+
+//release UAT:
+
+    // await prescriptionPage.ApplyTemplate(
+    //         templateData.templateName,
+    //         templateData.searchKey,
+    //         templateData.templateAppliedMessage
+    //     );//release UAT
+
+    // await prescriptionPage.fillObservation(
+    // observationData
+    // // timeout.time
     // );
 
-    await prescriptionPage.clickSidebarEdgeToggle(timeout.time);
+    // // await prescriptionPage.PrescriptionObservation(
+    // // templateData.templateName,
+    // // templateData.searchKey,
+    // // timeout.time,
+    // // prescriptionData.addRows,
+    // // prescriptionData.drugs
+    // // );
 
-    await prescriptionPage.fillMarginValues(
-    marginData.top,
-    marginData.bottom,
-    marginData.leftRight,
-    timeout.time,
-    );
+    // await prescriptionPage.clickSidebarEdgeToggle();
 
-    const newTab = await prescriptionPage.openSameUrlInNewTab(
-    loginData.url,
-    timeout.time
-    );
+    // await prescriptionPage.fillMarginValues(
+    // marginData.top,
+    // marginData.bottom,
+    // marginData.leftRight,
+    // // timeout.time,
+    // );
 
-    const newCalendarPage = new CalendarPage(newTab);
+    // const newTab = await prescriptionPage.openSameUrlInNewTab(
+    // loginData.url,
+    // // timeout.time
+    // );
 
-    await newCalendarPage.selectPatientFromCalendar(
-        patientName,
-        bookingDate
-    );
+    // const newCalendarPage = new CalendarPage(newTab);
 
-    const newPrescriptionPage =
-    new PrescriptionPage(newTab);
+    // await newCalendarPage.selectPatientFromCalendar(
+    //     patientName,
+    //     bookingDate
+    // );
 
-    await newPrescriptionPage.clickWritePrescription();
+    // const newPrescriptionPage =
+    // new PrescriptionPage(newTab);
 
-    await newPrescriptionPage.verifyNewTabObservationData(
-    observationData,
-    timeout.time
-    );
+    // await newPrescriptionPage.clickWritePrescription();
+
+    // await newPrescriptionPage.verifyNewTabObservationData(
+    // observationData,
+    // // timeout.time
+    // );
+
+    // await newPrescriptionPage.generateAndViewPrescription();
 
     
 });

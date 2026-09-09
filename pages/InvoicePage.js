@@ -2065,6 +2065,11 @@ class InvoicePage {
                 );
             }
         );
+
+        await this.keywords.wait(
+            this.page,
+            timeout.elementTimeout
+        );
     }
 
     async generateInvoiceAddAdmission() {
@@ -2090,6 +2095,11 @@ class InvoicePage {
                     this.locator.finalGenerateInvoiceBtn
                 );
             }
+        );
+
+        await this.keywords.wait(
+            this.page,
+            timeout.elementTimeout
         );
     }
 }

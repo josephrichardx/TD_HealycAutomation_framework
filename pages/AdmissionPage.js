@@ -104,7 +104,11 @@ export class AdmissionPage {
             }
         );
 
-        await this.keywords.wait(this.page, 1000);
+        // await this.keywords.wait(this.page, 1000);
+        await this.keywords.wait(
+            this.page,
+            timeout.testTimeout
+        );
 
         const patient = this.locator.getPatient(patientName);
 

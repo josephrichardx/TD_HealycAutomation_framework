@@ -10,7 +10,7 @@ const { CalendarPage } = require('../pages/CalendarPage');
 const { patientData,appoinmentData,consultData } = require('../testdata/TC_47A.json');
 const { generateUniquePatientFullName } = require('../utils/RandomData');
 
-test('Generate Invoice', async ({ page }) => {
+test('Consult status', async ({ page }) => {
  
     const patientName = generateUniquePatientFullName();
     const patientPage = new PatientPage(page);

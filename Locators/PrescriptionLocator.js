@@ -387,11 +387,29 @@ this.instructionInput = (rowIndex) =>
 //         .nth(rowIndex)
 //         .locator("textarea.drug-name-input");
 
+// this.newTabDrugNameCell = (rowIndex) =>
+//     page
+//         .locator("//tr[contains(@class,'medication-row')]")
+//         .nth(rowIndex)
+//         .locator("td.col-drug");
 this.newTabDrugNameCell = (rowIndex) =>
     page
         .locator("//tr[contains(@class,'medication-row')]")
         .nth(rowIndex)
-        .locator("td.col-drug");
+        .locator("td")
+        .first();
+
+// this.newTabDrugNameInput = (rowIndex) =>
+//     page
+//         .locator("//tr[contains(@class,'medication-row')]")
+//         .nth(rowIndex)
+//         .locator("textarea.drug-name-input");
+
+this.newTabDrugNameInput = (rowIndex) =>
+    page
+        .locator("//tr[contains(@class,'medication-row')]")
+        .nth(rowIndex)
+        .locator("textarea.drug-name-input");
 
 this.newTabFormDropdown = (rowIndex) =>
     page
@@ -479,16 +497,72 @@ this.observationSection =
 // this.observationAddRowBtn =
 //     this.observationSection.getByRole("button", { name: "+" });
 
-this.observationAddRowBtn = page
-    .locator("section")
-    .filter({
-        hasText: "Co-morbidities"
-    })
-    .locator("button")
-    .filter({
-        has: page.locator("svg")
-    })
-    .last();
+// this.observationAddRowBtn = page
+//     .locator("section")
+//     .filter({
+//         hasText: "Co-morbidities"
+//     })
+//     .locator("button")
+//     .filter({
+//         has: page.locator("svg")
+//     })
+//     .last();
+this.observationAddRowBtn =
+    page.locator(
+        'app-emr-medications-table[data-section-id="co_morbidities"] button[title="Add row"]'
+    );
+
+// NEW TAB - SAVE
+// =======================
+
+this.newTabSaveButton = page.locator("//button[text()=' Save']");
+
+this.newTabGenerateShareButton = page.locator(
+    "//button[text()=' Generate & Share ']"
+);
+
+this.newTabExitButton = page.locator(
+   "button:has(i.fa-light.fa-arrow-left-from-bracket)"
+);
+
+// this.newTabExitButton = page.locator(
+//     "//i[@class='fa-light fa-arrow-right-from-bracket']"
+// );
+
+
+this.newTabEyeIcon = page.locator(
+    "(//i[@class='fa-light fa-eye'])[1]"
+);
+
+
+//Apply Template in frontend
+
+this.formatValueButton = page.locator(
+    "//button[@class='format-value']"
+);
+
+this.formatValueOption = (formatValue) =>
+    page.locator(`//span[text()='${formatValue}']`);
+
+this.templatesButton = page.locator(
+    "//button[@aria-label='Templates']"
+);
+
+this.templateSearchInput = page.locator(
+    "//input[@placeholder='Search templates...']"
+);
+
+this.applyButton = page.locator(
+    "(//button[text()=' Apply '])[1]"
+);
+
+this.replaceButton = page.locator(
+    "//button[text()=' Replace ']"
+);
+
+this.templateSuccessMessage = page.locator(
+    "//div[contains(@class,'mdc-snackbar__label')]"
+);
 
         }
 

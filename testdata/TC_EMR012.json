@@ -10,21 +10,17 @@
   },
 
   "appoinmentData": {
-    "doctorName": "Dr. Orthopedic"
+    "doctorName": "Dr. Test"
   },
  
   "consultData": {
-    "consultSlot": "First Consult"
+    "consultSlot": "Consult-1"
   },
 
   "templateData": {
   "templateName": "EMR_AUTOMATION_TEMPLATE TD",
   "searchKey": "Enter",
    "templateAppliedMessage": "Template Applied successfully!"
-  },
-
-  "timeout": {
-    "time": 3000
   },
 
  "prescriptionData": {
@@ -47,7 +43,7 @@
 },
 
 "observationData": {
-    "row": 1,
+    "row": 2,
     "drugName": "1 AL Plus 5mg/120mg Capsule",
     "form": "Capsule",
     "strength": "4",
@@ -73,7 +69,13 @@
     "top": "10",
     "bottom": "20",
     "leftRight": "15"
-  }
+  },
+
+    "template": {
+        "formatValue": "EMR_AUTOMATION TD",
+        "templateName": "EMR_AUTOMATION_TEMPLATE TD"
+    }
+
 
 
 

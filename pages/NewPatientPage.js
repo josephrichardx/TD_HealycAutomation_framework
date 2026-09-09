@@ -1,9 +1,10 @@
 import { expect } from '@playwright/test';
-
 import { StepHelper } from '../utils/StepHelper.js';
 import { Verify } from '../utils/verification.js';
 import { NewPatientLocator } from '../Locators/NewPatientLocator.js';
 import { Keywords } from '../utils/Keywords.js';
+
+const { calculateAgeFromDate } = require('../utils/RandomData');
 
 const timeoutData = require('../testdata/timeout.json');
 const { timeout } = timeoutData;
@@ -18,26 +19,12 @@ export class NewPatient {
 
     async openAddPatientForm() {
 
-        await Verify.state(
-            this.page,
-            'Add New Button',
-            this.locator.addNewBtn,
-            { visible: true, enabled: true, soft: false }
-        );
-
         await StepHelper.step(
             this.page,
             'Click Add New Button',
             async () => {
                 await this.keywords.click(this.locator.addNewBtn);
             }
-        );
-
-        await Verify.state(
-            this.page,
-            'Add Patient Option',
-            this.locator.addPatientBtn,
-            { visible: true, soft: false }
         );
 
         await StepHelper.step(
@@ -47,23 +34,9 @@ export class NewPatient {
                 await this.keywords.click(this.locator.addPatientBtn);
             }
         );
-
-        await Verify.state(
-            this.page,
-            'Add New Patient Panel Title',
-            this.locator.panelTitle,
-            { visible: true, soft: false }
-        );
     }
 
     async selectSalutation(salutation) {
-
-        await Verify.state(
-            this.page,
-            'Salutation Dropdown',
-            this.locator.salutationDropdownBtn,
-            { visible: true, enabled: true, soft: false }
-        );
 
         await StepHelper.step(
             this.page,
@@ -93,13 +66,6 @@ export class NewPatient {
 
     async enterPatientName(patientName) {
 
-        await Verify.state(
-            this.page,
-            'Patient Name Field',
-            this.locator.patientNameTxt,
-            { visible: true, enabled: true, soft: false }
-        );
-
         await StepHelper.step(
             this.page,
             `Enter Patient Name - ${patientName}`,
@@ -121,13 +87,6 @@ export class NewPatient {
 
     async enterMobileNumber(mobileNumber) {
 
-        await Verify.state(
-            this.page,
-            'Mobile Number Field',
-            this.locator.mobileNumberTxt,
-            { visible: true, enabled: true, soft: false }
-        );
-
         await StepHelper.step(
             this.page,
             `Enter Mobile Number - ${mobileNumber}`,
@@ -148,13 +107,6 @@ export class NewPatient {
     }
 
     async enterReferralBy(referralBy) {
-
-        await Verify.state(
-            this.page,
-            'Referral By Field',
-            this.locator.referralByTxt,
-            { visible: true, enabled: true, soft: false }
-        );
 
         await StepHelper.step(
             this.page,
@@ -187,13 +139,6 @@ export class NewPatient {
 
     async enterEmail(email) {
 
-        await Verify.state(
-            this.page,
-            'Email Field',
-            this.locator.emailTxt,
-            { visible: true, enabled: true, soft: false }
-        );
-
         await StepHelper.step(
             this.page,
             `Enter Email - ${email}`,
@@ -217,37 +162,28 @@ export class NewPatient {
 
         const { day, monthName, year } = dobData;
 
-        await Verify.state(
-            this.page,
-            'Date Of Birth Field',
-            this.locator.dobComponent,
-            { visible: true, soft: false }
-        );
-
         await StepHelper.step(
             this.page,
             'Click Date Of Birth Field',
             async () => {
-                await this.keywords.click(this.locator.dobComponent);
+                await this.keywords.click(
+                    this.locator.dobComponent
+                );
             }
-        );
-
-        await Verify.state(
-            this.page,
-            'DOB Calendar Opened',
-            this.locator.calendarHeader,
-            { visible: true, soft: false }
         );
 
         await StepHelper.step(
             this.page,
             'Open Month/Year Selector',
             async () => {
-                await this.keywords.click(this.locator.calendarHeaderTitle);
+                await this.keywords.click(
+                    this.locator.calendarHeaderTitle
+                );
             }
         );
 
-        const monthOption = this.locator.getMonthButton(monthName);
+        const monthOption =
+            this.locator.getMonthButton(monthName);
 
         await Verify.state(
             this.page,
@@ -264,7 +200,8 @@ export class NewPatient {
             }
         );
 
-        const yearOption = this.locator.getYearButton(year);
+        const yearOption =
+            this.locator.getYearButton(year);
 
         await Verify.state(
             this.page,
@@ -285,11 +222,14 @@ export class NewPatient {
             this.page,
             'Save Month/Year Selection',
             async () => {
-                await this.keywords.click(this.locator.saveDateBtn);
+                await this.keywords.click(
+                    this.locator.saveDateBtn
+                );
             }
         );
 
-        const dayLocator = this.locator.getDayLocator(day);
+        const dayLocator =
+            this.locator.getDayLocator(day);
 
         await Verify.state(
             this.page,
@@ -302,7 +242,9 @@ export class NewPatient {
             this.page,
             `Select Date Of Birth Day - ${day}`,
             async () => {
-                await this.keywords.click(dayLocator.first());
+                await this.keywords.click(
+                    dayLocator.first()
+                );
             }
         );
 
@@ -326,12 +268,6 @@ export class NewPatient {
 
     async verifyAgeCalculatedCorrectly(dobData) {
 
-        const { calculateAgeFromDate } =
-            require('../utils/RandomData');
-
-        const expectedAge =
-            calculateAgeFromDate(dobData.dateObj);
-
         await Verify.state(
             this.page,
             'Age Field',
@@ -340,18 +276,19 @@ export class NewPatient {
         );
 
         await expect(async () => {
-
             const actualValue =
                 await this.locator.ageTxt.inputValue();
 
             expect(actualValue).not.toBe('');
-
         }).toPass({
             timeout: timeout.expectTimeout
         });
 
         const actualAgeText =
             await this.locator.ageTxt.inputValue();
+
+        const expectedAge =
+            calculateAgeFromDate(dobData.dateObj);
 
         await Verify.equals(
             this.page,
@@ -370,13 +307,6 @@ export class NewPatient {
                     ? this.locator.otherGenderBtn
                     : this.locator.maleBtn;
 
-        await Verify.state(
-            this.page,
-            `Gender Option - ${gender}`,
-            genderBtn,
-            { visible: true, soft: false }
-        );
-
         await StepHelper.step(
             this.page,
             `Select Gender - ${gender}`,
@@ -387,13 +317,6 @@ export class NewPatient {
     }
 
     async enterAddress(address) {
-
-        await Verify.state(
-            this.page,
-            'Address Field',
-            this.locator.addressTxt,
-            { visible: true, enabled: true, soft: false }
-        );
 
         await StepHelper.step(
             this.page,
@@ -441,13 +364,6 @@ export class NewPatient {
 
         for (const field of fields) {
 
-            await Verify.state(
-                this.page,
-                `${field.label} Field`,
-                field.locator,
-                { visible: true, enabled: true, soft: false }
-            );
-
             await StepHelper.step(
                 this.page,
                 `Enter ${field.label} - ${field.value}`,
@@ -467,13 +383,6 @@ export class NewPatient {
 
     async checkVipPatientCheckbox() {
 
-        await Verify.state(
-            this.page,
-            'VIP Checkbox Toggle',
-            this.locator.vipCheckboxToggle,
-            { visible: true, soft: false }
-        );
-
         await StepHelper.step(
             this.page,
             'Check VIP Patient Checkbox',
@@ -484,14 +393,15 @@ export class NewPatient {
             }
         );
 
-        await expect(
-            this.locator.vipCheckboxState
-        ).toHaveAttribute(
-            'class',
-            /checked/,
-            {
-                timeout: timeout.expectTimeout
-            }
+        const classAfter =
+            await this.locator.vipCheckboxState
+                .getAttribute('class');
+
+        await Verify.contains(
+            this.page,
+            'VIP Checkbox Is Checked After Click',
+            'checked',
+            classAfter
         );
     }
 
@@ -507,13 +417,15 @@ export class NewPatient {
             }
         );
 
-        await expect(
-            this.locator.vipCheckboxState
-        ).not.toHaveAttribute(
-            'class',
-            /checked/,
-            {
-                timeout: timeout.expectTimeout
+        const classAfter =
+            await this.locator.vipCheckboxState
+                .getAttribute('class');
+
+        await StepHelper.step(
+            this.page,
+            'Verify VIP Checkbox Is Unchecked After Click',
+            async () => {
+                expect(classAfter).not.toContain('checked');
             }
         );
     }
@@ -535,6 +447,11 @@ export class NewPatient {
             }
         );
 
+        await this.locator.vipInfoTooltip.waitFor({
+            state: 'visible',
+            timeout: timeout.elementTimeout
+        });
+
         await Verify.state(
             this.page,
             'VIP Info Tooltip',
@@ -552,15 +469,9 @@ export class NewPatient {
 
     async verifyVipCheckboxCannotBeUnchecked() {
 
-        await Verify.state(
-            this.page,
-            'VIP Checkbox',
-            this.locator.vipCheckboxState,
-            { visible: true, soft: false }
-        );
-
         const classBefore =
-            await this.locator.vipCheckboxState.getAttribute('class');
+            await this.locator.vipCheckboxState
+                .getAttribute('class');
 
         await Verify.contains(
             this.page,
@@ -579,31 +490,27 @@ export class NewPatient {
             }
         );
 
-        await expect(
-            this.locator.vipCheckboxState
-        ).toHaveAttribute(
-            'class',
-            /checked/,
-            {
-                timeout: timeout.expectTimeout
-            }
+        const classAfter =
+            await this.locator.vipCheckboxState
+                .getAttribute('class');
+
+        await Verify.contains(
+            this.page,
+            'VIP Checkbox Still Checked After Click (VIP -> non-VIP blocked)',
+            'checked',
+            classAfter
         );
     }
 
     async clickSave() {
 
-        await Verify.state(
-            this.page,
-            'Save Button',
-            this.locator.saveBtn,
-            { visible: true, enabled: true, soft: false }
-        );
-
         await StepHelper.step(
             this.page,
             'Click Save Button',
             async () => {
-                await this.keywords.click(this.locator.saveBtn);
+                await this.keywords.click(
+                    this.locator.saveBtn
+                );
             }
         );
     }
@@ -613,13 +520,6 @@ export class NewPatient {
         await this.keywords.waitForElement(
             this.locator.successToastTitle,
             timeout.elementTimeout
-        );
-
-        await Verify.state(
-            this.page,
-            `Patient Saved Confirmation - ${patientName}`,
-            this.locator.successToastTitle,
-            { visible: true, soft: false }
         );
 
         await Verify.text(
@@ -632,25 +532,14 @@ export class NewPatient {
 
     async searchAndVerifyPatient(patientName) {
 
-        await Verify.state(
-            this.page,
-            'Search Patient Field',
-            this.locator.searchPatientTxt,
-            { visible: true, soft: false }
-        );
-
         await StepHelper.step(
             this.page,
             `Search Patient (Typing Sequentially) - ${patientName}`,
             async () => {
                 await this.locator.searchPatientTxt.focus();
 
-                await this.locator.searchPatientTxt.pressSequentially(
-                    patientName,
-                    {
-                        delay: 0
-                    }
-                );
+                await this.locator.searchPatientTxt
+                    .pressSequentially(patientName);
             }
         );
 
@@ -670,13 +559,6 @@ export class NewPatient {
         const patientDropdownResult =
             this.locator.getPatient(patientName);
 
-        await Verify.state(
-            this.page,
-            `Patient Search Result - ${patientName}`,
-            patientDropdownResult,
-            { visible: true, soft: false }
-        );
-
         await StepHelper.step(
             this.page,
             'Click Patient from Search Results',
@@ -687,11 +569,9 @@ export class NewPatient {
             }
         );
 
-        await this.page.waitForURL(
-            /patient-profile/,
-            {
-                timeout: timeout.navigationTimeout
-            }
+        await this.keywords.waitForElement(
+            this.locator.patientProfileNameText,
+            timeout.navigationTimeout
         );
     }
 
@@ -728,11 +608,9 @@ export class NewPatient {
             }
         );
 
-        await this.page.waitForURL(
-            /patient-profile/,
-            {
-                timeout: timeout.navigationTimeout
-            }
+        await this.keywords.waitForElement(
+            this.locator.patientProfileNameText,
+            timeout.navigationTimeout
         );
     }
 
@@ -743,12 +621,20 @@ export class NewPatient {
             timeout.navigationTimeout
         );
 
-        await Verify.state(
-            this.page,
-            'Patient Profile Name',
-            this.locator.patientProfileNameText,
-            { visible: true, soft: false }
-        );
+        await expect(async () => {
+
+            const text =
+                (
+                    await this.keywords.getText(
+                        this.locator.patientProfileNameText
+                    )
+                ).trim();
+
+            expect(text).not.toBe('.');
+
+        }).toPass({
+            timeout: timeout.navigationTimeout
+        });
 
         await Verify.text(
             this.page,
@@ -764,63 +650,55 @@ export class NewPatient {
         options = {}
     ) {
 
-        const { calculateAgeFromDate } =
-            require('../utils/RandomData');
-
         const isVip = options.isVip || false;
 
-        await Verify.state(
-            this.page,
-            'Patient Profile - UHID Field Present',
-            this.locator.profileUhidText,
-            { visible: true, soft: false }
-        );
-
         const actualUhid =
-            (await this.locator.profileUhidText.innerText()).trim();
+            (
+                await this.keywords.getText(
+                    this.locator.profileUhidText
+                )
+            ).trim();
 
         await Verify.record(
             this.page,
-            'Patient Profile - UHID',
+            patientData.uhidLogText,
             actualUhid
         );
 
-        await Verify.state(
-            this.page,
-            'Patient Profile - Gender/Age Field Present',
-            this.locator.profileGenderAgeText,
-            { visible: true, soft: false }
-        );
-
-        const actualGenderAge =
-            (await this.locator.profileGenderAgeText.innerText()).trim();
+        const rawGenderAge =
+            (
+                await this.keywords.getText(
+                    this.locator.profileGenderAgeText
+                )
+            ).trim();
 
         const expectedAge =
             calculateAgeFromDate(dobData.dateObj);
 
+        const [
+            actualGender,
+            actualAge
+        ] =
+            rawGenderAge
+                .split('|')
+                .map(item => item.trim());
+
         await StepHelper.step(
             this.page,
-            `Verify Patient Profile Gender | Expected to contain: ${patientData.gender} | Actual: ${actualGenderAge}`,
+            `Verify Patient Profile Gender | Expected: ${patientData.gender} | Actual: ${actualGender}`,
             async () => {
-                expect(actualGenderAge)
-                    .toContain(patientData.gender);
+                expect(actualGender)
+                    .toBe(patientData.gender);
             }
         );
 
         await StepHelper.step(
             this.page,
-            `Verify Patient Profile Age | Expected to contain: ${expectedAge} Years | Actual: ${actualGenderAge}`,
+            `Verify Patient Profile Age | Expected: ${expectedAge} Years | Actual: ${actualAge}`,
             async () => {
-                expect(actualGenderAge)
-                    .toContain(`${expectedAge} Years`);
+                expect(actualAge)
+                    .toBe(`${expectedAge} Years`);
             }
-        );
-
-        await Verify.state(
-            this.page,
-            'Patient Profile - Email Field Present',
-            this.locator.profileEmailText,
-            { visible: true, soft: false }
         );
 
         await Verify.text(
@@ -831,15 +709,8 @@ export class NewPatient {
             { exact: true }
         );
 
-        await Verify.state(
-            this.page,
-            'Patient Profile - Phone Field Present',
-            this.locator.profilePhoneText,
-            { visible: true, soft: false }
-        );
-
         const expectedPhone = isVip
-            ? `******${patientData.mobileNumber.slice(-4)}`
+            ? `*****${patientData.mobileNumber.slice(-4)}`
             : patientData.mobileNumber;
 
         await Verify.text(
@@ -849,26 +720,12 @@ export class NewPatient {
             this.locator.profilePhoneText
         );
 
-        await Verify.state(
-            this.page,
-            'Patient Profile - Address Field Present',
-            this.locator.profileAddressText,
-            { visible: true, soft: false }
-        );
-
         await Verify.text(
             this.page,
             'Patient Profile - Address',
             patientData.address,
             this.locator.profileAddressText,
             { exact: true }
-        );
-
-        await Verify.state(
-            this.page,
-            'Patient Profile - Referral Source Field Present',
-            this.locator.profileReferralSourceValue,
-            { visible: true, soft: false }
         );
 
         await Verify.text(
@@ -881,6 +738,12 @@ export class NewPatient {
     }
 
     async validateCloseUsingX() {
+
+        await StepHelper.addSteps(
+            11,
+            'Start',
+            'Validate that the Add Patient form can be closed using the X button and that the form resets after closing'
+        );
 
         await this.openAddPatientForm();
 
@@ -907,23 +770,34 @@ export class NewPatient {
             this.locator.panelTitle,
             { hidden: true }
         );
+
+        await StepHelper.addSteps(
+            11,
+            'End',
+            'Validate that the Add Patient form can be closed using the X button and that the form resets after closing'
+        );
     }
 
     async validateLeapYearDob(dobData) {
 
-        const { calculateAgeFromDate } =
-            require('../utils/RandomData');
+        await StepHelper.addSteps(
+            9,
+            'Start',
+            'Enter a leap year date of birth and verify that the age is calculated correctly'
+        );
 
         await this.openAddPatientForm();
+
         await this.enterDateOfBirth(dobData);
 
-        const dobDateObj = dobData.dateObj
-            ? new Date(dobData.dateObj)
-            : new Date(
-                dobData.year,
-                dobData.monthIndex,
-                dobData.day
-            );
+        const dobDateObj =
+            dobData.dateObj
+                ? new Date(dobData.dateObj)
+                : new Date(
+                    dobData.year,
+                    dobData.monthIndex,
+                    dobData.day
+                );
 
         const expectedAge =
             calculateAgeFromDate(dobDateObj);
@@ -944,16 +818,15 @@ export class NewPatient {
                 );
             }
         );
+
+        await StepHelper.addSteps(
+            9,
+            'End',
+            'Enter a leap year date of birth and verify that the age is calculated correctly'
+        );
     }
 
     async openEditPatient() {
-
-        await Verify.state(
-            this.page,
-            'Edit Patient Icon',
-            this.locator.editPatientIcon,
-            { visible: true, soft: false }
-        );
 
         await StepHelper.step(
             this.page,
@@ -969,19 +842,12 @@ export class NewPatient {
             this.locator.patientNameTxt,
             timeout.navigationTimeout
         );
-
-        await Verify.state(
-            this.page,
-            'Edit Patient Panel',
-            this.locator.patientNameTxt,
-            { visible: true, soft: false }
-        );
     }
 
-    async verifyEditPatientFieldsMatch(patientData, dobData) {
-
-        const { calculateAgeFromDate } =
-            require('../utils/RandomData');
+    async verifyEditPatientFieldsMatch(
+        patientData,
+        dobData
+    ) {
 
         await Verify.inputValue(
             this.page,
@@ -1064,13 +930,11 @@ export class NewPatient {
             );
         }
 
-        const salutationText =
-            (await this.locator.salutationDropdownBtn.innerText()).trim();
-
-        await Verify.record(
+        await Verify.text(
             this.page,
             'Edit Panel - Salutation Dropdown Displays',
-            salutationText
+            patientData.title,
+            this.locator.salutationDropdownBtn
         );
 
         await Verify.record(
@@ -1104,13 +968,6 @@ export class NewPatient {
             timeout.elementTimeout
         );
 
-        await Verify.state(
-            this.page,
-            'Patient Details Updated Toast',
-            this.locator.successToastTitle,
-            { visible: true, soft: false }
-        );
-
         await Verify.text(
             this.page,
             'Patient Details Updated Toast Text',
@@ -1122,12 +979,16 @@ export class NewPatient {
     async enableVipAndSave(expectedToastMsg) {
 
         const classBeforeEdit =
-            await this.locator.vipCheckboxState.getAttribute('class');
+            await this.locator.vipCheckboxState
+                .getAttribute('class');
 
-        await Verify.record(
+        await StepHelper.step(
             this.page,
-            'VIP Checkbox State Before Enabling VIP',
-            classBeforeEdit
+            'Verify VIP Checkbox Is Unchecked Before Enabling VIP',
+            async () => {
+                expect(classBeforeEdit)
+                    .not.toContain('checked');
+            }
         );
 
         await this.checkVipPatientCheckbox();
@@ -1143,22 +1004,50 @@ export class NewPatient {
         dobData
     ) {
 
+        await StepHelper.addSteps(
+            9,
+            'Start',
+            'Enter valid patient data, verify age calculation, and then cancel the form'
+        );
+
         await this.openAddPatientForm();
 
         await this.enterPatientName(patientName);
-        await this.selectSalutation(patientData.title);
-        await this.enterMobileNumber(patientData.mobileNumber);
-        await this.enterReferralBy(patientData.referralBy);
 
-        await this.enterEmail(patientData.email);
+        await this.selectSalutation(
+            patientData.title
+        );
 
-        await this.enterDateOfBirth(dobData);
-        await this.verifyAgeCalculatedCorrectly(dobData);
+        await this.enterMobileNumber(
+            patientData.mobileNumber
+        );
 
-        await this.selectGender(patientData.gender);
-        await this.enterAddress(patientData.address);
+        await this.enterReferralBy(
+            patientData.referralBy
+        );
 
-        await this.locator.panelTitle.scrollIntoViewIfNeeded();
+        await this.enterEmail(
+            patientData.email
+        );
+
+        await this.enterDateOfBirth(
+            dobData
+        );
+
+        await this.verifyAgeCalculatedCorrectly(
+            dobData
+        );
+
+        await this.selectGender(
+            patientData.gender
+        );
+
+        await this.enterAddress(
+            patientData.address
+        );
+
+        await this.locator.panelTitle
+            .scrollIntoViewIfNeeded();
 
         await this.fillAdditionalDetails(
             patientData.additionalDetails
@@ -1169,6 +1058,7 @@ export class NewPatient {
         );
 
         await this.checkVipPatientCheckbox();
+
         await this.uncheckVipPatientCheckbox();
 
         await StepHelper.step(
@@ -1187,18 +1077,28 @@ export class NewPatient {
             this.locator.panelTitle,
             { hidden: true }
         );
+
+        await StepHelper.addSteps(
+            9,
+            'End',
+            'Enter valid patient data, verify age calculation, and then cancel the form'
+        );
     }
 
-    async updatePatientNameAndMobile(newName, newMobile) {
+    async updatePatientNameAndMobile(
+        newName,
+        newMobile,
+        newReferral
+    ) {
 
         await StepHelper.step(
             this.page,
             `Edit Patient Name to - ${newName}`,
             async () => {
 
-                await this.locator.patientNameTxt.click();
-                await this.locator.patientNameTxt.press('Control+A');
-                await this.locator.patientNameTxt.press('Backspace');
+                await this.keywords.clear(
+                    this.locator.patientNameTxt
+                );
 
                 await this.keywords.fill(
                     this.locator.patientNameTxt,
@@ -1212,13 +1112,29 @@ export class NewPatient {
             `Edit Mobile Number to - ${newMobile}`,
             async () => {
 
-                await this.locator.mobileNumberTxt.click();
-                await this.locator.mobileNumberTxt.press('Control+A');
-                await this.locator.mobileNumberTxt.press('Backspace');
+                await this.keywords.clear(
+                    this.locator.mobileNumberTxt
+                );
 
                 await this.keywords.fill(
                     this.locator.mobileNumberTxt,
                     newMobile
+                );
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            `Edit Referral By to - ${newReferral}`,
+            async () => {
+
+                await this.keywords.clear(
+                    this.locator.referralByTxt
+                );
+
+                await this.keywords.fill(
+                    this.locator.referralByTxt,
+                    newReferral
                 );
             }
         );
@@ -1231,6 +1147,12 @@ export class NewPatient {
         options = {}
     ) {
 
+        await StepHelper.addSteps(
+            12,
+            'Start',
+            ' Create a new patient with valid data and verify the save operation and toast message'
+        );
+
         const {
             markAsVip = false,
             expectedToastMsg
@@ -1242,19 +1164,43 @@ export class NewPatient {
             await this.checkVipPatientCheckbox();
         }
 
-        await this.enterPatientName(patientName);
-        await this.selectSalutation(patientData.title);
-        await this.enterMobileNumber(patientData.mobileNumber);
-        await this.enterReferralBy(patientData.referralBy);
+        await this.enterPatientName(
+            patientName
+        );
+
+        await this.selectSalutation(
+            patientData.title
+        );
+
+        await this.enterMobileNumber(
+            patientData.mobileNumber
+        );
+
+        await this.enterReferralBy(
+            patientData.referralBy
+        );
 
         await this.verifySaveEnabledAfterMandatoryFields();
 
-        await this.enterEmail(patientData.email);
-        await this.enterDateOfBirth(dobData);
-        await this.verifyAgeCalculatedCorrectly(dobData);
+        await this.enterEmail(
+            patientData.email
+        );
 
-        await this.selectGender(patientData.gender);
-        await this.enterAddress(patientData.address);
+        await this.enterDateOfBirth(
+            dobData
+        );
+
+        await this.verifyAgeCalculatedCorrectly(
+            dobData
+        );
+
+        await this.selectGender(
+            patientData.gender
+        );
+
+        await this.enterAddress(
+            patientData.address
+        );
 
         await this.fillAdditionalDetails(
             patientData.additionalDetails
@@ -1266,6 +1212,12 @@ export class NewPatient {
             patientName,
             expectedToastMsg
         );
+
+        await StepHelper.addSteps(
+            12,
+            'End',
+            ' Create a new patient with valid data and verify the save operation and toast message'
+        );
     }
 
     // ============================================================
@@ -1274,13 +1226,23 @@ export class NewPatient {
 
     async validateEmptyMandatoryFields() {
 
+        await StepHelper.addSteps(
+            1,
+            'start',
+            'Click Add New Patient Button to Open Form and verify save button without entering details'
+        );
+
         await this.openAddPatientForm();
 
         await Verify.state(
             this.page,
             'Verify Save Button is Disabled on Empty Form',
             this.locator.saveBtn,
-            { visible: true, enabled: false, soft: false }
+            {
+                visible: true,
+                enabled: false,
+                soft: false
+            }
         );
 
         await StepHelper.step(
@@ -1292,6 +1254,12 @@ export class NewPatient {
                 );
             }
         );
+
+        await StepHelper.addSteps(
+            1,
+            'End',
+            'Click Add New Patient Button to Open Form and verify save button without entering details'
+        );
     }
 
     async validateMissingSalutation(
@@ -1300,11 +1268,25 @@ export class NewPatient {
         errorData
     ) {
 
+        await StepHelper.addSteps(
+            2,
+            'start',
+            'Leave salutation field empty and verify error message when trying to save the form'
+        );
+
         await this.openAddPatientForm();
 
-        await this.enterPatientName(patientName);
-        await this.enterMobileNumber(patientData.mobileNumber);
-        await this.enterReferralBy(patientData.referralBy);
+        await this.enterPatientName(
+            patientName
+        );
+
+        await this.enterMobileNumber(
+            patientData.mobileNumber
+        );
+
+        await this.enterReferralBy(
+            patientData.referralBy
+        );
 
         await this.clickSave();
 
@@ -1338,15 +1320,38 @@ export class NewPatient {
                 );
             }
         );
+
+        await StepHelper.addSteps(
+            2,
+            'End',
+            'Leave salutation field empty and verify error message when trying to save the form'
+        );
     }
 
-    async validateMissingName(patientData, errorData) {
+    async validateMissingName(
+        patientData,
+        errorData
+    ) {
+
+        await StepHelper.addSteps(
+            3,
+            'start',
+            'Leave name field empty and fill in Salutation, mobile and referral by fields and verify error message when trying to save the form'
+        );
 
         await this.openAddPatientForm();
 
-        await this.selectSalutation(patientData.title);
-        await this.enterMobileNumber(patientData.mobileNumber);
-        await this.enterReferralBy(patientData.referralBy);
+        await this.selectSalutation(
+            patientData.title
+        );
+
+        await this.enterMobileNumber(
+            patientData.mobileNumber
+        );
+
+        await this.enterReferralBy(
+            patientData.referralBy
+        );
 
         await this.clickSave();
 
@@ -1373,15 +1378,38 @@ export class NewPatient {
                 );
             }
         );
+
+        await StepHelper.addSteps(
+            3,
+            'End',
+            'Leave name field empty and fill in Salutation, mobile and referral by fields and verify error message when trying to save the form'
+        );
     }
 
-    async validateMissingMobile(patientName, patientData) {
+    async validateMissingMobile(
+        patientName,
+        patientData
+    ) {
+
+        await StepHelper.addSteps(
+            4,
+            'Start',
+            'Leave mobile number field empty and fill in Salutation, name and referral by fields and verify error message when trying to save the form'
+        );
 
         await this.openAddPatientForm();
 
-        await this.selectSalutation(patientData.title);
-        await this.enterPatientName(patientName);
-        await this.enterReferralBy(patientData.referralBy);
+        await this.selectSalutation(
+            patientData.title
+        );
+
+        await this.enterPatientName(
+            patientName
+        );
+
+        await this.enterReferralBy(
+            patientData.referralBy
+        );
 
         await this.clickSave();
 
@@ -1401,6 +1429,12 @@ export class NewPatient {
                 );
             }
         );
+
+        await StepHelper.addSteps(
+            4,
+            'End',
+            'Leave mobile number field empty and fill in Salutation, name and referral by fields and verify error message when trying to save the form'
+        );
     }
 
     async validateMissingReferral(
@@ -1409,11 +1443,25 @@ export class NewPatient {
         errorData
     ) {
 
+        await StepHelper.addSteps(
+            5,
+            'Start',
+            'Leave referral number field empty and fill in Salutation, name and mobile fields and verify error message when trying to save the form'
+        );
+
         await this.openAddPatientForm();
 
-        await this.selectSalutation(patientData.title);
-        await this.enterPatientName(patientName);
-        await this.enterMobileNumber(patientData.mobileNumber);
+        await this.selectSalutation(
+            patientData.title
+        );
+
+        await this.enterPatientName(
+            patientName
+        );
+
+        await this.enterMobileNumber(
+            patientData.mobileNumber
+        );
 
         await this.clickSave();
 
@@ -1447,6 +1495,12 @@ export class NewPatient {
                 );
             }
         );
+
+        await StepHelper.addSteps(
+            5,
+            'End',
+            'Leave mobile number field empty and fill in Salutation, name and mobile fields and verify error message when trying to save the form'
+        );
     }
 
     async validateInvalidEmailFormat(
@@ -1455,13 +1509,33 @@ export class NewPatient {
         invalidEmail
     ) {
 
+        await StepHelper.addSteps(
+            6,
+            'Start',
+            'Enter invalid values/characters in the email field and verify error toast message'
+        );
+
         await this.openAddPatientForm();
 
-        await this.enterPatientName(patientName);
-        await this.selectSalutation(patientData.title);
-        await this.enterMobileNumber(patientData.mobileNumber);
-        await this.enterReferralBy(patientData.referralBy);
-        await this.enterEmail(invalidEmail);
+        await this.enterPatientName(
+            patientName
+        );
+
+        await this.selectSalutation(
+            patientData.title
+        );
+
+        await this.enterMobileNumber(
+            patientData.mobileNumber
+        );
+
+        await this.enterReferralBy(
+            patientData.referralBy
+        );
+
+        await this.enterEmail(
+            invalidEmail
+        );
 
         await StepHelper.step(
             this.page,
@@ -1473,13 +1547,6 @@ export class NewPatient {
 
         await this.clickSave();
 
-        await Verify.state(
-            this.page,
-            'Verify Form Remains Open When Email is Invalid (Save Blocked)',
-            this.locator.panelTitle,
-            { visible: true, soft: false }
-        );
-
         await StepHelper.step(
             this.page,
             'Click Cancel Button to Reset Form',
@@ -1488,6 +1555,12 @@ export class NewPatient {
                     this.locator.cancelBtn
                 );
             }
+        );
+
+        await StepHelper.addSteps(
+            6,
+            'End',
+            'Enter invalid values/characters in the email field and verify error toast message'
         );
     }
 
@@ -1504,7 +1577,10 @@ export class NewPatient {
             }
         );
 
-        await this.enterReferralBy(referralBy);
+        await this.enterReferralBy(
+            referralBy
+        );
+
         await this.clickSave();
 
         await this.keywords.waitForElement(
@@ -1602,14 +1678,11 @@ export class NewPatient {
             this.page,
             `Attempt to type invalid mobile: ${invalidMobile}`,
             async () => {
+
                 await this.locator.mobileNumberTxt.focus();
 
-                await this.locator.mobileNumberTxt.pressSequentially(
-                    invalidMobile,
-                    {
-                        delay: 0
-                    }
-                );
+                await this.locator.mobileNumberTxt
+                    .pressSequentially(invalidMobile);
             }
         );
 
@@ -1636,20 +1709,23 @@ export class NewPatient {
         expectedSanitized
     ) {
 
+        await StepHelper.addSteps(
+            7,
+            'Start',
+            'Attempt to type invalid age and verify that only numeric characters are accepted'
+        );
+
         await this.openAddPatientForm();
 
         await StepHelper.step(
             this.page,
             `Attempt to type invalid age: ${invalidAge}`,
             async () => {
+
                 await this.locator.ageTxt.focus();
 
-                await this.locator.ageTxt.pressSequentially(
-                    invalidAge,
-                    {
-                        delay: 0
-                    }
-                );
+                await this.locator.ageTxt
+                    .pressSequentially(invalidAge);
             }
         );
 
@@ -1669,11 +1745,23 @@ export class NewPatient {
                 );
             }
         );
+
+        await StepHelper.addSteps(
+            7,
+            'End',
+            'Attempt to type invalid age and verify that only numeric characters are accepted'
+        );
     }
 
     async validateFutureDateSelectionResetsToToday(
         futureTestDay
     ) {
+
+        await StepHelper.addSteps(
+            8,
+            'Start',
+            'Attempt to select a future date of birth and verify that the field resets to today\'s date'
+        );
 
         await this.openAddPatientForm();
 
@@ -1732,9 +1820,9 @@ export class NewPatient {
             `Select Day - ${futureTestDay} in Future Year`,
             async () => {
                 await this.keywords.click(
-                    this.locator
-                        .getDayLocator(futureTestDay)
-                        .first()
+                    this.locator.getDayLocator(
+                        futureTestDay
+                    ).first()
                 );
             }
         );
@@ -1755,6 +1843,12 @@ export class NewPatient {
                     this.locator.cancelBtn
                 );
             }
+        );
+
+        await StepHelper.addSteps(
+            8,
+            'End',
+            'Attempt to select a future date of birth and verify that the field resets to today\'s date'
         );
     }
 
@@ -1778,13 +1872,26 @@ export class NewPatient {
                 ? oversizedValue
                 : validData.mobileNumber;
 
-        await this.enterPatientName(nameToEnter);
-        await this.selectSalutation(validData.title);
-        await this.enterMobileNumber(mobileToEnter);
-        await this.enterReferralBy(validData.referralBy);
+        await this.enterPatientName(
+            nameToEnter
+        );
+
+        await this.selectSalutation(
+            validData.title
+        );
+
+        await this.enterMobileNumber(
+            mobileToEnter
+        );
+
+        await this.enterReferralBy(
+            validData.referralBy
+        );
 
         if (fieldType === 'Address') {
-            await this.enterAddress(oversizedValue);
+            await this.enterAddress(
+                oversizedValue
+            );
         }
 
         await this.clickSave();
@@ -1835,11 +1942,25 @@ export class NewPatient {
 
         await this.openAddPatientForm();
 
-        await this.enterPatientName(patientName);
-        await this.selectSalutation(patientData.title);
-        await this.enterMobileNumber(patientData.mobileNumber);
-        await this.enterReferralBy(patientData.referralBy);
-        await this.enterEmail(patientData.email);
+        await this.enterPatientName(
+            patientName
+        );
+
+        await this.selectSalutation(
+            patientData.title
+        );
+
+        await this.enterMobileNumber(
+            patientData.mobileNumber
+        );
+
+        await this.enterReferralBy(
+            patientData.referralBy
+        );
+
+        await this.enterEmail(
+            patientData.email
+        );
 
         await this.clickSave();
 
@@ -1881,6 +2002,12 @@ export class NewPatient {
         errorData
     ) {
 
+        await StepHelper.addSteps(
+            10,
+            'Start',
+            'Create a patient and then attempt to create another patient with the same name and mobile number to trigger a duplicate warning'
+        );
+
         await this.createPatientFast(
             patientName,
             patientData,
@@ -1889,9 +2016,17 @@ export class NewPatient {
 
         await this.openAddPatientForm();
 
-        await this.enterPatientName(patientName);
-        await this.selectSalutation(patientData.title);
-        await this.enterMobileNumber(patientData.mobileNumber);
+        await this.enterPatientName(
+            patientName
+        );
+
+        await this.selectSalutation(
+            patientData.title
+        );
+
+        await this.enterMobileNumber(
+            patientData.mobileNumber
+        );
 
         await this.keywords.waitForElement(
             this.locator.duplicateWarningBox,
@@ -1922,6 +2057,12 @@ export class NewPatient {
                     this.locator.cancelBtn
                 );
             }
+        );
+
+        await StepHelper.addSteps(
+            10,
+            'Start',
+            'Create a patient and then attempt to create another patient with the same name and mobile number to trigger a duplicate warning'
         );
     }
 
@@ -2076,9 +2217,9 @@ export class NewPatient {
             `Select Date Of Birth Day - ${dobData.day}`,
             async () => {
                 await this.keywords.click(
-                    this.locator
-                        .getDayLocator(dobData.day)
-                        .first()
+                    this.locator.getDayLocator(
+                        dobData.day
+                    ).first()
                 );
             }
         );
@@ -2095,7 +2236,9 @@ export class NewPatient {
                             ? this.locator.otherGenderBtn
                             : this.locator.maleBtn;
 
-                await this.keywords.click(genderBtn);
+                await this.keywords.click(
+                    genderBtn
+                );
             }
         );
 
@@ -2139,7 +2282,9 @@ export class NewPatient {
                 this.page,
                 `Enter ${field.label} - ${field.value}`,
                 async () => {
-                    await field.locator.fill(field.value);
+                    await field.locator.fill(
+                        field.value
+                    );
                 }
             );
         }

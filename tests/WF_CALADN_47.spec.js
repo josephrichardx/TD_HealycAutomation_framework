@@ -8,13 +8,13 @@ const { patientData,IPDAdmissionDetailsSummary,admissionPatientData  } = require
 const { generateUniquePatientFullName } = require('../utils/RandomData.js');
 import {generateAdmissionDate,generateAdmissionTime,getAdmissionData} from '../utils/RandomData.js';
  
-test('IPD - Generate Invoice', async ({ page }) => {
+test('Consult status', async ({ page }) => {
  
     const patientName = generateUniquePatientFullName();
     const admissionPage = new AdmissionPage(page);
     const patientPage = new PatientPage(page);
     const ipdPage = new IPDPage(page);
- 
+
  
     // ============================================================
     // 1. Create Patient

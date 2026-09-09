@@ -228,10 +228,10 @@ class ConsultPage {
                             `Selected Slot Date: ${this.selectedSlotDate}`
                         );
 
-                        await firstSlot.waitFor({
-                            state: 'visible',
-                            timeout: timeout.elementTimeout
-                        });
+                        // await firstSlot.waitFor({
+                        //     state: 'visible',
+                        //     timeout: timeout.elementTimeout
+                        // });
 
                         await this.keywords.click(
                             firstSlot
@@ -254,11 +254,13 @@ class ConsultPage {
                      * No fixed wait here.
                      * Wait for the next date's slot state instead.
                      */
+
+                    
                     await this.locator.slotButton
                         .first()
                         .waitFor({
                             state: 'visible',
-                            timeout: timeout.elementTimeout
+                            timeout: timeout.testTimeout
                         })
                         .catch(() => {});
                 }
@@ -473,15 +475,19 @@ class ConsultPage {
             patientName
         );
 
-        await this.selectDoctor(
-            doctorName
-        );
+        // await this.selectDoctor(
+        //     doctorName
+        // );
 
         await this.selectProvider();
 
         await this.selectConsultSlot(
             consultSlot,
             bookingDate
+        );
+
+         await this.selectDoctor(
+            doctorName
         );
 
         const selectedSlotDate =
