@@ -694,6 +694,8 @@ class E2EPage {
         const card =
             this.locator.cancelledAppointmentCard(patientName);
 
+        await this.page.waitForLoadState('networkidle', { timeout: networkIdleTimeoutMs })
+
         await StepHelper.step(
             this.page,
             `Verify Cancelled Appointment Now Displayed On Calendar | Expected: visible | Actual: checking`,
