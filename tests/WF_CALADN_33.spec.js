@@ -66,7 +66,8 @@ test('Add Admission - Make Payment', async ({ page }) => {
     // 5. Select Room / Bed
     // ==========================================
 
-    await admissionPage.selectRandomRoomCategory();
+    // await admissionPage.selectRandomRoomCategory();
+    await admissionPage.selectSpecificRoomCategory(admissionPatientData.roomCategory);
     await admissionPage.selectRandomRoomNumber();
     await admissionPage.selectRandomBedNumber();
 

@@ -204,6 +204,21 @@ class ConsultLocator {
         this.slotTimeText = page.locator('.slotButton span.slot-time');
         this.calendarNextBtn = page.locator('.fc-next-button');
         this.waitlistBtn = page.locator('.waitingListButton');
+
+        this.consultationStatusDropdown =
+        page.locator("(//div[@class='field-dropdown'])[2]");
+ 
+        this.checkedInOption =
+            page.locator("(//span[text()='Checked-In'])[2]");
+ 
+        this.consultationRoomDropdown =
+            page.locator("(//div[@class='name-consultRoom'])[2]");
+ 
+        this.consultationRoomOption = (room) =>
+            page.locator(`(//div[text()=' ${room} '])[2]`);
+ 
+        this.consultationRoomSuccessToast =
+            page.locator("//div[@class='toaster-wrapper success']");
     }
 
     // --- NEWLY ADDED METHODS ---

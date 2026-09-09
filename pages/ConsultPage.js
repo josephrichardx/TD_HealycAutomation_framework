@@ -504,6 +504,88 @@ async selectFirstAvailableSlot() {
         );
     }
  
+    async updateConsultationRoom(
+        room,
+        status,
+        expectedMessage
+    ) {
+ 
+        await StepHelper.step(
+            this.page,
+            'Click Consultation Status Dropdown',
+            async () => {
+                await this.keywords.click(
+                    this.locator.consultationStatusDropdown
+                );
+            }
+        );
+ 
+        await StepHelper.step(
+            this.page,
+            `Select Consultation Status - ${status}`,
+            async () => {
+                await this.keywords.click(
+                    this.locator.checkedInOption
+                );
+            }
+        );
+ 
+        await StepHelper.step(
+            this.page,
+            'Click Consultation Room Dropdown',
+            async () => {
+                await this.keywords.click(
+                    this.locator.consultationRoomDropdown
+                );
+            }
+        );
+ 
+        await StepHelper.step(
+            this.page,
+            `Select Consultation Room - ${room}`,
+            async () => {
+ 
+                const roomOption =
+                    this.locator.consultationRoomOption(room);
+ 
+                await roomOption.waitFor({
+                    state: 'visible',
+                    timeout: 30000
+                });
+ 
+                await this.keywords.click(
+                    roomOption
+                );
+            }
+        );
+ 
+        const messageLocator =
+            this.locator.consultationRoomSuccessToast
+                .getByText(
+                    expectedMessage,
+                    { exact: true }
+                );
+ 
+        await messageLocator.waitFor({
+            state: 'visible',
+            timeout: 30000
+        });
+ 
+        const actualMessage =
+            await this.keywords.getText(
+                messageLocator
+            );
+ 
+        await StepHelper.step(
+            this.page,
+            `Verify Consultation Room Success Message | Expected: ${expectedMessage} | Actual: ${actualMessage}`,
+            async () => {
+                expect(actualMessage).toBe(
+                    expectedMessage
+                );
+            }
+        );
+    }
 
     async addConsult(
         patientName,

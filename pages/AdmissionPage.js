@@ -434,19 +434,19 @@ export class AdmissionPage {
         });
     }
 
-    async selectSpecificRoomCategory(roomCategoryName) {
-        // 1. Click to open the room category dropdown
-        await this.locator.roomCategoryDropdownBtn.click();
+    // async selectSpecificRoomCategory(roomCategoryName) {
+    //     // 1. Click to open the room category dropdown
+    //     await this.locator.roomCategoryDropdownBtn.click();
 
-        // 2. Target the exact text inside the dropdown list
-        // Using RegExp ensures it matches the exact word (e.g. "Single") and avoids partial matches
-        const specificOption = this.locator.roomCategoryDropdownList
-            .locator('.dropdown-item span.status-text')
-            .filter({ hasText: new RegExp(`^${roomCategoryName}$`) });
+    //     // 2. Target the exact text inside the dropdown list
+    //     // Using RegExp ensures it matches the exact word (e.g. "Single") and avoids partial matches
+    //     const specificOption = this.locator.roomCategoryDropdownList
+    //         .locator('.dropdown-item span.status-text')
+    //         .filter({ hasText: new RegExp(`^${roomCategoryName}$`) });
 
-        // 3. Click the target option
-        await specificOption.click();
-    }
+    //     // 3. Click the target option
+    //     await specificOption.click();
+    // }
 
     async selectRandomRoomNumber() {
         return await this._selectRandomDropdownOption({
@@ -455,6 +455,11 @@ export class AdmissionPage {
             dropdownList: this.locator.roomNumberDropdownList,
             options: this.locator.roomNumberOptions
         });
+    }
+
+    async selectSpecificRoomCategory(roomCategoryName) {
+    await this.locator.roomCategoryDropdownBtn.click();
+    await this.locator.specificRoomCategoryOption(roomCategoryName).click();
     }
 
     async selectRandomBedNumber() {

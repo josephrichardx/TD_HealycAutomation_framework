@@ -2001,7 +2001,11 @@ async verifyVisitingSlipContent(
                 );
             }
         );
+
+        await this.page.waitForTimeout(20000);
     }
+
+
 
 
     async generateInvoiceAddAdmission() { 
@@ -2027,6 +2031,8 @@ async verifyVisitingSlipContent(
                     );
                 }
             );
+
+            await this.page.waitForTimeout(20000);
         }
 
     }
