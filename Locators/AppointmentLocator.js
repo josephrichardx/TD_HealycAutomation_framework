@@ -85,6 +85,19 @@ class AppointmentLocator {
                 type,
                 { exact: true }
             ).first();
+        
+        this.goToAppointmentPageLink = page.getByText(
+            'Go to appointment page'
+        ).filter({ visible: true });  
+
+         this.appointmentPatientInfoValue = (fieldLabel) =>
+            page.locator(
+                `//div[contains(@class,'patient-information')]` +
+                `//div[contains(@class,'label6')]` +
+                `[div[normalize-space()='${fieldLabel}']]` +
+                `/div[contains(@class,'label7')]`
+            ).last();
+            
     }
 
     getPatientNameInAppointmentPanel(patientName) {

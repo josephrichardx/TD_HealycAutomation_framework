@@ -30,6 +30,7 @@ class E2ELocator {
  
         this.addNewBtn = page.getByRole('button', { name: 'Add New' });
         this.addPatientBtn = page.getByRole('button', { name: 'Add Patient' });
+        
         this.patientNameTxt = page.getByPlaceholder('Enter patient name');
         this.mobileNumberTxt = page.getByPlaceholder('Enter phone number');
         this.referralByTxt = page.getByPlaceholder('Write down').first();
@@ -551,5 +552,5 @@ class E2ELocator {
     }
  
 }
- 
+
 module.exports = { E2ELocator };

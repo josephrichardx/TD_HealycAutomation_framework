@@ -2102,6 +2102,921 @@ class InvoicePage {
             timeout.elementTimeout
         );
     }
+
+    async generateInvoiceWithReasonValidation(
+        patientName,
+        invoiceData,
+        packageName
+    ) {
+
+        await StepHelper.step(
+            this.page,
+            'Open Generate Invoice',
+            async () => {
+                await this.keywords.click(
+                    this.locator.generateInvoiceLink
+                );
+            }
+        );
+
+        await this.selectServices();
+
+        await this.verifyLineItemQtyAndRate('1', packageName);
+
+        await StepHelper.step(
+            this.page,
+            'Click Add Adjustment',
+            async () => {
+                await this.keywords.click(
+                    this.locator.addAdjustmentBtn
+                );
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            `Enter Adjustment Amount - ${invoiceData.adjustmentAmount}`,
+            async () => {
+                await this.keywords.fill(
+                    this.locator.invoiceAmountTxt,
+                    invoiceData.adjustmentAmount
+                );
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            'Click Generate Invoice (Name and Reason left blank on purpose)',
+            async () => {
+                await this.keywords.click(
+                    this.locator.finalGenerateInvoiceBtn
+                );
+            }
+        );
+
+        const actualErrorTitle =
+            (
+                await this.keywords.getText(
+                    this.locator.invoiceErrorToastTitle
+                )
+            ).trim();
+
+        await StepHelper.step(
+            this.page,
+            `Verify Reason Mandatory Validation | Expected: Discount Reason Required | Actual: ${actualErrorTitle}`,
+            async () => {
+
+                expect(actualErrorTitle).toBe(
+                    'Discount Reason Required'
+                );
+            }
+        );
+
+        const actualErrorSubtext =
+            (
+                await this.keywords.getText(
+                    this.locator.invoiceErrorToastSubtext
+                )
+            ).trim();
+
+        await StepHelper.step(
+            this.page,
+            `Verify Reason Mandatory Message | Expected: Please provide a reason for the discount or adjustment. | Actual: ${actualErrorSubtext}`,
+            async () => {
+
+                expect(actualErrorSubtext).toBe(
+                    'Please provide a reason for the discount or adjustment.'
+                );
+            }
+        );
+
+        // Now fill the real Name and Reason and generate for real.
+        await StepHelper.step(
+            this.page,
+            `Enter Adjustment Name - ${invoiceData.adjustmentName}`,
+            async () => {
+                await this.keywords.fill(
+                    this.locator.adjustmentNameTxt,
+                    invoiceData.adjustmentName
+                );
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            `Enter Adjustment Reason - ${invoiceData.adjustmentReason}`,
+            async () => {
+                await this.keywords.fill(
+                    this.locator.reasonTxt,
+                    invoiceData.adjustmentReason
+                );
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            'Generate Invoice',
+            async () => {
+                await this.keywords.click(
+                    this.locator.finalGenerateInvoiceBtn
+                );
+            }
+        );
+    }
+
+    async verifyLineItemQtyAndRate(expectedQty, expectedPackageName) {
+
+        // Item Name column - confirmed DOM from earlier screenshots:
+        // first td.td-service in the row holds the item name (e.g.
+        // "Neuro PT (30 sessions)"), second td.td-service holds the
+        // Invoice Desc. This is the more literal "displayed as an
+        // invoice line item" check - on the Create Invoice screen
+        // itself, not just later on the PDF (which was already
+        // covered separately in openAndVerifyInvoicePDF()).
+        const actualItemName =
+            await this.locator.invoiceLineItemRow
+                .locator('td.td-service')
+                .first()
+                .innerText();
+
+        await StepHelper.step(
+            this.page,
+            `Verify Line Item Displays Package Name | Expected: ${expectedPackageName} | Actual: ${actualItemName.trim()}`,
+            async () => {
+
+                expect(actualItemName.trim()).toBe(
+                    expectedPackageName
+                );
+            }
+        );
+
+        const numberInputs =
+            this.locator.invoiceLineItemRow.locator(
+                'input[type="number"]'
+            );
+
+        const actualQty = await numberInputs.nth(0).inputValue();
+
+        await StepHelper.step(
+            this.page,
+            `Verify Line Item Qty | Expected: ${expectedQty} | Actual: ${actualQty}`,
+            async () => {
+
+                expect(actualQty).toBe(String(expectedQty));
+            }
+        );
+
+        const actualRate = await numberInputs.nth(1).inputValue();
+
+        await StepHelper.step(
+            this.page,
+            `Verify Line Item Rate Is Populated | Expected: a positive number | Actual: ${actualRate}`,
+            async () => {
+
+                expect(Number(actualRate)).toBeGreaterThan(0);
+            }
+        );
+    }
+
+async verifyInvoiceTotalAdjustment(
+    invoiceData
+    ) {
+
+    let summaryValue;
+    let summaryAmount;
+    let expectedTotal;
+    let actualTotal;
+
+
+    // Get Summary Value
+    await StepHelper.step(
+        this.page,
+        'Get Summary Value',
+        async () => {
+
+            summaryValue =
+                (
+                    await this.keywords.getText(
+                        this.locator.summaryValue
+                    )
+                ).trim();
+
+            console.log(
+                `Summary Value: ${summaryValue}`
+            );
+        }
+    );
+
+
+    // Calculate Expected Invoice Total
+    await StepHelper.step(
+        this.page,
+        'Calculate Expected Invoice Total',
+        async () => {
+
+            summaryAmount =
+                parseFloat(
+                    summaryValue.replace(
+                        /[₹,\s]/g,
+                        ''
+                    )
+                );
+
+            const adjustmentAmount =
+                parseFloat(
+                    invoiceData.adjustmentAmount
+                );
+
+            expectedTotal =
+                summaryAmount + adjustmentAmount;
+
+            console.log(
+                `Summary Amount: ${summaryAmount}`
+            );
+
+            console.log(
+                `Adjustment Amount: ${adjustmentAmount}`
+            );
+
+            console.log(
+                `Expected Total: ${expectedTotal.toFixed(2)}`
+            );
+        }
+    );
+
+
+    // Get Actual Invoice Total
+    await StepHelper.step(
+        this.page,
+        'Get Invoice Total',
+        async () => {
+
+            actualTotal =
+                (
+                    await this.keywords.getText(
+                        this.locator.invoiceTotal
+                    )
+                ).trim();
+
+            console.log(
+                `Actual Invoice Total: ${actualTotal}`
+            );
+        }
+    );
+
+
+    // Verify Invoice Total
+    await StepHelper.step(
+        this.page,
+        `Verify Invoice Total | Expected: ₹${expectedTotal.toFixed(2)} | Actual: ${actualTotal}`,
+        async () => {
+
+            const actualAmount =
+                parseFloat(
+                    actualTotal.replace(
+                        /[₹,\s]/g,
+                        ''
+                    )
+                );
+
+            expect(actualAmount).toBe(
+                expectedTotal
+            );
+        }
+    );
+
+
+    return summaryAmount;
+
+    }
+
+    async PaymentSection(expectedInvoiceTotal = null) {
+
+        let invoiceNumber;
+        let paymentDue;
+        let paidAmount;
+        let totalAmount;
+
+        const expectedTotalText =
+            expectedInvoiceTotal !== null
+                ? `₹${parseFloat(expectedInvoiceTotal).toFixed(2)}`
+                : null;
+
+
+        // Get Invoice Number
+
+        await StepHelper.step(
+            this.page,
+            'Get Invoice Number',
+            async () => {
+
+                invoiceNumber =
+                    (
+                        await this.keywords.getText(
+                            this.locator.appointmentInvoiceNumber
+                        )
+                    ).trim();
+
+                console.log(
+                    `Invoice Number: ${invoiceNumber}`
+                );
+            }
+        );
+
+
+        // Verify Invoice Number
+
+        await StepHelper.step(
+            this.page,
+            `Verify Invoice Number Format | Expected: starts with "INV-" | Actual: ${invoiceNumber}`,
+            async () => {
+
+                expect(invoiceNumber).toMatch(/^INV-/);
+            }
+        );
+
+
+        // Verify Send Invoice
+
+        await StepHelper.step(
+            this.page,
+            'Get Send Invoice Label',
+            async () => {
+
+                this._sendInvoiceText =
+                    (
+                        await this.keywords.getText(
+                            this.locator.appointmentSendInvoice
+                        )
+                    ).trim();
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            `Verify Send Invoice Label | Expected: Send invoice | Actual: ${this._sendInvoiceText}`,
+            async () => {
+
+                expect(this._sendInvoiceText).toBe(
+                    'Send invoice'
+                );
+            }
+        );
+
+
+        // Get Payment Due
+
+        await StepHelper.step(
+            this.page,
+            'Get Payment Due',
+            async () => {
+
+                paymentDue =
+                    (
+                        await this.keywords.getText(
+                            this.locator.appointmentPaymentDue
+                        )
+                    ).trim();
+
+                console.log(
+                    `Payment Due: ${paymentDue}`
+                );
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            expectedTotalText
+                ? `Verify Payment Due | Expected: ${expectedTotalText} | Actual: ${paymentDue}`
+                : `Verify Payment Due Is Present | Expected: non-empty value | Actual: ${paymentDue}`,
+            async () => {
+
+                if (expectedTotalText) {
+
+                    const actualDue =
+                        parseFloat(
+                            paymentDue.replace(/[₹,\s]/g, '')
+                        ).toFixed(2);
+
+                    expect(actualDue).toBe(
+                        parseFloat(expectedInvoiceTotal).toFixed(2)
+                    );
+
+                } else {
+
+                    expect(paymentDue).not.toBe('');
+                }
+            }
+        );
+
+
+        // Get Paid Amount
+
+        await StepHelper.step(
+            this.page,
+            'Get Paid Amount',
+            async () => {
+
+                paidAmount =
+                    (
+                        await this.keywords.getText(
+                            this.locator.appointmentPaidAmount
+                        )
+                    ).trim();
+
+                console.log(
+                    `Paid Amount: ${paidAmount}`
+                );
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            `Verify Paid Amount | Expected: ₹0.00 | Actual: ${paidAmount}`,
+            async () => {
+
+                const actualPaid =
+                    parseFloat(
+                        paidAmount.replace(/[₹,\s]/g, '')
+                    );
+
+                expect(actualPaid).toBe(0);
+            }
+        );
+
+
+        // Get Total Amount
+
+        await StepHelper.step(
+            this.page,
+            'Get Total Amount',
+            async () => {
+
+                totalAmount =
+                    (
+                        await this.keywords.getText(
+                            this.locator.appointmentTotalAmount
+                        )
+                    ).trim();
+
+                console.log(
+                    `Total Amount: ${totalAmount}`
+                );
+            }
+        );
+
+
+        // Verify Total Amount
+
+        await StepHelper.step(
+            this.page,
+            expectedTotalText
+                ? `Verify Total Amount | Expected: ${expectedTotalText} | Actual: ${totalAmount}`
+                : `Verify Total Amount Is Present | Expected: non-empty value | Actual: ${totalAmount}`,
+            async () => {
+
+                if (expectedTotalText) {
+
+                    const actualTotal =
+                        parseFloat(
+                            totalAmount.replace(/[₹,\s]/g, '')
+                        ).toFixed(2);
+
+                    expect(actualTotal).toBe(
+                        parseFloat(expectedInvoiceTotal).toFixed(2)
+                    );
+
+                } else {
+
+                    expect(totalAmount).not.toBe('');
+                }
+            }
+        );
+    }
+
+    async VerifyInvoicePDF(
+    patientName,
+    patientData,
+    invoiceData,
+    summaryAmount,
+    packageName = null,
+    dobData = null
+    ) {
+
+    let invoiceNumber;
+
+    // ==========================================
+    // 1. Get Generated Invoice Number
+    // ==========================================
+
+    await StepHelper.step(
+        this.page,
+        'Get Generated Invoice Number',
+        async () => {
+
+            invoiceNumber =
+                (
+                    await this.keywords.getText(
+                        this.locator.invoiceNumber
+                    )
+                ).trim();
+
+            console.log(
+                `Invoice Number: ${invoiceNumber}`
+            );
+
+            expect(invoiceNumber).not.toBe('');
+        }
+    );
+
+    // ==========================================
+    // 2. Open Invoice PDF
+    // ==========================================
+
+    await StepHelper.step(
+        this.page,
+        `Open Invoice PDF - ${invoiceNumber}`,
+        async () => {
+
+            await this.keywords.click(
+                this.locator.invoiceNumber
+            );
+        }
+    );
+
+    // ==========================================
+    // 3. Wait for PDF
+    // ==========================================
+
+    await StepHelper.step(
+        this.page,
+        'Wait for Invoice PDF to Load',
+        async () => {
+
+            await this.keywords.waitForElement(
+                this.locator.closePdfPreviewBtn,
+                30000
+            );
+        }
+    );
+
+    // ==========================================
+    // 4. Verify Invoice PDF Details
+    // ==========================================
+
+        const pdf =
+            this.locator.pdfBody;
+
+        // ==========================================
+        // Invoice Number
+        // ==========================================
+
+        const actualInvoiceNumber =
+            (
+                await this.keywords.getText(
+                    this.locator.invoiceNumberPdf
+                )
+            ).trim();
+
+        await StepHelper.step(
+            this.page,
+            `Verify Invoice Number | Expected: ${invoiceNumber} | Actual: ${actualInvoiceNumber}`,
+            async () => {
+
+                expect(
+                    actualInvoiceNumber
+                ).toBe(invoiceNumber);
+            }
+        );
+
+        // ==========================================
+        // Patient Name
+        // ==========================================
+
+        const actualPatientName =
+            (
+                await this.keywords.getText(
+                    this.locator.patientNamePdf
+                )
+            ).trim();
+
+        await StepHelper.step(
+            this.page,
+            `Verify Patient Name | Expected: ${patientName} | Actual: ${actualPatientName}`,
+            async () => {
+
+                expect(
+                    actualPatientName
+                ).toContain(patientName);
+            }
+        );
+
+        // ==========================================
+        // Package Name (invoice line item) - only when
+        // provided, so existing callers passing 4 args are
+        // unaffected.
+        // ==========================================
+
+        if (packageName) {
+
+            const actualItemDescription =
+                (
+                    await this.keywords.getText(
+                        this.locator.itemDescriptionPdf(
+                            packageName
+                        )
+                    )
+                ).trim();
+
+            await StepHelper.step(
+                this.page,
+                `Verify Package Name (Invoice Line Item) | Expected: ${packageName} | Actual: ${actualItemDescription}`,
+                async () => {
+
+                    expect(
+                        actualItemDescription
+                    ).toContain(packageName);
+                }
+            );
+        }
+
+        // ==========================================
+        // Age
+        // ==========================================
+
+        // dobData (new patient-creation flow) takes priority
+        // when provided; falls back to the old flat
+        // patientData.age for the 4 other existing tests
+        // (WF_CALADN_03/04/125/126) that call this without it.
+        const resolvedAge = dobData
+            ? require('../utils/RandomData')
+                .calculateAgeFromDate(dobData.dateObj)
+            : patientData.age;
+
+        const expectedAge =
+            `Age : ${resolvedAge}`;
+
+        const actualAge =
+            (
+                await this.keywords.getText(
+                    this.locator.agePdf(
+                        resolvedAge
+                    )
+                )
+            ).trim();
+
+        await StepHelper.step(
+            this.page,
+            `Verify Age | Expected: ${expectedAge} | Actual: ${actualAge}`,
+            async () => {
+
+                expect(actualAge).toBe(
+                    expectedAge
+                );
+            }
+        );
+
+        // ==========================================
+        // Gender
+        // ==========================================
+
+        const expectedGender =
+            `Gender : ${patientData.gender}`;
+
+        const actualGender =
+            (
+                await this.keywords.getText(
+                    this.locator.genderPdf(
+                        patientData.gender
+                    )
+                )
+            ).trim();
+
+        await StepHelper.step(
+            this.page,
+            `Verify Gender | Expected: ${expectedGender} | Actual: ${actualGender}`,
+            async () => {
+
+                expect(actualGender).toBe(
+                    expectedGender
+                );
+            }
+        );
+
+        // ==========================================
+        // Amount Calculation
+        // ==========================================
+
+        const subTotal =
+            parseFloat(summaryAmount);
+
+        const discount =
+            parseFloat(
+                invoiceData.adjustmentAmount
+            );
+
+        const expectedTotal =
+            subTotal + discount;
+
+        // ==========================================
+        // Sub Total
+        // ==========================================
+
+        const expectedSubTotal =
+            `Sub Total : ${subTotal.toFixed(2)}`;
+
+        const actualSubTotal =
+            (
+                await this.keywords.getText(
+                    this.locator.subTotalPdf(
+                        subTotal
+                    )
+                )
+            ).trim();
+
+        await StepHelper.step(
+            this.page,
+            `Verify Sub Total | Expected: ${expectedSubTotal} | Actual: ${actualSubTotal}`,
+            async () => {
+
+                expect(actualSubTotal).toBe(
+                    expectedSubTotal
+                );
+            }
+        );
+
+    // ==========================================
+    // Discount / Adjustment
+    // ==========================================
+
+    const expectedDiscount =
+    `Discount : ${discount.toFixed(2)}`;
+
+    const expectedAdjustment =
+    `Adjustment : ${discount.toFixed(2)}`;
+
+    const discountLocator =
+    this.locator.discountPdf(discount);
+
+    const adjustmentLocator =
+    this.locator.adjustmentPdf(discount);
+
+    let actualDiscount = '';
+    let actualAdjustment = '';
+
+    const discountCount =
+    await discountLocator.count();
+
+    const adjustmentCount =
+    await adjustmentLocator.count();
+
+    if (discountCount > 0) {
+
+    actualDiscount =
+    (
+        await this.keywords.getText(
+            discountLocator
+        )
+    ).trim();
+
+    await StepHelper.step(
+    this.page,
+    `Verify Discount | Expected: ${expectedDiscount} | Actual: ${actualDiscount}`,
+    async () => {
+
+        expect(actualDiscount).toBe(
+            expectedDiscount
+        );
+    }
+    );
+
+    } else if (adjustmentCount > 0) {
+
+    actualAdjustment =
+    (
+        await this.keywords.getText(
+            adjustmentLocator
+        )
+    ).trim();
+
+    await StepHelper.step(
+    this.page,
+    `Verify Adjustment | Expected: ${expectedAdjustment} | Actual: ${actualAdjustment}`,
+    async () => {
+
+        expect(actualAdjustment).toBe(
+            expectedAdjustment
+        );
+    }
+    );
+
+    } else {
+
+    throw new Error(
+    `Neither Discount nor Adjustment was found in Invoice PDF. ` +
+    `Expected either "${expectedDiscount}" or "${expectedAdjustment}".`
+    );
+    }
+
+        // ==========================================
+        // Total
+        // ==========================================
+
+        const expectedTotalText =
+            `Total : ${expectedTotal.toFixed(2)}`;
+
+        const actualTotalText =
+            (
+                await this.keywords.getText(
+                    this.locator.totalPdf(
+                        expectedTotal
+                    )
+                )
+            ).trim();
+
+        await StepHelper.step(
+            this.page,
+            `Verify Total | Expected: ${expectedTotalText} | Actual: ${actualTotalText}`,
+            async () => {
+
+                expect(actualTotalText).toBe(
+                    expectedTotalText
+                );
+            }
+        );
+
+        // ==========================================
+        // Credit Applied (must be zero on a fresh invoice
+        // before any payment/refund has touched it)
+        // ==========================================
+
+        const expectedCreditText =
+            `Credit Applied : 0.00`;
+
+        const actualCreditText =
+            (
+                await this.keywords.getText(
+                    this.locator.creditAppliedPdf(0)
+                )
+            ).trim();
+
+        await StepHelper.step(
+            this.page,
+            `Verify Credit Applied | Expected: ${expectedCreditText} | Actual: ${actualCreditText}`,
+            async () => {
+
+                expect(actualCreditText).toBe(
+                    expectedCreditText
+                );
+            }
+        );
+
+        // ==========================================
+        // Balance (equals the invoice total at this point -
+        // nothing has been paid yet)
+        // ==========================================
+
+        const expectedBalanceText =
+            `Balance : ${expectedTotal.toFixed(2)}`;
+
+        const actualBalanceText =
+            (
+                await this.keywords.getText(
+                    this.locator.balancePdf(
+                        expectedTotal
+                    )
+                )
+            ).trim();
+
+        await StepHelper.step(
+            this.page,
+            `Verify Balance | Expected: ${expectedBalanceText} | Actual: ${actualBalanceText}`,
+            async () => {
+
+                expect(actualBalanceText).toBe(
+                    expectedBalanceText
+                );
+            }
+        );
+
+    // ==========================================
+    // 5. Close PDF
+    // ==========================================
+
+    await StepHelper.step(
+        this.page,
+        'Close Invoice PDF Preview',
+        async () => {
+
+            await this.keywords.click(
+                this.locator.closePdfPreviewBtn
+            );
+        }
+    );
+
+    return invoiceNumber;
+    }
+
 }
 
 module.exports = { InvoicePage };

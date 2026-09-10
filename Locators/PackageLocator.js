@@ -65,12 +65,41 @@ class PackageLocator {
         //     );
 
        this.confirmBtn = page.locator(
-    "//button[@class='activeButon']"
-);
+            "//button[@class='activeButon']"
+        );
 
         this.nextDateBtn =
             page.locator('div.NextListButton');
-                
+            
+        this.packageAddedToastTitle = page.locator(
+            'app-custom-toaster-message div.title'
+        ).filter({ visible: true });
+
+        this.packageBreadcrumb = page.locator(
+            'div.packageHeader div.addAppointmentHeader'
+        );
+
+        this.packageBannerName = page.locator(
+            'div.headingDiv div.top'
+        );
+
+        this.packageActiveStatusBtn = page.locator(
+            'div.headingDiv button.activated'
+        );
+
+        this.slotAppointmentCard = (slot) =>
+        slot.locator('xpath=ancestor::div[contains(@class,"bookappointmentBodyCard")]');
+ 
+        this.nextDayBtn =
+            page.locator('div.NextListButton').first();
+
+        this.confirmPackageBookingBtn = page.getByRole('button', {
+            name: /Confirm/i
+        });
+
+        this.packageToastSubtext = page.locator(
+            'app-custom-toaster-message div.subtext'
+        ).filter({ visible: true });
     }
 
     getPatient(patientName) {

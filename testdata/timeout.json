@@ -1,6 +1,7 @@
 {
   "timeout": {
     "testTimeout": 1000,
+    "networkIdleTimeoutMs": 5000,
     "actionTimeout": 50000,
     "navigationTimeout": 50000,
     "expectTimeout": 30000,

@@ -42,6 +42,8 @@ const {
     cancellationStatusTimeoutMs
 } = timeouts;
 
+const timeoutData = require('../testdata/timeout.json');
+const { timeout } = timeoutData;
 
 class E2EPage {
 
@@ -217,7 +219,7 @@ class E2EPage {
 
         await this.keywords.waitForElement(
             this.locator.successToastTitle,
-            toastWaitTimeoutMs
+            timeout.elementTimeout
         );
     }
 

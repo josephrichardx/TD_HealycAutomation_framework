@@ -320,6 +320,34 @@ class InvoiceLocator
         // so anchor to the one that actually follows the "Status" label.
         this.checkedInStatusBadge = page.locator("(//div[text()='Status'])[2]//ancestor::div[1]//following-sibling::div[@class='field-dropdown']");
 
+        this.invoiceLineItemRow =
+            page.locator('table.billing-table tbody tr').first();
+
+        this.invoiceAmountTxt =
+            page.getByRole('textbox', {
+                name: 'Amount'
+            });
+
+        this.invoiceErrorToastTitle = page.locator(
+            'app-custom-toaster-message div.title'
+        ).last();
+
+        this.invoiceErrorToastSubtext = page.locator(
+            'app-custom-toaster-message div.subtext'
+        ).last();
+
+        this.itemDescriptionPdf = (itemName) =>
+            this.pdfBody.getByText(itemName).first();
+                this.balancePdf = (balance) =>
+            this.pdfBody.getByText(
+                `Balance : ${parseFloat(balance).toFixed(2)}`
+        );
+
+        this.creditAppliedPdf = (creditApplied) =>
+            this.pdfBody.getByText(
+                `Credit Applied : ${parseFloat(creditApplied).toFixed(2)}`
+        );
+
     }
 
 

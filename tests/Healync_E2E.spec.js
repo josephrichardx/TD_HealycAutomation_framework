@@ -1,9 +1,17 @@
 import { test } from '../fixtures/baseTest.js';
+import { PatientPage } from '../pages/PatientPage.js';
  
 const { StepHelper } = require('../utils/StepHelper');
  
 const { E2EPage } = require('../pages/E2EPage.js');
- 
+const { NewPatient } = require('../pages/NewPatientPage');
+const { CalendarPage } = require('../pages/CalendarPage');
+const { PackagePage } = require('../pages/PackagePage');
+const { AppointmentPage } = require('../pages/AppointmentPage.js');
+const { InvoicePage } = require('../pages/InvoicePage');
+const { PaymentPage } = require('../pages/PaymentPage');
+
+
 const {
     validPatientData,
     dobYearRange,
@@ -20,6 +28,14 @@ const {
  
 test('Healync_E2E - Cancel with Full Refund (single session package)', async ({ page }) => {
  
+    const patientPage = new PatientPage(page);
+    const newPatient = new NewPatient(page);
+    const calendarPage = new CalendarPage(page);
+    const packagePage = new PackagePage(page);
+    const appointmentPage = new AppointmentPage(page);
+    const invoicePage = new InvoicePage(page);
+    const paymentPage = new PaymentPage(page);
+
     const patientName = generateUniquePatientFullName();
     const dobData = generateRandomDateOfBirth(
         dobYearRange.minYear,
@@ -34,24 +50,28 @@ test('Healync_E2E - Cancel with Full Refund (single session package)', async ({ 
         '===== STEP 1: Add Patient Module =====',
         async () => {}
     );
- 
-    await e2e.createPatientFast(
+
+    //patient page
+    await newPatient.createPatientFast(
         patientName,
         validPatientData,
         dobData
     );
- 
-    await e2e.verifySavedToastAndGoToProfile(toastMessages.patientSavedSuccess);
+
+    await newPatient.verifySavedToastAndGoToProfile(toastMessages.patientSavedSuccess);
  
     await page.waitForTimeout(6000);
-    await e2e.verifyPatientProfileNameMatches(
+
+    await newPatient.verifyPatientProfileNameMatches(
         patientName
     );
  
-    await e2e.verifyPatientProfileDetails(
+    await newPatient.verifyPatientProfileDetails(
         validPatientData,
         dobData
     );
+
+//     //patient
  
     // STEP 2 marker
    
@@ -60,15 +80,17 @@ test('Healync_E2E - Cancel with Full Refund (single session package)', async ({ 
         '===== STEP 2: Booking Flow =====',
         async () => {}
     );
+
+    //package
  
-    await e2e.clickSidebarCalendarIcon();
+    await calendarPage.clickSidebarCalendarIcon();
  
-    await e2e.addActivateSchedulePackage(
+    await packagePage.addActivateSchedulePackage(
         patientName,
         packageData.packageName
     );
  
-    await e2e.verifyPackageAddedAndAssociated(
+    await packagePage.verifyPackageAddedAndAssociated(
         packageData.packageName
     );
  
@@ -76,47 +98,55 @@ test('Healync_E2E - Cancel with Full Refund (single session package)', async ({ 
     const {
     selectedSlotDate,
     daysAdvanced
-} = await e2e.bookSingleSessionFromAddPackage();
+} = await packagePage.bookSingleSessionFromAddPackage();
  
-    await e2e.verifyServicesAddedToast();
-    await e2e.clickGoToAppointmentPage();
-    await e2e.verifyStatus(
+    await packagePage.verifyServicesAddedToast();
+
+    //   //package
+
+    //appoinment
+
+    await appointmentPage.clickGoToAppointmentPage();
+
+    await calendarPage.verifyStatus(
         statusData.expectedStatus
     );
  
-    await e2e.verifyAppointmentPatientDetails(
+    await appointmentPage.verifyAppointmentPatientDetails(
         validPatientData,
         dobData
     );
- 
+
+    //appoinment
    
     // STEP 3 marker
  
+    //invoice
     await StepHelper.step(
         page,
         '===== STEP 3: Generate Invoice =====',
         async () => {}
     );
  
-    await e2e.generateInvoiceWithReasonValidation(
+    await invoicePage.generateInvoiceWithReasonValidation(
         patientName,
         invoiceData,
         packageData.packageName
     );
  
-    const summaryAmount = await e2e.verifyInvoiceTotalAfterAdjustment(
+    const summaryAmount = await invoicePage.verifyInvoiceTotalAdjustment(
         invoiceData
     );
  
     const invoiceTotal = (
         summaryAmount + parseFloat(invoiceData.adjustmentAmount)
     ).toFixed(2);
- 
-    await e2e.verifyPaymentSection(
+
+    await invoicePage.PaymentSection(
         invoiceTotal
     );
  
-    const invoiceNumber = await e2e.openAndVerifyInvoicePDF(
+    const invoiceNumber = await invoicePage.VerifyInvoicePDF(
         patientName,
         validPatientData,
         invoiceData,
@@ -125,6 +155,7 @@ test('Healync_E2E - Cancel with Full Refund (single session package)', async ({ 
         dobData
     );
  
+    //invoice
  
     // STEP 4 marker
  
@@ -134,206 +165,232 @@ test('Healync_E2E - Cancel with Full Refund (single session package)', async ({ 
         async () => {}
     );
  
-    await e2e.Payment(
+    await paymentPage.Payment(
         invoiceTotal,
         invoiceData.paymentMode
     );
  
-    await e2e.verifyPostPaymentStatus(
+    await paymentPage.verifyPostPaymentStatus(
         invoiceTotal,
         invoiceData.paymentMode
     );
  
-    const invoicePdfReceiptNumber = await e2e.revalidateInvoicePDFAfterPayment(
+    const invoicePdfReceiptNumber = await paymentPage.revalidateInvoicePDFAfterPayment(
         invoiceNumber,
         invoiceData.paymentMode
     );
  
-    await e2e.verifyPaymentReceipt(
+    await paymentPage.verifyPaymentReceipt(
         invoiceNumber,
         invoiceTotal,
         invoicePdfReceiptNumber,
         invoiceData.paymentMode
     );
+    
+//     //payment
  
-    // STEP 5 marker
+//     // STEP 5 marker
  
-    await StepHelper.step(
-        page,
-        '===== STEP 5: Validate Patient Details =====',
-        async () => {}
-    );
+//     //invoice
+//     await StepHelper.step(
+//         page,
+//         '===== STEP 5: Validate Patient Details =====',
+//         async () => {}
+//     );
  
-    await e2e.openFinancials(
-        patientName
-    );
+//     await e2e.openFinancials(
+//         patientName
+//     );
  
-    await e2e.openInvoiceHistory();
+//     await e2e.openInvoiceHistory();
  
-    await e2e.verifyInvoiceHistoryRow(
-        invoiceNumber,
-        summaryAmount,
-        invoiceData.adjustmentAmount
-    );
+//     await e2e.verifyInvoiceHistoryRow(
+//         invoiceNumber,
+//         summaryAmount,
+//         invoiceData.adjustmentAmount
+//     );
  
-    await e2e.openAndVerifyInvoicePdfFromFinancials(
-        invoiceNumber,
-        patientName,
-        packageData.packageName,
-        summaryAmount,
-        invoiceData.adjustmentAmount
-    );
+//     await e2e.openAndVerifyInvoicePdfFromFinancials(
+//         invoiceNumber,
+//         patientName,
+//         packageData.packageName,
+//         summaryAmount,
+//         invoiceData.adjustmentAmount
+//     );
  
-    await e2e.verifyFinancialsPaymentHistory(
-        invoiceNumber,
-        invoiceTotal,
-        invoiceData.paymentMode
-    );
- 
-    await e2e.clickSidebarCalendarIcon();
- 
-    await e2e.searchPatient(
-        patientName
-    );
- 
-    const monthNames5 = [
-        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-    ];
- 
-    const formatDate5 = (d) =>
-        `${monthNames5[d.getMonth()]} ${String(d.getDate()).padStart(2, '0')}, ${d.getFullYear()}`;
- 
-    // const bookedDate5 = new Date();
-    // bookedDate5.setDate(bookedDate5.getDate() + daysAdvancedForBooking);
- 
-    // const bookedDateMinusOne5 = new Date(bookedDate5);
-    // bookedDateMinusOne5.setDate(bookedDateMinusOne5.getDate() - 1);
- 
-    // const bookedDatePlusOne5 = new Date(bookedDate5);
-    // bookedDatePlusOne5.setDate(bookedDatePlusOne5.getDate() + 1);
-    const bookedDate5 = new Date(selectedSlotDate);
+//     await e2e.verifyFinancialsPaymentHistory(
+//         invoiceNumber,
+//         invoiceTotal,
+//         invoiceData.paymentMode
+//     );
+//     //invoice
 
-    const bookedDateMinusOne5 = new Date(bookedDate5);
-    bookedDateMinusOne5.setDate(bookedDateMinusOne5.getDate() - 1);
+//     //calendar
+ 
+//     await e2e.clickSidebarCalendarIcon();
+ 
+//     await e2e.searchPatient(
+//         patientName
+//     );
+ 
+//     const monthNames5 = [
+//         'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+//         'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+//     ];
+ 
+//     const formatDate5 = (d) =>
+//         `${monthNames5[d.getMonth()]} ${String(d.getDate()).padStart(2, '0')}, ${d.getFullYear()}`;
+ 
+//     // const bookedDate5 = new Date();
+//     // bookedDate5.setDate(bookedDate5.getDate() + daysAdvancedForBooking);
+ 
+//     // const bookedDateMinusOne5 = new Date(bookedDate5);
+//     // bookedDateMinusOne5.setDate(bookedDateMinusOne5.getDate() - 1);
+ 
+//     // const bookedDatePlusOne5 = new Date(bookedDate5);
+//     // bookedDatePlusOne5.setDate(bookedDatePlusOne5.getDate() + 1);
+//     const bookedDate5 = new Date(selectedSlotDate);
 
-    const bookedDatePlusOne5 = new Date(bookedDate5);
-    bookedDatePlusOne5.setDate(bookedDatePlusOne5.getDate() + 1);
- 
-    await e2e.verifyPackageTag(
-        patientName,
-        packageData.packageShortName,
-        [
-            formatDate5(bookedDate5),
-            formatDate5(bookedDateMinusOne5),
-            formatDate5(bookedDatePlusOne5)
-        ]
-    );
- 
-    await e2e.openPatientAppointment(
-        patientName
-    );
- 
-    // STEP 6 marker
- 
-    await StepHelper.step(
-        page,
-        '===== STEP 6: Cancel & Refund =====',
-        async () => {}
-    );
- 
-    await e2e.cancellation();
-    await e2e.verifyPackageNameAndRefundAmount(
-        packageData.packageName,
-        invoiceTotal
-    );
- 
-    await e2e.attemptOverRefundAndVerifyBlocked(
-        invoiceTotal
-    );
- 
-    await e2e.cancelPackageWithFullRefund();
- 
-    await e2e.openFinancials(
-        patientName
-    );
- 
-    await e2e.openInvoiceHistory();
- 
-    await e2e.verifyPostRefundInvoicePdf(
-        invoiceNumber,
-        invoiceTotal
-    );
- 
-    await e2e.verifyFinancialsPaymentHistory(
-        invoiceNumber,
-        -invoiceTotal,
-        invoiceData.paymentMode
-    );
- 
-    await e2e.verifyRefundInFinancialsPaymentHistory(
-        invoiceNumber,
-        invoiceTotal,
-        invoiceData.paymentMode
-    );
- 
-    // STEP 7 marker (Part 1: Calendar Navigation & Toggle)
- 
-    await StepHelper.step(
-        page,
-        '===== STEP 7: Validate Cancelled Appointment on Calendar =====',
-        async () => {}
-    );
- 
-    await e2e.clickSidebarCalendarIcon();
- 
-    await e2e.verifyPatientNotInActiveView(
-        patientName
-    );
- 
-    await e2e.verifyPatientNotInActiveView(
-        patientName
-    );
- 
-    // await e2e.navigateToBookedDate(
-    //     daysAdvancedForBooking
-    // );
+//     const bookedDateMinusOne5 = new Date(bookedDate5);
+//     bookedDateMinusOne5.setDate(bookedDateMinusOne5.getDate() - 1);
 
-    await e2e.navigateToBookedDate(
-    daysAdvanced
-);
+//     const bookedDatePlusOne5 = new Date(bookedDate5);
+//     bookedDatePlusOne5.setDate(bookedDatePlusOne5.getDate() + 1);
  
-    await e2e.enableCancelledToggle();
+//     await e2e.verifyPackageTag(
+//         patientName,
+//         packageData.packageShortName,
+//         [
+//             formatDate5(bookedDate5),
+//             formatDate5(bookedDateMinusOne5),
+//             formatDate5(bookedDatePlusOne5)
+//         ]
+//     );
+ 
+//     await e2e.openPatientAppointment(
+//         patientName
+//     );
 
-    await page.waitForTimeout(5000);
+//     //calendar
+ 
+//     // STEP 6 marker
+ 
+//     //cancel
+//     await StepHelper.step(
+//         page,
+//         '===== STEP 6: Cancel & Refund =====',
+//         async () => {}
+//     );
+ 
+//     await e2e.cancellation();
 
-    await e2e.verifyAndClickCancelledAppointmentCard(
-        patientName
-    );
+//     //cancel
+
+//     //package
+//     await e2e.verifyPackageNameAndRefundAmount(
+//         packageData.packageName,
+//         invoiceTotal
+//     );
  
-    // STEP 7 marker (Part 2: Final Validations)
+//     await e2e.attemptOverRefundAndVerifyBlocked(
+//         invoiceTotal
+//     );
  
-    await e2e.locator.appointmentPatientInfoValue('UHID').waitFor({ state: 'visible' });
+//     await e2e.cancelPackageWithFullRefund();
+
+//     //cancel
+
+//     //invoice
  
-    await e2e.verifyAppointmentPatientDetails(
-        validPatientData,
-        dobData
-    );
+//     await e2e.openFinancials(
+//         patientName
+//     );
  
-    await e2e.verifyPostRefundAppointmentDetails(
-        invoiceTotal
-    );
+//     await e2e.openInvoiceHistory();
+ 
+//     await e2e.verifyPostRefundInvoicePdf(
+//         invoiceNumber,
+//         invoiceTotal
+//     );
+ 
+//     await e2e.verifyFinancialsPaymentHistory(
+//         invoiceNumber,
+//         invoiceTotal,
+//         invoiceData.paymentMode
+//     );
+ 
+//     await e2e.verifyRefundInFinancialsPaymentHistory(
+//         invoiceNumber,
+//         invoiceTotal,
+//         invoiceData.paymentMode
+//     );
+
+//     //invoice
+ 
+//     // STEP 7 marker (Part 1: Calendar Navigation & Toggle)
+ 
+//     //calendar
+//     await StepHelper.step(
+//         page,
+//         '===== STEP 7: Validate Cancelled Appointment on Calendar =====',
+//         async () => {}
+//     );
+ 
+//     await e2e.clickSidebarCalendarIcon();
+ 
+//     await e2e.verifyPatientNotInActiveView(
+//         patientName
+//     );
+ 
+//     await e2e.verifyPatientNotInActiveView(
+//         patientName
+//     );
+ 
+//     // await e2e.navigateToBookedDate(
+//     //     daysAdvancedForBooking
+//     // );
+
+//     await e2e.navigateToBookedDate(
+//     daysAdvanced
+// );
+ 
+//     await e2e.enableCancelledToggle();
+
+//     await page.waitForTimeout(5000);
+
+//     await e2e.verifyAndClickCancelledAppointmentCard(
+//         patientName
+//     );
+ 
+    
+//     // STEP 7 marker (Part 2: Final Validations)
+ 
+//     await e2e.locator.appointmentPatientInfoValue('UHID').waitFor({ state: 'visible' });
+ 
+//     await e2e.verifyAppointmentPatientDetails(
+//         validPatientData,
+//         dobData
+//     );
+ 
+//     //calendar
+
+//     //invoice
+//     await e2e.verifyPostRefundAppointmentDetails(
+//         invoiceTotal
+//     );
  
    
-    await e2e.reopenAndVerifyRefundedInvoicePdf(
-        invoiceNumber,
-        invoiceTotal
-    );
+//     await e2e.reopenAndVerifyRefundedInvoicePdf(
+//         invoiceNumber,
+//         invoiceTotal
+//     );
  
-    await e2e.verifyRefundReceiptPdf(
-        patientName,
-        invoiceTotal,
-        invoiceData.paymentMode
-    );
+//     await e2e.verifyRefundReceiptPdf(
+//         patientName,
+//         invoiceTotal,
+//         invoiceData.paymentMode
+//     );
+
+    //invoice
    
 });

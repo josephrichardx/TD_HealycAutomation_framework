@@ -493,6 +493,343 @@ class PatientPage {
             }
         );
     }
+
+    //e2e
+
+     async createPatientFast(patientName, patientData, dobData) {
+        await StepHelper.step(
+            this.page,
+            'Click Add New Button',
+            async () => {
+                await this.keywords.click(this.locator.addNewBtn);
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            'Click Add Patient Button',
+            async () => {
+                await this.keywords.click(this.locator.addPatientBtn);
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            `Enter Patient Name - ${patientName}`,
+            async () => {
+                await this.keywords.fill(this.locator.patientNameTxt, patientName);
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            'Open Salutation Dropdown',
+            async () => {
+                await this.keywords.click(this.locator.salutationDropdownBtn);
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            `Select Salutation - ${patientData.title}`,
+            async () => {
+                await this.keywords.click(this.locator.getSalutationOption(patientData.title));
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            `Enter Mobile Number - ${patientData.mobileNumber}`,
+            async () => {
+                await this.keywords.fill(this.locator.mobileNumberTxt, patientData.mobileNumber);
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            `Enter Referral By - ${patientData.referralBy}`,
+            async () => {
+                await this.keywords.fill(this.locator.referralByTxt, patientData.referralBy);
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            `Enter Email - ${patientData.email}`,
+            async () => {
+                await this.keywords.fill(this.locator.emailTxt, patientData.email);
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            'Click Date Of Birth Field',
+            async () => {
+                await this.keywords.click(this.locator.dobComponent);
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            'Open Month/Year Selector',
+            async () => {
+                await this.keywords.click(this.locator.calendarHeaderTitle);
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            `Select Month - ${dobData.monthName}`,
+            async () => {
+                await this.keywords.click(this.locator.getMonthButton(dobData.monthName));
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            `Select Year - ${dobData.year}`,
+            async () => {
+                await this.keywords.click(this.locator.getYearButton(dobData.year));
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            'Save Month/Year Selection',
+            async () => {
+                await this.keywords.click(this.locator.saveDateBtn);
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            `Select Date Of Birth Day - ${dobData.day}`,
+            async () => {
+                await this.keywords.click(this.locator.getDayLocator(dobData.day).first());
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            `Select Gender - ${patientData.gender}`,
+            async () => {
+                const genderBtn =
+                    patientData.gender === 'Female' ? this.locator.femaleBtn :
+                    patientData.gender === 'Other' ? this.locator.otherGenderBtn :
+                    this.locator.maleBtn;
+
+                await this.keywords.click(genderBtn);
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            `Enter Address - ${patientData.address}`,
+            async () => {
+                await this.keywords.fill(this.locator.addressTxt, patientData.address);
+            }
+        );
+
+        const additionalFields = [
+            { locator: this.locator.treatingDoctorTxt, value: patientData.additionalDetails.treatingDoctor, label: 'Treating Doctor' },
+            { locator: this.locator.medicalConditionTxt, value: patientData.additionalDetails.medicalCondition, label: 'Medical Condition' },
+            { locator: this.locator.pincodeTxt, value: patientData.additionalDetails.pincode, label: 'Pincode' },
+            { locator: this.locator.patientCategoryTxt, value: patientData.additionalDetails.patientCategory, label: 'Patient Category' }
+        ];
+
+        for (const field of additionalFields) {
+            await StepHelper.step(
+                this.page,
+                `Enter ${field.label} - ${field.value}`,
+                async () => {
+                    await field.locator.fill(field.value);
+                }
+            );
+        }
+
+        await StepHelper.step(
+            this.page,
+            'Click Save Button',
+            async () => {
+                await this.keywords.click(this.locator.saveBtn);
+            }
+        );
+
+        await this.keywords.waitForElement(
+            this.locator.successToastTitle,
+            timeout.elementTimeout
+        );
+    }
+
+    async verifySavedToastAndGoToProfile(expectedToastMsg) {
+        await Verify.state(
+            this.page,
+            'Patient Saved Toast Title',
+            this.locator.successToastTitle,
+            { visible: true, soft: false }
+        );
+
+        await Verify.text(
+            this.page,
+            'Patient Saved Toast Title Text',
+            expectedToastMsg,
+            this.locator.successToastTitle
+        );
+
+        await Verify.state(
+            this.page,
+            'Go To Patient Profile Link',
+            this.locator.goToPatientProfileLink,
+            { visible: true, soft: false }
+        );
+
+        await StepHelper.step(
+            this.page,
+            'Click Go To Patient Profile',
+            async () => {
+                await this.keywords.click(this.locator.goToPatientProfileLink);
+            }
+        );
+
+        await this.page.waitForURL(/\/patient-profile\//, { timeout: timeout.elementTimeout });
+    }
+
+    async verifyPatientProfileNameMatches(patientName) {
+        await this.keywords.waitForElement(
+            this.locator.patientProfileNameText,
+            timeout.elementTimeout
+        );
+
+        await Verify.state(
+            this.page,
+            'Patient Profile Name',
+            this.locator.patientProfileNameText,
+            { visible: true, soft: false }
+        );
+
+        await Verify.text(
+            this.page,
+            'Patient Profile Name Matches Created Patient',
+            patientName,
+            this.locator.patientProfileNameText
+        );
+    }
+
+    async verifyPatientProfileDetails(patientData, dobData, options = {}) {
+        const { calculateAgeFromDate } = require('../utils/RandomData');
+        const isVip = options.isVip || false;
+
+        // UHID 
+        await Verify.state(
+            this.page,
+            'Patient Profile - UHID Field Present',
+            this.locator.profileUhidText,
+            { visible: true, soft: false }
+        );
+
+        const actualUhid = (await this.locator.profileUhidText.innerText()).trim();
+
+        await Verify.record(
+            this.page,
+            'Patient Profile - UHID',
+            actualUhid
+        );
+
+        // Gender/Age
+        await Verify.state(
+            this.page,
+            'Patient Profile - Gender/Age Field Present',
+            this.locator.profileGenderAgeText,
+            { visible: true, soft: false }
+        );
+
+        const actualGenderAge = (await this.locator.profileGenderAgeText.innerText()).trim();
+        const expectedAge = calculateAgeFromDate(dobData.dateObj);
+
+        await StepHelper.step(
+            this.page,
+            `Verify Patient Profile Gender | Expected to contain: ${patientData.gender} | Actual: ${actualGenderAge}`,
+            async () => {
+                expect(actualGenderAge).toContain(patientData.gender);
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            `Verify Patient Profile Age | Expected to contain: ${expectedAge} Years | Actual: ${actualGenderAge}`,
+            async () => {
+                expect(actualGenderAge).toContain(`${expectedAge} Years`);
+            }
+        );
+
+        // Email
+        await Verify.state(
+            this.page,
+            'Patient Profile - Email Field Present',
+            this.locator.profileEmailText,
+            { visible: true, soft: false }
+        );
+
+        await Verify.text(
+            this.page,
+            'Patient Profile - Email',
+            patientData.email,
+            this.locator.profileEmailText,
+            { exact: true }
+        );
+
+        // Phone
+        await Verify.state(
+            this.page,
+            'Patient Profile - Phone Field Present',
+            this.locator.profilePhoneText,
+            { visible: true, soft: false }
+        );
+
+        const expectedPhone = isVip
+            ? `******${patientData.mobileNumber.slice(-4)}`
+            : patientData.mobileNumber;
+
+        await Verify.text(
+            this.page,
+            'Patient Profile - Phone',
+            expectedPhone,
+            this.locator.profilePhoneText
+        );
+
+        // Address
+        await Verify.state(
+            this.page,
+            'Patient Profile - Address Field Present',
+            this.locator.profileAddressText,
+            { visible: true, soft: false }
+        );
+
+        await Verify.text(
+            this.page,
+            'Patient Profile - Address',
+            patientData.address,
+            this.locator.profileAddressText,
+            { exact: true }
+        );
+
+        // Referral Source
+        await Verify.state(
+            this.page,
+            'Patient Profile - Referral Source Field Present',
+            this.locator.profileReferralSourceValue,
+            { visible: true, soft: false }
+        );
+
+        await Verify.text(
+            this.page,
+            'Patient Profile - Referral Source',
+            patientData.referralBy,
+            this.locator.profileReferralSourceValue,
+            { exact: true }
+        );
+    }
+
 }
 
 

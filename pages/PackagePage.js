@@ -1,3 +1,4 @@
+const { expect } = require('@playwright/test');
 const { StepHelper } = require('../utils/StepHelper');
 const { PackageLocator } = require('../Locators/PackageLocator');
 const { Keywords } = require('../utils/Keywords');
@@ -423,6 +424,312 @@ class PackagePage {
         await this.addAllPackageServices();
 
         await this.clickConfirm();
+    }
+
+     async verifyPackageAddedAndAssociated(packageName) {
+    
+            // Poll instead of a single read - guards against reading
+            // this before the "Package is added" toast has actually
+            // mounted (same race-condition class as the Payment Due
+            // Status fix). Manual loop, not expect().toHaveText(), to
+            // avoid Playwright's auto-generated "Wait for selector"
+            // report noise.
+            const deadline = Date.now() + 15000;
+            let actualToastTitle = '';
+    
+            while (Date.now() < deadline) {
+    
+                actualToastTitle =
+                    (
+                        await this.keywords.getText(
+                            this.locator.packageAddedToastTitle
+                        )
+                    ).trim();
+    
+                if (actualToastTitle === 'Package is added') {
+    
+                    break;
+                }
+    
+                await this.page.waitForTimeout(timeout.testTimeout);
+            }
+    
+            await StepHelper.step(
+                this.page,
+                `Verify "Package is added" Popup | Expected: Package is added | Actual: ${actualToastTitle}`,
+                async () => {
+    
+                    expect(actualToastTitle).toBe(
+                        'Package is added'
+                    );
+                }
+            );
+    
+            const actualBreadcrumb =
+                (
+                    await this.keywords.getText(
+                        this.locator.packageBreadcrumb
+                    )
+                ).trim();
+    
+            await StepHelper.step(
+                this.page,
+                `Verify Redirect Breadcrumb | Expected to contain: Book Packages, Patient, Packages | Actual: ${actualBreadcrumb}`,
+                async () => {
+    
+                    expect(actualBreadcrumb).toContain('Book Packages');
+                    expect(actualBreadcrumb).toContain('Patient');
+                    expect(actualBreadcrumb).toContain('Packages');
+                }
+            );
+    
+            const actualBannerName =
+                (
+                    await this.keywords.getText(
+                        this.locator.packageBannerName
+                    )
+                ).trim();
+    
+            await StepHelper.step(
+                this.page,
+                `Verify Package Associated With Patient | Expected: ${packageName} | Actual: ${actualBannerName}`,
+                async () => {
+    
+                    expect(actualBannerName).toContain(
+                        packageName
+                    );
+                }
+            );
+    
+            const actualActiveStatus =
+                (
+                    await this.keywords.getText(
+                        this.locator.packageActiveStatusBtn
+                    )
+                ).trim();
+    
+            await StepHelper.step(
+                this.page,
+                `Verify Package Status | Expected: Active | Actual: ${actualActiveStatus}`,
+                async () => {
+    
+                    expect(actualActiveStatus).toBe('Active');
+                }
+            );
+        }
+
+    async bookSingleSessionFromAddPackage() {
+
+    await this.selectPendingServiceItem();
+
+    const {
+        selectedSlotDate,
+        daysAdvanced
+    } = await this.selectAvailableSlot();
+
+    await this.clickNext();
+    await this.clickConfirmPackageBooking();
+
+    return {
+        selectedSlotDate,
+        daysAdvanced
+    };
+}
+
+async selectPendingServiceItem() {
+
+        const pendingService =
+            this.locator.pendingServiceCards.first();
+
+        const addButton =
+            pendingService.locator(
+                'button:not(.status)'
+            );
+
+        await StepHelper.step(
+            this.page,
+            'Click Add Service (+) on Pending Package Card',
+            async () => {
+
+                await this.keywords.click(
+                    addButton
+                );
+            }
+        );
+    }
+
+      async selectAvailableSlot() {
+       
+        const maxDaysToSearch = 30;
+        let daysSearched = 0;
+        let daysAdvanced = 0;
+ 
+        await StepHelper.step(
+            this.page,
+            'Select First Available Slot',
+            async () => {
+ 
+                // 1. RESTORED: Wait for the page network to settle BEFORE checking slots
+                await this.page
+                    .waitForLoadState('networkidle', { timeout: timeout.elementTimeout })
+                    .catch(() => {});
+ 
+                while (daysSearched < maxDaysToSearch) {
+ 
+                    // 2. NEW SAFETY: Explicitly wait up to 5 seconds for a slot to appear.
+                    // This stops the script from seeing "0 slots" and skipping days
+                    // just because the UI is slightly slow to render in CI environments.
+                    await this.locator.slotButton.first()
+                        .waitFor({ state: 'visible', timeout: timeout.networkIdleTimeoutMs  })
+                        .catch(() => {});
+ 
+                    const slotCount = await this.locator.slotButton.count();
+ 
+                    console.log(`Available Slots: ${slotCount}`);
+ 
+                    if (slotCount > 0) {
+ 
+                        const firstSlot = this.locator.slotButton.first();
+                       
+                        const appointmentCard = this.locator.slotAppointmentCard(firstSlot);
+ 
+                        const cardText = await this.keywords.getText(appointmentCard);
+ 
+                        console.log(`Appointment Card Text: ${cardText}`);
+ 
+                        const dateMatch = cardText.match(/\d{1,2}\s+[A-Za-z]{3},\s+\d{4}/);
+ 
+                        if (!dateMatch) {
+                            throw new Error(
+                                `Unable to read slot date from appointment card: ${cardText}`
+                            );
+                        }
+ 
+                        this.selectedSlotDate = dateMatch[0];
+ 
+                        console.log(`Selected Slot Date: ${this.selectedSlotDate}`);
+ 
+                        const deadline = Date.now() + 15000;
+                        let clicked = false;
+                        let lastError;
+ 
+                        while (Date.now() < deadline) {
+                            try {
+                                await this.keywords.click(firstSlot);
+                                clicked = true;
+                                break;
+                            } catch (error) {
+                                lastError = error;
+                                if (!/not attached|not stable|detached/i.test(error.message || '')) {
+                                    throw error;
+                                }
+                                await this.page.waitForTimeout(timeout.testTimeout);
+                            }
+                        }
+ 
+                        if (!clicked) {
+                            throw lastError;
+                        }
+ 
+                        break;
+                    }
+ 
+                    await StepHelper.step(
+                        this.page,
+                        'Move To Next Available Date',
+                        async () => {
+                            await this.keywords.click(this.locator.nextDayBtn);
+                        }
+                    );
+ 
+                    daysSearched++;
+                    daysAdvanced++;
+ 
+                    await this.page
+                        .waitForLoadState('networkidle', { timeout: timeout.elementTimeout })
+                        .catch(() => {});
+                }
+ 
+                if (daysSearched >= maxDaysToSearch) {
+                    throw new Error(`No available slots found after searching ${maxDaysToSearch} days forward.`);
+                }
+            }
+        );
+ 
+        return {
+    selectedSlotDate: this.selectedSlotDate,
+    daysAdvanced
+};
+
+}
+ 
+  async clickConfirmPackageBooking() {
+
+        await StepHelper.step(
+            this.page,
+            'Click Confirm Package Booking',
+            async () => {
+
+                await this.keywords.click(
+                    this.locator.confirmPackageBookingBtn
+                );
+            }
+        );
+    }
+
+   async verifyServicesAddedToast() {
+
+        // Same shared toast DOM node as the earlier "Package is added"
+        // check in verifyPackageAddedAndAssociated(), which polls for this
+        // exact reason: without it, a single immediate read can catch that
+        // toast's leftover text before this one has replaced it. Mirrors
+        // that method's proven pattern rather than reading once and hoping.
+        const deadline = Date.now() + 15000;
+        let actualTitle = '';
+
+        while (Date.now() < deadline) {
+
+            actualTitle =
+                (
+                    await this.keywords.getText(
+                        this.locator.packageAddedToastTitle
+                    )
+                ).trim();
+
+            if (actualTitle === 'Services is Added') {
+
+                break;
+            }
+
+            await this.page.waitForTimeout(timeout.testTimeout);
+        }
+
+        await StepHelper.step(
+            this.page,
+            `Verify "Services is Added" Toast | Expected: Services is Added | Actual: ${actualTitle}`,
+            async () => {
+
+                expect(actualTitle).toBe('Services is Added');
+            }
+        );
+
+        const actualSubtext =
+            (
+                await this.keywords.getText(
+                    this.locator.packageToastSubtext
+                )
+            ).trim();
+
+        await StepHelper.step(
+            this.page,
+            `Verify Toast Subtext | Expected: Your appointment have been scheduled successfully | Actual: ${actualSubtext}`,
+            async () => {
+
+                expect(actualSubtext).toBe(
+                    'Your appointment have been scheduled successfully'
+                );
+            }
+        );
     }
 }
 

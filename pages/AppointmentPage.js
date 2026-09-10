@@ -643,6 +643,106 @@ class AppointmentPage {
             actualStatusText
         );
     }
+
+    async clickGoToAppointmentPage() {
+        await StepHelper.step(
+            this.page,
+            'Click Go To Appointment Page',
+            async () => {
+                // Bypassing the keyword wrapper to force the click instantly before the toast detaches
+                await this.locator.goToAppointmentPageLink.click({ force: true });
+            }
+        );
+    }
+
+      async verifyAppointmentPatientDetails(patientData, dobData) {
+
+        const readField = (fieldLabel) => async () =>
+            (
+                await this.locator
+                    .appointmentPatientInfoValue(fieldLabel)
+                    .innerText({ timeout: timeout.networkIdleTimeoutMs })
+            ).trim();
+
+        const { calculateAgeFromDate } = require('../utils/RandomData');
+        const expectedAge = calculateAgeFromDate(dobData.dateObj);
+
+        await Verify.state(
+            this.page,
+            'UHID Field Present (Appointment Details)',
+            this.locator.appointmentPatientInfoValue('UHID'),
+            { visible: true }
+        );
+
+        const actualUhid = await Verify.record(
+            this.page,
+            'UHID (Appointment Details)',
+            readField('UHID')
+        );
+
+        await Verify.state(
+            this.page,
+            'Age Field Present (Appointment Details)',
+            this.locator.appointmentPatientInfoValue('Age'),
+            { visible: true }
+        );
+
+        await Verify.equals(
+            this.page,
+            'Verify Age (Appointment Details)',
+            String(expectedAge),
+            readField('Age')
+        );
+
+        await Verify.state(
+            this.page,
+            'Gender Field Present (Appointment Details)',
+            this.locator.appointmentPatientInfoValue('Gender'),
+            { visible: true }
+        );
+
+        await Verify.equals(
+            this.page,
+            'Verify Gender (Appointment Details)',
+            patientData.gender,
+            readField('Gender')
+        );
+
+        await Verify.state(
+            this.page,
+            'Contact Field Present (Appointment Details)',
+            this.locator.appointmentPatientInfoValue('Contact'),
+            { visible: true }
+        );
+
+        await Verify.contains(
+            this.page,
+            'Verify Contact (Appointment Details)',
+            patientData.mobileNumber,
+            readField('Contact')
+        );
+
+        await Verify.state(
+            this.page,
+            'Referral Source Field Present (Appointment Details)',
+            this.locator.appointmentPatientInfoValue('Referral source'),
+            { visible: true }
+        );
+        await Verify.contains(
+            this.page,
+            'Verify Referral Source (Appointment Details)',
+            patientData.referralBy,
+            readField('Referral source')
+        );
+
+        return actualUhid;
+    }
+
+    
+    
+
+
+
 }
 
 module.exports = { AppointmentPage };

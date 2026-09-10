@@ -193,21 +193,111 @@ class PaymentLocator {
         this.paymentHistoryRow =
         page.locator('table tbody tr').last();
 
-       // Payment History
-this.paymentHistoryTab = page.getByText(
-    'Payment History',
-    {
-        exact: true
-    }
-);
+            // Payment History
+        this.paymentHistoryTab = page.getByText(
+            'Payment History',
+            {
+                exact: true
+            }
+        );
 
-this.latestReceivedAmount = page.locator(
-    "//div[contains(@class,'financials-table-wrapper')]//table//tbody/tr[1]/td[4]"
-);
+        this.latestReceivedAmount = page.locator(
+            "//div[contains(@class,'financials-table-wrapper')]//table//tbody/tr[1]/td[4]"
+        );
 
-this.latestPaymentMode = page.locator(
-    "//div[contains(@class,'financials-table-wrapper')]//table//tbody/tr[1]/td[5]//span[not(contains(@class,'transaction-id'))]"
-);
+        this.latestPaymentMode = page.locator(
+            "//div[contains(@class,'financials-table-wrapper')]//table//tbody/tr[1]/td[5]//span[not(contains(@class,'transaction-id'))]"
+        );
+
+        this.makePaymentActionBtn = page.locator(
+            ".make-payment-btn"
+        );
+
+        this.amountInput = page.getByPlaceholder(
+            "₹ Amount"
+        );
+
+        this.paymentSuccessMessage = page.locator(
+            "app-custom-toaster-message"
+        );
+
+        this.appointmentPaymentDueStatus =
+            page.locator(
+            "//app-appointment-details//*[normalize-space()='Payment Due']/parent::*//span[contains(@class,'status-chip')]"
+        ).first();
+
+        this.appointmentPaymentDue =
+            page.locator(
+                "//app-appointment-details//*[normalize-space()='Payment Due']/parent::*//div[contains(@class,'amount-wrapper')]"
+        ).first();
+
+         this.appointmentPaidAmount =
+            page.locator(
+                "//app-appointment-details//*[normalize-space()='Paid amount']/parent::*//div[contains(@class,'amount-wrapper')]"
+        ).first();
+
+        this.appointmentTotalAmount =
+            page.locator(
+            "//app-appointment-details//*[normalize-space()='Total amount']/parent::*//div[contains(@class,'amount-wrapper')]"
+        ).first();
+
+        this.appointmentPaymentHistoryRows =
+            page.locator(
+            'div.payment-history table tbody tr'
+        );
+        this.paymentHistoryViewReceiptIcon = (row) =>
+            row.locator('i.fa-eye[title="View Receipt"]');
+
+        this.receiptPaymentNumberPdf = this.pdfBody.getByText(
+            /^\d{6}$/
+        ).first();
+
+        this.closePdfPreviewBtn =
+            page.locator(
+                '.btn-close-preview'
+        );
+
+        this.receiptAmountReceivedPdf = (amount) =>
+            this.pdfBody.getByText(
+                parseFloat(amount).toFixed(2)
+        ).first();
+
+        this.receiptPaymentModePdf = (mode) =>
+            this.pdfBody.getByText(mode, { exact: true }).first();
+                this.receiptAmountReceivedPdf = (amount) =>
+            this.pdfBody.getByText(
+                parseFloat(amount).toFixed(2)
+        ).first();
+    
+        this.receiptInvoiceNumberPdf = (invoiceNumber) =>
+        this.pdfBody.getByText(invoiceNumber).first();
+
+        this.appointmentInvoiceNumber =
+            page.locator(
+            'app-appointment-details span.invoice-id'
+        ).last();
+
+        this.invoiceNumberPdf =
+        this.pdfBody.locator(
+            'span.invoice-id'
+        ).first();
+
+        this.creditAppliedPdf = (creditApplied) =>
+            this.pdfBody.getByText(
+                `Credit Applied : ${parseFloat(creditApplied).toFixed(2)}`
+        );
+
+        this.balancePdf = (balance) =>
+            this.pdfBody.getByText(
+                `Balance : ${parseFloat(balance).toFixed(2)}`
+        );
+
+        this.invoicePaymentDetailsReceiptNumberPdf =
+        this.pdfBody.getByText(/^\d{6}$/).last();
+
+        this.invoicePaymentDetailsModePdf = (mode) =>
+        this.pdfBody.getByText(mode, { exact: true }).last();
+
 
         // this.paymentHistoryRow =
         //     page.locator(
