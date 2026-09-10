@@ -1,134 +1,53 @@
-import { test } from '../fixtures/baseTest.js';
-import { AdmissionPage } from '../pages/AdmissionPage.js';
+import { test, expect } from "../fixtures/baseTest.js"; 
+const { StepHelper } = require('../utils/StepHelper.js');
+                        
+const { PatientPage } = require('../pages/PatientPage');
+const { ConsultPage } = require('../pages/ConsultPage');
+const { ServicePage } = require('../pages/ServicePage');
+const { InvoicePage } = require('../pages/InvoicePage');
+const { CalendarPage } = require('../pages/CalendarPage');
  
-const { PatientPage } = require('../pages/PatientPage.js');
-const { IPDPage } = require('../pages/IPDPage.js');
- 
-const { patientData,IPDAdmissionDetailsSummary,admissionPatientData  } = require('../testdata/TC_47.json');
-const { generateUniquePatientFullName } = require('../utils/RandomData.js');
-import {generateAdmissionDate,generateAdmissionTime,getAdmissionData} from '../utils/RandomData.js';
- 
+const { patientData,appoinmentData,consultData } = require('../testdata/TC_47.json');
+const { generateUniquePatientFullName } = require('../utils/RandomData');
+
 test('Consult status', async ({ page }) => {
  
     const patientName = generateUniquePatientFullName();
-    const admissionPage = new AdmissionPage(page);
     const patientPage = new PatientPage(page);
-    const ipdPage = new IPDPage(page);
-
+    const consultPage = new ConsultPage(page);
+    const calendarPage = new CalendarPage(page);
  
-    // ============================================================
-    // 1. Create Patient
-    // ============================================================
-
-    await patientPage.createPatient(
+     await patientPage.createPatient(
         patientName,
         patientData
     );
-
-
-    // ==========================================
-    // 1. Add Admission
-    // ==========================================
-
-    await admissionPage.clickAddNew();
-    await admissionPage.clickAddAdmission();
-
-    // ==========================================
-    // 2. Select Patient
-    // ==========================================
-
-    await admissionPage.searchPatient(patientName);
-
-    // ==========================================
-    // 3. Select Location
-    // ==========================================
-
-    await admissionPage.openLocationDropdown();
-    await admissionPage.selectLocation(admissionPatientData.location);
-
-    // ==========================================
-    // 4. Select Admission Date & Time
-    // ==========================================
-
-    const admissionDate = generateAdmissionDate();
-    await admissionPage.selectAdmissionDate(admissionDate);
-
-    const admissionTime = generateAdmissionTime();
-    await admissionPage.selectAdmissionTime(admissionTime);
-
-    // ==========================================
-    // 5. Select Room / Bed
-    // ==========================================
-
-    await admissionPage.selectRandomRoomCategory();
-    await admissionPage.selectRandomRoomNumber();
-    await admissionPage.selectRandomBedNumber();
-
-    // ==========================================
-    // 6. Diagnosis & Doctor
-    // ==========================================
-
-    const dynamicData = getAdmissionData();
-
-    await admissionPage.fillDiagnosisAndDoctor(
-    dynamicData.admittingDiagnosis,
-    admissionPatientData.doctorName
+ 
+    const bookingDate =
+    await consultPage.addConsult(
+        patientName,
+        appoinmentData.doctorName,
+        consultData.consultSlot
     );
 
-    // ==========================================
-    // 7. Add Surgery,Tests & Consumables
-    // ==========================================
-
-        await admissionPage.addSurgery(admissionPatientData);
-        await admissionPage.addTests(
-         admissionPatientData.testCount
-        );
-
-        await admissionPage.addConsumables(
-            admissionPatientData.consumableCount
-        );
-
-    // ==========================================
-    // 8. Emergency Details
-    // ==========================================
-
-   await admissionPage.fillEmergencyDetailsAndContinue(
-    admissionPatientData.emergency,
-    admissionPatientData.contactNumber,
-    admissionPatientData.physicianName
-    );
-
-    // ==========================================
-    // 9. Insurance Details
-    // ==========================================
-
-    await admissionPage.fillInsuranceDetailsAndContinue(
-        admissionPatientData.insuranceName,
-        admissionPatientData.insuranceNumber,
-        admissionPatientData.policyName
-    );
-
-    // ==========================================
-    // 10. Verify Admission Summary
-    // ==========================================
-
-    await admissionPage.verifyAdmissionSummaryAndContinue(
-    admissionDate,
-    admissionTime,
-    admissionPatientData.dateLabel,
-    admissionPatientData.timeLabel
-    );
-
-    await ipdPage.IPDAdmissionDetails(
+    await calendarPage.selectPatientFromCalendar(
     patientName,
-    admissionDate
+    bookingDate
     );
  
-    await ipdPage.IPDAdmissionDetailsSummary(
-    IPDAdmissionDetailsSummary
+    await consultPage.updateConsultationRoom(
+    consultData.consultationRoom,
+    consultData.consultationStatus,
+    consultData.consultationRoomSuccessMessage
     );
+
+    // await page.locator('app-custom-popup:nth-child(2) > .wrappers > .content > .appointment > div > .appointment-details > .appointment-content > .appointment2 > .booking-info > .appointment-details2 > .container2 > .inner > .statuys > div > div > .field-dropdown > div > .name-action3').click();
+    // await page.getByText('Checked-In').nth(1).click();
+    // await page.getByText('C1').nth(1).click();
+    // await page.getByText('C2').nth(1).click();
+    // await expect(page.locator('app-custom-toaster-message')).toContainText('Consultation room updatedDismiss');
  
-   
-   
+
+
+
+ 
 });
- 
