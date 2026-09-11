@@ -1,10 +1,11 @@
 name: Playwright Tests
 
-run-name: Playwright Tests - ${{ inputs.test_cases }}
+run-name: Playwright Tests
 
 on:
   workflow_dispatch:
     inputs:
+
       baseUrl:
         description: 'Select Target Base URL'
         required: true
@@ -15,11 +16,138 @@ on:
           - 'http://frontend-uat.healync.com'
           - 'http://release-uat.healync.com.s3-website.ap-south-1.amazonaws.com'
 
-      test_cases:
-        description: 'Enter test cases separated by comma, or ALL'
-        required: true
-        type: string
-        default: 'ALL'
+      run_all:
+        description: 'Run ALL test cases'
+        required: false
+        type: boolean
+        default: false
+
+      Healync_E2E:
+        description: 'Run Healync_E2E.spec.js'
+        required: false
+        type: boolean
+        default: false
+
+      WF_CALADN_01:
+        description: 'Run WF_CALADN_01.spec.js'
+        required: false
+        type: boolean
+        default: false
+
+      WF_CALADN_02:
+        description: 'Run WF_CALADN_02.spec.js'
+        required: false
+        type: boolean
+        default: false
+
+      WF_CALADN_03:
+        description: 'Run WF_CALADN_03.spec.js'
+        required: false
+        type: boolean
+        default: false
+
+      WF_CALADN_04:
+        description: 'Run WF_CALADN_04.spec.js'
+        required: false
+        type: boolean
+        default: false
+
+      WF_CALADN_05:
+        description: 'Run WF_CALADN_05.spec.js'
+        required: false
+        type: boolean
+        default: false
+
+      WF_CALADN_31:
+        description: 'Run WF_CALADN_31.spec.js'
+        required: false
+        type: boolean
+        default: false
+
+      WF_CALADN_32:
+        description: 'Run WF_CALADN_32.spec.js'
+        required: false
+        type: boolean
+        default: false
+
+      WF_CALADN_32A:
+        description: 'Run WF_CALADN_32A.spec.js'
+        required: false
+        type: boolean
+        default: false
+
+      WF_CALADN_33:
+        description: 'Run WF_CALADN_33.spec.js'
+        required: false
+        type: boolean
+        default: false
+
+      WF_CALADN_33A:
+        description: 'Run WF_CALADN_33A.spec.js'
+        required: false
+        type: boolean
+        default: false
+
+      WF_CALADN_39:
+        description: 'Run WF_CALADN_39.spec.js'
+        required: false
+        type: boolean
+        default: false
+
+      WF_CALADN_40:
+        description: 'Run WF_CALADN_40.spec.js'
+        required: false
+        type: boolean
+        default: false
+
+      WF_CALADN_41:
+        description: 'Run WF_CALADN_41.spec.js'
+        required: false
+        type: boolean
+        default: false
+
+      WF_CALADN_42:
+        description: 'Run WF_CALADN_42.spec.js'
+        required: false
+        type: boolean
+        default: false
+
+      WF_CALADN_45:
+        description: 'Run WF_CALADN_45.spec.js'
+        required: false
+        type: boolean
+        default: false
+
+      WF_CALADN_46:
+        description: 'Run WF_CALADN_46.spec.js'
+        required: false
+        type: boolean
+        default: false
+
+      WF_CALADN_47:
+        description: 'Run WF_CALADN_47.spec.js'
+        required: false
+        type: boolean
+        default: false
+
+      WF_CALADN_48:
+        description: 'Run WF_CALADN_48.spec.js'
+        required: false
+        type: boolean
+        default: false
+
+      WF_CALADN_125:
+        description: 'Run WF_CALADN_125.spec.js'
+        required: false
+        type: boolean
+        default: false
+
+      WF_CALADN_126:
+        description: 'Run WF_CALADN_126.spec.js'
+        required: false
+        type: boolean
+        default: false
+
 
 jobs:
 
@@ -31,16 +159,40 @@ jobs:
 
     steps:
       - id: check
+        shell: bash
         run: |
+
           if [ "${{ inputs.baseUrl }}" == "-- Select Base URL --" ]; then
             echo "proceed=false" >> "$GITHUB_OUTPUT"
-            echo "::error::Please select Base URL"
+            echo "::error::Please select a Base URL."
             exit 1
           fi
 
-          if [ -z "${{ inputs.test_cases }}" ]; then
+          if [ "${{ inputs.run_all }}" != "true" ] && \
+             [ "${{ inputs.Healync_E2E }}" != "true" ] && \
+             [ "${{ inputs.WF_CALADN_01 }}" != "true" ] && \
+             [ "${{ inputs.WF_CALADN_02 }}" != "true" ] && \
+             [ "${{ inputs.WF_CALADN_03 }}" != "true" ] && \
+             [ "${{ inputs.WF_CALADN_04 }}" != "true" ] && \
+             [ "${{ inputs.WF_CALADN_05 }}" != "true" ] && \
+             [ "${{ inputs.WF_CALADN_31 }}" != "true" ] && \
+             [ "${{ inputs.WF_CALADN_32 }}" != "true" ] && \
+             [ "${{ inputs.WF_CALADN_32A }}" != "true" ] && \
+             [ "${{ inputs.WF_CALADN_33 }}" != "true" ] && \
+             [ "${{ inputs.WF_CALADN_33A }}" != "true" ] && \
+             [ "${{ inputs.WF_CALADN_39 }}" != "true" ] && \
+             [ "${{ inputs.WF_CALADN_40 }}" != "true" ] && \
+             [ "${{ inputs.WF_CALADN_41 }}" != "true" ] && \
+             [ "${{ inputs.WF_CALADN_42 }}" != "true" ] && \
+             [ "${{ inputs.WF_CALADN_45 }}" != "true" ] && \
+             [ "${{ inputs.WF_CALADN_46 }}" != "true" ] && \
+             [ "${{ inputs.WF_CALADN_47 }}" != "true" ] && \
+             [ "${{ inputs.WF_CALADN_48 }}" != "true" ] && \
+             [ "${{ inputs.WF_CALADN_125 }}" != "true" ] && \
+             [ "${{ inputs.WF_CALADN_126 }}" != "true" ]; then
+
             echo "proceed=false" >> "$GITHUB_OUTPUT"
-            echo "::error::Please select at least one test case"
+            echo "::error::Please select at least one test case."
             exit 1
           fi
 
@@ -62,7 +214,7 @@ jobs:
         shell: bash
         run: |
 
-          if [ "${{ inputs.test_cases }}" == "ALL" ]; then
+          if [ "${{ inputs.run_all }}" == "true" ]; then
 
             FILES=$(find tests -maxdepth 1 -name "*.spec.js" -type f \
               -printf "%f\n" | jq -R -s -c 'split("\n")[:-1]')
@@ -71,13 +223,95 @@ jobs:
 
           else
 
-            MATRIX=$(echo "${{ inputs.test_cases }}" \
-              | tr ',' '\n' \
-              | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' \
-              | sed '/^$/d' \
-              | jq -R -s -c 'split("\n")')
+            TESTS=""
 
-            echo "matrix=$MATRIX" >> "$GITHUB_OUTPUT"
+            if [ "${{ inputs.Healync_E2E }}" == "true" ]; then
+              TESTS="${TESTS}\"Healync_E2E.spec.js\","
+            fi
+
+            if [ "${{ inputs.WF_CALADN_01 }}" == "true" ]; then
+              TESTS="${TESTS}\"WF_CALADN_01.spec.js\","
+            fi
+
+            if [ "${{ inputs.WF_CALADN_02 }}" == "true" ]; then
+              TESTS="${TESTS}\"WF_CALADN_02.spec.js\","
+            fi
+
+            if [ "${{ inputs.WF_CALADN_03 }}" == "true" ]; then
+              TESTS="${TESTS}\"WF_CALADN_03.spec.js\","
+            fi
+
+            if [ "${{ inputs.WF_CALADN_04 }}" == "true" ]; then
+              TESTS="${TESTS}\"WF_CALADN_04.spec.js\","
+            fi
+
+            if [ "${{ inputs.WF_CALADN_05 }}" == "true" ]; then
+              TESTS="${TESTS}\"WF_CALADN_05.spec.js\","
+            fi
+
+            if [ "${{ inputs.WF_CALADN_31 }}" == "true" ]; then
+              TESTS="${TESTS}\"WF_CALADN_31.spec.js\","
+            fi
+
+            if [ "${{ inputs.WF_CALADN_32 }}" == "true" ]; then
+              TESTS="${TESTS}\"WF_CALADN_32.spec.js\","
+            fi
+
+            if [ "${{ inputs.WF_CALADN_32A }}" == "true" ]; then
+              TESTS="${TESTS}\"WF_CALADN_32A.spec.js\","
+            fi
+
+            if [ "${{ inputs.WF_CALADN_33 }}" == "true" ]; then
+              TESTS="${TESTS}\"WF_CALADN_33.spec.js\","
+            fi
+
+            if [ "${{ inputs.WF_CALADN_33A }}" == "true" ]; then
+              TESTS="${TESTS}\"WF_CALADN_33A.spec.js\","
+            fi
+
+            if [ "${{ inputs.WF_CALADN_39 }}" == "true" ]; then
+              TESTS="${TESTS}\"WF_CALADN_39.spec.js\","
+            fi
+
+            if [ "${{ inputs.WF_CALADN_40 }}" == "true" ]; then
+              TESTS="${TESTS}\"WF_CALADN_40.spec.js\","
+            fi
+
+            if [ "${{ inputs.WF_CALADN_41 }}" == "true" ]; then
+              TESTS="${TESTS}\"WF_CALADN_41.spec.js\","
+            fi
+
+            if [ "${{ inputs.WF_CALADN_42 }}" == "true" ]; then
+              TESTS="${TESTS}\"WF_CALADN_42.spec.js\","
+            fi
+
+            if [ "${{ inputs.WF_CALADN_45 }}" == "true" ]; then
+              TESTS="${TESTS}\"WF_CALADN_45.spec.js\","
+            fi
+
+            if [ "${{ inputs.WF_CALADN_46 }}" == "true" ]; then
+              TESTS="${TESTS}\"WF_CALADN_46.spec.js\","
+            fi
+
+            if [ "${{ inputs.WF_CALADN_47 }}" == "true" ]; then
+              TESTS="${TESTS}\"WF_CALADN_47.spec.js\","
+            fi
+
+            if [ "${{ inputs.WF_CALADN_48 }}" == "true" ]; then
+              TESTS="${TESTS}\"WF_CALADN_48.spec.js\","
+            fi
+
+            if [ "${{ inputs.WF_CALADN_125 }}" == "true" ]; then
+              TESTS="${TESTS}\"WF_CALADN_125.spec.js\","
+            fi
+
+            if [ "${{ inputs.WF_CALADN_126 }}" == "true" ]; then
+              TESTS="${TESTS}\"WF_CALADN_126.spec.js\","
+            fi
+
+            TESTS="[${TESTS%,}]"
+
+            echo "matrix=$TESTS" >> "$GITHUB_OUTPUT"
 
           fi
 
