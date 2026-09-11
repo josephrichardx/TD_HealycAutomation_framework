@@ -1,5 +1,7 @@
 name: Playwright Tests
-run-name: Playwright Tests - ${{ inputs.test_case }}
+
+run-name: Playwright Tests - ${{ inputs.test_cases }}
+
 on:
   workflow_dispatch:
     inputs:
@@ -12,114 +14,116 @@ on:
           - '-- Select Base URL --'
           - 'http://frontend-uat.healync.com'
           - 'http://release-uat.healync.com.s3-website.ap-south-1.amazonaws.com'
-      test_case:
-        description: 'Select Test Case to run'
+
+      test_cases:
+        description: 'Enter test cases separated by comma, or ALL'
         required: true
-        type: choice
-        default: '-- Select Test Case --'
-        options:
-          - '-- Select Test Case --'
-          - 'ALL'
-          - 'Healync_E2E.spec.js'
-          - 'WF_CALADN_01.spec.js'
-          - 'WF_CALADN_02.spec.js'
-          - 'WF_CALADN_03.spec.js'
-          - 'WF_CALADN_04.spec.js'
-          - 'WF_CALADN_05.spec.js'
-          - 'WF_CALADN_31.spec.js'
-          - 'WF_CALADN_32.spec.js'
-          - 'WF_CALADN_32A.spec.js'
-          - 'WF_CALADN_33.spec.js'
-          - 'WF_CALADN_33A.spec.js'
-          - 'WF_CALADN_39.spec.js'
-          - 'WF_CALADN_40.spec.js'
-          - 'WF_CALADN_41.spec.js'
-          - 'WF_CALADN_42.spec.js'
-          - 'WF_CALADN_45.spec.js'
-          - 'WF_CALADN_46.spec.js'
-          - 'WF_CALADN_47.spec.js'
-          - 'WF_CALADN_48.spec.js'
-          - 'WF_CALADN_125.spec.js'
-          - 'WF_CALADN_126.spec.js'
- 
+        type: string
+        default: 'ALL'
+
 jobs:
+
   validate:
     runs-on: ubuntu-latest
+
     outputs:
       proceed: ${{ steps.check.outputs.proceed }}
+
     steps:
       - id: check
         run: |
-          if [ "${{ inputs.baseUrl }}" == "-- Select Base URL --" ] || [ "${{ inputs.test_case }}" == "-- Select Test Case --" ]; then
+          if [ "${{ inputs.baseUrl }}" == "-- Select Base URL --" ]; then
             echo "proceed=false" >> "$GITHUB_OUTPUT"
-            echo "::error::Please select both a Base URL and a Test Case before running."
-          else
-            echo "proceed=true" >> "$GITHUB_OUTPUT"
+            echo "::error::Please select Base URL"
+            exit 1
           fi
- 
+
+          if [ -z "${{ inputs.test_cases }}" ]; then
+            echo "proceed=false" >> "$GITHUB_OUTPUT"
+            echo "::error::Please select at least one test case"
+            exit 1
+          fi
+
+          echo "proceed=true" >> "$GITHUB_OUTPUT"
+
+
   setup:
     needs: validate
     if: needs.validate.outputs.proceed == 'true'
     runs-on: ubuntu-latest
+
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
+
     steps:
       - uses: actions/checkout@v4
+
       - id: set-matrix
+        shell: bash
         run: |
-          if [ "${{ inputs.test_case }}" == "ALL" ]; then
-            # Scans the actual tests folder — no hardcoded/duplicated list to maintain
-            FILES=$(ls tests/*.spec.js | xargs -n1 basename | jq -R -s -c 'split("\n")[:-1]')
+
+          if [ "${{ inputs.test_cases }}" == "ALL" ]; then
+
+            FILES=$(find tests -maxdepth 1 -name "*.spec.js" -type f \
+              -printf "%f\n" | jq -R -s -c 'split("\n")[:-1]')
+
             echo "matrix=$FILES" >> "$GITHUB_OUTPUT"
+
           else
-            echo "matrix=[\"${{ inputs.test_case }}\"]" >> "$GITHUB_OUTPUT"
+
+            MATRIX=$(echo "${{ inputs.test_cases }}" \
+              | tr ',' '\n' \
+              | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' \
+              | sed '/^$/d' \
+              | jq -R -s -c 'split("\n")')
+
+            echo "matrix=$MATRIX" >> "$GITHUB_OUTPUT"
+
           fi
+
 
   test:
     needs: [validate, setup]
     if: needs.validate.outputs.proceed == 'true'
+
     timeout-minutes: 10
+
     runs-on: ubuntu-latest
+
     strategy:
       max-parallel: 1
       fail-fast: false
+
       matrix:
         test_case: ${{ fromJSON(needs.setup.outputs.matrix) }}
+
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with:
-        node-version: 20
-        cache: 'npm'
-    - name: Install dependencies
-      run: npm ci
-    - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
 
-    # - name: Run Test Case
-    #   env:
-    #     BASE_URL: ${{ inputs.baseUrl }}
-    #   run: npx playwright test tests/${{ matrix.test_case }}
+      - uses: actions/checkout@v4
 
-    - name: Run Test Case
-      env:
-        BASE_URL: ${{ inputs.baseUrl }}
-        PLAYWRIGHT_REPORT_DIR: playwright-report-${{ matrix.test_case }}
-      run: npx playwright test tests/${{ matrix.test_case }}
-      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
 
-    # - name: Upload HTML Report
-    #   if: ${{ !cancelled() }}
-    #   uses: actions/upload-artifact@v4
-    #   with:
-    #     name: playwright-report-${{ matrix.test_case }}
-    #     path: playwright-report/
-    #     retention-days: 30
+      - name: Install dependencies
+        run: npm ci
 
-    - name: Upload HTML Report
-      if: ${{ !cancelled() }}
-      uses: actions/upload-artifact@v4
-      with:
-        name: playwright-report-${{ matrix.test_case }}
-        path: playwright-report-${{ matrix.test_case }}/
-        retention-days: 30
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+
+      - name: Run Test Case
+        env:
+          BASE_URL: ${{ inputs.baseUrl }}
+          PLAYWRIGHT_REPORT_DIR: playwright-report-${{ matrix.test_case }}
+
+        run: |
+          npx playwright test tests/${{ matrix.test_case }}
+
+      - name: Upload HTML Report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ matrix.test_case }}
+          path: playwright-report-${{ matrix.test_case }}/
+          retention-days: 30
