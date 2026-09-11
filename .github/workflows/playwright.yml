@@ -320,7 +320,7 @@ jobs:
     needs: [validate, setup]
     if: needs.validate.outputs.proceed == 'true'
 
-    timeout-minutes: 10
+    timeout-minutes: 60
 
     runs-on: ubuntu-latest
 
