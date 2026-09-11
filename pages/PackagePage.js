@@ -243,10 +243,14 @@ class PackagePage {
                 timeout: timeout.elementTimeout
             });
 
-            const addButton =
-                pendingService.locator(
-                    'button:has(i.fa-regular.fa-plus)'
-                );
+            // const addButton =
+            //     pendingService.locator(
+            //         'button:has(i.fa-regular.fa-plus)'
+            //     );
+
+            const addButton = pendingService.locator(
+                this.locator.addServiceButton
+            );
 
             await StepHelper.step(
                 this.page,
@@ -274,22 +278,73 @@ class PackagePage {
                 dateChanged < 7
             ) {
 
-                await StepHelper.step(
+                // await StepHelper.step(
+                //     this.page,
+                //     'No slots available - Move to next date',
+                //     async () => {
+
+                //         // const nextDateButton =
+                //         //     this.locator.nextDateBtn.first();
+
+                //         // await nextDateButton.waitFor({
+                //         //     state: 'visible',
+                //         //     timeout: timeout.elementTimeout
+                //         // });
+
+                //         // await this.keywords.click(
+                //         //     nextDateButton
+                //         // );
+
+                //         await this.locator.nextDateBtn.first().waitFor({
+                //             state: 'visible',
+                //             timeout: timeout.elementTimeout
+                //         });
+
+                //         await this.keywords.click(
+                //             this.locator.nextDateBtn.first()
+                //         );
+                //     }
+                // );
+
+                    await StepHelper.step(
                     this.page,
                     'No slots available - Move to next date',
                     async () => {
 
-                        const nextDateButton =
-                            this.locator.nextDateBtn.first();
+                        try {
+                            const nextDateButton =
+                                this.locator.nextDateBtn.first();
 
-                        await nextDateButton.waitFor({
-                            state: 'visible',
-                            timeout: timeout.elementTimeout
-                        });
+                            await nextDateButton.waitFor({
+                                state: 'visible',
+                                timeout: timeout.elementTimeout
+                            });
 
-                        await this.keywords.click(
-                            nextDateButton
-                        );
+                            await this.keywords.click(nextDateButton);
+
+                        } catch (error) {
+
+                            if (
+                                error.message.includes(
+                                    'Element is not attached to the DOM'
+                                )
+                            ) {
+                                const refreshedNextDateButton =
+                                    this.locator.nextDateBtn.first();
+
+                                await refreshedNextDateButton.waitFor({
+                                    state: 'visible',
+                                    timeout: timeout.elementTimeout
+                                });
+
+                                await this.keywords.click(
+                                    refreshedNextDateButton
+                                );
+
+                            } else {
+                                throw error;
+                            }
+                        }
                     }
                 );
 
@@ -317,26 +372,45 @@ class PackagePage {
                     Math.random() * slotCount
                 );
 
+            // await StepHelper.step(
+            //     this.page,
+            //     `Select Random Time Slot - ${randomIndex + 1}`,
+            //     async () => {
+
+            //         const selectedSlot =
+            //             this.locator.timeSlots.nth(
+            //                 randomIndex
+            //             );
+
+            //         await selectedSlot.waitFor({
+            //             state: 'visible',
+            //             timeout: timeout.elementTimeout
+            //         });
+
+            //         await this.keywords.click(
+            //             selectedSlot
+            //         );
+            //     }
+            // );
+
             await StepHelper.step(
-                this.page,
-                `Select Random Time Slot - ${randomIndex + 1}`,
-                async () => {
+            this.page,
+            `Select Random Time Slot - ${randomIndex + 1}`,
+            async () => {
 
-                    const selectedSlot =
-                        this.locator.timeSlots.nth(
-                            randomIndex
-                        );
+                const selectedSlot =
+                    this.locator.timeSlots.nth(randomIndex);
 
-                    await selectedSlot.waitFor({
-                        state: 'visible',
-                        timeout: timeout.elementTimeout
-                    });
+                await selectedSlot.waitFor({
+                    state: 'visible',
+                    timeout: timeout.elementTimeout
+                });
 
-                    await this.keywords.click(
-                        selectedSlot
-                    );
-                }
-            );
+                await selectedSlot.click({
+                    timeout: timeout.actionTimeout
+                });
+            }
+        );
 
             await StepHelper.step(
                 this.page,
@@ -428,12 +502,6 @@ class PackagePage {
 
      async verifyPackageAddedAndAssociated(packageName) {
     
-            // Poll instead of a single read - guards against reading
-            // this before the "Package is added" toast has actually
-            // mounted (same race-condition class as the Payment Due
-            // Status fix). Manual loop, not expect().toHaveText(), to
-            // avoid Playwright's auto-generated "Wait for selector"
-            // report noise.
             const deadline = Date.now() + 15000;
             let actualToastTitle = '';
     
@@ -576,9 +644,6 @@ async selectPendingServiceItem() {
  
                 while (daysSearched < maxDaysToSearch) {
  
-                    // 2. NEW SAFETY: Explicitly wait up to 5 seconds for a slot to appear.
-                    // This stops the script from seeing "0 slots" and skipping days
-                    // just because the UI is slightly slow to render in CI environments.
                     await this.locator.slotButton.first()
                         .waitFor({ state: 'visible', timeout: timeout.networkIdleTimeoutMs  })
                         .catch(() => {});
@@ -731,6 +796,159 @@ async selectPendingServiceItem() {
             }
         );
     }
+
+    async verifyPackageTag(
+        patientName,
+        expectedPackageShortName,
+        expectedDateOptions
+    ) {
+
+        const actualTag =
+            (
+                await this.keywords.getText(
+                    this.locator.patientSearchResultTag(
+                        patientName
+                    )
+                )
+            ).trim();
+
+        await StepHelper.step(
+            this.page,
+            `Verify Package Tag Contains Package Name | Expected to contain: ${expectedPackageShortName} | Actual: ${actualTag}`,
+            async () => {
+
+                expect(actualTag).toContain(
+                    expectedPackageShortName
+                );
+            }
+        );
+
+        const dateOptionsList = Array.isArray(expectedDateOptions)
+            ? expectedDateOptions
+            : [expectedDateOptions];
+
+        await StepHelper.step(
+            this.page,
+            `Verify Package Tag Date | Expected to contain one of: ${dateOptionsList.join(' or ')} | Actual: ${actualTag}`,
+            async () => {
+
+                const matchesAny = dateOptionsList.some(
+                    (d) => actualTag.includes(d)
+                );
+
+                expect(matchesAny).toBe(true);
+            }
+        );
+    }
+
+
+     async verifyPackageNameAndRefundAmount(
+        expectedPackageName,
+        expectedPaidAmount
+    ) {
+
+        await StepHelper.step(
+            this.page,
+            `Verify Package Name on Cancel Modal | Expected: ${expectedPackageName}`,
+            async () => {
+
+                await expect(
+                    this.locator.cancelModalPackageName(
+                        expectedPackageName
+                    )
+                ).toBeVisible();
+            }
+        );
+
+        const actualAmountAlreadyPaid =
+            (
+                await this.keywords.getText(
+                    this.locator.amountAlreadyPaidValue
+                )
+            ).trim();
+
+        const expectedAmountText =
+            `₹ ${parseFloat(expectedPaidAmount).toFixed(0)}`;
+
+        await StepHelper.step(
+            this.page,
+            `Verify Total Refund Amount == Paid Amount | Expected: ${expectedAmountText} | Actual: ${actualAmountAlreadyPaid}`,
+            async () => {
+
+                expect(actualAmountAlreadyPaid).toContain(
+                    parseFloat(expectedPaidAmount).toFixed(0)
+                );
+            }
+        );
+    }
+
+     async attemptOverRefundAndVerifyBlocked(paidAmount) {
+    
+            const overLimitAmount = (
+                parseFloat(paidAmount) + 1000
+            ).toFixed(2);
+    
+            await StepHelper.step(
+                this.page,
+                `Enter Over-Limit Refund Amount - ${overLimitAmount}`,
+                async () => {
+    
+                    await this.keywords.fill(
+                        this.locator.amountTxt,
+                        overLimitAmount
+                    );
+                }
+            );
+    
+            await StepHelper.step(
+                this.page,
+                'Click Review & Confirm (expecting a rejected/Abandoned outcome)',
+                async () => {
+    
+                    await this.keywords.click(
+                        this.locator.reviewConfirmBtn
+                    );
+                }
+            );
+    
+            const actualStatus =
+                (
+                    await this.keywords.getText(
+                        this.locator.newPackageStatusValue
+                    )
+                ).trim();
+    
+            await StepHelper.step(
+                this.page,
+                `Verify Over-Refund Amount Was Rejected | Expected: New Package Status shows Abandoned (not Cancelled) | Actual: ${actualStatus}`,
+                async () => {
+    
+                    expect(actualStatus).toBe('Abandoned');
+                }
+            );
+    
+            await StepHelper.step(
+                this.page,
+                'Click Back to Recover From Invalid Amount',
+                async () => {
+    
+                    await this.keywords.click(
+                        this.locator.reviewScreenBackBtn
+                    );
+                }
+            );
+    
+            await StepHelper.step(
+                this.page,
+                'Clear Over-Limit Amount',
+                async () => {
+    
+                    await this.locator.amountTxt.fill('');
+                }
+            );
+        }
+
+
 }
 
 module.exports = { PackagePage };

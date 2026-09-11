@@ -49,9 +49,16 @@ export default defineConfig({
 //   }]
 // ],
 
+// reporter: [
+//     ['html', {
+//         outputFolder: 'playwright-report',
+//         open: 'never'
+//     }]
+// ],
+
 reporter: [
     ['html', {
-        outputFolder: 'playwright-report',
+        outputFolder: process.env.PLAYWRIGHT_REPORT_DIR || 'playwright-report',
         open: 'never'
     }]
 ],

@@ -53,6 +53,8 @@ class PackageLocator {
             hasText: 'Pending'
         }); 
 
+      this.addServiceButton = 'button:has(i.fa-regular.fa-plus)';
+
         // this.timeSlots =
         //      page.locator('.slotButton');
 
@@ -100,6 +102,43 @@ class PackageLocator {
         this.packageToastSubtext = page.locator(
             'app-custom-toaster-message div.subtext'
         ).filter({ visible: true });
+
+        this.patientResult = (patientName) =>
+            page.locator(
+                `//div[@class='list-item-wrapper'][contains(.,'${patientName}')]`
+            ).first();
+            
+        this.patientSearchResultTag = (patientName) =>
+            this.patientResult(patientName)
+                .locator('span.status-service-future');
+
+        this.patientNoApptBookedTag = (patientName) =>
+            this.patientResult(patientName)
+                .locator('span.status-default');
+
+        this.cancelModalPackageName = (packageName) =>
+        page.locator('.cancel-modal').getByText(packageName);
+
+        this.amountAlreadyPaidValue = page.locator(
+        "//*[normalize-space()='Amount already paid']/following-sibling::*[1]");
+
+        this.amountTxt = page.getByRole('textbox', {
+            name: '₹'
+        });
+
+        this.reviewConfirmBtn = page.getByRole('button', {
+            name: 'Review & Confirm',
+            exact: true
+        });
+
+        this.newPackageStatusValue = page.locator(
+            "//*[normalize-space()='New Package Status']/following-sibling::*[1]"
+        );
+
+        this.reviewScreenBackBtn = page.getByRole('button', {
+            name: 'Back',
+            exact: true
+        }).last();
     }
 
     getPatient(patientName) {
@@ -118,6 +157,12 @@ class PackageLocator {
             { exact: true }
         );
     }
+
+    // getAddServiceButton(pendingService) {
+    // return pendingService.locator(
+    //     'button:has(i.fa-regular.fa-plus)'
+    // );
+    // }
 }
 
 module.exports = { PackageLocator };

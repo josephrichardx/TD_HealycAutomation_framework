@@ -248,6 +248,12 @@ class PaymentLocator {
         this.paymentHistoryViewReceiptIcon = (row) =>
             row.locator('i.fa-eye[title="View Receipt"]');
 
+         this.pdfBody =
+                    page.locator('body');
+                this.viewInvoiceBtn = page.locator(
+                '.fa-regular.fa-eye'
+            );
+
         this.receiptPaymentNumberPdf = this.pdfBody.getByText(
             /^\d{6}$/
         ).first();
@@ -298,6 +304,13 @@ class PaymentLocator {
         this.invoicePaymentDetailsModePdf = (mode) =>
         this.pdfBody.getByText(mode, { exact: true }).last();
 
+        this.financialsPaymentHistoryTab = page
+            .locator('div.tab-item')
+            .filter({ hasText: 'Payment History' });
+
+        this.financialsPaymentHistoryRows = page.locator(
+            'div.financials-table-wrapper table tbody tr'
+        );
 
         // this.paymentHistoryRow =
         //     page.locator(

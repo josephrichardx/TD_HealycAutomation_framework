@@ -738,7 +738,104 @@ class AppointmentPage {
         return actualUhid;
     }
 
-    
+    async verifyAndClickCancelledAppointmentCard(patientName) {
+
+        const card =
+            this.locator.cancelledAppointmentCard(patientName);
+
+        await this.page.waitForLoadState('networkidle', { timeout: timeout.elementTimeout })
+
+        await StepHelper.step(
+            this.page,
+            `Verify Cancelled Appointment Now Displayed On Calendar | Expected: visible | Actual: checking`,
+            async () => {
+
+                await expect(card).toBeVisible();
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            `Click Cancelled Appointment Card - ${patientName} (Forced)`,
+            async () => {
+
+                // Because calendar events frequently overlap in time (stacking visually), 
+                // Playwright's standard click gets blocked by the card in front of it.
+                // Using evaluate() bypasses the 'obscured' check and forces the click natively.
+                await card.evaluate(node => node.click());
+            }
+        );
+    }
+
+     async verifyPostRefundAppointmentDetails(refundAmount) {
+
+            const actualPaymentDue =
+                (
+                    await this.keywords.getText(
+                        this.locator.appointmentPaymentDue
+                    )
+                ).trim();
+
+            await StepHelper.step(
+                this.page,
+                `Verify Due Amount Is Zero | Expected: 0.00 | Actual: ${actualPaymentDue}`,
+                async () => {
+                    expect(actualPaymentDue).toContain('0.00');
+                }
+            );
+
+            const actualStatus =
+                (
+                    await this.keywords.getText(
+                        this.locator.appointmentPaymentDueStatus
+                    )
+                ).trim();
+
+            await StepHelper.step(
+                this.page,
+                `Verify Payment Due Status Is Refunded | Expected: Refunded | Actual: ${actualStatus}`,
+                async () => {
+                    expect(actualStatus).toBe('Refunded');
+                }
+            );
+
+            const actualPaidAmount =
+                (
+                    await this.keywords.getText(
+                        this.locator.appointmentPaidAmount
+                    )
+                ).trim();
+
+            await StepHelper.step(
+                this.page,
+                `Verify Paid Amount Is Zero | Expected: 0.00 | Actual: ${actualPaidAmount}`,
+                async () => {
+                    expect(actualPaidAmount).toContain('0.00');
+                }
+            );
+            const negativeAmount = -Math.abs(parseFloat(refundAmount));
+
+            const refundRow =
+                this.locator.appointmentPaymentHistoryRows.nth(1); 
+
+            const actualHistoryAmount =
+                (
+                    await refundRow.locator('td').nth(3).innerText()
+                )
+                    .trim()
+                    .replace(/[₹,\s]/g, '');
+
+            await StepHelper.step(
+                this.page,
+                `Verify Negative Payment/Refund Transaction Displayed | Expected: ${negativeAmount.toFixed(2)} | Actual: ${actualHistoryAmount}`,
+                async () => {
+                    expect(parseFloat(actualHistoryAmount)).toBe(
+                        negativeAmount
+                    );
+                }
+            );
+        }
+
     
 
 

@@ -74,7 +74,7 @@ jobs:
           else
             echo "matrix=[\"${{ inputs.test_case }}\"]" >> "$GITHUB_OUTPUT"
           fi
- 
+
   test:
     needs: [validate, setup]
     if: needs.validate.outputs.proceed == 'true'
@@ -95,14 +95,31 @@ jobs:
       run: npm ci
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
+
+    # - name: Run Test Case
+    #   env:
+    #     BASE_URL: ${{ inputs.baseUrl }}
+    #   run: npx playwright test tests/${{ matrix.test_case }}
+
     - name: Run Test Case
       env:
         BASE_URL: ${{ inputs.baseUrl }}
+        PLAYWRIGHT_REPORT_DIR: playwright-report-${{ matrix.test_case }}
       run: npx playwright test tests/${{ matrix.test_case }}
+      
+
+    # - name: Upload HTML Report
+    #   if: ${{ !cancelled() }}
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     name: playwright-report-${{ matrix.test_case }}
+    #     path: playwright-report/
+    #     retention-days: 30
+
     - name: Upload HTML Report
       if: ${{ !cancelled() }}
       uses: actions/upload-artifact@v4
       with:
         name: playwright-report-${{ matrix.test_case }}
-        path: playwright-report/
+        path: playwright-report-${{ matrix.test_case }}/
         retention-days: 30

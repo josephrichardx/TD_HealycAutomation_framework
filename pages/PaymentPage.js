@@ -1495,6 +1495,168 @@ class PaymentPage {
             return actualReceiptNumber;
         }
 
+    async verifyFinancialsPaymentHistory(
+        expectedInvoiceNumber,
+        expectedAmount,
+        expectedMode = 'Cash'
+    ) {
+
+        await StepHelper.step(
+            this.page,
+            'Open Payment History (Financials)',
+            async () => {
+                await this.keywords.click(
+                    this.locator.financialsPaymentHistoryTab
+                );
+            }
+        );
+
+        const firstRow =
+            this.locator.financialsPaymentHistoryRows.first();
+
+        const actualInvoiceNumber =
+            (
+                await firstRow.locator('td').nth(1).innerText()
+            ).trim();
+
+        await StepHelper.step(
+            this.page,
+            `Verify Payment History Invoice Number | Expected: ${expectedInvoiceNumber} | Actual: ${actualInvoiceNumber}`,
+            async () => {
+
+                expect(actualInvoiceNumber).toBe(
+                    expectedInvoiceNumber
+                );
+            }
+        );
+
+        // const actualAmount =
+        //     (
+        //         await firstRow.locator('td').nth(3).innerText()
+        //     )
+        //         .trim()
+        //         .replace(/[₹,\s]/g, '');
+
+        const actualAmount =
+            Math.abs(
+                parseFloat(
+                    (
+                        await firstRow.locator('td').nth(3).innerText()
+                    )
+                        .trim()
+                        .replace(/[₹,\s]/g, '')
+                )
+        ).toFixed(2);
+
+        const expectedAmountText =
+            parseFloat(expectedAmount).toFixed(2);
+
+        await StepHelper.step(
+            this.page,
+            `Verify Payment History Received Amount | Expected: ₹${expectedAmountText} | Actual: ₹${actualAmount}`,
+            async () => {
+
+                expect(
+                    parseFloat(actualAmount).toFixed(2)
+                ).toBe(expectedAmountText);
+            }
+        );
+
+        const actualMode =
+            (
+                await firstRow
+                    .locator('div.payment-mode-wrapper span')
+                    .innerText()
+            ).trim();
+
+        await StepHelper.step(
+            this.page,
+            `Verify Payment History Mode | Expected: ${expectedMode} | Actual: ${actualMode}`,
+            async () => {
+
+                expect(actualMode).toBe(expectedMode);
+            }
+        );
+    }
+
+     async verifyRefundInFinancialsPaymentHistory(
+            expectedInvoiceNumber,
+            refundAmount,
+            expectedMode = 'Cash'
+        ) {
+    
+            const negativeAmount = -Math.abs(parseFloat(refundAmount));
+    
+            const refundRow =
+                this.locator.financialsPaymentHistoryRows.first();
+    
+            const actualRefundReceiptNumber =
+                (
+                    await refundRow.locator('td').nth(0).innerText()
+                ).trim();
+    
+            await StepHelper.step(
+                this.page,
+                `Verify Refund Transaction/PDF Number Present | Expected: non-empty | Actual: ${actualRefundReceiptNumber}`,
+                async () => {
+    
+                    expect(actualRefundReceiptNumber).not.toBe('');
+                }
+            );
+    
+            const actualRefundInvoiceNumber =
+                (
+                    await refundRow.locator('td').nth(1).innerText()
+                ).trim();
+    
+            await StepHelper.step(
+                this.page,
+                `Verify Refund Row Invoice Number | Expected: ${expectedInvoiceNumber} | Actual: ${actualRefundInvoiceNumber}`,
+                async () => {
+    
+                    expect(actualRefundInvoiceNumber).toBe(
+                        expectedInvoiceNumber
+                    );
+                }
+            );
+    
+            const actualRefundAmount =
+                (
+                    await refundRow.locator('td').nth(3).innerText()
+                )
+                    .trim()
+                    .replace(/[₹,\s]/g, '');
+    
+            await StepHelper.step(
+                this.page,
+                `Verify Negative Payment/Refund Amount | Expected: ${negativeAmount.toFixed(2)} | Actual: ${actualRefundAmount}`,
+                async () => {
+    
+                    expect(parseFloat(actualRefundAmount)).toBe(
+                        negativeAmount
+                    );
+                }
+            );
+    
+            const actualRefundMode =
+                (
+                    await refundRow
+                        .locator('div.payment-mode-wrapper span')
+                        .innerText()
+                ).trim();
+    
+            await StepHelper.step(
+                this.page,
+                `Verify Refund Payment Mode | Expected: ${expectedMode} | Actual: ${actualRefundMode}`,
+                async () => {
+    
+                    expect(actualRefundMode).toBe(expectedMode);
+                }
+            );
+        }
+    
+
+
 }
 
 

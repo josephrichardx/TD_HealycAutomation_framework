@@ -672,6 +672,141 @@ class CalendarPage {
             patientName
         );
     }
+
+     async SidebarCalendarIcon() {
+
+
+        await StepHelper.step(
+
+            this.page,
+
+            'Click Calendar icon on the left sidebar to return to the dashboard',
+
+            async () => {
+
+
+                await this.keywords.waitForElement(
+
+                    this.locator.sidebarCalendarIcon,
+
+                    timeout.elementTimeout
+
+                );
+
+
+                await this.keywords.click(
+
+                    this.locator.sidebarCalendarIcon
+
+                );
+
+
+                await this.page
+
+                    .waitForURL(
+
+                        (url) => url.pathname.includes('/dashboard'),
+
+                        { timeout: timeout.elementTimeout }
+
+                    )
+
+                    .catch(() => {
+
+                        console.log('[clickSidebarCalendarIcon] URL never matched /dashboard - falling through to wait on the search box directly instead.');
+
+                    });
+
+                await this.keywords.waitForElement(
+                    this.locator.patientSearch,
+                    timeout.elementTimeout
+                );
+
+    
+                await this.page
+                    .waitForLoadState('networkidle', { timeout: timeout.elementTimeout })
+                    .catch(() => {});
+
+                await this.keywords.waitForElement(
+                    this.locator.patientSearch,
+                    timeout.elementTimeout
+                );
+
+                console.log('Navigated back to the Calendar (dashboard) via sidebar icon');
+
+            }
+
+        );
+
+    }
+
+    async verifyPatientNotInActiveView(patientName) {
+
+        await this.searchPatient(patientName);
+
+        const actualTag =
+            (
+                await this.keywords.getText(
+                    this.locator.patientNoApptBookedTag(
+                        patientName
+                    )
+                )
+            ).trim();
+
+        await StepHelper.step(
+            this.page,
+            `Verify Cancelled Appointment Not In Active View | Expected: No appt booked | Actual: ${actualTag}`,
+            async () => {
+
+                expect(actualTag).toBe('No appt booked');
+            }
+        );
+
+        // Dismiss the search results dropdown by clicking away.
+        await StepHelper.step(
+            this.page,
+            'Dismiss Search Results Dropdown (Clicking Outside)',
+            async () => {
+                await this.page.mouse.click(10, 10);
+
+                await this.page.waitForTimeout(timeout.testTimeout);
+            }
+        );
+    }
+
+     async navigateToBookedDate(daysToAdvance) {
+
+        for (let i = 0; i < daysToAdvance; i++) {
+
+            await StepHelper.step(
+                this.page,
+                `Click Next Day (${i + 1} of ${daysToAdvance})`,
+                async () => {
+
+                    await this.keywords.click(
+                        this.locator.nextDayCalendarBtn
+                    );
+                }
+            );
+        }
+    }
+
+    async enableCancelledToggle() {
+
+        await StepHelper.step(
+            this.page,
+            'Enable Cancelled Appointments Toggle',
+            async () => {
+
+                await this.keywords.click(
+                    this.locator.showCancelledToggle
+                );
+            }
+        );
+    }
+
+    
+
 }
 
 

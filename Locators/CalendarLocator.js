@@ -43,6 +43,17 @@ class CalendarLocator {
             'app-appointment-details'
         );
 
+        this.patientNoApptBookedTag = (patientName) =>
+            this.patientResult(patientName)
+                .locator('span.status-default');
+
+        this.nextDayCalendarBtn = page.getByRole('button', {
+            name: 'Next day'
+        });
+
+        this.showCancelledToggle = page.locator(
+            '.status-card.canceled .toggle-switch'
+        );
 }
 
 getStatus(status) {
