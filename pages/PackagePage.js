@@ -500,9 +500,9 @@ class PackagePage {
         await this.clickConfirm();
     }
 
-     async verifyPackageAddedAndAssociated(packageName) {
+     async verifyPackageAddedAndAssociated(packageName,packageAddedToast,breadcrumbBookPackages,breadcrumbPatient,breadcrumbPackages,activeStatus) {
     
-            const deadline = Date.now() + 15000;
+            const deadline = Date.now() + timeout.elementTimeout;
             let actualToastTitle = '';
     
             while (Date.now() < deadline) {
@@ -514,8 +514,12 @@ class PackagePage {
                         )
                     ).trim();
     
-                if (actualToastTitle === 'Package is added') {
+                // if (actualToastTitle === 'Package is added') {
     
+                //     break;
+                // }
+
+                if (actualToastTitle === packageAddedToast) {
                     break;
                 }
     
@@ -524,11 +528,16 @@ class PackagePage {
     
             await StepHelper.step(
                 this.page,
-                `Verify "Package is added" Popup | Expected: Package is added | Actual: ${actualToastTitle}`,
+                // `Verify "Package is added" Popup | Expected: Package is added | Actual: ${actualToastTitle}`,
+                `Verify "Package Added" Popup | Expected: ${packageAddedToast} | Actual: ${actualToastTitle}`,
                 async () => {
     
+                    // expect(actualToastTitle).toBe(
+                    //     'Package is added'
+                    // );
+
                     expect(actualToastTitle).toBe(
-                        'Package is added'
+                        packageAddedToast
                     );
                 }
             );
@@ -542,12 +551,25 @@ class PackagePage {
     
             await StepHelper.step(
                 this.page,
-                `Verify Redirect Breadcrumb | Expected to contain: Book Packages, Patient, Packages | Actual: ${actualBreadcrumb}`,
+                // `Verify Redirect Breadcrumb | Expected to contain: Book Packages, Patient, Packages | Actual: ${actualBreadcrumb}`,
+                `Verify Redirect Breadcrumb | Expected to contain: ${breadcrumbBookPackages}, ${breadcrumbPatient}, ${breadcrumbPackages} | Actual: ${actualBreadcrumb}`,
                 async () => {
     
-                    expect(actualBreadcrumb).toContain('Book Packages');
-                    expect(actualBreadcrumb).toContain('Patient');
-                    expect(actualBreadcrumb).toContain('Packages');
+                    // expect(actualBreadcrumb).toContain('Book Packages');
+                    // expect(actualBreadcrumb).toContain('Patient');
+                    // expect(actualBreadcrumb).toContain('Packages');
+
+                    expect(actualBreadcrumb).toContain(
+                        breadcrumbBookPackages
+                    );
+
+                    expect(actualBreadcrumb).toContain(
+                        breadcrumbPatient
+                    );
+
+                    expect(actualBreadcrumb).toContain(
+                        breadcrumbPackages
+                    );
                 }
             );
     
@@ -578,10 +600,13 @@ class PackagePage {
     
             await StepHelper.step(
                 this.page,
-                `Verify Package Status | Expected: Active | Actual: ${actualActiveStatus}`,
+                // `Verify Package Status | Expected: Active | Actual: ${actualActiveStatus}`,
+                `Verify Package Status | Expected: ${activeStatus} | Actual: ${actualActiveStatus}`,
                 async () => {
     
-                    expect(actualActiveStatus).toBe('Active');
+                    expect(actualActiveStatus).toBe(
+                        activeStatus
+                    );
                 }
             );
         }
@@ -609,10 +634,14 @@ async selectPendingServiceItem() {
         const pendingService =
             this.locator.pendingServiceCards.first();
 
-        const addButton =
-            pendingService.locator(
-                'button:not(.status)'
-            );
+        // const addButton =
+        //     pendingService.locator(
+        //         'button:not(.status)'
+        //     );
+
+        const addButton = this.locator.serviceAddButton(
+            pendingService
+        );
 
         await StepHelper.step(
             this.page,
@@ -674,7 +703,7 @@ async selectPendingServiceItem() {
  
                         console.log(`Selected Slot Date: ${this.selectedSlotDate}`);
  
-                        const deadline = Date.now() + 15000;
+                        const deadline = Date.now() + timeout.elementTimeout;
                         let clicked = false;
                         let lastError;
  
@@ -742,14 +771,9 @@ async selectPendingServiceItem() {
         );
     }
 
-   async verifyServicesAddedToast() {
+   async verifyServicesAddedToast(serviceAddedToast,appointmentScheduledSubtext) {
 
-        // Same shared toast DOM node as the earlier "Package is added"
-        // check in verifyPackageAddedAndAssociated(), which polls for this
-        // exact reason: without it, a single immediate read can catch that
-        // toast's leftover text before this one has replaced it. Mirrors
-        // that method's proven pattern rather than reading once and hoping.
-        const deadline = Date.now() + 15000;
+        const deadline = Date.now() + timeout.elementTimeout;
         let actualTitle = '';
 
         while (Date.now() < deadline) {
@@ -761,8 +785,12 @@ async selectPendingServiceItem() {
                     )
                 ).trim();
 
-            if (actualTitle === 'Services is Added') {
+            // if (actualTitle === 'Services is Added') {
 
+            //     break;
+            // }
+
+            if (actualTitle === serviceAddedToast) {
                 break;
             }
 
@@ -771,10 +799,11 @@ async selectPendingServiceItem() {
 
         await StepHelper.step(
             this.page,
-            `Verify "Services is Added" Toast | Expected: Services is Added | Actual: ${actualTitle}`,
+            // `Verify "Services is Added" Toast | Expected: Services is Added | Actual: ${actualTitle}`,
+            `Verify Services Added Toast | Expected: ${serviceAddedToast} | Actual: ${actualTitle}`,
             async () => {
 
-                expect(actualTitle).toBe('Services is Added');
+                expect(actualTitle).toBe(serviceAddedToast);
             }
         );
 
@@ -787,12 +816,11 @@ async selectPendingServiceItem() {
 
         await StepHelper.step(
             this.page,
-            `Verify Toast Subtext | Expected: Your appointment have been scheduled successfully | Actual: ${actualSubtext}`,
+            // `Verify Toast Subtext | Expected: Your appointment have been scheduled successfully | Actual: ${actualSubtext}`,
+            `Verify Toast Subtext | Expected: ${appointmentScheduledSubtext} | Actual: ${actualSubtext}`,
             async () => {
 
-                expect(actualSubtext).toBe(
-                    'Your appointment have been scheduled successfully'
-                );
+                expect(actualSubtext).toBe(appointmentScheduledSubtext);
             }
         );
     }
@@ -882,7 +910,7 @@ async selectPendingServiceItem() {
         );
     }
 
-     async attemptOverRefundAndVerifyBlocked(paidAmount) {
+     async attemptOverRefundAndVerifyBlocked(paidAmount,abandonedStatus,amountFieldEmptyValue) {
     
             const overLimitAmount = (
                 parseFloat(paidAmount) + 1000
@@ -923,7 +951,7 @@ async selectPendingServiceItem() {
                 `Verify Over-Refund Amount Was Rejected | Expected: New Package Status shows Abandoned (not Cancelled) | Actual: ${actualStatus}`,
                 async () => {
     
-                    expect(actualStatus).toBe('Abandoned');
+                    expect(actualStatus).toBe(abandonedStatus);
                 }
             );
     
@@ -943,7 +971,10 @@ async selectPendingServiceItem() {
                 'Clear Over-Limit Amount',
                 async () => {
     
-                    await this.locator.amountTxt.fill('');
+                    // await this.locator.amountTxt.fill('');
+                    await this.locator.amountTxt.fill(
+                        amountFieldEmptyValue
+                    );
                 }
             );
         }

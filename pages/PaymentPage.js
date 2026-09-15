@@ -904,7 +904,7 @@ class PaymentPage {
         );
     }
 
-     async Payment(amount, paymentMode = 'Cash') {
+     async Payment(amount,paymentMode,paymentRecordedMessage) {
 
         await StepHelper.step(
             this.page,
@@ -916,10 +916,14 @@ class PaymentPage {
             }
         );
         
-        const modeButton =
-            paymentMode === 'UPI' ? this.locator.upiBtn :
-            paymentMode === 'Card' ? this.locator.cardBtn :
-            this.locator.cashBtn;
+        // const modeButton =
+        //     paymentMode === 'UPI' ? this.locator.upiBtn :
+        //     paymentMode === 'Card' ? this.locator.cardBtn :
+        //     this.locator.cashBtn;
+
+        const modeButton = this.locator.paymentModeButton(
+            paymentMode
+        );
 
         await StepHelper.step(
             this.page,
@@ -978,14 +982,12 @@ class PaymentPage {
 
         await StepHelper.step(
             this.page,
-            `Verify Payment Recorded Successfully | Expected: contains "Payment recorded successfully" | Actual: ${this._paymentMessage}`,
+            `Verify Payment Recorded Successfully | Expected: contains "${paymentRecordedMessage}" | Actual: ${this._paymentMessage}`,
             async () => {
 
                 expect(
                     this._paymentMessage
-                ).toContain(
-                    "Payment recorded successfully"
-                );
+                ).toContain(paymentRecordedMessage);
 
             }
         );
@@ -993,7 +995,9 @@ class PaymentPage {
 
      async verifyPostPaymentStatus(
         expectedPaidAmount,
-        expectedPaymentMethod = 'Cash'
+        expectedPaymentMethod,
+        paidStatus,
+        expectedPaymentDue
     ) {
 
         const expectedAmount =
@@ -1004,7 +1008,7 @@ class PaymentPage {
             'Wait for Payment Due Status to update to Paid',
             async () => {
 
-                const deadline = Date.now() + 20000;
+                const deadline = Date.now() + timeout.elementTimeout;
                 let currentStatus = '';
 
                 while (Date.now() < deadline) {
@@ -1016,7 +1020,7 @@ class PaymentPage {
                             )
                         ).trim();
 
-                    if (currentStatus === 'Paid') {
+                    if (currentStatus === paidStatus) {
 
                         break;
                     }
@@ -1024,7 +1028,7 @@ class PaymentPage {
                     await this.page.waitForTimeout(timeout.testTimeout);
                 }
 
-                expect(currentStatus).toBe('Paid');
+                expect(currentStatus).toBe(paidStatus);
             }
         );
 
@@ -1039,23 +1043,41 @@ class PaymentPage {
                 )
             ).trim();
 
+        // await StepHelper.step(
+        //     this.page,
+        //     `Verify Payment Due | Expected: 0.00 | Actual: ${actualPaymentDue}`,
+        //     async () => {
+
+        //         const actualDueAmount =
+        //             parseFloat(
+        //                 actualPaymentDue.replace(
+        //                     /[₹,\s]/g,
+        //                     ''
+        //                 )
+        //             );
+
+        //         expect(actualDueAmount).toBe(0);
+        //     }
+        // );
+
         await StepHelper.step(
-            this.page,
-            `Verify Payment Due | Expected: 0.00 | Actual: ${actualPaymentDue}`,
-            async () => {
+        this.page,
+        `Verify Payment Due | Expected: ${expectedPaymentDue} | Actual: ${actualPaymentDue}`,
+        async () => {
 
-                const actualDueAmount =
-                    parseFloat(
-                        actualPaymentDue.replace(
-                            /[₹,\s]/g,
-                            ''
-                        )
-                    );
+            const actualDueAmount =
+                parseFloat(
+                    actualPaymentDue.replace(
+                        /[₹,\s]/g,
+                        ''
+                    )
+                );
 
-                expect(actualDueAmount).toBe(0);
-            }
-        );
-
+            expect(actualDueAmount).toBe(
+                parseFloat(expectedPaymentDue)
+            );
+        }
+    );
         // ==========================================
         // Payment Due Status chip == "Paid"
         // ==========================================
@@ -1067,12 +1089,20 @@ class PaymentPage {
                 )
             ).trim();
 
+        // await StepHelper.step(
+        //     this.page,
+        //     `Verify Payment Due Status | Expected: Paid | Actual: ${actualStatus}`,
+        //     async () => {
+
+        //         expect(actualStatus).toBe(');
+        //     }
+        // );
+
         await StepHelper.step(
             this.page,
-            `Verify Payment Due Status | Expected: Paid | Actual: ${actualStatus}`,
+            `Verify Payment Due Status | Expected: ${paidStatus} | Actual: ${actualStatus}`,
             async () => {
-
-                expect(actualStatus).toBe('Paid');
+                expect(actualStatus).toBe(paidStatus);
             }
         );
 
@@ -1152,10 +1182,16 @@ class PaymentPage {
         const expectedDateToday = formatDate(today);
         const expectedDateYesterday = formatDate(yesterday);
 
-        const actualDate =
-            (
-                await firstRow.locator('td').nth(1).innerText()
-            ).trim();
+        // const actualDate =
+        //     (
+        //         await firstRow.locator('td').nth(1).innerText()
+        //     ).trim();
+
+        const actualDate = (
+            await this.keywords.getText(
+                this.locator.actualDate(firstRow)
+            )
+        ).trim();
 
         await StepHelper.step(
             this.page,
@@ -1168,10 +1204,16 @@ class PaymentPage {
             }
         );
 
-        const actualMethod =
-            (
-                await firstRow.locator('td').nth(2).innerText()
-            ).trim();
+        // const actualMethod =
+        //     (
+        //         await firstRow.locator('td').nth(2).innerText()
+        //     ).trim();
+
+        const actualMethod = (
+            await this.keywords.getText(
+                this.locator.actualMethod(firstRow)
+            )
+        ).trim();
 
         await StepHelper.step(
             this.page,
@@ -1184,12 +1226,20 @@ class PaymentPage {
             }
         );
 
-        const actualHistoryAmount =
-            (
-                await firstRow.locator('td').nth(3).innerText()
+        // const actualHistoryAmount =
+        //     (
+        //         await firstRow.locator('td').nth(3).innerText()
+        //     )
+        //         .trim()
+        //         .replace(/[₹,\s]/g, '');
+
+        const actualHistoryAmount = (
+            await this.keywords.getText(
+                this.locator.actualHistoryAmount(firstRow)
             )
-                .trim()
-                .replace(/[₹,\s]/g, '');
+        )
+            .trim()
+            .replace(/[₹,\s]/g, '');
 
         await StepHelper.step(
             this.page,
@@ -1205,7 +1255,11 @@ class PaymentPage {
 
      async revalidateInvoicePDFAfterPayment(
             expectedInvoiceNumber,
-            expectedPaymentMode = 'Cash'
+            expectedPaymentMode,
+            CreditText,
+            BalanceText,
+            invoiceReceiptNumberPattern,
+            expectedPaidAmountNumber
         ) {
 
             await this.page
@@ -1257,12 +1311,13 @@ class PaymentPage {
                 }
             );
     
-            const expectedCreditText = 'Credit Applied : 0.00';
+            // const expectedCreditText = 'Credit Applied : 0.00';
+            const expectedCreditText = CreditText;
     
             const actualCreditText =
                 (
                     await this.keywords.getText(
-                        this.locator.creditAppliedPdf(0)
+                        this.locator.creditAppliedPdf(expectedPaidAmountNumber)
                     )
                 ).trim();
     
@@ -1277,12 +1332,13 @@ class PaymentPage {
                 }
             );
     
-            const expectedBalanceText = 'Balance : 0.00';
+            // const expectedBalanceText = 'Balance : 0.00';
+            const expectedBalanceText = BalanceText;
     
             const actualBalanceText =
                 (
                     await this.keywords.getText(
-                        this.locator.balancePdf(0)
+                        this.locator.balancePdf(expectedPaidAmountNumber)
                     )
                 ).trim();
     
@@ -1353,7 +1409,7 @@ class PaymentPage {
             expectedInvoiceNumber,
             expectedAmount,
             expectedInvoiceReceiptNumber = null,
-            expectedPaymentMode = 'Cash'
+            expectedPaymentMode
         ) {
     
             const firstRow =
@@ -1498,7 +1554,7 @@ class PaymentPage {
     async verifyFinancialsPaymentHistory(
         expectedInvoiceNumber,
         expectedAmount,
-        expectedMode = 'Cash'
+        expectedMode
     ) {
 
         await StepHelper.step(
@@ -1514,10 +1570,16 @@ class PaymentPage {
         const firstRow =
             this.locator.financialsPaymentHistoryRows.first();
 
-        const actualInvoiceNumber =
-            (
-                await firstRow.locator('td').nth(1).innerText()
-            ).trim();
+        // const actualInvoiceNumber =
+        //     (
+        //         await firstRow.locator('td').nth(1).innerText()
+        //     ).trim();
+
+        const actualInvoiceNumber = (
+            await this.keywords.getText(
+                this.locator.actualInvoiceNumber(firstRow)
+            )
+        ).trim();
 
         await StepHelper.step(
             this.page,
@@ -1531,21 +1593,26 @@ class PaymentPage {
         );
 
         // const actualAmount =
-        //     (
-        //         await firstRow.locator('td').nth(3).innerText()
-        //     )
-        //         .trim()
-        //         .replace(/[₹,\s]/g, '');
+        //     Math.abs(
+        //         parseFloat(
+        //             (
+        //                 await firstRow.locator('td').nth(3).innerText()
+        //             )
+        //                 .trim()
+        //                 .replace(/[₹,\s]/g, '')
+        //         )
+        // ).toFixed(2);
 
-        const actualAmount =
-            Math.abs(
-                parseFloat(
-                    (
-                        await firstRow.locator('td').nth(3).innerText()
+        const actualAmount = Math.abs(
+            parseFloat(
+                (
+                    await this.keywords.getText(
+                        this.locator.actualAmount(firstRow)
                     )
-                        .trim()
-                        .replace(/[₹,\s]/g, '')
                 )
+                    .trim()
+                    .replace(/[₹,\s]/g, '')
+            )
         ).toFixed(2);
 
         const expectedAmountText =
@@ -1562,12 +1629,18 @@ class PaymentPage {
             }
         );
 
-        const actualMode =
-            (
-                await firstRow
-                    .locator('div.payment-mode-wrapper span')
-                    .innerText()
-            ).trim();
+        // const actualMode =
+        //     (
+        //         await firstRow
+        //             .locator('div.payment-mode-wrapper span')
+        //             .innerText()
+        //     ).trim();
+
+        const actualMode = (
+            await this.keywords.getText(
+                this.locator.actualMode(firstRow)
+            )
+        ).trim();
 
         await StepHelper.step(
             this.page,
@@ -1582,7 +1655,7 @@ class PaymentPage {
      async verifyRefundInFinancialsPaymentHistory(
             expectedInvoiceNumber,
             refundAmount,
-            expectedMode = 'Cash'
+            expectedMode
         ) {
     
             const negativeAmount = -Math.abs(parseFloat(refundAmount));
@@ -1590,24 +1663,37 @@ class PaymentPage {
             const refundRow =
                 this.locator.financialsPaymentHistoryRows.first();
     
-            const actualRefundReceiptNumber =
-                (
-                    await refundRow.locator('td').nth(0).innerText()
-                ).trim();
+            // const actualRefundReceiptNumber =
+            //     (
+            //         await refundRow.locator('td').nth(0).innerText()
+            //     ).trim();
+
+            const actualRefundReceiptNumber = (
+                await this.keywords.getText(
+                    this.locator.actualRefundReceiptNumber(refundRow)
+                )
+            ).trim();
     
             await StepHelper.step(
                 this.page,
                 `Verify Refund Transaction/PDF Number Present | Expected: non-empty | Actual: ${actualRefundReceiptNumber}`,
                 async () => {
     
-                    expect(actualRefundReceiptNumber).not.toBe('');
+                    // expect(actualRefundReceiptNumber).not.toBe('');
+                    expect(actualRefundReceiptNumber).toBeTruthy();
                 }
             );
     
-            const actualRefundInvoiceNumber =
-                (
-                    await refundRow.locator('td').nth(1).innerText()
-                ).trim();
+            // const actualRefundInvoiceNumber =
+            //     (
+            //         await refundRow.locator('td').nth(1).innerText()
+            //     ).trim();
+
+            const actualRefundInvoiceNumber = (
+                await this.keywords.getText(
+                    this.locator.actualRefundInvoiceNumber(refundRow)
+                )
+            ).trim();
     
             await StepHelper.step(
                 this.page,
@@ -1620,9 +1706,17 @@ class PaymentPage {
                 }
             );
     
-            const actualRefundAmount =
-                (
-                    await refundRow.locator('td').nth(3).innerText()
+            // const actualRefundAmount =
+            //     (
+            //         await refundRow.locator('td').nth(3).innerText()
+            //     )
+            //         .trim()
+            //         .replace(/[₹,\s]/g, '');
+
+            const actualRefundAmount = (
+                    await this.keywords.getText(
+                        this.locator.actualRefundAmount(refundRow)
+                    )
                 )
                     .trim()
                     .replace(/[₹,\s]/g, '');
@@ -1638,12 +1732,18 @@ class PaymentPage {
                 }
             );
     
-            const actualRefundMode =
-                (
-                    await refundRow
-                        .locator('div.payment-mode-wrapper span')
-                        .innerText()
-                ).trim();
+            // const actualRefundMode =
+            //     (
+            //         await refundRow
+            //             .locator('div.payment-mode-wrapper span')
+            //             .innerText()
+            //     ).trim();
+
+            const actualRefundMode = (
+                await this.keywords.getText(
+                    this.locator.actualRefundMode(refundRow)
+                )
+            ).trim();
     
             await StepHelper.step(
                 this.page,

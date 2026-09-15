@@ -418,7 +418,7 @@ class CalendarPage {
                                 appointmentActionData.dashboardPath
                             ),
                         {
-                            timeout: timeout.navigationTimeout
+                            timeout: timeout.elementTimeout
                         }
                     )
                     .catch(() => {});
@@ -454,7 +454,7 @@ class CalendarPage {
                                 appointmentActionData.dashboardPath
                             ),
                         {
-                            timeout: timeout.navigationTimeout
+                            timeout: timeout.elementTimeout
                         }
                     )
                     .catch(() => {});
@@ -487,10 +487,13 @@ class CalendarPage {
                     patientResult
                 );
 
+                // const viewAppointmentBtn =
+                //     patientResult
+                //         .locator("button[class='view-appt-btn']")
+                //         .first();
+
                 const viewAppointmentBtn =
-                    patientResult
-                        .locator("button[class='view-appt-btn']")
-                        .first();
+                this.locator.AppointmentBtn(patientResult);
 
                 await viewAppointmentBtn.waitFor({
                     state: 'attached',
@@ -701,16 +704,33 @@ class CalendarPage {
                 );
 
 
+                // await this.page
+
+                //     .waitForURL(
+
+                //         (url) => url.pathname.includes('/dashboard'),
+
+                //         { timeout: timeout.elementTimeout }
+
+                //     )
+
+                //     .catch(() => {
+
+                //         console.log('[clickSidebarCalendarIcon] URL never matched /dashboard - falling through to wait on the search box directly instead.');
+
+                //     });
+
+
                 await this.page
-
                     .waitForURL(
-
-                        (url) => url.pathname.includes('/dashboard'),
-
-                        { timeout: timeout.elementTimeout }
-
+                        (url) =>
+                            url.pathname.includes(
+                                appointmentActionData.dashboardPath
+                            ),
+                        {
+                            timeout: timeout.elementTimeout
+                        }
                     )
-
                     .catch(() => {
 
                         console.log('[clickSidebarCalendarIcon] URL never matched /dashboard - falling through to wait on the search box directly instead.');
@@ -740,7 +760,7 @@ class CalendarPage {
 
     }
 
-    async verifyPatientNotInActiveView(patientName) {
+    async verifyPatientNotInActiveView(patientName,noAppointmentBookedTag) {
 
         await this.searchPatient(patientName);
 
@@ -753,12 +773,21 @@ class CalendarPage {
                 )
             ).trim();
 
+        // await StepHelper.step(
+        //     this.page,
+        //     `Verify Cancelled Appointment Not In Active View | Expected: No appt booked | Actual: ${actualTag}`,
+        //     async () => {
+
+        //         expect(actualTag).toBe(noAppointmentBookedTag);
+        //     }
+        // );
+
         await StepHelper.step(
             this.page,
-            `Verify Cancelled Appointment Not In Active View | Expected: No appt booked | Actual: ${actualTag}`,
+            `Verify Cancelled Appointment Not In Active View | Expected: ${noAppointmentBookedTag} | Actual: ${actualTag}`,
             async () => {
 
-                expect(actualTag).toBe('No appt booked');
+                expect(actualTag).toBe(noAppointmentBookedTag);
             }
         );
 

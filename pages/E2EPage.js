@@ -1389,15 +1389,8 @@ class E2EPage {
         // );
     }
 
-    async verifyLineItemQtyAndRate(expectedQty, expectedPackageName) {
+    async verifyLineItemQtyAndRate(expectedPackageQuantity, expectedPackageName) {
 
-        // Item Name column - confirmed DOM from earlier screenshots:
-        // first td.td-service in the row holds the item name (e.g.
-        // "Neuro PT (30 sessions)"), second td.td-service holds the
-        // Invoice Desc. This is the more literal "displayed as an
-        // invoice line item" check - on the Create Invoice screen
-        // itself, not just later on the PDF (which was already
-        // covered separately in openAndVerifyInvoicePDF()).
         const actualItemName =
             await this.locator.invoiceLineItemRow
                 .locator('td.td-service')
@@ -1424,10 +1417,10 @@ class E2EPage {
 
         await StepHelper.step(
             this.page,
-            `Verify Line Item Qty | Expected: ${expectedQty} | Actual: ${actualQty}`,
+            `Verify Line Item Qty | Expected: ${expectedPackageQuantity} | Actual: ${actualQty}`,
             async () => {
 
-                expect(actualQty).toBe(String(expectedQty));
+                expect(actualQty).toBe(String(expectedPackageQuantity));
             }
         );
 
@@ -1534,7 +1527,7 @@ class E2EPage {
 
         await this.selectInvoiceServices();
 
-        await this.verifyLineItemQtyAndRate('1', packageName);
+        await this.verifyLineItemQtyAndRate(expectedPackageQuantity, packageName);
 
         await StepHelper.step(
             this.page,
@@ -2731,7 +2724,7 @@ class E2EPage {
         const actualBalanceText =
             (
                 await this.keywords.getText(
-                    this.locator.balancePdf(0)
+                    this.locator.balancePdf(expectedPaidAmountNumber)
                 )
             ).trim();
 
@@ -3136,12 +3129,12 @@ class E2EPage {
             },
             {
                 label: 'Balance (post-payment)',
-                locator: this.locator.balancePdf(0),
+                locator: this.locator.balancePdf(expectedPaidAmountNumber),
                 expected: 'Balance : 0.00'
             },
             {
                 label: 'Credit Applied',
-                locator: this.locator.creditAppliedPdf(0),
+                locator: this.locator.creditAppliedPdf(expectedPaidAmountNumber),
                 expected: 'Credit Applied : 0.00'
             }
         ];
@@ -3311,7 +3304,7 @@ class E2EPage {
         const actualBalance =
             (
                 await this.keywords.getText(
-                    this.locator.balancePdf(0)
+                    this.locator.balancePdf(expectedPaidAmountNumber)
                 )
             ).trim();
 
@@ -3447,7 +3440,7 @@ class E2EPage {
         const actualBalance =
             (
                 await this.keywords.getText(
-                    this.locator.balancePdf(0)
+                    this.locator.balancePdf(expectedPaidAmountNumber)
                 )
             ).trim();
 

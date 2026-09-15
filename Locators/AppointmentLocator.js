@@ -130,7 +130,17 @@ class AppointmentLocator {
             'div.payment-history table tbody tr'
         );
 
-            
+        this.actualHistoryAmount = (refundRow) =>
+         refundRow.locator('td').nth(3);
+
+        // this.appointmentPatientInfoValue = (fieldName) =>
+        // page.getByText(fieldName, { exact: true }).nth(1);
+
+
+        // this.appointmentPatientInfoValue = (fieldName) =>
+        //  page.getByText(fieldName, { exact: true })
+        // .locator('..')
+        // .locator('.value');
 
             
     }

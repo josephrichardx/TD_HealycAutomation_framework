@@ -53,6 +53,10 @@ class PackageLocator {
             hasText: 'Pending'
         }); 
 
+
+        this.serviceAddButton = (pendingService) =>
+        pendingService.locator('button:not(.status)');
+
       this.addServiceButton = 'button:has(i.fa-regular.fa-plus)';
 
         // this.timeSlots =

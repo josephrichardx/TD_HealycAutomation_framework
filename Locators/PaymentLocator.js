@@ -213,6 +213,12 @@ class PaymentLocator {
             ".make-payment-btn"
         );
 
+        this.paymentModeButton = (paymentMode) =>
+        page.getByRole('button', {
+            name: paymentMode,
+            exact: true
+        });
+
         this.amountInput = page.getByPlaceholder(
             "₹ Amount"
         );
@@ -311,6 +317,36 @@ class PaymentLocator {
         this.financialsPaymentHistoryRows = page.locator(
             'div.financials-table-wrapper table tbody tr'
         );
+
+        this.actualInvoiceNumber = (firstRow) =>
+        firstRow.locator('td').nth(1);
+
+        this.actualAmount = (firstRow) =>
+        firstRow.locator('td').nth(3);
+
+        this.actualMode = (firstRow) =>
+        firstRow.locator('div.payment-mode-wrapper span');
+
+        this.actualRefundReceiptNumber = (refundRow) =>
+        refundRow.locator('td').nth(0);
+
+        this.actualRefundInvoiceNumber = (refundRow) =>
+         refundRow.locator('td').nth(1);
+
+        this.actualRefundAmount = (refundRow) =>
+         refundRow.locator('td').nth(3);
+
+        this.actualRefundMode = (refundRow) =>
+        refundRow.locator('div.payment-mode-wrapper span');
+
+        this.actualDate = (firstRow) =>
+            firstRow.locator('td').nth(1);
+
+        this.actualMethod = (firstRow) =>
+            firstRow.locator('td').nth(2);
+
+        this.actualHistoryAmount = (firstRow) =>
+        firstRow.locator('td').nth(3);
 
         // this.paymentHistoryRow =
         //     page.locator(

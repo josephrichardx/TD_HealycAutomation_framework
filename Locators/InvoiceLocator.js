@@ -19,7 +19,12 @@ class InvoiceLocator
                 name: 'Generate invoice',
                 exact: true
             });
-        
+
+        this.invoiceLineItemName = (invoiceLineItemRow) =>
+        invoiceLineItemRow
+        .locator('td.td-service')
+        .first();
+                
 
         // Invoice Services
         // this.serviceCheckbox1 =
@@ -317,6 +322,9 @@ class InvoiceLocator
 
         this.invoiceLineItemRow =
             page.locator('table.billing-table tbody tr').first();
+
+        this.invoiceLineItemNumberInputs = (invoiceLineItemRow) =>
+        invoiceLineItemRow.locator('input[type="number"]');
 
         this.invoiceAmountTxt =
             page.getByRole('textbox', {

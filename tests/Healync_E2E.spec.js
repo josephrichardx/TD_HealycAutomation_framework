@@ -1,3 +1,4 @@
+import { time } from 'node:console';
 import { test } from '../fixtures/baseTest.js';
 import { PatientPage } from '../pages/PatientPage.js';
  
@@ -12,23 +13,16 @@ const { InvoicePage } = require('../pages/InvoicePage');
 const { PaymentPage } = require('../pages/PaymentPage');
 const { CancellationPage } = require('../pages/CancellationPage.js');
 
-
-const {
-    validPatientData,
-    dobYearRange,
-    toastMessages,
-    packageData,
-    statusData,
-    invoiceData
-} = require('../testdata/E2E.json');
+const { validPatientData,dobYearRange,toastMessages,packageData,statusData,invoiceData,dateData } = require('../testdata/E2E.json');
  
-const {
-    generateUniquePatientFullName,
-    generateRandomDateOfBirth
-} = require('../utils/RandomData');
+const { generateUniquePatientFullName,generateRandomDateOfBirth } = require('../utils/RandomData');
+
+const timeoutData = require('../testdata/timeout.json');
+const { timeout } = timeoutData;
  
 test('Healync_E2E - Cancel with Full Refund (single session package)', async ({ page }) => {
  
+    const e2e = new E2EPage(page);
     const patientPage = new PatientPage(page);
     const newPatient = new NewPatient(page);
     const calendarPage = new CalendarPage(page);
@@ -43,7 +37,6 @@ test('Healync_E2E - Cancel with Full Refund (single session package)', async ({ 
         dobYearRange.minYear,
         dobYearRange.maxYear
     );
-    const e2e = new E2EPage(page);
  
     // STEP 1
  
@@ -54,15 +47,15 @@ test('Healync_E2E - Cancel with Full Refund (single session package)', async ({ 
     );
 
     //patient page
-    await newPatient.createPatientFast(
+    await newPatient.createPatientField(
         patientName,
         validPatientData,
         dobData
     );
-
+    
     await newPatient.verifySavedToastAndGoToProfile(toastMessages.patientSavedSuccess);
  
-    await page.waitForTimeout(6000);
+    await page.waitForTimeout(timeout.networkIdleTimeoutMs);
 
     await newPatient.verifyPatientProfileNameMatches(
         patientName
@@ -91,18 +84,25 @@ test('Healync_E2E - Cancel with Full Refund (single session package)', async ({ 
         patientName,
         packageData.packageName
     );
- 
+
     await packagePage.verifyPackageAddedAndAssociated(
-        packageData.packageName
+        packageData.packageName,
+        packageData.packageAddedToast,
+        packageData.breadcrumbBookPackages,
+        packageData.breadcrumbPatient,
+        packageData.breadcrumbPackages,
+        packageData.activeStatus
     );
- 
+
     // const daysAdvancedForBooking = await e2e.bookSingleSessionFromAddPackage();
     const {
     selectedSlotDate,
     daysAdvanced
-} = await packagePage.bookSingleSessionFromAddPackage();
+    } = await packagePage.bookSingleSessionFromAddPackage();
  
-    await packagePage.verifyServicesAddedToast();
+    await packagePage.verifyServicesAddedToast(
+        packageData.serviceAddedToast,
+        packageData.appointmentScheduledSubtext);
 
     //   //package
 
@@ -113,10 +113,10 @@ test('Healync_E2E - Cancel with Full Refund (single session package)', async ({ 
     await calendarPage.verifyStatus(
         statusData.expectedStatus
     );
- 
+
     await appointmentPage.verifyAppointmentPatientDetails(
         validPatientData,
-        dobData
+        dobData,
     );
 
     //appoinment
@@ -129,23 +129,33 @@ test('Healync_E2E - Cancel with Full Refund (single session package)', async ({ 
         '===== STEP 3: Generate Invoice =====',
         async () => {}
     );
- 
+
     await invoicePage.generateInvoiceWithReasonValidation(
         patientName,
         invoiceData,
-        packageData.packageName
+        packageData.expectedPackageQuantity,
+        packageData.packageName,
+        packageData.minimumRate,
+        invoiceData.discountReasonRequiredMessage,
+        invoiceData.discountReasonMandatoryMessage
+    
     );
- 
+
     const summaryAmount = await invoicePage.verifyInvoiceTotalAdjustment(
         invoiceData
     );
- 
+
     const invoiceTotal = (
         summaryAmount + parseFloat(invoiceData.adjustmentAmount)
     ).toFixed(2);
 
     await invoicePage.PaymentSection(
-        invoiceTotal
+        invoiceTotal,
+        invoiceData.sendInvoiceLabel,
+        invoiceData.expectedPaidAmount,
+        invoiceData.expectedPaidAmountNumber,
+        packageData.amountFieldEmptyValue,
+        invoiceData.invoiceNumberPrefix
     );
  
     const invoiceNumber = await invoicePage.VerifyInvoicePDF(
@@ -154,7 +164,8 @@ test('Healync_E2E - Cancel with Full Refund (single session package)', async ({ 
         invoiceData,
         summaryAmount,
         packageData.packageName,
-        dobData
+        dobData,
+        invoiceData.CreditText
     );
  
     //invoice
@@ -169,19 +180,26 @@ test('Healync_E2E - Cancel with Full Refund (single session package)', async ({ 
  
     await paymentPage.Payment(
         invoiceTotal,
-        invoiceData.paymentMode
+        invoiceData.paymentMode,
+        invoiceData.paymentRecordedMessage
     );
  
     await paymentPage.verifyPostPaymentStatus(
         invoiceTotal,
-        invoiceData.paymentMode
+        invoiceData.paymentMode,
+        invoiceData.paidStatus,
+        invoiceData.expectedPaymentDue
     );
  
     const invoicePdfReceiptNumber = await paymentPage.revalidateInvoicePDFAfterPayment(
         invoiceNumber,
-        invoiceData.paymentMode
+        invoiceData.paymentMode,
+        invoiceData.CreditText,
+        invoiceData.BalanceText,
+        invoiceData.invoiceReceiptNumberPattern,
+        invoiceData.expectedPaidAmountNumber
     );
- 
+
     await paymentPage.verifyPaymentReceipt(
         invoiceNumber,
         invoiceTotal,
@@ -199,29 +217,33 @@ test('Healync_E2E - Cancel with Full Refund (single session package)', async ({ 
         '===== STEP 5: Validate Patient Details =====',
         async () => {}
     );
- 
+
     await paymentPage.openFinancials(
         patientName
     );
  
     await invoicePage.openInvoiceHistory();
- 
+
     await invoicePage.verifyInvoiceHistoryRow(
         invoiceNumber,
         summaryAmount,
-        invoiceData.adjustmentAmount
+        invoiceData.adjustmentAmount,
+        invoiceData.expectedRemaining
     );
- 
+
     await invoicePage.openAndVerifyInvoicePdfFromFinancials(
         invoiceNumber,
         patientName,
         packageData.packageName,
         summaryAmount,
-        invoiceData.adjustmentAmount
+        invoiceData.adjustmentAmount,
+        invoiceData.BalanceText,
+        invoiceData.CreditText,
+        invoiceData.expectedPaidAmountNumber
     );
 
     //invoice
- 
+
     await paymentPage.verifyFinancialsPaymentHistory(
         invoiceNumber,
         invoiceTotal,
@@ -237,22 +259,16 @@ test('Healync_E2E - Cancel with Full Refund (single session package)', async ({ 
         patientName
     );
  
-    const monthNames5 = [
-        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-    ];
+    // const monthNames5 = [
+    //     'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    //     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    // ];
+
+    const monthNames5 = dateData.monthNames5;
  
     const formatDate5 = (d) =>
         `${monthNames5[d.getMonth()]} ${String(d.getDate()).padStart(2, '0')}, ${d.getFullYear()}`;
  
-    // const bookedDate5 = new Date();
-    // bookedDate5.setDate(bookedDate5.getDate() + daysAdvancedForBooking);
- 
-    // const bookedDateMinusOne5 = new Date(bookedDate5);
-    // bookedDateMinusOne5.setDate(bookedDateMinusOne5.getDate() - 1);
- 
-    // const bookedDatePlusOne5 = new Date(bookedDate5);
-    // bookedDatePlusOne5.setDate(bookedDatePlusOne5.getDate() + 1);
     const bookedDate5 = new Date(selectedSlotDate);
 
     const bookedDateMinusOne5 = new Date(bookedDate5);
@@ -293,13 +309,15 @@ test('Healync_E2E - Cancel with Full Refund (single session package)', async ({ 
 //     //package
     await packagePage.verifyPackageNameAndRefundAmount(
         packageData.packageName,
-        invoiceTotal
+        invoiceTotal,
     );
- 
+
     await packagePage.attemptOverRefundAndVerifyBlocked(
-        invoiceTotal
+        invoiceTotal,
+        packageData.abandonedStatus,
+        packageData.amountFieldEmptyValue
     );
- 
+
     await cancellationPage.PackageFullRefundcancel();
 
     //cancel
@@ -311,12 +329,14 @@ test('Healync_E2E - Cancel with Full Refund (single session package)', async ({ 
     );
  
     await invoicePage.openInvoiceHistory();
- 
+
     await invoicePage.verifyPostRefundInvoicePdf(
         invoiceNumber,
-        invoiceTotal
+        invoiceTotal,
+        invoiceData.BalanceText,
+        invoiceData.expectedPaidAmountNumber
     );
- 
+
     await paymentPage.verifyFinancialsPaymentHistory(
         invoiceNumber,
         invoiceTotal,
@@ -343,7 +363,8 @@ test('Healync_E2E - Cancel with Full Refund (single session package)', async ({ 
     await calendarPage.SidebarCalendarIcon();
  
     await calendarPage.verifyPatientNotInActiveView(
-        patientName
+        patientName,
+        statusData.noAppointmentBookedTag
     );
  
     // await e2e.navigateToBookedDate(
@@ -356,7 +377,7 @@ test('Healync_E2E - Cancel with Full Refund (single session package)', async ({ 
  
     await calendarPage.enableCancelledToggle();
 
-    await page.waitForTimeout(5000);
+    await page.waitForTimeout(timeout.networkIdleTimeoutMs);
 
     await appointmentPage.verifyAndClickCancelledAppointmentCard(
         patientName
@@ -365,8 +386,12 @@ test('Healync_E2E - Cancel with Full Refund (single session package)', async ({ 
     
     // STEP 7 marker (Part 2: Final Validations)
  
-    await appointmentPage.locator.appointmentPatientInfoValue('UHID').waitFor({ state: 'visible' });
+    // await appointmentPage.locator.appointmentPatientInfoValue('UHID').waitFor({ state: 'visible' });
  
+    await appointmentPage.verifyAppointmentPatientInfo(
+    validPatientData
+    );
+
     await appointmentPage.verifyAppointmentPatientDetails(
         validPatientData,
         dobData
@@ -375,19 +400,25 @@ test('Healync_E2E - Cancel with Full Refund (single session package)', async ({ 
     //calendar
 
     //invoice
+
     await appointmentPage.verifyPostRefundAppointmentDetails(
-        invoiceTotal
+        invoiceTotal,
+        invoiceData.expectedRemaining,
+        invoiceData.refundedStatus
     );
-   
+
     await invoicePage.reopenAndVerifyRefundedInvoicePdf(
         invoiceNumber,
-        invoiceTotal
+        invoiceTotal,
+        invoiceData.BalanceText,
+        invoiceData.expectedPaidAmountNumber
     );
  
     await invoicePage.verifyRefundReceiptPdf(
         patientName,
         invoiceTotal,
-        invoiceData.paymentMode
+        invoiceData.paymentMode,
+        invoiceData.refundReceiptTitle
     );
 
     //invoice

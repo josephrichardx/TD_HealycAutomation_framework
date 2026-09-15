@@ -11,10 +11,15 @@
     "address": "address",
     "expectedVipTooltipText": "Enabling this will mask the patient's mobile and WhatsApp numbers. Once marked as VIP, this cannot be changed later.",
     "additionalDetails": {
-      "treatingDoctor": "test doctor",
-      "medicalCondition": "None",
-      "pincode": "1234",
-      "patientCategory": "patient"
+    "treatingDoctor": "test doctor",
+    "medicalCondition": "None",
+    "pincode": "1234",
+    "patientCategory": "patient",
+    "uhidField": "UHID",
+    "ageField": "Age",
+    "genderField": "Gender",
+    "contactField": "Contact",
+    "referralSourceField": "Referral source"
     }
   },
   "dobYearRange": {
@@ -27,16 +32,42 @@
   },
   "packageData": {
     "packageName": "Neuro PT (30 sessions)",
-    "packageShortName": "Neuro PT"
+    "packageShortName": "Neuro PT",
+    "expectedPackageQuantity": "1",
+    "packageAddedToast": "Package is added",
+    "breadcrumbBookPackages": "Book Packages",
+    "breadcrumbPatient": "Patient",
+    "breadcrumbPackages": "Packages",
+    "activeStatus": "Active",
+    "serviceAddedToast": "Services is Added",
+    "appointmentScheduledSubtext": "Your appointment have been scheduled successfully",
+    "abandonedStatus": "Abandoned",
+    "amountFieldEmptyValue": "",
+    "minimumRate": 0
   },
   "statusData": {
-    "expectedStatus": "Confirmed"
+    "expectedStatus": "Confirmed",
+    "noAppointmentBookedTag": "No appt booked"
   },
   "invoiceData": {
     "adjustmentAmount": "10",
     "adjustmentName": "Discount",
     "adjustmentReason": "Consult Discount",
-    "paymentMode": "Cash"
+    "paymentMode": "Cash",
+    "paymentRecordedMessage": "Payment recorded successfully",
+    "paidStatus": "Paid",
+    "expectedPaymentDue": "0.00",
+    "CreditText": "Credit Applied : 0.00",
+    "BalanceText": "Balance : 0.00",
+    "expectedRemaining": "0.00",
+    "refundedStatus": "Refunded",
+    "discountReasonRequiredMessage": "Discount Reason Required",
+    "discountReasonMandatoryMessage": "Please provide a reason for the discount or adjustment.",
+    "sendInvoiceLabel": "Send invoice",
+    "expectedPaidAmount": "0.00",
+    "expectedPaidAmountNumber": 0,
+    "invoiceNumberPrefix": "INV-",
+    "refundReceiptTitle": "Refund Receipt"
   },
   "cancellationData": {
     "cancellationReason": "Emergency or unexpected issue",
@@ -49,6 +80,23 @@
     "networkIdleTimeoutMs": 15000,
     "toastWaitTimeoutMs": 15000,
     "cancellationStatusTimeoutMs": 30000
-  }
+  },
+
+  "dateData": {
+  "monthNames5": [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec"
+  ]
+}
 }
  

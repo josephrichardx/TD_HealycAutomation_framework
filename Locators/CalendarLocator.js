@@ -28,6 +28,9 @@ class CalendarLocator {
                 `//div[@class='list-item-wrapper'][contains(.,'${patientName}')]`
             ).first();
 
+        this.AppointmentBtn = (patientResult) =>
+        patientResult.locator("button[class='view-appt-btn']").first();
+
         this.viewAppointmentBtn = page.locator(
             "//div[@class='list-item-wrapper']//button[@class='view-appt-btn']"
         );

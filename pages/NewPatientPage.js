@@ -630,7 +630,8 @@ export class NewPatient {
                     )
                 ).trim();
 
-            expect(text).not.toBe('.');
+            // expect(text).not.toBe('.');
+            expect(text).toBeTruthy();
 
         }).toPass({
             timeout: timeout.navigationTimeout
@@ -2066,7 +2067,7 @@ export class NewPatient {
         );
     }
 
-    async createPatientFast(
+    async createPatientField(
         patientName,
         patientData,
         dobData
@@ -2224,21 +2225,34 @@ export class NewPatient {
             }
         );
 
+        // await StepHelper.step(
+        //     this.page,
+        //     `Select Gender - ${patientData.gender}`,
+        //     async () => {
+
+        //         const genderBtn =
+        //             patientData.gender === 'Female'
+        //                 ? this.locator.femaleBtn
+        //                 : patientData.gender === 'Other'
+        //                     ? this.locator.otherGenderBtn
+        //                     : this.locator.maleBtn;
+
+        //         await this.keywords.click(
+        //             genderBtn
+        //         );
+        //     }
+        // );
+
         await StepHelper.step(
             this.page,
             `Select Gender - ${patientData.gender}`,
             async () => {
 
-                const genderBtn =
-                    patientData.gender === 'Female'
-                        ? this.locator.femaleBtn
-                        : patientData.gender === 'Other'
-                            ? this.locator.otherGenderBtn
-                            : this.locator.maleBtn;
-
-                await this.keywords.click(
-                    genderBtn
+                const genderBtn = this.locator.genderBtn(
+                    patientData.gender
                 );
+
+                await this.keywords.click(genderBtn);
             }
         );
 

@@ -2106,7 +2106,11 @@ class InvoicePage {
     async generateInvoiceWithReasonValidation(
         patientName,
         invoiceData,
-        packageName
+        expectedPackageQuantity,
+        packageName,
+        minimumRate,
+        discountReasonRequiredMessage,
+        discountReasonMandatoryMessage
     ) {
 
         await StepHelper.step(
@@ -2121,7 +2125,7 @@ class InvoicePage {
 
         await this.selectServices();
 
-        await this.verifyLineItemQtyAndRate('1', packageName);
+        await this.verifyLineItemQtyAndRate(expectedPackageQuantity, packageName,minimumRate);
 
         await StepHelper.step(
             this.page,
@@ -2163,11 +2167,11 @@ class InvoicePage {
 
         await StepHelper.step(
             this.page,
-            `Verify Reason Mandatory Validation | Expected: Discount Reason Required | Actual: ${actualErrorTitle}`,
+            `Verify Reason Mandatory Validation | Expected: ${discountReasonRequiredMessage} | Actual: ${actualErrorTitle}`,
             async () => {
 
                 expect(actualErrorTitle).toBe(
-                    'Discount Reason Required'
+                    discountReasonRequiredMessage
                 );
             }
         );
@@ -2181,11 +2185,11 @@ class InvoicePage {
 
         await StepHelper.step(
             this.page,
-            `Verify Reason Mandatory Message | Expected: Please provide a reason for the discount or adjustment. | Actual: ${actualErrorSubtext}`,
+            `Verify Reason Mandatory Message | Expected: ${discountReasonMandatoryMessage} | Actual: ${actualErrorSubtext}`,
             async () => {
 
                 expect(actualErrorSubtext).toBe(
-                    'Please provide a reason for the discount or adjustment.'
+                   discountReasonMandatoryMessage
                 );
             }
         );
@@ -2224,20 +2228,19 @@ class InvoicePage {
         );
     }
 
-    async verifyLineItemQtyAndRate(expectedQty, expectedPackageName) {
+    async verifyLineItemQtyAndRate(expectedPackageQuantity, expectedPackageName,minimumRate) {
 
-        // Item Name column - confirmed DOM from earlier screenshots:
-        // first td.td-service in the row holds the item name (e.g.
-        // "Neuro PT (30 sessions)"), second td.td-service holds the
-        // Invoice Desc. This is the more literal "displayed as an
-        // invoice line item" check - on the Create Invoice screen
-        // itself, not just later on the PDF (which was already
-        // covered separately in openAndVerifyInvoicePDF()).
-        const actualItemName =
-            await this.locator.invoiceLineItemRow
-                .locator('td.td-service')
-                .first()
-                .innerText();
+        // const actualItemName =
+        //     await this.locator.invoiceLineItemRow
+        //         .locator('td.td-service')
+        //         .first()
+        //         .innerText();
+
+       const actualItemName = await this.keywords.getText(
+            this.locator.invoiceLineItemName(
+                this.locator.invoiceLineItemRow
+            )
+        );
 
         await StepHelper.step(
             this.page,
@@ -2250,32 +2253,46 @@ class InvoicePage {
             }
         );
 
-        const numberInputs =
-            this.locator.invoiceLineItemRow.locator(
-                'input[type="number"]'
-            );
+        // const numberInputs =
+        //     this.locator.invoiceLineItemRow.locator(
+        //         'input[type="number"]'
+        //     );
+
+        const numberInputs = this.locator.invoiceLineItemNumberInputs(
+        this.locator.invoiceLineItemRow
+        );
 
         const actualQty = await numberInputs.nth(0).inputValue();
 
         await StepHelper.step(
             this.page,
-            `Verify Line Item Qty | Expected: ${expectedQty} | Actual: ${actualQty}`,
+            `Verify Line Item Qty | Expected: ${expectedPackageQuantity} | Actual: ${actualQty}`,
             async () => {
 
-                expect(actualQty).toBe(String(expectedQty));
+                expect(actualQty).toBe(String(expectedPackageQuantity));
             }
         );
 
         const actualRate = await numberInputs.nth(1).inputValue();
 
-        await StepHelper.step(
-            this.page,
-            `Verify Line Item Rate Is Populated | Expected: a positive number | Actual: ${actualRate}`,
-            async () => {
+        // await StepHelper.step(
+        //     this.page,
+        //     `Verify Line Item Rate Is Populated | Expected: ${expectedRateValidation} | Actual: ${actualRate}`,
+        //     async () => {
 
-                expect(Number(actualRate)).toBeGreaterThan(0);
-            }
-        );
+        //         expect(Number(actualRate)).toBeGreaterThan(0);
+        //     }
+        // );
+
+        await StepHelper.step(
+        this.page,
+        `Verify Line Item Rate Is Populated | Expected: greater than ${minimumRate} | Actual: ${actualRate}`,
+        async () => {
+            expect(Number(actualRate)).toBeGreaterThan(
+                minimumRate
+            );
+        }
+    );
     }
 
 async verifyInvoiceTotalAdjustment(
@@ -2390,7 +2407,7 @@ async verifyInvoiceTotalAdjustment(
 
     }
 
-    async PaymentSection(expectedInvoiceTotal = null) {
+    async PaymentSection(expectedInvoiceTotal = null,sendInvoiceLabel,expectedPaidAmount,expectedPaidAmountNumber,amountFieldEmptyValue,invoiceNumberPrefix) {
 
         let invoiceNumber;
         let paymentDue;
@@ -2426,12 +2443,22 @@ async verifyInvoiceTotalAdjustment(
 
         // Verify Invoice Number
 
+        // await StepHelper.step(
+        //     this.page,
+        //     `Verify Invoice Number Format | Expected: starts with "INV-" | Actual: ${invoiceNumber}`,
+        //     async () => {
+
+        //         expect(invoiceNumber).toMatch(/^INV-/);
+        //     }
+        // );
+
         await StepHelper.step(
             this.page,
-            `Verify Invoice Number Format | Expected: starts with "INV-" | Actual: ${invoiceNumber}`,
+            `Verify Invoice Number Format | Expected: starts with "${invoiceNumberPrefix}" | Actual: ${invoiceNumber}`,
             async () => {
-
-                expect(invoiceNumber).toMatch(/^INV-/);
+                expect(invoiceNumber).toMatch(
+                    new RegExp(`^${invoiceNumberPrefix}`)
+                );
             }
         );
 
@@ -2452,17 +2479,26 @@ async verifyInvoiceTotalAdjustment(
             }
         );
 
+        // await StepHelper.step(
+        //     this.page,
+        //     `Verify Send Invoice Label | Expected: Send invoice | Actual: ${this._sendInvoiceText}`,
+        //     async () => {
+
+        //         expect(this._sendInvoiceText).toBe(
+        //             'Send invoice'
+        //         );
+        //     }
+        // );  
+
         await StepHelper.step(
-            this.page,
-            `Verify Send Invoice Label | Expected: Send invoice | Actual: ${this._sendInvoiceText}`,
-            async () => {
-
-                expect(this._sendInvoiceText).toBe(
-                    'Send invoice'
-                );
-            }
-        );
-
+        this.page,
+        `Verify Send Invoice Label | Expected: ${sendInvoiceLabel} | Actual: ${this._sendInvoiceText}`,
+        async () => {
+            expect(this._sendInvoiceText).toBe(
+                sendInvoiceLabel
+            );
+        }
+    );
 
         // Get Payment Due
 
@@ -2504,7 +2540,7 @@ async verifyInvoiceTotalAdjustment(
 
                 } else {
 
-                    expect(paymentDue).not.toBe('');
+                    expect(paymentDue).not.toBe(amountFieldEmptyValue);
                 }
             }
         );
@@ -2532,7 +2568,7 @@ async verifyInvoiceTotalAdjustment(
 
         await StepHelper.step(
             this.page,
-            `Verify Paid Amount | Expected: ₹0.00 | Actual: ${paidAmount}`,
+            `Verify Paid Amount | Expected: ₹${expectedPaidAmount}| Actual: ${paidAmount}`,
             async () => {
 
                 const actualPaid =
@@ -2540,7 +2576,7 @@ async verifyInvoiceTotalAdjustment(
                         paidAmount.replace(/[₹,\s]/g, '')
                     );
 
-                expect(actualPaid).toBe(0);
+                expect(actualPaid).toBe(expectedPaidAmountNumber);
             }
         );
 
@@ -2588,7 +2624,7 @@ async verifyInvoiceTotalAdjustment(
 
                 } else {
 
-                    expect(totalAmount).not.toBe('');
+                    expect(totalAmount).not.toBe(amountFieldEmptyValue);
                 }
             }
         );
@@ -2600,7 +2636,8 @@ async verifyInvoiceTotalAdjustment(
     invoiceData,
     summaryAmount,
     packageName = null,
-    dobData = null
+    dobData = null,
+    CreditText
     ) {
 
     let invoiceNumber;
@@ -2625,7 +2662,8 @@ async verifyInvoiceTotalAdjustment(
                 `Invoice Number: ${invoiceNumber}`
             );
 
-            expect(invoiceNumber).not.toBe('');
+            // expect(invoiceNumber).not.toBe('');
+            expect(invoiceNumber).toBeTruthy();
         }
     );
 
@@ -2655,7 +2693,7 @@ async verifyInvoiceTotalAdjustment(
 
             await this.keywords.waitForElement(
                 this.locator.closePdfPreviewBtn,
-                30000
+                timeout.elementTimeout
             );
         }
     );
@@ -2744,10 +2782,6 @@ async verifyInvoiceTotalAdjustment(
         // Age
         // ==========================================
 
-        // dobData (new patient-creation flow) takes priority
-        // when provided; falls back to the old flat
-        // patientData.age for the 4 other existing tests
-        // (WF_CALADN_03/04/125/126) that call this without it.
         const resolvedAge = dobData
             ? require('../utils/RandomData')
                 .calculateAgeFromDate(dobData.dateObj)
@@ -2951,7 +2985,7 @@ async verifyInvoiceTotalAdjustment(
         // ==========================================
 
         const expectedCreditText =
-            `Credit Applied : 0.00`;
+           CreditText
 
         const actualCreditText =
             (
@@ -3033,7 +3067,8 @@ async verifyInvoiceTotalAdjustment(
      async verifyInvoiceHistoryRow(
         expectedInvoiceNumber,
         summaryAmount,
-        adjustmentAmount
+        adjustmentAmount,
+        expectedRemaining
     ) {
 
         const total = summaryAmount + parseFloat(adjustmentAmount);
@@ -3120,12 +3155,26 @@ async verifyInvoiceTotalAdjustment(
                 )
             ).trim();
 
+        // await StepHelper.step(
+        //     this.page,
+        //     `Verify Remaining Amount in Invoice History | Expected: 0 | Actual: ${actualRemaining}`,
+        //     async () => {
+
+        //         // expect(parseFloat(actualRemaining)).toBe(expectedRemaining);
+        //         expect(parseFloat(actualRemaining)).toBe(
+        //             parseFloat(expectedRemaining)
+        //         );
+        //     }
+        // );
+
         await StepHelper.step(
             this.page,
-            `Verify Remaining Amount in Invoice History | Expected: 0 | Actual: ${actualRemaining}`,
+            `Verify Remaining Amount in Invoice History | Expected: ${expectedRemaining} | Actual: ${actualRemaining}`,
             async () => {
 
-                expect(parseFloat(actualRemaining)).toBe(0);
+                expect(parseFloat(actualRemaining)).toBe(
+                    parseFloat(expectedRemaining)
+                );
             }
         );
     }
@@ -3135,7 +3184,11 @@ async verifyInvoiceTotalAdjustment(
             patientName,
             packageName,
             summaryAmount,
-            adjustmentAmount
+            adjustmentAmount,
+            BalanceText,
+            CreditText,
+            expectedPaidAmountNumber
+            
         ) {
     
             const total = summaryAmount + parseFloat(adjustmentAmount);
@@ -3193,13 +3246,13 @@ async verifyInvoiceTotalAdjustment(
                 },
                 {
                     label: 'Balance (post-payment)',
-                    locator: this.locator.balancePdf(0),
-                    expected: 'Balance : 0.00'
+                    locator: this.locator.balancePdf(expectedPaidAmountNumber),
+                    expected: BalanceText
                 },
                 {
                     label: 'Credit Applied',
-                    locator: this.locator.creditAppliedPdf(0),
-                    expected: 'Credit Applied : 0.00'
+                    locator: this.locator.creditAppliedPdf(expectedPaidAmountNumber),
+                    expected: CreditText
                 }
             ];
     
@@ -3245,7 +3298,9 @@ async verifyInvoiceTotalAdjustment(
     
         async verifyPostRefundInvoicePdf(
         expectedInvoiceNumber,
-        refundAmount
+        refundAmount,
+        BalanceText,
+        expectedPaidAmountNumber
     ) {
 
         await StepHelper.step(
@@ -3294,16 +3349,27 @@ async verifyInvoiceTotalAdjustment(
         const actualBalance =
             (
                 await this.keywords.getText(
-                    this.locator.balancePdf(0)
+                    this.locator.balancePdf(expectedPaidAmountNumber)
                 )
             ).trim();
 
+        // await StepHelper.step(
+        //     this.page,
+        //     `Verify Balance Due Is Zero | Expected: Balance : 0.00 | Actual: ${actualBalance}`,
+        //     async () => {
+
+        //         expect(actualBalance).toBe(BalanceText);
+        //     }
+        // );
+
         await StepHelper.step(
             this.page,
-            `Verify Balance Due Is Zero | Expected: Balance : 0.00 | Actual: ${actualBalance}`,
+            `Verify Balance Due Is Zero | Expected: ${BalanceText} | Actual: ${actualBalance}`,
             async () => {
 
-                expect(actualBalance).toBe('Balance : 0.00');
+                expect(actualBalance).toBe(
+                    BalanceText
+                );
             }
         );
 
@@ -3359,7 +3425,9 @@ async verifyInvoiceTotalAdjustment(
 
      async reopenAndVerifyRefundedInvoicePdf(
         expectedInvoiceNumber,
-        refundAmount
+        refundAmount,
+        BalanceText,
+        expectedPaidAmountNumber
     ) {
 
         await StepHelper.step(
@@ -3426,16 +3494,24 @@ async verifyInvoiceTotalAdjustment(
         const actualBalance =
             (
                 await this.keywords.getText(
-                    this.locator.balancePdf(0)
+                    this.locator.balancePdf(expectedPaidAmountNumber)
                 )
             ).trim();
 
+        // await StepHelper.step(
+        //     this.page,
+        //     `Verify Balance Due Is Zero | Expected: Balance : 0.00 | Actual: ${actualBalance}`,
+        //     async () => {
+
+        //         expect(actualBalance).toBe(BalanceText);
+        //     }
+        // );
+
         await StepHelper.step(
             this.page,
-            `Verify Balance Due Is Zero | Expected: Balance : 0.00 | Actual: ${actualBalance}`,
+            `Verify Balance Due Is Zero | Expected: ${BalanceText} | Actual: ${actualBalance}`,
             async () => {
-
-                expect(actualBalance).toBe('Balance : 0.00');
+                expect(actualBalance).toBe(BalanceText);
             }
         );
 
@@ -3474,7 +3550,8 @@ async verifyInvoiceTotalAdjustment(
      async verifyRefundReceiptPdf(
             patientName,
             expectedAmount,
-            expectedPaymentMode
+            expectedPaymentMode,
+            refundReceiptTitle
         ) {
             // .nth(1) explicitly targets the second row in the Payment History table (the refund)
             const refundRow =
@@ -3513,9 +3590,9 @@ async verifyInvoiceTotalAdjustment(
 
             await StepHelper.step(
                 this.page,
-                `Verify Receipt Title | Expected: Refund Receipt | Actual: ${actualTitle}`,
+                `Verify Receipt Title | Expected: ${refundReceiptTitle} | Actual: ${actualTitle}`,
                 async () => {
-                    expect(actualTitle).toBe('Refund Receipt');
+                    expect(actualTitle).toBe(refundReceiptTitle);
                 }
             );
 

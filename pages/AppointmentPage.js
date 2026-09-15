@@ -655,89 +655,188 @@ class AppointmentPage {
         );
     }
 
-      async verifyAppointmentPatientDetails(patientData, dobData) {
+    //   async verifyAppointmentPatientDetails(patientData, dobData,uhidField,ageField,genderField,contactField,referralSourceField) {
 
-        const readField = (fieldLabel) => async () =>
-            (
-                await this.locator
-                    .appointmentPatientInfoValue(fieldLabel)
-                    .innerText({ timeout: timeout.networkIdleTimeoutMs })
-            ).trim();
+    //     // const readField = (fieldLabel) => async () =>
+    //     //     (
+    //     //         await this.locator
+    //     //             .appointmentPatientInfoValue(fieldLabel)
+    //     //             .innerText({ timeout: timeout.networkIdleTimeoutMs })
+    //     //     ).trim();
 
-        const { calculateAgeFromDate } = require('../utils/RandomData');
-        const expectedAge = calculateAgeFromDate(dobData.dateObj);
+    //         const readField = (fieldLabel) => async () =>
+    //         (
+    //             await this.keywords.getText(
+    //                 this.locator.appointmentPatientInfoValue(fieldLabel)
+    //             )
+    //         ).trim();
 
-        await Verify.state(
-            this.page,
-            'UHID Field Present (Appointment Details)',
-            this.locator.appointmentPatientInfoValue('UHID'),
-            { visible: true }
-        );
+    //     const { calculateAgeFromDate } = require('../utils/RandomData');
+    //     const expectedAge = calculateAgeFromDate(dobData.dateObj);
 
-        const actualUhid = await Verify.record(
-            this.page,
-            'UHID (Appointment Details)',
-            readField('UHID')
-        );
+    //     await Verify.state(
+    //         this.page,
+    //         'UHID Field Present (Appointment Details)',
+    //         this.locator.appointmentPatientInfoValue(uhidField),
+    //         { visible: true }
+    //     );
 
-        await Verify.state(
-            this.page,
-            'Age Field Present (Appointment Details)',
-            this.locator.appointmentPatientInfoValue('Age'),
-            { visible: true }
-        );
+    //     const actualUhid = await Verify.record(
+    //         this.page,
+    //         'UHID (Appointment Details)',
+    //         readField(uhidField)
+    //     );
 
-        await Verify.equals(
-            this.page,
-            'Verify Age (Appointment Details)',
-            String(expectedAge),
-            readField('Age')
-        );
+    //     await Verify.state(
+    //         this.page,
+    //         'Age Field Present (Appointment Details)',
+    //         this.locator.appointmentPatientInfoValue(ageField),
+    //         { visible: true }
+    //     );
 
-        await Verify.state(
-            this.page,
-            'Gender Field Present (Appointment Details)',
-            this.locator.appointmentPatientInfoValue('Gender'),
-            { visible: true }
-        );
+    //     await Verify.equals(
+    //         this.page,
+    //         'Verify Age (Appointment Details)',
+    //         String(expectedAge),
+    //         readField(ageField)
+    //     );
 
-        await Verify.equals(
-            this.page,
-            'Verify Gender (Appointment Details)',
-            patientData.gender,
-            readField('Gender')
-        );
+    //     await Verify.state(
+    //         this.page,
+    //         'Gender Field Present (Appointment Details)',
+    //         this.locator.appointmentPatientInfoValue(genderField),
+    //         { visible: true }
+    //     );
 
-        await Verify.state(
-            this.page,
-            'Contact Field Present (Appointment Details)',
-            this.locator.appointmentPatientInfoValue('Contact'),
-            { visible: true }
-        );
+    //     await Verify.equals(
+    //         this.page,
+    //         'Verify Gender (Appointment Details)',
+    //         patientData.gender,
+    //         readField(genderField)
+    //     );
 
-        await Verify.contains(
-            this.page,
-            'Verify Contact (Appointment Details)',
-            patientData.mobileNumber,
-            readField('Contact')
-        );
+    //     await Verify.state(
+    //         this.page,
+    //         'Contact Field Present (Appointment Details)',
+    //         this.locator.appointmentPatientInfoValue(contactField),
+    //         { visible: true }
+    //     );
 
-        await Verify.state(
-            this.page,
-            'Referral Source Field Present (Appointment Details)',
-            this.locator.appointmentPatientInfoValue('Referral source'),
-            { visible: true }
-        );
-        await Verify.contains(
-            this.page,
-            'Verify Referral Source (Appointment Details)',
-            patientData.referralBy,
-            readField('Referral source')
-        );
+    //     await Verify.contains(
+    //         this.page,
+    //         'Verify Contact (Appointment Details)',
+    //         patientData.mobileNumber,
+    //         readField(contactField)
+    //     );
 
-        return actualUhid;
-    }
+    //     await Verify.state(
+    //         this.page,
+    //         'Referral Source Field Present (Appointment Details)',
+    //         this.locator.appointmentPatientInfoValue(referralSourceField),
+    //         { visible: true }
+    //     );
 
+    //     await Verify.contains(
+    //         this.page,
+    //         'Verify Referral Source (Appointment Details)',
+    //         patientData.referralBy,
+    //         readField(referralSourceField)
+    //     );
+
+    //     return actualUhid;
+    // }
+
+    async verifyAppointmentPatientDetails(patientData, dobData) {
+
+    const readField = (fieldLabel) => async () =>
+        (
+            await this.keywords.getText(
+                this.locator.appointmentPatientInfoValue(fieldLabel)
+            )
+        ).trim();
+
+    const { calculateAgeFromDate } = require('../utils/RandomData');
+    const expectedAge = calculateAgeFromDate(dobData.dateObj);
+
+    const {
+        uhidField,
+        ageField,
+        genderField,
+        contactField,
+        referralSourceField
+    } = patientData.additionalDetails;
+
+    await Verify.state(
+        this.page,
+        'UHID Field Present (Appointment Details)',
+        this.locator.appointmentPatientInfoValue(uhidField),
+        { visible: true }
+    );
+
+    const actualUhid = await Verify.record(
+        this.page,
+        'UHID (Appointment Details)',
+        readField(uhidField)
+    );
+
+    await Verify.state(
+        this.page,
+        'Age Field Present (Appointment Details)',
+        this.locator.appointmentPatientInfoValue(ageField),
+        { visible: true }
+    );
+
+    await Verify.equals(
+        this.page,
+        'Verify Age (Appointment Details)',
+        String(expectedAge),
+        readField(ageField)
+    );
+
+    await Verify.state(
+        this.page,
+        'Gender Field Present (Appointment Details)',
+        this.locator.appointmentPatientInfoValue(genderField),
+        { visible: true }
+    );
+
+    await Verify.equals(
+        this.page,
+        'Verify Gender (Appointment Details)',
+        patientData.gender,
+        readField(genderField)
+    );
+
+    await Verify.state(
+        this.page,
+        'Contact Field Present (Appointment Details)',
+        this.locator.appointmentPatientInfoValue(contactField),
+        { visible: true }
+    );
+
+    await Verify.contains(
+        this.page,
+        'Verify Contact (Appointment Details)',
+        patientData.mobileNumber,
+        readField(contactField)
+    );
+
+    await Verify.state(
+        this.page,
+        'Referral Source Field Present (Appointment Details)',
+        this.locator.appointmentPatientInfoValue(referralSourceField),
+        { visible: true }
+    );
+
+    await Verify.contains(
+        this.page,
+        'Verify Referral Source (Appointment Details)',
+        patientData.referralBy,
+        readField(referralSourceField)
+    );
+
+    return actualUhid;
+}
     async verifyAndClickCancelledAppointmentCard(patientName) {
 
         const card =
@@ -767,7 +866,7 @@ class AppointmentPage {
         );
     }
 
-     async verifyPostRefundAppointmentDetails(refundAmount) {
+     async verifyPostRefundAppointmentDetails(refundAmount,expectedRemaining,refundedStatus) {
 
             const actualPaymentDue =
                 (
@@ -776,13 +875,23 @@ class AppointmentPage {
                     )
                 ).trim();
 
+            // await StepHelper.step(
+            //     this.page,
+            //     `Verify Due Amount Is Zero | Expected: 0.00 | Actual: ${actualPaymentDue}`,
+            //     async () => {
+            //         expect(actualPaymentDue).toContain(expectedRemaining);
+            //     }
+            // );
+
             await StepHelper.step(
-                this.page,
-                `Verify Due Amount Is Zero | Expected: 0.00 | Actual: ${actualPaymentDue}`,
-                async () => {
-                    expect(actualPaymentDue).toContain('0.00');
-                }
-            );
+            this.page,
+            `Verify Due Amount Is Zero | Expected: ${expectedRemaining} | Actual: ${actualPaymentDue}`,
+            async () => {
+                expect(actualPaymentDue).toContain(
+                   expectedRemaining
+                );
+            }
+        );
 
             const actualStatus =
                 (
@@ -791,11 +900,19 @@ class AppointmentPage {
                     )
                 ).trim();
 
+            // await StepHelper.step(
+            //     this.page,
+            //     `Verify Payment Due Status Is Refunded | Expected: Refunded | Actual: ${actualStatus}`,
+            //     async () => {
+            //         expect(actualStatus).toBe(refundedStatus);
+            //     }
+            // );
+
             await StepHelper.step(
                 this.page,
-                `Verify Payment Due Status Is Refunded | Expected: Refunded | Actual: ${actualStatus}`,
+                `Verify Payment Due Status Is Refunded | Expected: ${refundedStatus} | Actual: ${actualStatus}`,
                 async () => {
-                    expect(actualStatus).toBe('Refunded');
+                    expect(actualStatus).toBe(refundedStatus);
                 }
             );
 
@@ -806,24 +923,41 @@ class AppointmentPage {
                     )
                 ).trim();
 
+            // await StepHelper.step(
+            //     this.page,
+            //     `Verify Paid Amount Is Zero | Expected: 0.00 | Actual: ${actualPaidAmount}`,
+            //     async () => {
+            //         expect(actualPaidAmount).toContain(expectedRemaining);
+            //     }
+            // );
+
             await StepHelper.step(
                 this.page,
-                `Verify Paid Amount Is Zero | Expected: 0.00 | Actual: ${actualPaidAmount}`,
+                `Verify Paid Amount Is Zero | Expected: ${expectedRemaining} | Actual: ${actualPaidAmount}`,
                 async () => {
-                    expect(actualPaidAmount).toContain('0.00');
+                    expect(actualPaidAmount).toContain(expectedRemaining);
                 }
             );
+
             const negativeAmount = -Math.abs(parseFloat(refundAmount));
 
             const refundRow =
                 this.locator.appointmentPaymentHistoryRows.nth(1); 
 
-            const actualHistoryAmount =
-                (
-                    await refundRow.locator('td').nth(3).innerText()
+            // const actualHistoryAmount =
+            //     (
+            //         await refundRow.locator('td').nth(3).innerText()
+            //     )
+            //         .trim()
+            //         .replace(/[₹,\s]/g, '');
+
+            const actualHistoryAmount = (
+                await this.keywords.getText(
+                    this.locator.actualHistoryAmount(refundRow)
                 )
-                    .trim()
-                    .replace(/[₹,\s]/g, '');
+            )
+                .trim()
+                .replace(/[₹,\s]/g, '');
 
             await StepHelper.step(
                 this.page,
@@ -836,10 +970,18 @@ class AppointmentPage {
             );
         }
 
-    
+   async verifyAppointmentPatientInfo(patientData) {
+    await this.locator
+        .appointmentPatientInfoValue(
+        patientData.additionalDetails.uhidField
+        )
+        .waitFor({
+        state: 'visible'
+        });
+    }
 
 
-
+      
 }
 
 module.exports = { AppointmentPage };
