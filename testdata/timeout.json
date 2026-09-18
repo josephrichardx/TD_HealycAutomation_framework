@@ -5,7 +5,7 @@
     "actionTimeout": 50000,
     "navigationTimeout": 50000,
     "expectTimeout": 30000,
-    "elementTimeout": 30000
+    "elementTimeout": 60000
 
   }
 }

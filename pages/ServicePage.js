@@ -52,6 +52,13 @@ class ServicePage {
             }
         );
 
+        //new
+        await this.verification.verifyText(
+            this.locator.patientSearchResult,
+            patientName,
+            `Verify searched patient name is displayed as ${patientName}`
+        );
+
         const patient =
             this.locator.getPatient(
                 patientName

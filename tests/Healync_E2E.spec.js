@@ -47,7 +47,7 @@ test('Healync_E2E - Cancel with Full Refund (single session package)', async ({ 
     );
 
     //patient page
-    await newPatient.createPatientField(
+    await newPatient.createPatientFast(
         patientName,
         validPatientData,
         dobData

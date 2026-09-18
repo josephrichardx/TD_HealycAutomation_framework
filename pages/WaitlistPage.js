@@ -359,6 +359,10 @@ class WaitlistPage {
             const slotCount =
                 await slots.count().catch(() => 0);
 
+                console.log(
+                    `Available slots: ${slotCount}`
+                );
+
             if (slotCount === 0) {
                 continue;
             }
@@ -380,7 +384,22 @@ class WaitlistPage {
 
                 try {
 
-                    const slot = slots.first();
+                    // const slot = slots.first();
+
+                    // await slot.waitFor({
+                    //     state: 'visible',
+                    //     timeout: timeout.elementTimeout
+                    // });
+
+                    // const slotText = (
+                    //     await this.keywords.getText(slot)
+                    // ).trim();
+
+                    // await this.keywords.forceClick(slot);
+
+                    const slot = slots
+                        .filter({ visible: true })
+                        .first();
 
                     await slot.waitFor({
                         state: 'visible',
@@ -391,7 +410,9 @@ class WaitlistPage {
                         await this.keywords.getText(slot)
                     ).trim();
 
-                    await this.keywords.forceClick(slot);
+                    await slot.click({
+                        timeout: timeout.elementTimeout
+                    });
 
                     await this.locators.scheduleSelectedSlot
                         .first()
@@ -505,120 +526,263 @@ class WaitlistPage {
     }
 
 
-    async selectFirstAvailableSlotAcrossDates(
-        monthsToScan = 3
-    ) {
+    // async selectFirstAvailableSlotAcrossDates(
+    //     monthsToScan = 3
+    // ) {
 
-        let selectedSlotText = null;
-        let selectedDayText = null;
-        let selectedMonthYear = null;
+    //     let selectedSlotText = null;
+    //     let selectedDayText = null;
+    //     let selectedMonthYear = null;
 
-        await StepHelper.step(
-            this.page,
-            'Select the first available time slot in the schedule dialog',
-            async () => {
+    //     await StepHelper.step(
+    //         this.page,
+    //         'Select the first available time slot in the schedule dialog',
+    //         async () => {
 
-                await this.keywords.waitForElement(
-                    this.locators.scheduleModal,
-                    timeout.elementTimeout
+    //             await this.keywords.waitForElement(
+    //                 this.locators.scheduleModal,
+    //                 timeout.elementTimeout
+    //             );
+
+    //             const monthHeading =
+    //                 this.locators.scheduleMonthHeading;
+
+    //             for (
+    //                 let month = 0;
+    //                 month < monthsToScan;
+    //                 month++
+    //             ) {
+
+    //                 const monthYear = (
+    //                     await this.keywords.getText(
+    //                         monthHeading
+    //                     )
+    //                 ).trim();
+
+    //                 const days =
+    //                     this.locators.scheduleSelectableDays;
+
+    //                 const dayCount =
+    //                     await days.count().catch(() => 0);
+
+    //                 console.log(
+    //                     `${monthYear}: ${dayCount} bookable day(s)`
+    //                 );
+
+    //                 for (
+    //                     let index = 0;
+    //                     index < dayCount;
+    //                     index++
+    //                 ) {
+
+    //                     const day =
+    //                         days.nth(index);
+
+    //                     const dayText = (
+    //                         await this.keywords.getText(day)
+    //                     ).trim();
+
+    //                     await this.keywords.click(day);
+
+    //                     selectedSlotText =
+    //                         await this.tryPickSlotInAnyDayPart();
+
+    //                     if (selectedSlotText) {
+
+    //                         selectedDayText =
+    //                             dayText;
+
+    //                         selectedMonthYear =
+    //                             monthYear;
+
+    //                         console.log(
+    //                             `Slot found on ${dayText} ${monthYear}: ${selectedSlotText}`
+    //                         );
+
+    //                         return;
+    //                     }
+
+    //                     console.log(
+    //                         `No slots on ${dayText} ${monthYear}`
+    //                     );
+    //                 }
+
+    //                 if (
+    //                     month === monthsToScan - 1
+    //                 ) {
+    //                     break;
+    //                 }
+
+    //                 await this.keywords.click(
+    //                     this.locators.scheduleNextMonthBtn
+    //                 );
+
+    //                 await this.locators
+    //                     .getScheduleMonthHeadingOtherThan(
+    //                         monthYear
+    //                     )
+    //                     .waitFor({
+    //                         state: 'visible',
+    //                         timeout: timeout.elementTimeout
+    //                     });
+    //             }
+
+    //             throw new Error(
+    //                 `No time slots are available on any bookable date within the next ${monthsToScan} month(s) of the schedule dialog.`
+    //             );
+    //         }
+    //     );
+
+    //     return {
+    //         slot: selectedSlotText,
+    //         day: selectedDayText,
+    //         monthYear: selectedMonthYear
+    //     };
+    // }
+
+
+    async selectFirstAvailableSlotAcrossDates(monthsToScan = 3) {
+
+    let selectedSlotText = null;
+    let selectedDayText = null;
+    let selectedMonthYear = null;
+
+    await StepHelper.step(
+        this.page,
+        'Select the first available time slot starting from today',
+        async () => {
+
+            await this.keywords.waitForElement(
+                this.locators.scheduleModal,
+                timeout.elementTimeout
+            );
+
+            const today = new Date();
+
+            // Remove time portion
+            today.setHours(0, 0, 0, 0);
+
+            console.log(
+                `Today: ${today.toDateString()}`
+            );
+
+            const monthHeading =
+                this.locators.scheduleMonthHeading;
+
+            for (
+                let month = 0;
+                month < monthsToScan;
+                month++
+            ) {
+
+                const monthYear = (
+                    await this.keywords.getText(monthHeading)
+                ).trim();
+
+                console.log(
+                    `Checking month: ${monthYear}`
                 );
 
-                const monthHeading =
-                    this.locators.scheduleMonthHeading;
+                const days =
+                    this.locators.scheduleSelectableDays;
+
+                const dayCount =
+                    await days.count();
+
+                console.log(
+                    `${monthYear}: ${dayCount} selectable day(s)`
+                );
 
                 for (
-                    let month = 0;
-                    month < monthsToScan;
-                    month++
+                    let index = 0;
+                    index < dayCount;
+                    index++
                 ) {
 
-                    const monthYear = (
-                        await this.keywords.getText(
-                            monthHeading
-                        )
+                    const day =
+                        days.nth(index);
+
+                    const dayText = (
+                        await this.keywords.getText(day)
                     ).trim();
 
-                    const days =
-                        this.locators.scheduleSelectableDays;
-
-                    const dayCount =
-                        await days.count().catch(() => 0);
-
                     console.log(
-                        `${monthYear}: ${dayCount} bookable day(s)`
+                        `Checking date: ${dayText} ${monthYear}`
                     );
 
-                    for (
-                        let index = 0;
-                        index < dayCount;
-                        index++
-                    ) {
+                    /*
+                     * Click the date
+                     */
+                    await this.keywords.click(day);
 
-                        const day =
-                            days.nth(index);
+                    /*
+                     * Check ALL available day parts / slots
+                     * for this particular date.
+                     */
+                    selectedSlotText =
+                        await this.tryPickSlotInAnyDayPart();
 
-                        const dayText = (
-                            await this.keywords.getText(day)
-                        ).trim();
+                    /*
+                     * Slot found → STOP immediately
+                     */
+                    if (selectedSlotText) {
 
-                        await this.keywords.click(day);
+                        selectedDayText =
+                            dayText;
 
-                        selectedSlotText =
-                            await this.tryPickSlotInAnyDayPart();
-
-                        if (selectedSlotText) {
-
-                            selectedDayText =
-                                dayText;
-
-                            selectedMonthYear =
-                                monthYear;
-
-                            console.log(
-                                `Slot found on ${dayText} ${monthYear}: ${selectedSlotText}`
-                            );
-
-                            return;
-                        }
+                        selectedMonthYear =
+                            monthYear;
 
                         console.log(
-                            `No slots on ${dayText} ${monthYear}`
+                            `Slot found on ${dayText} ${monthYear}: ${selectedSlotText}`
                         );
+
+                        return;
                     }
 
-                    if (
-                        month === monthsToScan - 1
-                    ) {
-                        break;
-                    }
-
-                    await this.keywords.click(
-                        this.locators.scheduleNextMonthBtn
+                    /*
+                     * No slot for this date.
+                     * Move to the next date.
+                     */
+                    console.log(
+                        `No slot available on ${dayText} ${monthYear}`
                     );
-
-                    await this.locators
-                        .getScheduleMonthHeadingOtherThan(
-                            monthYear
-                        )
-                        .waitFor({
-                            state: 'visible',
-                            timeout: timeout.elementTimeout
-                        });
                 }
 
-                throw new Error(
-                    `No time slots are available on any bookable date within the next ${monthsToScan} month(s) of the schedule dialog.`
+                /*
+                 * Current month completely checked.
+                 * Move to next month.
+                 */
+                if (month === monthsToScan - 1) {
+                    break;
+                }
+
+                await this.keywords.click(
+                    this.locators.scheduleNextMonthBtn
                 );
+
+                await this.locators
+                    .getScheduleMonthHeadingOtherThan(
+                        monthYear
+                    )
+                    .waitFor({
+                        state: 'visible',
+                        timeout: timeout.elementTimeout
+                    });
             }
-        );
 
-        return {
-            slot: selectedSlotText,
-            day: selectedDayText,
-            monthYear: selectedMonthYear
-        };
-    }
+            throw new Error(
+                `No available time slot found starting from today within the next ${monthsToScan} month(s).`
+            );
+        }
+    );
 
+    return {
+        slot: selectedSlotText,
+        day: selectedDayText,
+        monthYear: selectedMonthYear
+    };
+}
 
     async clickConfirmSchedule() {
 

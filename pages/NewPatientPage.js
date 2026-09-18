@@ -2067,7 +2067,7 @@ export class NewPatient {
         );
     }
 
-    async createPatientField(
+    async createPatientFast(
         patientName,
         patientData,
         dobData

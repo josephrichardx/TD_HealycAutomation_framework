@@ -127,7 +127,8 @@ class CalendarPage {
                 // Wait for search result instead of fixed wait
                 await this.keywords.waitForElement(
                     this.locator.patientResult(patientName),
-                    timeout.elementTimeout
+                    // timeout.elementTimeout
+                    timeout.actionTimeout
                 );
             }
         );

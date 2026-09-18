@@ -58,19 +58,41 @@ const firstNames = [
     'Sarah', 'Emily', 'Jessica', 'Ashley', 'Amanda',
     'Daniel', 'Matthew', 'Christopher', 'Andrew', 'Joseph',
     'Emma', 'Olivia', 'Sophia', 'Isabella', 'Mia',
-    'William', 'Richard', 'Thomas', 'Charles', 'Christopher',
-    'Benjamin', 'Samuel', 'Alexander', 'Henry', 'Jack',
-    'Lucas', 'Liam', 'Noah', 'Ethan', 'Mason',
-    'Logan', 'Jacob', 'Michael', 'Elijah', 'James',
-    'Ava', 'Charlotte', 'Amelia', 'Harper', 'Evelyn',
-    'Abigail', 'Ella', 'Scarlett', 'Grace', 'Chloe',
-    'Victoria', 'Riley', 'Aria', 'Lily', 'Aurora',
-    'Zoey', 'Hannah', 'Layla', 'Nora', 'Camila',
-    'Samantha', 'Elizabeth', 'Natalie', 'Luna', 'Savannah',
-    'Brooklyn', 'Leah', 'Zoe', 'Stella', 'Hazel',
-    'Violet', 'Penelope', 'Lucy', 'Claire', 'Ellie'
+    'William', 'Richard', 'Thomas', 'Charles', 'Benjamin',
+    'Samuel', 'Alexander', 'Henry', 'Jack', 'Lucas',
+    'Liam', 'Noah', 'Ethan', 'Mason', 'Logan',
+    'Jacob', 'Elijah', 'Ava', 'Charlotte', 'Amelia',
+    'Harper', 'Evelyn', 'Abigail', 'Ella', 'Scarlett',
+    'Grace', 'Chloe', 'Victoria', 'Riley', 'Aria',
+    'Lily', 'Aurora', 'Zoey', 'Hannah', 'Layla',
+    'Nora', 'Camila', 'Samantha', 'Elizabeth', 'Natalie',
+    'Luna', 'Savannah', 'Brooklyn', 'Leah', 'Zoe',
+    'Stella', 'Hazel', 'Violet', 'Penelope', 'Lucy',
+    'Claire', 'Ellie',
+
+    'Anthony', 'Mark', 'Steven', 'Paul', 'George',
+    'Kenneth', 'Edward', 'Brian', 'Ronald', 'Timothy',
+    'Jason', 'Jeffrey', 'Ryan', 'Jacob', 'Gary',
+    'Nicholas', 'Eric', 'Jonathan', 'Stephen', 'Larry',
+    'Justin', 'Scott', 'Brandon', 'Benjamin', 'Samuel',
+    'Gregory', 'Frank', 'Alexander', 'Raymond', 'Patrick',
+    'Kevin', 'Dennis', 'Jerry', 'Tyler', 'Aaron',
+    'Jose', 'Adam', 'Nathan', 'Zachary', 'Douglas',
+    'Peter', 'Kyle', 'Walter', 'Evan', 'Dylan',
+    'Jeremy', 'Arthur', 'Cameron', 'Keith', 'Juan',
+
+    'Megan', 'Rachel', 'Lauren', 'Kayla', 'Brianna',
+    'Jennifer', 'Nicole', 'Stephanie', 'Rebecca', 'Michelle',
+    'Kimberly', 'Melissa', 'Christina', 'Amy', 'Angela',
+    'Heather', 'Catherine', 'Madison', 'Brittany', 'Danielle',
+    'Sophie', 'Hailey', 'Kaylee', 'Aaliyah', 'Peyton',
+    'Aubrey', 'Brooklyn', 'Bella', 'Addison', 'Natalia',
+    'Jasmine', 'Alexis', 'Allison', 'Katherine', 'Mackenzie',
+    'Morgan', 'Taylor', 'Sydney', 'Caroline', 'Julia',
+    'Maya', 'Naomi', 'Elena', 'Eliana', 'Valentina',
+    'Alice', 'Ruby', 'Eva', 'Ivy', 'Sadie'
 ];
- 
+
 const lastNames = [
     'Doe', 'Smith', 'Johnson', 'Williams', 'Brown',
     'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez',
@@ -86,9 +108,42 @@ const lastNames = [
     'Edwards', 'Collins', 'Reyes', 'Stewart', 'Morris',
     'Morales', 'Murphy', 'Cook', 'Rogers', 'Gutierrez',
     'Ortiz', 'Morgan', 'Cooper', 'Peterson', 'Bailey',
-    'Reed', 'Kelly', 'Howard', 'Ramos', 'Kim'
+    'Reed', 'Kelly', 'Howard', 'Ramos', 'Kim',
+
+    'Cox', 'Ward', 'Richardson', 'Watson', 'Brooks',
+    'Chavez', 'Wood', 'James', 'Bennett', 'Gray',
+    'Mendoza', 'Ruiz', 'Hughes', 'Price', 'Alvarez',
+    'Castillo', 'Sanders', 'Patel', 'Myers', 'Long',
+    'Ross', 'Foster', 'Jimenez', 'Powell', 'Jenkins',
+    'Perry', 'Russell', 'Sullivan', 'Bell', 'Coleman',
+    'Butler', 'Henderson', 'Barnes', 'Gonzales', 'Fisher',
+    'Vasquez', 'Simmons', 'Romero', 'Jordan', 'Patterson',
+    'Alexander', 'Hamilton', 'Graham', 'Reynolds', 'Griffin',
+    'Wallace', 'Moreno', 'West', 'Cole', 'Hayes',
+    'Bryant', 'Herrera', 'Gibson', 'Ellis', 'Tran',
+    'Medina', 'Aguilar', 'Stevens', 'Murray', 'Ford',
+    'Castro', 'Marshall', 'Owens', 'Harrison', 'Fernandez',
+    'McDonald', 'Woods', 'Washington', 'Kennedy', 'Wells',
+    'Vargas', 'Henry', 'Chen', 'Freeman', 'Webb',
+    'Tucker', 'Guzman', 'Burns', 'Crawford', 'Olson',
+    'Simpson', 'Porter', 'Hunter', 'Gordon', 'Mendez',
+    'Silva', 'Shaw', 'Snyder', 'Mason', 'Dixon',
+    'Munoz', 'Hunt', 'Hicks', 'Holmes', 'Palmer',
+    'Wagner', 'Black', 'Robertson', 'Boyd', 'Rose',
+    'Stone', 'Salazar', 'Fox', 'Warren', 'Mills',
+    'Meyer', 'Rice', 'Schmidt', 'Garza', 'Daniels',
+    'Ferguson', 'Nichols', 'Stephens', 'Soto', 'Weaver',
+    'Ryan', 'Gardner', 'Payne', 'Grant', 'Dunn',
+    'Kelley', 'Spencer', 'Hawkins', 'Arnold', 'Pierce',
+    'Vazquez', 'Hansen', 'Peters', 'Santos', 'Hart',
+    'Bradley', 'Knight', 'Elliott', 'Cunningham', 'Duncan',
+    'Lane', 'Carroll', 'Drake', 'Andrews', 'Johnston',
+    'Ray', 'Douglas', 'Schneider', 'Carr', 'Nicholson',
+    'Hansen', 'Matthews', 'Chapman', 'Pena', 'Richards',
+    'McCarthy', 'Lawson', 'Steele', 'Bishop', 'Mansfield'
 ];
- 
+
+
 function generateUniquePatientFullName() {
  
     const firstName = firstNames[
@@ -156,7 +211,81 @@ function generateShortPatientName(length = 5) {
     return `Test ${generateUniqueLastName(length)}`;
 }
  
- 
+
+function randomItem(array) {
+    return array[
+        Math.floor(Math.random() * array.length)
+    ];
+}
+
+function generateNamePart() {
+
+    const consonants = [
+        'b', 'c', 'd', 'g', 'h', 'j', 'k', 'l',
+        'm', 'n', 'p', 'r', 's', 't', 'v'
+    ];
+
+    const vowels = [
+        'a', 'e', 'i', 'o', 'u'
+    ];
+
+    const syllableCount = Math.floor(
+        Math.random() * 2
+    ) + 2; // 2 or 3 syllables
+
+    let name = '';
+
+    for (let i = 0; i < syllableCount; i++) {
+
+        name += randomItem(consonants);
+        name += randomItem(vowels);
+    }
+
+    return name.charAt(0).toUpperCase() + name.slice(1);
+}
+
+function generateName() {
+
+    const firstName = generateNamePart();
+    const lastName = generateNamePart();
+
+    return `${firstName} ${lastName}`;
+}
+
+
+// function generateNamePart() {
+
+//     const consonants = [
+//         'b', 'd', 'g', 'h', 'j', 'k',
+//         'l', 'm', 'n', 'p', 'r', 's',
+//         't', 'v'
+//     ];
+
+//     const vowels = [
+//         'a', 'e', 'i', 'o', 'u'
+//     ];
+
+//     const syllableCount =
+//         Math.floor(Math.random() * 2) + 2;
+
+//     let name = '';
+
+//     for (let i = 0; i < syllableCount; i++) {
+//         name += randomItem(consonants);
+//         name += randomItem(vowels);
+//     }
+
+//     return name.charAt(0).toUpperCase() + name.slice(1);
+// }
+
+// function generateName() {
+
+//     const firstName = generateNamePart();
+//     const lastName = generateNamePart();
+
+//     return `${firstName} ${lastName}`;
+// }
+
 module.exports = {
     generatePatientName,
     generateAdmissionDate,
@@ -166,6 +295,7 @@ module.exports = {
     generateRandomMobileNumber,
     calculateAgeFromDate,
     generateUniquePatientFullName,
-    generateShortPatientName
+    generateShortPatientName,
+    generateName
 };
  

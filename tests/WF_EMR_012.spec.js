@@ -57,10 +57,10 @@ test('EMR Prescription', async ({ page }) => {
     //         templateData.templateAppliedMessage
     //     );//release UAT
 
-    // await prescriptionPage.fillObservation(
-    // observationData
-    // // timeout.time
-    // );
+    await prescriptionPage.fillObservation(
+    observationData
+    // timeout.time
+    );
 
     // // await prescriptionPage.PrescriptionObservation(
     // // templateData.templateName,

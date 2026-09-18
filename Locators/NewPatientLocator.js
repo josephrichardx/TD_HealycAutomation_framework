@@ -29,9 +29,10 @@ class NewPatientLocator {
                 name: gender,
                 exact: true
             });
-        // this.maleBtn = page.getByRole('button', { name: 'Male', exact: true });
-        // this.femaleBtn = page.getByRole('button', { name: 'Female', exact: true });
-        // this.otherGenderBtn = page.getByRole('button', { name: 'Other', exact: true });
+            
+        this.maleBtn = page.getByRole('button', { name: 'Male', exact: true });
+        this.femaleBtn = page.getByRole('button', { name: 'Female', exact: true });
+        this.otherGenderBtn = page.getByRole('button', { name: 'Other', exact: true });
  
         this.addressTxt = page.getByPlaceholder('Write down resident address');
  

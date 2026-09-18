@@ -69,6 +69,12 @@ class ServiceLocator {
         );
 
 
+        this.getPatientSearchResult = (patientName) =>
+        page.locator(
+            `//div[contains(@class,'patient-item')]//*[normalize-space(text())='${patientName}']`
+        );
+
+
         // Provider / Service Dropdown
         this.providerDropdown = page.locator(
             'app-multi-dropdown:nth-child(3) > .multi-dropdown-container > .multi-dropdown-title'

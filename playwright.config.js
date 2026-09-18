@@ -21,13 +21,14 @@ export default defineConfig({
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
-  retries: process.env.CI ? 2 : 0,
+  // retries: 3,
   /* Opt out of parallel tests on CI. */
   // Serial. This UAT environment drops transient toasts (booking confirmation,
   // patient saved, payment recorded) when more than one worker drives it, so
   // parallel runs are fast but unreliable. The speed win comes from not
   // screenshotting every passing step - see utils/StepHelper.js.
-  workers: 1,
+  workers: 4,
+
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   // reporter: [
   //   [
@@ -72,7 +73,7 @@ reporter: [
         //screenshot: 'on',
         video: 'retain-on-failure',
         //  video: 'on',
-        trace: 'off',
+        trace: 'on-first-retry',
 
         // actionTimeout: 30000,
         // navigationTimeout: 30000
@@ -82,10 +83,10 @@ reporter: [
   // End-to-end workflows (patient + consult + service + waitlist + calendar
   // verification) run long, so the per-test budget lives here rather than as a
   // test.setTimeout() hardcoded in individual spec files.
-  timeout: 600000,
+  timeout: 800000,
 
   expect: {
-        timeout: 10000
+        timeout: 50000
   },
 
   

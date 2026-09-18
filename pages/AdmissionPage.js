@@ -630,24 +630,108 @@ export class AdmissionPage {
         return selectedLabels;
     }
 
+    // async addSurgery(surgeryData) {
+        
+    //     await this.locator.addSurgeryBtn.click();
+
+    //     await this.locator.surgeryNameInput.click();
+    //     await this.locator.surgeryOption(surgeryData.surgeryName).click();
+
+    //     await this.locator.doctorInput.click();
+    //     await this.locator.doctorOption(surgeryData.doctorName).click();
+
+    //     await this.locator.otDropdown.click();
+    //     await this.locator.otOption(surgeryData.otName).click();
+
+    //     await this.locator.linkSurgeryBtn.click();
     async addSurgery(surgeryData) {
-        
-        await this.locator.addSurgeryBtn.click();
 
-        await this.locator.surgeryNameInput.click();
-        await this.locator.surgeryOption(surgeryData.surgeryName).click();
+    await StepHelper.step(
+        this.page,
+        'Click Add Surgery button',
+        async () => {
+            await this.keywords.click(
+                this.locator.addSurgeryBtn
+            );
+        }
+    );
 
-        await this.locator.doctorInput.click();
-        await this.locator.doctorOption(surgeryData.doctorName).click();
+    await StepHelper.step(
+        this.page,
+        'Click Surgery Name input',
+        async () => {
+            await this.keywords.click(
+                this.locator.surgeryNameInput
+            );
+        }
+    );
 
-        await this.locator.otDropdown.click();
-        await this.locator.otOption(surgeryData.otName).click();
+    await StepHelper.step(
+        this.page,
+        `Select Surgery: ${surgeryData.surgeryName}`,
+        async () => {
 
-        await this.locator.linkSurgeryBtn.click();
-        
-    }
+            const surgeryOption =
+                this.locator.surgeryOption(
+                    surgeryData.surgeryName
+                );
 
-    // async addTests(maxCount = 3) {
+            await surgeryOption.waitFor({
+                state: 'visible',
+                timeout: timeout.elementTimeout
+            });
+
+            await this.keywords.click(surgeryOption);
+        }
+    );
+
+    await StepHelper.step(
+        this.page,
+        `Select Primary Surgeon: ${surgeryData.doctorName}`,
+        async () => {
+
+            await this.keywords.click(
+                this.locator.doctorInput
+            );
+
+            await this.keywords.click(
+                this.locator.doctorOption(
+                    surgeryData.doctorName
+                )
+            );
+        }
+    );
+
+    await StepHelper.step(
+        this.page,
+        `Select OT: ${surgeryData.otName}`,
+        async () => {
+
+            await this.keywords.click(
+                this.locator.otDropdown
+            );
+
+            await this.keywords.click(
+                this.locator.otOption(
+                    surgeryData.otName
+                )
+            );
+        }
+    );
+
+    await StepHelper.step(
+        this.page,
+        'Link Surgery with IPD',
+        async () => {
+
+            await this.keywords.click(
+                this.locator.linkSurgeryBtn
+            );
+        }
+    );
+}
+
+// async addTests(maxCount = 3) {
     //     return await this._selectRandomChipsAndLink({
     //         label: 'Test',
     //         addBtn: this.locator.addTestBtn,
