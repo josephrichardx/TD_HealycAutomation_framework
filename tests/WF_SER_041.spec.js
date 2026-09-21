@@ -8,7 +8,7 @@ const { InvoicePage } = require('../pages/InvoicePage');
 const { CalendarPage } = require('../pages/CalendarPage');
 const { ConsultPage } = require('../pages/ConsultPagenew');
  
-const { patientData,appoinmentData,consultData,serviceData,invoiceData } = require('../testdata/TC_003.json');
+const { patientData,appoinmentData,consultData,serviceData,servicedropdownData,invoiceData } = require('../testdata/TC_SER_041.json');
 const { generateUniquePatientFullName } = require('../utils/RandomData');
 
 test('Create Service & Check waitlist ', async ({ page }) => {
@@ -28,11 +28,13 @@ test('Create Service & Check waitlist ', async ({ page }) => {
     
     // await consultPage.verifyAddNewMenuOptions(addNewMenuOptions);
 
-    await servicePage.addService(
+    await servicePage.addServiceVerifybooking(
     patientName,
     serviceData.serviceName,
+    servicedropdownData
     );
- 
+    
+
  
 });
  

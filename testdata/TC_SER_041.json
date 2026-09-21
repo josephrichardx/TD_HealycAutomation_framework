@@ -13,11 +13,16 @@
     "doctorName": "Dr. Orthopedic"
   },
  
-  "consultData": {
-    "consultSlot": "First Consult"
-  },
    "serviceData": {
-    "serviceName": "Clear Aligners"
+    "serviceName": "Clear Aligners",
+     "fees": "Fees"
+  },
+
+  "servicedropdownData": {
+  "doctorDropdown": "Doctor",
+  "locationDropdown": "Locations",
+  "serviceDropdown": "Service",
+  "dateDropdown": "Date"
   },
 
    "invoiceData": {

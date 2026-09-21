@@ -69,10 +69,8 @@ class ServiceLocator {
         );
 
 
-        this.getPatientSearchResult = (patientName) =>
-        page.locator(
-            `//div[contains(@class,'patient-item')]//*[normalize-space(text())='${patientName}']`
-        );
+        this.patientSearchResult = (patientName) =>
+        this.page.getByText(patientName, { exact: true });
 
 
         // Provider / Service Dropdown
@@ -114,7 +112,102 @@ class ServiceLocator {
             '.slotButton'
         );
 
-         this.nextDateBtn = page.locator('div.NextListButton').first();
+          this.slotAppointmentCard = (slot) =>
+            slot.locator(
+                'xpath=ancestor::div[contains(@class,"bookappointmentBodyCard")]'
+            );
+
+        
+
+        this.nextDateBtn = page.locator('div.NextListButton').first();
+
+
+//     //     this.dropdown = (dropdownName) =>
+//     // this.page.locator(
+//     //     `//app-multi-dropdown[@title="${dropdownName}"]//div[contains(@class,"multi-dropdown-title")]`
+//     // );
+// this.dropdown = (dropdownName) =>
+//     page.locator(
+//         `app-multi-dropdown[title="${dropdownName}"] > .multi-dropdown-container > .multi-dropdown-title`
+//     );
+
+// this.dateDropdown = page.locator(
+//     '//div[contains(@class,"range-date-container")]//span'
+// ).first();
+
+// this.dropdownOptions = (dropdownName) =>
+//     page.locator(
+//         `//app-multi-dropdown[@title="${dropdownName}"]//div[contains(@class,"options")]`
+//     );
+
+//     this.dropdownOutsideArea = page.getByRole(
+//     'heading',
+//     { name: /Book a suitable "Service"/ }
+// );
+
+// this.dropdown = (dropdownName) =>
+//     page.locator(
+//         `app-multi-dropdown[title="${dropdownName}"]`
+//     ).locator('.multi-dropdown-title');
+
+// this.dropdownOptions = (dropdownName) =>
+//     page.locator(
+//         `app-multi-dropdown[title="${dropdownName}"]`
+//     ).locator('div.options');
+
+this.dateDropdown = page.locator(
+    '//div[contains(@class,"range-date-container")]//span'
+).first();
+
+this.dropdownOutsideArea = page.getByRole(
+    'heading',
+    { name: /Book a suitable "Service"/ }
+);
+
+ // Booking Filters
+       
+        this.bookingFilterNavbar =
+            page.locator("app-book-appointment-filter-navbar");
+
+        this.doctorDropdown =
+            this.bookingFilterNavbar.getByText("Doctor", { exact: true });
+
+        this.locationsDropdown =
+            this.bookingFilterNavbar.getByText("Locations", { exact: true });
+
+        this.serviceDropdown =
+            this.bookingFilterNavbar.getByText("Service", { exact: true });
+
+        this.dateDropdown =
+            this.bookingFilterNavbar.getByText("Date", { exact: true });
+
+
+         this.selectedService = page.locator(
+            "(//div[@data-toggle='tooltip'])[1]"
+        );
+
+        this.fees = page.locator(
+            "//div[contains(text(),'Fees:')]"
+        ).first();
+
+this.reviewService = this.page.locator(
+    "//div[@class='badge reviewConsult']"
+);
+
+this.reviewFees = this.page.locator(
+    "//div[@class='fees']"
+);
+
+this.reviewAppointmentDate = this.page.locator(
+    "(//div[@class='normalLabel'])[3]"
+);
+
+this.reviewAppointmentDateTime = this.page.locator(
+    "(//div[@class='normalLabel'])[3]"
+);
+
+
+
     }
 
 
@@ -138,6 +231,7 @@ class ServiceLocator {
         ).first();
     }
 
+    
 
     // Dynamic Service Option
     getServiceOption(serviceName) {
@@ -146,6 +240,25 @@ class ServiceLocator {
             `xpath=(//div[normalize-space()='${serviceName}'])[3]`
         );
     }
+
+   dropdown(dropdownName) {
+    return this.page.locator(
+        `app-multi-dropdown[title="${dropdownName}"]`
+    ).locator(
+        "//div[@class='multi-dropdown-title']"
+    );
+}
+
+dropdownOptions(dropdownName) {
+    return this.page.locator(
+        `app-multi-dropdown[title="${dropdownName}"]`
+    ).locator(
+        "//div[@class='multi-dropdown-options']"
+    );
+}
+
+
+
 }
 
 module.exports = { ServiceLocator };

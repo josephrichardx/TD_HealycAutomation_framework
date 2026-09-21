@@ -159,6 +159,21 @@ function generateUniquePatientFullName() {
  
     return `${firstName} ${middleInitial} ${lastName}`;
 }
+
+// let index = 0;
+
+// function generatePatientFullName() {
+//     const firstName = firstNames[
+//         Math.floor(Math.random() * firstNames.length)
+//     ];
+
+//     const firstLetter = String.fromCharCode(65 + Math.floor(index / 26));
+//     const secondLetter = String.fromCharCode(97 + (index % 26));
+
+//     index = (index + 1) % 676;
+
+//     return `${firstName} ${firstLetter}${secondLetter}`;
+// }
  
 function generateRandomDateOfBirth(minYear = 1990, maxYear = 2002) {
  
