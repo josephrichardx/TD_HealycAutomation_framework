@@ -40,8 +40,14 @@ this.linkSurgeryBtn = page.locator(
     "//button[text()='Link surgery with IPD']"
 );
 
+// this.surgeryOption = (surgeryName) =>
+//     page.locator(`//div[text()=' ${surgeryName} ']`);
+
 this.surgeryOption = (surgeryName) =>
-    page.locator(`//div[text()=' ${surgeryName} ']`);
+    page.locator('div.singleOption:visible')
+        .filter({ hasText: surgeryName })
+        .first();
+
 
 this.doctorOption = (doctorName) =>
     page.locator(`(//div[text()=' ${doctorName} '])[2]`);

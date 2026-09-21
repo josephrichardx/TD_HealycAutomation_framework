@@ -238,7 +238,8 @@ class IPDPage {
             this.locator.invoiceNumber,
             {
                 visible: true,
-                soft: false
+                soft: false,
+                timeout: timeout.elementTimeout
             }
         );
 
@@ -256,7 +257,8 @@ class IPDPage {
             /^#INV/,
             invoiceNumber,
             {
-                soft: false
+                soft: false,
+                timeout: timeout.elementTimeout
             }
         );
 
@@ -753,6 +755,1027 @@ class IPDPage {
             }
         );
     }
+
+   async addAdministrativeForm(formName) {
+
+    await StepHelper.step(
+        this.page,
+        'Click Add Administrative Form',
+        async () => {
+            await this.keywords.click(
+                this.locator.addAdministrativeFormBtn
+            );
+        }
+    );
+
+    await StepHelper.step(
+        this.page,
+        'Click Search Consent Form',
+        async () => {
+            await this.keywords.click(
+                this.locator.searchConsentFormInput
+            );
+        }
+    );
+
+    await StepHelper.step(
+        this.page,
+        `Fill Consent Form - ${formName}`,
+        async () => {
+            await this.locator.searchConsentFormInput.fill(formName);
+        }
+    );
+
+    await StepHelper.step(
+    this.page,
+    `Select Consent Form - ${formName}`,
+    async () => {
+        await this.keywords.click(
+            this.locator.suggestionContent
+        );
+    }
+    );
+
+    await this.locator.formHeader.waitFor({
+    state: 'visible',
+    timeout: timeout.elementTimeout
+    });
+
+    const actualText = await this.keywords.getText(
+        this.locator.formHeader
+    );
+
+    await StepHelper.step(
+        this.page,
+        `Verify Administrative Form | Expected: ${formName} | Actual: ${actualText}`,
+        async () => {
+
+            expect(actualText).toBe(formName);
+        }
+    );
+}
+
+async fillAdministrativeFormFields(administrativeForm) {
+
+    const fields = [
+        {
+            name: 'Age',
+            value: administrativeForm.Age
+        },
+        {
+            name: 'Gender',
+            value: administrativeForm.Gender
+        },
+        {
+            name: 'UHID',
+            value: administrativeForm.UHID
+        },
+        {
+            name: 'Procedure planned (as told to me)',
+            value: administrativeForm['Procedure planned (as told to me)']
+        }
+    ];
+
+    for (const fieldData of fields) {
+
+        const field = this.locator.getConsentFormField(fieldData.name);
+
+        await StepHelper.step(
+            this.page,
+            `Fill ${fieldData.name} - ${fieldData.value}`,
+            async () => {
+
+                await field.waitFor({
+                    state: 'visible',
+                    timeout: timeout.elementTimeout
+                });
+
+                await field.click();
+                await field.fill(fieldData.value);
+            }
+        );
+    }
+}
+
+
+// async fillAdministrativeFormDetails(administrativeForm) {
+
+//     const fields = [
+//         {
+//             question: 'Any known allergy',
+//             option: administrativeForm['Any known allergy'],
+//             value: administrativeForm['Allergy Details']
+//         },
+//         {
+//             question: 'Taking blood-thinning medicine',
+//             option: administrativeForm['Taking blood-thinning medicine'],
+//             value: administrativeForm['Blood-thinning Details']
+//         },
+//         {
+//             question: 'Taking Metformin / diabetes medicine',
+//             option: administrativeForm['Taking Metformin / diabetes medicine'],
+//             value: administrativeForm['Metformin Details']
+//         },
+//         {
+//             question: 'Kidney problem or on dialysis',
+//             option: administrativeForm['Kidney problem or on dialysis'],
+//             value: administrativeForm['Kidney Details']
+//         },
+//         {
+//             question: 'Pacemaker or any implant in the body',
+//             option: administrativeForm['Pacemaker or any implant in the body'],
+//             value: administrativeForm['Pacemaker Details']
+//         },
+//         {
+//             question: 'Currently pregnant or breastfeeding',
+//             option: administrativeForm['Currently pregnant or breastfeeding'],
+//             value: administrativeForm['Pregnancy Details']
+//         },
+//         {
+//             question: 'Last meal/water taken — time',
+//             value: administrativeForm['Last meal/water taken — time'],
+//             type: 'time'
+//         },
+//         {
+//             question: 'Empty stomach (fasting) since',
+//             value: administrativeForm['Empty stomach (fasting) since'],
+//             type: 'time'
+//         }
+//     ];
+
+//     for (const fieldData of fields) {
+
+//         await StepHelper.step(
+//             this.page,
+//             `Fill ${fieldData.question} - ${fieldData.value}`,
+//             async () => {
+
+//                 // Checkbox fields
+//                 if (!fieldData.type) {
+
+//                     const checkbox = this.locator.getConsentFormCheckbox(
+//                         fieldData.question,
+//                         fieldData.option
+//                     );
+
+//                     await checkbox.waitFor({
+//                         state: 'visible',
+//                         timeout: timeout.actionTimeout
+//                     });
+
+//                     await checkbox.click();
+//                 }
+
+//                 // Details / Time input fields
+//                 const field = fieldData.type === 'time'
+//                     ? this.locator.getAdministrativeTimeField(
+//                         fieldData.question
+//                     )
+//                     : this.locator.getConsentFormDetailsField(
+//                         fieldData.question
+//                     );
+
+//                 await field.waitFor({
+//                     state: 'visible',
+//                     timeout: timeout.actionTimeout
+//                 });
+
+//                 await field.click();
+
+//                 await field.fill(
+//                     String(fieldData.value)
+//                 );
+//             }
+//         );
+//     }
+// }
+async fillAdministrativeFormDetails(administrativeForm) {
+
+    const fields = [
+        {
+            question: 'Any known allergy',
+            option: administrativeForm['Any known allergy'],
+            value: administrativeForm['Allergy Details']
+        },
+        {
+            question: 'Taking blood-thinning medicine',
+            option: administrativeForm['Taking blood-thinning medicine'],
+            value: administrativeForm['Blood-thinning Details']
+        },
+        {
+            question: 'Taking Metformin / diabetes medicine',
+            option: administrativeForm['Taking Metformin / diabetes medicine'],
+            value: administrativeForm['Metformin Details']
+        },
+        {
+            question: 'Kidney problem or on dialysis',
+            option: administrativeForm['Kidney problem or on dialysis'],
+            value: administrativeForm['Kidney Details']
+        },
+        {
+            question: 'Pacemaker or any implant in the body',
+            option: administrativeForm['Pacemaker or any implant in the body'],
+            value: administrativeForm['Pacemaker Details']
+        },
+        {
+            question: 'Currently pregnant or breastfeeding',
+            option: administrativeForm['Currently pregnant or breastfeeding'],
+            value: administrativeForm['Pregnancy Details']
+        },
+        {
+            question: 'Last meal/water taken — time',
+            value: administrativeForm['Last meal/water taken — time'],
+            type: 'time'
+        },
+        {
+            question: 'Empty stomach (fasting) since',
+            value: administrativeForm['Empty stomach (fasting) since'],
+            type: 'time'
+        }
+    ];
+
+    for (const fieldData of fields) {
+
+        await StepHelper.step(
+            this.page,
+            `Fill ${fieldData.question} - ${fieldData.value}`,
+            async () => {
+
+                // Checkbox
+                if (!fieldData.type) {
+
+                    const checkbox =
+                        this.locator.getConsentFormCheckbox(
+                            fieldData.question,
+                            fieldData.option
+                        );
+
+                    await checkbox.waitFor({
+                        state: 'visible',
+                        timeout: timeout.actionTimeout
+                    });
+
+                    await checkbox.scrollIntoViewIfNeeded();
+
+                    if (!(await checkbox.isChecked())) {
+                        await checkbox.click();
+                    }
+
+                    await expect(checkbox).toBeChecked({
+                        timeout: timeout.actionTimeout
+                    });
+                }
+
+                // Details / Time
+                const field = fieldData.type === 'time'
+                    ? this.locator.getAdministrativeTimeField(
+                        fieldData.question
+                    )
+                    : this.locator.getConsentFormDetailsField(
+                        fieldData.question
+                    );
+
+                await field.waitFor({
+                    state: 'visible',
+                    timeout: timeout.actionTimeout
+                });
+
+                await field.click();
+
+                await field.fill(
+                    String(fieldData.value)
+                );
+            }
+        );
+    }
+}
+
+
+// async verifyAdministrativeFormFields(administrativeForm) {
+
+//     const fields = [
+//         {
+//             name: 'Age',
+//             value: administrativeForm.Age
+//         },
+//         {
+//             name: 'Gender',
+//             value: administrativeForm.Gender
+//         },
+//         {
+//             name: 'UHID',
+//             value: administrativeForm.UHID
+//         },
+//         {
+//             name: 'Procedure planned (as told to me)',
+//             value: administrativeForm['Procedure planned (as told to me)']
+//         }
+//     ];
+
+//     for (const fieldData of fields) {
+
+//         await StepHelper.step(
+//             this.page,
+//             `Verify ${fieldData.name} - Expected: ${fieldData.value}`,
+//             async () => {
+
+//                 const field = this.locator.getConsentFormField(
+//                     fieldData.name
+//                 );
+
+//                 await field.waitFor({
+//                     state: 'visible',
+//                     timeout: timeout.elementTimeout
+//                 });
+
+//                 await expect(field).toHaveValue(
+//                     String(fieldData.value),
+//                     {
+//                         timeout: timeout.elementTimeout
+//                     }
+//                 );
+//             }
+//         );
+//     }
+// }
+
+
+async verifyAdministrativeFormFields(administrativeForm) {
+
+    const fields = [
+        {
+            name: 'Age',
+            value: administrativeForm.Age
+        },
+        {
+            name: 'Gender',
+            value: administrativeForm.Gender
+        },
+        {
+            name: 'UHID',
+            value: administrativeForm.UHID
+        },
+        {
+            name: 'Procedure planned (as told to me)',
+            value: administrativeForm['Procedure planned (as told to me)']
+        }
+    ];
+
+    for (const fieldData of fields) {
+
+        const field = this.locator.getConsentFormField(fieldData.name);
+
+        await field.waitFor({
+            state: 'visible',
+            timeout: timeout.elementTimeout
+        });
+
+        const expectedValue = String(fieldData.value);
+        const actualValue = await field.inputValue();
+
+        await StepHelper.step(
+            this.page,
+            `Verify ${fieldData.name} | Expected: ${expectedValue} | Actual: ${actualValue}`,
+            async () => {
+
+                if (actualValue !== expectedValue) {
+                    throw new Error(
+                        `${fieldData.name} mismatch | Expected: ${expectedValue} | Actual: ${actualValue}`
+                    );
+                }
+            }
+        );
+    }
+}
+async verifyAdministrativeFormDetails(administrativeForm) {
+
+    const fields = [
+        {
+            question: 'Any known allergy',
+            option: administrativeForm['Any known allergy'],
+            value: administrativeForm['Allergy Details']
+        },
+        {
+            question: 'Taking blood-thinning medicine',
+            option: administrativeForm['Taking blood-thinning medicine'],
+            value: administrativeForm['Blood-thinning Details']
+        },
+        {
+            question: 'Taking Metformin / diabetes medicine',
+            option: administrativeForm['Taking Metformin / diabetes medicine'],
+            value: administrativeForm['Metformin Details']
+        },
+        {
+            question: 'Kidney problem or on dialysis',
+            option: administrativeForm['Kidney problem or on dialysis'],
+            value: administrativeForm['Kidney Details']
+        },
+        {
+            question: 'Pacemaker or any implant in the body',
+            option: administrativeForm['Pacemaker or any implant in the body'],
+            value: administrativeForm['Pacemaker Details']
+        },
+        {
+            question: 'Currently pregnant or breastfeeding',
+            option: administrativeForm['Currently pregnant or breastfeeding'],
+            value: administrativeForm['Pregnancy Details']
+        },
+        {
+            question: 'Last meal/water taken — time',
+            value: administrativeForm['Last meal/water taken — time'],
+            type: 'time'
+        },
+        {
+            question: 'Empty stomach (fasting) since',
+            value: administrativeForm['Empty stomach (fasting) since'],
+            type: 'time'
+        }
+    ];
+
+    for (const fieldData of fields) {
+
+        // Checkbox fields
+        if (!fieldData.type) {
+
+            const checkbox = this.locator.getConsentFormCheckbox(
+                fieldData.question,
+                fieldData.option
+            );
+
+            await checkbox.waitFor({
+                state: 'visible',
+                timeout: timeout.actionTimeout
+            });
+
+            const actualChecked = await checkbox.isChecked();
+            const expectedOption = String(fieldData.option);
+
+            await StepHelper.step(
+                this.page,
+                `Verify ${fieldData.question} | Expected: ${expectedOption} | Actual: ${actualChecked ? 'Yes' : 'No'}`,
+                async () => {
+
+                    const expectedChecked =
+                        expectedOption.toLowerCase() === 'yes';
+
+                    if (actualChecked !== expectedChecked) {
+                        throw new Error(
+                            `${fieldData.question} mismatch | ` +
+                            `Expected: ${expectedOption} | ` +
+                            `Actual: ${actualChecked ? 'Yes' : 'No'}`
+                        );
+                    }
+                }
+            );
+
+            // Details field
+            const field = this.locator.getConsentFormDetailsField(
+                fieldData.question
+            );
+
+            await field.waitFor({
+                state: 'visible',
+                timeout: timeout.actionTimeout
+            });
+
+            const expectedValue = String(fieldData.value);
+            const actualValue = await field.inputValue();
+
+            await StepHelper.step(
+                this.page,
+                `Verify ${fieldData.question} Details | Expected: ${expectedValue} | Actual: ${actualValue}`,
+                async () => {
+
+                    if (actualValue !== expectedValue) {
+                        throw new Error(
+                            `${fieldData.question} Details mismatch | ` +
+                            `Expected: ${expectedValue} | ` +
+                            `Actual: ${actualValue}`
+                        );
+                    }
+                }
+            );
+        }
+
+        // Time fields
+        else {
+
+            const field = this.locator.getAdministrativeTimeField(
+                fieldData.question
+            );
+
+            await field.waitFor({
+                state: 'visible',
+                timeout: timeout.actionTimeout
+            });
+
+            const expectedValue = String(fieldData.value);
+            const actualValue = await field.inputValue();
+
+            await StepHelper.step(
+                this.page,
+                `Verify ${fieldData.question} | Expected: ${expectedValue} | Actual: ${actualValue}`,
+                async () => {
+
+                    if (actualValue !== expectedValue) {
+                        throw new Error(
+                            `${fieldData.question} mismatch | ` +
+                            `Expected: ${expectedValue} | ` +
+                            `Actual: ${actualValue}`
+                        );
+                    }
+                }
+            );
+        }
+    }
+}
+
+// async fillConsentCheckboxes(consentCheckboxData) {
+
+//     for (const [question, expectedValue] of Object.entries(consentCheckboxData)) {
+
+//         const checkbox = this.locator.getConsentCheckbox(question);
+
+//         await checkbox.waitFor({
+//             state: 'visible',
+//             timeout: timeout.actionTimeout
+//         });
+
+//         await StepHelper.step(
+//             this.page,
+//             `Consent Checkbox - ${question} | Expected: ${expectedValue}`,
+//             async () => {
+
+//                 const actualValue = await checkbox.isChecked();
+
+//                 if (expectedValue && !actualValue) {
+//                     await checkbox.check();
+//                 } else if (!expectedValue && actualValue) {
+//                     await checkbox.uncheck();
+//                 }
+
+//                 const finalActualValue = await checkbox.isChecked();
+
+//                 if (finalActualValue !== expectedValue) {
+//                     throw new Error(
+//                         `${question} mismatch | ` +
+//                         `Expected: ${expectedValue} | ` +
+//                         `Actual: ${finalActualValue}`
+//                     );
+//                 }
+//             }
+//         );
+//     }
+// }
+
+async fillConsentCheckboxes(consentCheckboxData) {
+
+    for (const [question, expectedValue] of Object.entries(consentCheckboxData)) {
+
+        const checkbox = this.locator.getConsentCheckbox(question);
+
+        await checkbox.waitFor({
+            state: 'visible',
+            timeout: timeout.actionTimeout
+        });
+
+        // Select checkbox based on JSON
+        if (expectedValue) {
+            await checkbox.check();
+        } else {
+            await checkbox.uncheck();
+        }
+
+        // Get actual UI value
+        const actualValue = await checkbox.isChecked();
+
+        await StepHelper.step(
+            this.page,
+            `Verify Consent Checkbox | ${question} | Expected: ${expectedValue} | Actual: ${actualValue}`,
+            async () => {
+
+                if (actualValue !== expectedValue) {
+                    throw new Error(
+                        `${question} mismatch | ` +
+                        `Expected: ${expectedValue} | ` +
+                        `Actual: ${actualValue}`
+                    );
+                }
+            }
+        );
+    }
+}
+
+
+async boldPatientName() {
+
+    await StepHelper.step(
+        this.page,
+        'Select Patient Name :',
+        async () => {
+            await this.locator.patientNameText.selectText();
+        }
+    );
+
+    // await StepHelper.step(
+    //     this.page,
+    //     'Click Bold',
+    //     async () => {
+    //         await this.locator.boldButton.click();
+    //     }
+    // );
+
+    await StepHelper.step(
+        this.page,
+        'Verify Patient Name : is Bold',
+        async () => {
+            await expect(this.locator.boldPatientName).toBeVisible({
+                timeout: timeout.actionTimeout
+            });
+        }
+    );
+}
+
+async addPatientSignature(signatureData) {
+
+    await StepHelper.step(
+        this.page,
+        'Click Add Patient Signature',
+        async () => {
+
+            await this.locator.addPatientSignatureButton.waitFor({
+                state: 'visible',
+                timeout: timeout.actionTimeout
+            });
+
+            await this.locator.addPatientSignatureButton.click();
+        }
+    );
+
+    await StepHelper.step(
+        this.page,
+        `Enter Signature Name - ${signatureData.signatureName}`,
+        async () => {
+
+            await this.locator.signatureNameInput.waitFor({
+                state: 'visible',
+                timeout: timeout.actionTimeout
+            });
+
+            await this.locator.signatureNameInput.click();
+
+            await this.locator.signatureNameInput.fill(
+                signatureData.signatureName
+            );
+        }
+    );
+
+    await StepHelper.step(
+        this.page,
+        `Enter Patient Signature Name - ${signatureData.patientSignatureName}`,
+        async () => {
+
+            await this.locator.signatureInput.waitFor({
+                state: 'visible',
+                timeout: timeout.actionTimeout
+            });
+
+            await this.locator.signatureInput.click();
+
+            await this.locator.signatureInput.fill(
+                signatureData.patientSignatureName
+            );
+        }
+    );
+
+    await StepHelper.step(
+    this.page,
+    `Draw Patient Signature - ${signatureData.signatureName}`,
+    async () => {
+
+        await this.locator.signatureCanvas.waitFor({
+            state: 'visible',
+            timeout: timeout.actionTimeout
+        });
+
+        const box = await this.locator.signatureCanvas.boundingBox();
+
+        if (!box) {
+            throw new Error('Signature canvas is not available');
+        }
+
+        const draw = async (points) => {
+            await this.page.mouse.move(points[0][0], points[0][1]);
+            await this.page.mouse.down();
+
+            for (let i = 1; i < points.length; i++) {
+                await this.page.mouse.move(
+                    points[i][0],
+                    points[i][1],
+                    { steps: 3 }
+                );
+            }
+
+            await this.page.mouse.up();
+        };
+
+        const x = box.x;
+        const y = box.y;
+
+        // // Draw "T"
+        // await draw([
+        //     [x + 80, y + 40],
+        //     [x + 140, y + 40],
+        //     [x + 110, y + 40],
+        //     [x + 110, y + 100]
+        // ]);
+
+         // Draw "t"
+        await draw([
+            [x + 240, y + 45],
+            [x + 240, y + 100]
+        ]);
+
+        // Draw "e"
+        await draw([
+            [x + 145, y + 80],
+            [x + 175, y + 80],
+            [x + 180, y + 65],
+            [x + 170, y + 55],
+            [x + 150, y + 60],
+            [x + 145, y + 80],
+            [x + 160, y + 90],
+            [x + 180, y + 85]
+        ]);
+
+        // Draw "s"
+        await draw([
+            [x + 215, y + 60],
+            [x + 195, y + 55],
+            [x + 185, y + 70],
+            [x + 210, y + 80],
+            [x + 220, y + 90],
+            [x + 200, y + 100],
+            [x + 180, y + 95]
+        ]);
+
+        // Draw "t"
+        await draw([
+            [x + 240, y + 45],
+            [x + 240, y + 100]
+        ]);
+
+        await draw([
+            [x + 225, y + 65],
+            [x + 255, y + 65]
+        ]);
+    }
+);
+
+    await StepHelper.step(
+        this.page,
+        'Click Save Signature',
+        async () => {
+
+            await this.locator.saveSignatureButton.waitFor({
+                state: 'visible',
+                timeout: timeout.actionTimeout
+            });
+
+            await this.locator.saveSignatureButton.click();
+        }
+    );
+}
+
+async submitAndVerifyConsentForm(administrativeForm) {
+
+    const formName = administrativeForm['formName'];
+
+    // Submit
+    await StepHelper.step(
+        this.page,
+        'Click Submit button',
+        async () => {
+
+            await this.locator.submitButton.waitFor({
+                state: 'visible',
+                timeout: timeout.actionTimeout
+            });
+
+            await this.locator.submitButton.click();
+        }
+    );
+
+    // Verify score result table
+    await StepHelper.step(
+        this.page,
+        'Verify Score Result Table is visible',
+        async () => {
+
+            await this.locator.scoreResultTable.waitFor({
+                state: 'visible',
+                timeout: timeout.actionTimeout
+            });
+        }
+    );
+
+    // Verify form name
+    await StepHelper.step(
+        this.page,
+        `Verify ${formName} is displayed`,
+        async () => {
+
+            const form = this.locator.consentFormName(formName);
+
+            await form.waitFor({
+                state: 'visible',
+                timeout: timeout.actionTimeout
+            });
+
+            const actualText = (await form.textContent()).trim();
+
+            if (actualText !== formName) {
+                throw new Error(
+                    `Form name mismatch. Expected: ${formName}, Actual: ${actualText}`
+                );
+            }
+        }
+    );
+
+    // Verify View icon
+    const viewIcon = this.locator.consentFormViewIcon(formName);
+
+    await StepHelper.step(
+        this.page,
+        `Verify View icon for ${formName} is visible`,
+        async () => {
+
+            await viewIcon.waitFor({
+                state: 'visible',
+                timeout: timeout.actionTimeout
+            });
+        }
+    );
+
+    await StepHelper.step(
+    this.page,
+    `Click View icon and open PDF for ${formName}`,
+    async () => {
+        await viewIcon.click();
+
+        await this.page.waitForTimeout(timeout.networkIdleTimeoutMs);
+    }
+    );
+
+ await StepHelper.step(
+    this.page,
+    `Verify PDF name contains ${formName}`,
+    async () => {
+        const pdfFormName = this.locator.pdfFormName(formName);
+
+        await expect(pdfFormName).toHaveText(formName, {
+            timeout: timeout.actionTimeout
+        });
+    }
+);
+}
+
+async verifyAdministrativeFormPDF(administrativeForm, consentCheckboxData) {
+
+    const pdfData = [
+        {
+            field: 'Form Name',
+            value: administrativeForm.formName
+        },
+        {
+            field: 'Age',
+            value: administrativeForm.Age
+        },
+        {
+            field: 'Gender',
+            value: administrativeForm.Gender
+        },
+        {
+            field: 'UHID',
+            value: administrativeForm.UHID
+        },
+        {
+            field: 'Procedure planned',
+            value: administrativeForm['Procedure planned (as told to me)']
+        },
+        {
+            field: 'Allergy Details',
+            value: administrativeForm['Allergy Details']
+        },
+        {
+            field: 'Blood-thinning Details',
+            value: administrativeForm['Blood-thinning Details']
+        },
+        {
+            field: 'Metformin Details',
+            value: administrativeForm['Metformin Details']
+        },
+        {
+            field: 'Kidney Details',
+            value: administrativeForm['Kidney Details']
+        },
+        {
+            field: 'Pacemaker Details',
+            value: administrativeForm['Pacemaker Details']
+        },
+        {
+            field: 'Pregnancy Details',
+            value: administrativeForm['Pregnancy Details']
+        },
+        {
+            field: 'Last meal/water taken',
+            value: administrativeForm['Last meal/water taken — time']
+        },
+        {
+            field: 'Empty stomach',
+            value: administrativeForm['Empty stomach (fasting) since']
+        }
+    ];
+
+    const pdfText = this.locator.pdfTextLayer.first();
+
+    await pdfText.waitFor({
+        state: 'visible',
+        timeout: timeout.actionTimeout
+    });
+
+    // Verify Administrative Form Data
+    for (const data of pdfData) {
+
+        const expectedValue = String(data.value);
+
+        const actualLocator = pdfText.getByText(expectedValue, {
+            exact: false
+        });
+
+        await actualLocator.first().waitFor({
+            state: 'visible',
+            timeout: timeout.actionTimeout
+        });
+
+        const actualValue = await this.keywords.getText(
+            actualLocator.first()
+        );
+
+        await StepHelper.step(
+            this.page,
+            `Verify PDF ${data.field} | Expected: ${expectedValue} | Actual: ${actualValue}`,
+            async () => {
+
+                if (!actualValue.includes(expectedValue)) {
+                    throw new Error(
+                        `${data.field} mismatch | ` +
+                        `Expected: ${expectedValue} | ` +
+                        `Actual: ${actualValue}`
+                    );
+                }
+            }
+        );
+    }
+
+    // Verify Consent Checkbox Questions
+    for (const [question, expectedValue] of Object.entries(consentCheckboxData)) {
+
+        const actualLocator = pdfText.getByText(question, {
+            exact: false
+        });
+
+        await actualLocator.first().waitFor({
+            state: 'visible',
+            timeout: timeout.actionTimeout
+        });
+
+        const actualValue = await this.keywords.getText(
+            actualLocator.first()
+        );
+
+        await StepHelper.step(
+            this.page,
+            `Verify PDF Consent | Expected: ${expectedValue} | Actual: ${actualValue}`,
+            async () => {
+
+                if (!actualValue.includes(question)) {
+                    throw new Error(
+                        `Consent question not found in PDF | ` +
+                        `Expected: ${question} | ` +
+                        `Actual: ${actualValue}`
+                    );
+                }
+            }
+        );
+    }
+}
+
+
+
+
+
+
 }
 
 module.exports = { IPDPage };

@@ -8,7 +8,7 @@ const { CalendarPage } = require('../pages/CalendarPage');
 const { PrescriptionPage } = require('../pages/PrescriptionPage');
 
 
-const { patientData,appoinmentData,consultData,prescriptionData,templateData,loginData,marginData,observationData,template } = require('../testdata/TC_EMR012.json');
+const { patientData,appoinmentData,consultData,prescriptionData,templateData,loginData,marginData,observationData,template } = require('../testdata/TC_EMR032.json');
 const { generateUniquePatientFullName } = require('../utils/RandomData');
 
 test('EMR Prescription', async ({ page }) => {
@@ -46,38 +46,10 @@ test('EMR Prescription', async ({ page }) => {
     template.templateName
     );
 
-//release UAT:
-
-    // await prescriptionPage.ApplyTemplate(
-    //         templateData.templateName,
-    //         templateData.searchKey,
-    //         templateData.templateAppliedMessage
-    //     );
-
     await prescriptionPage.fillObservation(
     observationData
     // timeout.time
     );
-
-    //release UAT
-
-    //old
-    // // await prescriptionPage.PrescriptionObservation(
-    // // templateData.templateName,
-    // // templateData.searchKey,
-    // // timeout.time,
-    // // prescriptionData.addRows,
-    // // prescriptionData.drugs
-    // // );//old
-
-    // await prescriptionPage.clickSidebarEdgeToggle();
-
-    // await prescriptionPage.fillMarginValues(
-    // marginData.top,
-    // marginData.bottom,
-    // marginData.leftRight,
-    // // timeout.time,
-    // );
 
     const newTab = await prescriptionPage.openSameUrlInNewTab(
     loginData.url,

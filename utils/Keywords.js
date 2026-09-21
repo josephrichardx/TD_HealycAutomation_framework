@@ -509,6 +509,17 @@ class Keywords {
                 return await pagePromise;
         });
     }
+
+    // =========================================================
+    // VERIFY THE ELEMENT
+    // =========================================================
+
+    async verifyElementVisible(locator) {
+    await locator.waitFor({
+        state: "visible",
+        timeout: 30000
+    });
+}
 }
  
  

@@ -28,6 +28,9 @@ class CalendarLocator {
                 `//div[@class='list-item-wrapper'][contains(.,'${patientName}')]`
             ).first();
 
+        this.AppointmentBtn = (patientResult) =>
+        patientResult.locator("button[class='view-appt-btn']").first();
+
         this.viewAppointmentBtn = page.locator(
             "//div[@class='list-item-wrapper']//button[@class='view-appt-btn']"
         );
@@ -43,6 +46,17 @@ class CalendarLocator {
             'app-appointment-details'
         );
 
+        this.patientNoApptBookedTag = (patientName) =>
+            this.patientResult(patientName)
+                .locator('span.status-default');
+
+        this.nextDayCalendarBtn = page.getByRole('button', {
+            name: 'Next day'
+        });
+
+        this.showCancelledToggle = page.locator(
+            '.status-card.canceled .toggle-switch'
+        );
 }
 
 getStatus(status) {

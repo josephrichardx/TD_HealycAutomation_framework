@@ -24,6 +24,12 @@ class NewPatientLocator {
             has: page.locator('div.section-paragraph', { hasText: 'Age' })
         }).locator('input[placeholder="Enter age"]');
  
+        this.genderBtn = (gender) =>
+            page.getByRole('button', {
+                name: gender,
+                exact: true
+            });
+            
         this.maleBtn = page.getByRole('button', { name: 'Male', exact: true });
         this.femaleBtn = page.getByRole('button', { name: 'Female', exact: true });
         this.otherGenderBtn = page.getByRole('button', { name: 'Other', exact: true });

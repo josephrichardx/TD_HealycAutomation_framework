@@ -1,15 +1,10 @@
 import { test as base } from '@playwright/test';
-import { LoginPage } from '../pages/LoginPage.js';
-
-import users from '../testdata/users.json' with { type: 'json' };
-const { loginData } = users;
-
+ 
 export const test = base.extend({
   page: async ({ page }, use, testInfo) => {
-
+ 
     const apiFailures = [];
-    
-
+ 
     page.on('response', async (response) => {
       if (response.status() >= 400) {
         apiFailures.push({
@@ -19,18 +14,13 @@ export const test = base.extend({
         });
       }
     });
-
-    // Reuse the saved session if present; otherwise fall back to the normal login flow.
-    const loginPage = new LoginPage(page);
-
-    await loginPage.login(
-      loginData.username,
-      loginData.password,
-      { skipIfAuthenticated: true, waitForSuccess: true }
-    );
-
+ 
+    // Open application using saved authentication state
+    await page.goto('http://release-uat.healync.com.s3-website.ap-south-1.amazonaws.com');
+    await page.waitForLoadState('domcontentloaded');
+ 
     await use(page);
-
+ 
     if (apiFailures.length > 0) {
       await testInfo.attach('API Failures', {
         body: JSON.stringify(apiFailures, null, 2),
@@ -39,3 +29,4 @@ export const test = base.extend({
     }
   }
 });
+ 

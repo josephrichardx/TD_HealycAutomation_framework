@@ -176,6 +176,10 @@ this.cancellationSuccessMessage = page.getByText(
     'Success',
     { exact: true }
 );
+
+this.amountAlreadyPaidValue = page.locator(
+    "//*[normalize-space()='Amount already paid']/following-sibling::*[1]"
+);
     
     }
 

@@ -231,9 +231,12 @@ this.drugCell = page.locator(
     "//td[contains(@class,'col-drug col-id')]"
 );
 
-this.drugSearchInput = page.locator(
-    "//textarea[contains(@class,'drug-name-input')]"
-);
+// this.drugSearchInput = page.locator(
+//     "//textarea[contains(@class,'drug-name-input')]"
+// );//old
+
+this.drugSearchInput =
+    page.locator('input[placeholder="Search or enter drug name"]');//new
 
 // this.drugSearchInput = () =>
 //     page
@@ -367,9 +370,12 @@ this.instructionCell = (rowIndex) =>
         .nth(rowIndex)
         .locator("td.col-instructions");
 
-this.instructionInput = (rowIndex) =>
-    this.instructionCell(rowIndex)
-        .locator("input[placeholder*='Type instruction']");
+// this.instructionInput = (rowIndex) =>
+//     this.instructionCell(rowIndex)
+//         .locator("input[placeholder*='Type instruction']");//old
+
+this.instructionInput =
+    page.locator('input[placeholder="Enter instructions"]');//new
 
 
 // this.observationRow = (drugName) =>
@@ -507,15 +513,25 @@ this.observationSection =
 //         has: page.locator("svg")
 //     })
 //     .last();
+
+// this.observationAddRowBtn =
+//     page.locator(
+//         'app-emr-medications-table[data-section-id="co_morbidities"] button[title="Add row"]'
+//     );//old
+
 this.observationAddRowBtn =
-    page.locator(
-        'app-emr-medications-table[data-section-id="co_morbidities"] button[title="Add row"]'
-    );
+    page.locator('button.add-new-btn').first();//new
 
 // NEW TAB - SAVE
 // =======================
 
 this.newTabSaveButton = page.locator("//button[text()=' Save']");
+
+this.printOptionsBtn =
+    page.locator("//button[@aria-label='Print options']").first();
+
+this.shareWithPatientBtn =
+    page.locator("//button[text()=' Share with Patient ']").first();
 
 this.newTabGenerateShareButton = page.locator(
     "//button[text()=' Generate & Share ']"
@@ -563,6 +579,15 @@ this.replaceButton = page.locator(
 this.templateSuccessMessage = page.locator(
     "//div[contains(@class,'mdc-snackbar__label')]"
 );
+
+this.createNewTemplateBtn =
+    page.locator("//button[text()=' + Create New Template ']").first();
+
+this.templateNameInput =
+    page.locator("//input[@placeholder='e.g. Diabetes + Hypertension']").first();
+
+this.saveTemplateBtn =
+    page.locator("//button[text()=' Save Template ']").first();
 
         }
 
