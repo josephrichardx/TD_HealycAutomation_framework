@@ -1,0 +1,86 @@
+{
+  "patientData": {
+    "title": "Mr",
+    "phoneNumber": "1234567890",
+    "notes": "Healync",
+    "email": "test@gmail.com",
+    "age": "21",
+    "gender": "Male",
+    "address": "Chennai"
+  },
+
+ "appoinmentData": {
+    "doctorName": "Dr. Orthopedic"
+  },
+ 
+  "consultData": {
+    "consultSlot": "First Consult"
+  },
+
+  "templateData": {
+  "templateName": "EMR_AUTOMATION_TEMPLATE TD",
+  "searchKey": "Enter",
+   "templateAppliedMessage": "Template Applied successfully!"
+  },
+
+ "prescriptionData": {
+
+    "addRows": 1,
+    "drugs": [
+          {
+            "drugName": " 1 AL Plus 5mg/120mg Capsule ",
+            "durationType1": "Days",
+            "durationType2": "Weeks",
+            "instruction": "Before Food"
+          },
+          {
+            "drugName": "1 Nvp Tablet",
+            "durationType1": "Weeks",
+            "durationType2": "Months",
+            "instruction": "After Food"
+          }
+      ]
+},
+
+"observationData": {
+    "row": 2,
+    "drugName": "1 AL Plus 5mg/120mg Capsule",
+    "form": "Capsule",
+    "strength": "4",
+    "strengthUnit": "ml",
+    "route": "PO",
+    "dosage": "4",
+    "dosageUnit": "capsule",
+    "frequency": "Daily",
+    "schedule": ["4", "4", "4", "4"],
+    "timing": "Before food",
+    "duration": "4",
+    "durationUnit": "Days",
+    "instruction": "INS 1"
+},
+
+ "loginData": {
+    "url": "http://release-uat.healync.com.s3-website.ap-south-1.amazonaws.com",
+    "username": "sales@healync.com",
+    "password": "Demo2025$$"
+  },
+
+  "marginData": {
+    "top": "10",
+    "bottom": "20",
+    "leftRight": "15"
+  },
+
+    "template": {
+        "formatValue": "EMR_AUTOMATION TD",
+        "templateName": "EMR_Test1"
+    },
+
+    "scoringChartData": {
+        "scoringChartName": "Mini-Mental State Examination (MMSE)"
+    }
+
+
+
+
+}

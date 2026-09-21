@@ -496,7 +496,7 @@ class PrescriptionPage {
         }
     }
 
-    async fillObservationRow(
+    async fill_Co_morbidities(
         rowIndex,
         observationData
     ) {
@@ -612,222 +612,6 @@ class PrescriptionPage {
             }
         );
 
-        // // =========================
-        // // ROUTE
-        // // =========================
-
-        // await StepHelper.step(
-        //     this.page,
-        //     `Route - ${observationData.route}`,
-        //     async () => {
-
-        //         const route =
-        //             this.locators.routeDropdown.nth(rowIndex);
-
-        //         await route.waitFor({
-        //             state: 'visible',
-        //             timeout: timeout.elementTimeout
-        //         });
-
-        //         await this.keywords.click(route);
-
-        //         await this.keywords.selectOption(
-        //             route,
-        //             observationData.route
-        //         );
-        //     }
-        // );
-
-        // // =========================
-        // // DOSAGE
-        // // =========================
-
-        // await StepHelper.step(
-        //     this.page,
-        //     `Dosage - ${observationData.dosage}`,
-        //     async () => {
-
-        //         const dosage =
-        //             this.locators.dosageInput.nth(rowIndex);
-
-        //         await dosage.waitFor({
-        //             state: 'visible',
-        //             timeout: timeout.elementTimeout
-        //         });
-
-        //         await this.keywords.click(dosage);
-
-        //         await this.keywords.clear(dosage);
-
-        //         await this.keywords.type(
-        //             dosage,
-        //             observationData.dosage
-        //         );
-        //     }
-        // );
-
-        // // =========================
-        // // DOSAGE UNIT
-        // // =========================
-
-        // await StepHelper.step(
-        //     this.page,
-        //     `Dosage Unit - ${observationData.dosageUnit}`,
-        //     async () => {
-
-        //         const dosageUnit =
-        //             this.locators.dosageUnitDropdown.nth(rowIndex);
-
-        //         await dosageUnit.waitFor({
-        //             state: 'visible',
-        //             timeout: timeout.elementTimeout
-        //         });
-
-        //         await this.keywords.click(dosageUnit);
-
-        //         await this.keywords.selectOption(
-        //             dosageUnit,
-        //             observationData.dosageUnit
-        //         );
-        //     }
-        // );
-
-        // // =========================
-        // // FREQUENCY
-        // // =========================
-
-        // await StepHelper.step(
-        //     this.page,
-        //     `Frequency - ${observationData.frequency}`,
-        //     async () => {
-
-        //         const frequency =
-        //             this.locators.frequencyDropdown.nth(rowIndex);
-
-        //         await frequency.waitFor({
-        //             state: 'visible',
-        //             timeout: timeout.elementTimeout
-        //         });
-
-        //         await this.keywords.click(frequency);
-
-        //         await this.keywords.selectOption(
-        //             frequency,
-        //             observationData.frequency
-        //         );
-        //     }
-        // );
-
-        // // =========================
-        // // SCHEDULE
-        // // =========================
-
-        // await StepHelper.step(
-        //     this.page,
-        //     `Schedule - Row ${rowIndex + 1}`,
-        //     async () => {
-
-        //         const scheduleCount =
-        //             observationData.schedule.length;
-
-        //         for (let j = 0; j < scheduleCount; j++) {
-
-        //             const scheduleIndex =
-        //                 (rowIndex * scheduleCount) + j;
-
-        //             const schedule =
-        //                 this.locators.scheduleInputs.nth(
-        //                     scheduleIndex
-        //                 );
-
-        //             await schedule.waitFor({
-        //                 state: 'visible',
-        //                 timeout: timeout.elementTimeout
-        //             });
-
-        //             await this.keywords.click(schedule);
-
-        //             await this.keywords.clear(schedule);
-
-        //             await schedule.waitFor({
-        //                 state: 'visible',
-        //                 timeout: timeout.elementTimeout
-        //             });
-
-        //             await this.keywords.type(
-        //                 schedule,
-        //                 observationData.schedule[j]
-        //             );
-        //         }
-        //     }
-        // );
-
-        // // =========================
-        // // TIMING
-        // // =========================
-
-        // await StepHelper.step(
-        //     this.page,
-        //     `Timing - ${observationData.timing}`,
-        //     async () => {
-
-        //         const timingDropdown =
-        //             this.locators.timingDropdown(rowIndex);
-
-        //         await timingDropdown.waitFor({
-        //             state: 'visible',
-        //             timeout: timeout.elementTimeout
-        //         });
-
-        //         await this.keywords.click(
-        //             timingDropdown
-        //         );
-
-        //         const emptyStomachOption =
-        //             this.locators.timingOption(
-        //                 rowIndex,
-        //                 'Empty stomach'
-        //             );
-
-        //         await emptyStomachOption.waitFor({
-        //             state: 'visible',
-        //             timeout: timeout.elementTimeout
-        //         });
-
-        //         await StepHelper.step(
-        //             this.page,
-        //             'Unselect Timing - Empty stomach',
-        //             async () => {
-
-        //                 await this.keywords.click(
-        //                     emptyStomachOption
-        //                 );
-        //             }
-        //         );
-
-        //         const requiredTimingOption =
-        //             this.locators.timingOption(
-        //                 rowIndex,
-        //                 observationData.timing
-        //             );
-
-        //         await requiredTimingOption.waitFor({
-        //             state: 'visible',
-        //             timeout: timeout.elementTimeout
-        //         });
-
-        //         await StepHelper.step(
-        //             this.page,
-        //             `Select Timing - ${observationData.timing}`,
-        //             async () => {
-
-        //                 await this.keywords.click(
-        //                     requiredTimingOption
-        //                 );
-        //             }
-        //         );
-        //     }
-        // );
 
         // =========================
         // DURATION
@@ -908,7 +692,438 @@ class PrescriptionPage {
                 //     this.locators.instructionInput(rowIndex);//old
 
                 const instruction =
-                this.locators.instructionInput.nth(rowIndex);//new
+                    this.locators.instructionInput.nth(rowIndex);//new
+
+                await instruction.waitFor({
+                    state: 'visible',
+                    timeout: timeout.elementTimeout
+                });
+
+                await this.keywords.clear(
+                    instruction
+                );
+
+                await this.keywords.type(
+                    instruction,
+                    observationData.instruction
+                );
+            }
+        );
+    }
+
+    async fill_Toxicity(
+        rowIndex,
+        observationData
+    ) {
+
+        // =========================
+        // DRUG NAME
+        // =========================
+
+        await StepHelper.step(
+            this.page,
+            `Drug Name - ${observationData.drugName}`,
+            async () => {
+
+                const drugCell =
+                    this.locators.drugCell.nth(rowIndex);
+
+                await this.keywords.click(drugCell);
+
+                const drugInput =
+                    this.locators.drugSearchInput.nth(rowIndex);
+
+                await drugInput.waitFor({
+                    state: 'visible',
+                    timeout: timeout.elementTimeout
+                });
+
+                await this.keywords.clear(drugInput);
+
+                await this.keywords.type(
+                    drugInput,
+                    observationData.drugName
+                );
+            }
+        );
+
+        // =========================
+        // FORM
+        // =========================
+
+        await StepHelper.step(
+            this.page,
+            `Form - ${observationData.form}`,
+            async () => {
+
+                const form =
+                    this.locators.formDropdown.nth(rowIndex);
+
+                await form.waitFor({
+                    state: 'visible',
+                    timeout: timeout.elementTimeout
+                });
+
+                await this.keywords.click(form);
+
+                await this.keywords.selectOption(
+                    form,
+                    observationData.form
+                );
+            }
+        );
+
+        // =========================
+        // STRENGTH
+        // =========================
+
+        await StepHelper.step(
+            this.page,
+            `Strength - ${observationData.strength}`,
+            async () => {
+
+                const strength =
+                    this.locators.strengthInput.nth(rowIndex);
+
+                await strength.waitFor({
+                    state: 'visible',
+                    timeout: timeout.elementTimeout
+                });
+
+                await this.keywords.click(strength);
+
+                await this.keywords.clear(strength);
+
+                await this.keywords.type(
+                    strength,
+                    observationData.strength
+                );
+            }
+        );
+
+        // =========================
+        // STRENGTH UNIT
+        // =========================
+
+        await StepHelper.step(
+            this.page,
+            `Strength Unit - ${observationData.strengthUnit}`,
+            async () => {
+
+                const strengthUnit =
+                    this.locators.strengthUnitDropdown(rowIndex);
+
+                await strengthUnit.waitFor({
+                    state: 'visible',
+                    timeout: timeout.elementTimeout
+                });
+
+                await this.keywords.selectOption(
+                    strengthUnit,
+                    {
+                        label: observationData.strengthUnit
+                    }
+                );
+            }
+        );
+
+        // =========================
+        // ROUTE
+        // =========================
+
+        await StepHelper.step(
+            this.page,
+            `Route - ${observationData.route}`,
+            async () => {
+
+                const route =
+                    this.locators.routeDropdown.nth(rowIndex);
+
+                await route.waitFor({
+                    state: 'visible',
+                    timeout: timeout.elementTimeout
+                });
+
+                await this.keywords.click(route);
+
+                await this.keywords.selectOption(
+                    route,
+                    observationData.route
+                );
+            }
+        );
+
+        // =========================
+        // DOSAGE
+        // =========================
+
+        await StepHelper.step(
+            this.page,
+            `Dosage - ${observationData.dosage}`,
+            async () => {
+
+                const dosage =
+                    this.locators.dosageInput.nth(rowIndex);
+
+                await dosage.waitFor({
+                    state: 'visible',
+                    timeout: timeout.elementTimeout
+                });
+
+                await this.keywords.click(dosage);
+
+                await this.keywords.clear(dosage);
+
+                await this.keywords.type(
+                    dosage,
+                    observationData.dosage
+                );
+            }
+        );
+
+        // =========================
+        // DOSAGE UNIT
+        // =========================
+
+        await StepHelper.step(
+            this.page,
+            `Dosage Unit - ${observationData.dosageUnit}`,
+            async () => {
+
+                const dosageUnit =
+                    this.locators.dosageUnitDropdown.nth(rowIndex);
+
+                await dosageUnit.waitFor({
+                    state: 'visible',
+                    timeout: timeout.elementTimeout
+                });
+
+                await this.keywords.click(dosageUnit);
+
+                await this.keywords.selectOption(
+                    dosageUnit,
+                    observationData.dosageUnit
+                );
+            }
+        );
+
+        // =========================
+        // FREQUENCY
+        // =========================
+
+        await StepHelper.step(
+            this.page,
+            `Frequency - ${observationData.frequency}`,
+            async () => {
+
+                const frequency =
+                    this.locators.frequencyDropdown.nth(rowIndex);
+
+                await frequency.waitFor({
+                    state: 'visible',
+                    timeout: timeout.elementTimeout
+                });
+
+                await this.keywords.click(frequency);
+
+                await this.keywords.selectOption(
+                    frequency,
+                    observationData.frequency
+                );
+            }
+        );
+
+        // =========================
+        // SCHEDULE
+        // =========================
+
+        await StepHelper.step(
+            this.page,
+            `Schedule - Row ${rowIndex + 1}`,
+            async () => {
+
+                const scheduleCount =
+                    observationData.schedule.length;
+
+                for (let j = 0; j < scheduleCount; j++) {
+
+                    const scheduleIndex =
+                        (rowIndex * scheduleCount) + j;
+
+                    const schedule =
+                        this.locators.scheduleInputs.nth(
+                            scheduleIndex
+                        );
+
+                    await schedule.waitFor({
+                        state: 'visible',
+                        timeout: timeout.elementTimeout
+                    });
+
+                    await this.keywords.click(schedule);
+
+                    await this.keywords.clear(schedule);
+
+                    await schedule.waitFor({
+                        state: 'visible',
+                        timeout: timeout.elementTimeout
+                    });
+
+                    await this.keywords.type(
+                        schedule,
+                        observationData.schedule[j]
+                    );
+                }
+            }
+        );
+
+        // =========================
+        // TIMING
+        // =========================
+
+        await StepHelper.step(
+            this.page,
+            `Timing - ${observationData.timing}`,
+            async () => {
+
+                const timingDropdown =
+                    this.locators.timingDropdown(rowIndex);
+
+                await timingDropdown.waitFor({
+                    state: 'visible',
+                    timeout: timeout.elementTimeout
+                });
+
+                await this.keywords.click(
+                    timingDropdown
+                );
+
+                const emptyStomachOption =
+                    this.locators.timingOption(
+                        rowIndex,
+                        'Empty stomach'
+                    );
+
+                await emptyStomachOption.waitFor({
+                    state: 'visible',
+                    timeout: timeout.elementTimeout
+                });
+
+                await StepHelper.step(
+                    this.page,
+                    'Unselect Timing - Empty stomach',
+                    async () => {
+
+                        await this.keywords.click(
+                            emptyStomachOption
+                        );
+                    }
+                );
+
+                const requiredTimingOption =
+                    this.locators.timingOption(
+                        rowIndex,
+                        observationData.timing
+                    );
+
+                await requiredTimingOption.waitFor({
+                    state: 'visible',
+                    timeout: timeout.elementTimeout
+                });
+
+                await StepHelper.step(
+                    this.page,
+                    `Select Timing - ${observationData.timing}`,
+                    async () => {
+
+                        await this.keywords.click(
+                            requiredTimingOption
+                        );
+                    }
+                );
+            }
+        );
+
+        // =========================
+        // DURATION
+        // =========================
+
+        await StepHelper.step(
+            this.page,
+            `Duration - ${observationData.duration}`,
+            async () => {
+
+                const duration =
+                    this.locators.durationInput.nth(rowIndex);
+
+                await duration.waitFor({
+                    state: 'visible',
+                    timeout: timeout.elementTimeout
+                });
+
+                await this.keywords.click(duration);
+
+                await this.keywords.clear(duration);
+
+                await this.keywords.type(
+                    duration,
+                    observationData.duration
+                );
+            }
+        );
+
+        // =========================
+        // DURATION UNIT
+        // =========================
+
+        await StepHelper.step(
+            this.page,
+            `Duration Unit - ${observationData.durationUnit}`,
+            async () => {
+
+                const durationUnit =
+                    this.locators.durationUnitDropdown(rowIndex);
+
+                await durationUnit.waitFor({
+                    state: 'visible',
+                    timeout: timeout.elementTimeout
+                });
+
+                await this.keywords.selectOption(
+                    durationUnit,
+                    {
+                        label: observationData.durationUnit
+                    }
+                );
+            }
+        );
+
+        // =========================
+        // INSTRUCTION
+        // =========================
+
+        await StepHelper.step(
+            this.page,
+            `Instruction - ${observationData.instruction}`,
+            async () => {
+
+                const instructionCell =
+                    this.locators.instructionCell(rowIndex);
+
+                await instructionCell.waitFor({
+                    state: 'visible',
+                    timeout: timeout.elementTimeout
+                });
+
+                await this.keywords.click(
+                    instructionCell
+                );
+
+                // const instruction =
+                //     this.locators.instructionInput(rowIndex);//old
+
+                const instruction =
+                    this.locators.instructionInput.nth(rowIndex);//new
 
                 await instruction.waitFor({
                     state: 'visible',
@@ -928,179 +1143,181 @@ class PrescriptionPage {
     }
 
 
-//    async fillObservation(observationData) {
 
-//     const existingRows =
-//         this.locators.existingObservationRows;
 
-//     const existingRowCount =
-//         await existingRows.count();
+    //    async fillObservation(observationData) {
 
-//     // Fill existing rows
-//     for (
-//         let i = 0;
-//         i < existingRowCount;
-//         i++
-//     ) {
+    //     const existingRows =
+    //         this.locators.existingObservationRows;
 
-//         await StepHelper.step(
-//             this.page,
-//             `Fill Existing Observation Row - ${i + 1}`,
-//             async () => {
+    //     const existingRowCount =
+    //         await existingRows.count();
 
-//                 await this.fillObservationRow(
-//                     i,
-//                     observationData
-//                 );
-//             }
-//         );
-//     }
+    //     // Fill existing rows
+    //     for (
+    //         let i = 0;
+    //         i < existingRowCount;
+    //         i++
+    //     ) {
 
-//     // Add new rows
-//     for (
-//         let i = 0;
-//         i < observationData.row;
-//         i++
-//     ) {
+    //         await StepHelper.step(
+    //             this.page,
+    //             `Fill Existing Observation Row - ${i + 1}`,
+    //             async () => {
 
-//         const newRowIndex =
-//             existingRowCount + i;
+    //                 await this.fillObservationRow(
+    //                     i,
+    //                     observationData
+    //                 );
+    //             }
+    //         );
+    //     }
 
-//         await StepHelper.step(
-//             this.page,
-//             `Add Observation Row - ${newRowIndex + 1}`,
-//             async () => {
+    //     // Add new rows
+    //     for (
+    //         let i = 0;
+    //         i < observationData.row;
+    //         i++
+    //     ) {
 
-//                 await this.keywords.click(
-//                     this.locators.observationAddRowBtn
-//                 );
+    //         const newRowIndex =
+    //             existingRowCount + i;
 
-//                 await this.locators.observationRows
-//                     .nth(newRowIndex)
-//                     .waitFor({
-//                         state: "visible",
-//                         timeout: timeout.elementTimeout
-//                     });
-//             }
-//         );
+    //         await StepHelper.step(
+    //             this.page,
+    //             `Add Observation Row - ${newRowIndex + 1}`,
+    //             async () => {
 
-//         await StepHelper.step(
-//             this.page,
-//             `Fill New Observation Row - ${newRowIndex + 1}`,
-//             async () => {
+    //                 await this.keywords.click(
+    //                     this.locators.observationAddRowBtn
+    //                 );
 
-//                 await this.fillObservationRow(
-//                     newRowIndex,
-//                     observationData
-//                 );
-//             }
-//         );
-//     }
-// }
+    //                 await this.locators.observationRows
+    //                     .nth(newRowIndex)
+    //                     .waitFor({
+    //                         state: "visible",
+    //                         timeout: timeout.elementTimeout
+    //                     });
+    //             }
+    //         );
 
-// async fillObservation(observationData) {
+    //         await StepHelper.step(
+    //             this.page,
+    //             `Fill New Observation Row - ${newRowIndex + 1}`,
+    //             async () => {
 
-//     // Fill existing row
-//     await StepHelper.step(
-//         this.page,
-//         "Fill Existing Observation Row - 1",
-//         async () => {
+    //                 await this.fillObservationRow(
+    //                     newRowIndex,
+    //                     observationData
+    //                 );
+    //             }
+    //         );
+    //     }
+    // }
 
-//             await this.fillObservationRow(
-//                 0,
-//                 observationData
-//             );
-//         }
-//     );
+    // async fillObservation(observationData) {
 
-//     // Add and fill new rows
-//     for (let i = 0; i < observationData.row; i++) {
+    //     // Fill existing row
+    //     await StepHelper.step(
+    //         this.page,
+    //         "Fill Existing Observation Row - 1",
+    //         async () => {
 
-//         const newRowIndex = i + 1;
+    //             await this.fillObservationRow(
+    //                 0,
+    //                 observationData
+    //             );
+    //         }
+    //     );
 
-//         await StepHelper.step(
-//             this.page,
-//             `Add Observation Row - ${newRowIndex + 1}`,
-//             async () => {
+    //     // Add and fill new rows
+    //     for (let i = 0; i < observationData.row; i++) {
 
-//                 await this.keywords.click(
-//                     this.locators.observationAddRowBtn
-//                 );
+    //         const newRowIndex = i + 1;
 
-//                 await this.locators.observationRows
-//                     .nth(newRowIndex)
-//                     .waitFor({
-//                         state: "visible",
-//                         timeout: timeout.elementTimeout
-//                     });
-//             }
-//         );
+    //         await StepHelper.step(
+    //             this.page,
+    //             `Add Observation Row - ${newRowIndex + 1}`,
+    //             async () => {
 
-//         await StepHelper.step(
-//             this.page,
-//             `Fill New Observation Row - ${newRowIndex + 1}`,
-//             async () => {
+    //                 await this.keywords.click(
+    //                     this.locators.observationAddRowBtn
+    //                 );
 
-//                 await this.fillObservationRow(
-//                     newRowIndex,
-//                     observationData
-//                 );
-//             }
-//         );
-//     }
-// }//old
+    //                 await this.locators.observationRows
+    //                     .nth(newRowIndex)
+    //                     .waitFor({
+    //                         state: "visible",
+    //                         timeout: timeout.elementTimeout
+    //                     });
+    //             }
+    //         );
 
-async fillObservation(observationData) {
+    //         await StepHelper.step(
+    //             this.page,
+    //             `Fill New Observation Row - ${newRowIndex + 1}`,
+    //             async () => {
 
-    // Fill existing row
-    await StepHelper.step(
-        this.page,
-        "Fill Existing Observation Row - 1",
-        async () => {
+    //                 await this.fillObservationRow(
+    //                     newRowIndex,
+    //                     observationData
+    //                 );
+    //             }
+    //         );
+    //     }
+    // }//old
 
-            await this.fillObservationRow(
-                0,
-                observationData
-            );
-        }
-    );
+    async fillObservation(observationData) {
 
-    // Add and fill new rows
-    for (let i = 0; i < observationData.row; i++) {
-
-        const newRowIndex = i + 1;
-
+        // Fill existing row
         await StepHelper.step(
             this.page,
-            `Add Observation Row - ${newRowIndex + 1}`,
+            "Fill Existing Observation Row - 1",
             async () => {
 
-                await this.keywords.click(
-                    this.locators.observationAddRowBtn
-                );
-
-                await this.locators.observationRows
-                    .nth(newRowIndex)
-                    .waitFor({
-                        state: "visible",
-                        timeout: timeout.elementTimeout
-                    });
-            }
-        );
-
-        await StepHelper.step(
-            this.page,
-            `Fill New Observation Row - ${newRowIndex + 1}`,
-            async () => {
-
-                await this.fillObservationRow(
-                    newRowIndex,
+                await this.fill_Co_morbidities(
+                    0,
                     observationData
                 );
             }
         );
-    }
-}//new
+
+        // Add and fill new rows
+        for (let i = 0; i < observationData.row; i++) {
+
+            const newRowIndex = i + 1;
+
+            await StepHelper.step(
+                this.page,
+                `Add Observation Row - ${newRowIndex + 1}`,
+                async () => {
+
+                    await this.keywords.click(
+                        this.locators.observationAddRowBtn
+                    );
+
+                    await this.locators.observationRows
+                        .nth(newRowIndex)
+                        .waitFor({
+                            state: "visible",
+                            timeout: timeout.elementTimeout
+                        });
+                }
+            );
+
+            await StepHelper.step(
+                this.page,
+                `Fill New Observation Row - ${newRowIndex + 1}`,
+                async () => {
+
+                    await this.fill_Co_morbidities(
+                        newRowIndex,
+                        observationData
+                    );
+                }
+            );
+        }
+    }//new
 
     async openSameUrlInNewTab(url) {
 
@@ -1148,1135 +1365,1140 @@ async fillObservation(observationData) {
         );
     }
 
-//     async verifyNewTabObservationData(
-//         observationData
-//     ) {
-
-//         await StepHelper.step(
-//             this.page,
-//             'Open Prescription Document',
-//             async () => {
-
-//                 await this.keywords.waitForElement(
-//                     this.locators.documentBody,
-//                     timeout.elementTimeout
-//                 );
-//             }
-//         );
-
-//         for (
-//             let i = 0;
-//             i < observationData.row;
-//             i++
-//         ) {
-
-//             // // Drug Name
-//             // await StepHelper.step(
-//             //     this.page,
-//             //     `Drug Name | Expected: ${observationData.drugName}`,
-//             //     async () => {
-
-//             //         const drugCell =
-//             //             this.locators.newTabDrugNameCell(i);
-
-//             //         await drugCell.waitFor({
-//             //             state: 'visible',
-//             //             timeout: timeout.elementTimeout
-//             //         });
-
-//             //         const actualDrugName =
-//             //             await drugCell.innerText();
-
-//             //         expect(
-//             //             actualDrugName.trim()
-//             //         ).toBe(
-//             //             observationData.drugName.trim()
-//             //         );
-//             //     }
-//             // );
-
-//            // Drug Name
-//     await StepHelper.step(
-//     this.page,
-//     `Drug Name | Expected: ${observationData.drugName}`,
-//     async () => {
-
-//         const drugCell =
-//             this.locators.newTabDrugNameCell(i);
-
-//         await drugCell.waitFor({
-//             state: 'visible',
-//             timeout: timeout.elementTimeout
-//         });
-
-//         const actualDrugName =
-//             await drugCell.innerText();
-
-//         expect(
-//             actualDrugName.trim()
-//         ).toBe(
-//             observationData.drugName.trim()
-//         );
-//     }
-// );
-
-//             // Form
-//             await StepHelper.step(
-//                 this.page,
-//                 `Form | Expected: ${observationData.form}`,
-//                 async () => {
-
-//                     const locator =
-//                         this.locators.newTabFormDropdown(i);
-
-//                     await locator.waitFor({
-//                         state: 'visible',
-//                         timeout: timeout.elementTimeout
-//                     });
-
-//                     const actualForm =
-//                         await locator.inputValue();
-
-//                     expect(
-//                         actualForm.trim()
-//                     ).toBe(
-//                         observationData.form.trim()
-//                     );
-//                 }
-//             );
-
-//             // Strength
-//             await StepHelper.step(
-//                 this.page,
-//                 `Strength | Expected: ${observationData.strength}`,
-//                 async () => {
-
-//                     const locator =
-//                         this.locators.newTabStrengthInput(i);
-
-//                     await locator.waitFor({
-//                         state: 'visible',
-//                         timeout: timeout.elementTimeout
-//                     });
-
-//                     const actualStrength =
-//                         await locator.inputValue();
-
-//                     expect(
-//                         actualStrength.trim()
-//                     ).toBe(
-//                         observationData.strength.trim()
-//                     );
-//                 }
-//             );
-
-//             // Strength Unit
-//             await StepHelper.step(
-//                 this.page,
-//                 `Strength Unit | Expected: ${observationData.strengthUnit}`,
-//                 async () => {
-
-//                     const locator =
-//                         this.locators.newTabStrengthUnitDropdown(i);
-
-//                     await locator.waitFor({
-//                         state: 'visible',
-//                         timeout: timeout.elementTimeout
-//                     });
-
-//                     const actualStrengthUnit =
-//                         await locator.inputValue();
-
-//                     expect(
-//                         actualStrengthUnit.trim()
-//                     ).toBe(
-//                         observationData.strengthUnit.trim()
-//                     );
-//                 }
-//             );
-
-//             // Route
-//             await StepHelper.step(
-//                 this.page,
-//                 `Route | Expected: ${observationData.route}`,
-//                 async () => {
-
-//                     const locator =
-//                         this.locators.newTabRouteDropdown(i);
-
-//                     await locator.waitFor({
-//                         state: 'visible',
-//                         timeout: timeout.elementTimeout
-//                     });
-
-//                     const actualRoute =
-//                         await locator.inputValue();
-
-//                     expect(
-//                         actualRoute.trim()
-//                     ).toBe(
-//                         observationData.route.trim()
-//                     );
-//                 }
-//             );
-
-//             // Dosage
-//             await StepHelper.step(
-//                 this.page,
-//                 `Dosage | Expected: ${observationData.dosage}`,
-//                 async () => {
-
-//                     const locator =
-//                         this.locators.newTabDosageInput(i);
-
-//                     await locator.waitFor({
-//                         state: 'visible',
-//                         timeout: timeout.elementTimeout
-//                     });
-
-//                     const actualDosage =
-//                         await locator.inputValue();
-
-//                     expect(
-//                         actualDosage.trim()
-//                     ).toBe(
-//                         observationData.dosage.trim()
-//                     );
-//                 }
-//             );
-
-//             // Dosage Unit
-//             await StepHelper.step(
-//                 this.page,
-//                 `Dosage Unit | Expected: ${observationData.dosageUnit}`,
-//                 async () => {
-
-//                     const locator =
-//                         this.locators.newTabDosageUnitDropdown(i);
-
-//                     await locator.waitFor({
-//                         state: 'visible',
-//                         timeout: timeout.elementTimeout
-//                     });
-
-//                     const actualDosageUnit =
-//                         await locator.inputValue();
-
-//                     expect(
-//                         actualDosageUnit.trim()
-//                     ).toBe(
-//                         observationData.dosageUnit.trim()
-//                     );
-//                 }
-//             );
-
-//             // Frequency
-//             await StepHelper.step(
-//                 this.page,
-//                 `Frequency | Expected: ${observationData.frequency}`,
-//                 async () => {
-
-//                     const locator =
-//                         this.locators.newTabFrequencyDropdown(i);
-
-//                     await locator.waitFor({
-//                         state: 'visible',
-//                         timeout: timeout.elementTimeout
-//                     });
-
-//                     const actualFrequency =
-//                         await locator.inputValue();
-
-//                     expect(
-//                         actualFrequency.trim()
-//                     ).toBe(
-//                         observationData.frequency.trim()
-//                     );
-//                 }
-//             );
-
-//             // Schedule
-//             await StepHelper.step(
-//                 this.page,
-//                 `Schedule | Expected: ${observationData.schedule.join(', ')}`,
-//                 async () => {
-
-//                     const scheduleInputs =
-//                         this.locators.newTabScheduleInputs(i);
-
-//                     for (
-//                         let j = 0;
-//                         j < observationData.schedule.length;
-//                         j++
-//                     ) {
-
-//                         const scheduleInput =
-//                             scheduleInputs.nth(j);
-
-//                         await scheduleInput.waitFor({
-//                             state: 'visible',
-//                             timeout: timeout.elementTimeout
-//                         });
-
-//                         const actualSchedule =
-//                             await scheduleInput.inputValue();
-
-//                         expect(
-//                             actualSchedule.trim()
-//                         ).toBe(
-//                             observationData.schedule[j].trim()
-//                         );
-//                     }
-//                 }
-//             );
-
-//             // Timing
-//             await StepHelper.step(
-//                 this.page,
-//                 `Timing | Expected: ${observationData.timing}`,
-//                 async () => {
-
-//                     const locator =
-//                         this.locators.newTabTimingDropdown(i);
-
-//                     await locator.waitFor({
-//                         state: 'visible',
-//                         timeout: timeout.elementTimeout
-//                     });
-
-//                     const actualTiming =
-//                         await locator.textContent();
-
-//                     expect(
-//                         actualTiming.trim()
-//                     ).toContain(
-//                         observationData.timing.trim()
-//                     );
-//                 }
-//             );
-
-//             // Duration
-//             await StepHelper.step(
-//                 this.page,
-//                 `Duration | Expected: ${observationData.duration}`,
-//                 async () => {
-
-//                     const locator =
-//                         this.locators.newTabDurationInput(i);
-
-//                     await locator.waitFor({
-//                         state: 'visible',
-//                         timeout: timeout.elementTimeout
-//                     });
-
-//                     const actualDuration =
-//                         await locator.inputValue();
-
-//                     expect(
-//                         actualDuration.trim()
-//                     ).toBe(
-//                         observationData.duration.trim()
-//                     );
-//                 }
-//             );
-
-//             // Duration Unit
-//             await StepHelper.step(
-//                 this.page,
-//                 `Duration Unit | Expected: ${observationData.durationUnit}`,
-//                 async () => {
-
-//                     const locator =
-//                         this.locators.newTabDurationUnitDropdown(i);
-
-//                     await locator.waitFor({
-//                         state: 'visible',
-//                         timeout: timeout.elementTimeout
-//                     });
-
-//                     const actualDurationUnit =
-//                         await locator.inputValue();
-
-//                     expect(
-//                         actualDurationUnit.trim()
-//                     ).toBe(
-//                         observationData.durationUnit.trim()
-//                     );
-//                 }
-//             );
-
-//             // Instruction
-//             await StepHelper.step(
-//                 this.page,
-//                 `Instruction | Expected: ${observationData.instruction}`,
-//                 async () => {
-
-//                     const locator =
-//                         this.locators.newTabInstructionInput(i);
-
-//                     await locator.waitFor({
-//                         state: 'visible',
-//                         timeout: timeout.elementTimeout
-//                     });
-
-//                     const actualInstruction =
-//                         await locator.inputValue();
-
-//                     expect(
-//                         actualInstruction.trim()
-//                     ).toBe(
-//                         observationData.instruction.trim()
-//                     );
-//                 }
-//             );
-//         }
-//     }
-
-async verifyNewTabObservationData(observationData) {
-
-    await StepHelper.step(
-        this.page,
-        'Open Prescription Document',
-        async () => {
-
-            await this.keywords.waitForElement(
-                this.locators.documentBody,
-                timeout.elementTimeout
-            );
-        }
-    );
-
-    for (let i = 0; i < observationData.row; i++) {
-
-        // =========================
-        // DRUG NAME
-        // =========================
-
-//     await StepHelper.step(
-//     this.page,
-//     `Verify Drug Name - Row ${i + 1}`,
-//     async () => {
-
-//         const drugName =
-//             this.locators.newTabDrugNameInput(i);
-
-//         await drugName.waitFor({
-//             state: 'visible',
-//             timeout: timeout.elementTimeout
-//         });
-
-//         const actualDrugName =
-//             (await drugName.inputValue()).trim();
-
-//         console.log(
-//             `Drug Name | Expected: ${observationData.drugName} | Actual: ${actualDrugName}`
-//         );
-
-//         expect(actualDrugName).toBe(
-//             observationData.drugName.trim()
-//         );
-//     }
-// );
-
-await StepHelper.step(
-    this.page,
-    `Verify Drug Name - Row ${i + 1}`,
-    async () => {
-
-        const drugName =
-            this.locators.newTabDrugNameInput(i);
-
-        await drugName.waitFor({
-            state: 'visible',
-            timeout: timeout.elementTimeout
-        });
-
-        await expect.poll(
+    //     async verifyNewTabObservationData(
+    //         observationData
+    //     ) {
+
+    //         await StepHelper.step(
+    //             this.page,
+    //             'Open Prescription Document',
+    //             async () => {
+
+    //                 await this.keywords.waitForElement(
+    //                     this.locators.documentBody,
+    //                     timeout.elementTimeout
+    //                 );
+    //             }
+    //         );
+
+    //         for (
+    //             let i = 0;
+    //             i < observationData.row;
+    //             i++
+    //         ) {
+
+    //             // // Drug Name
+    //             // await StepHelper.step(
+    //             //     this.page,
+    //             //     `Drug Name | Expected: ${observationData.drugName}`,
+    //             //     async () => {
+
+    //             //         const drugCell =
+    //             //             this.locators.newTabDrugNameCell(i);
+
+    //             //         await drugCell.waitFor({
+    //             //             state: 'visible',
+    //             //             timeout: timeout.elementTimeout
+    //             //         });
+
+    //             //         const actualDrugName =
+    //             //             await drugCell.innerText();
+
+    //             //         expect(
+    //             //             actualDrugName.trim()
+    //             //         ).toBe(
+    //             //             observationData.drugName.trim()
+    //             //         );
+    //             //     }
+    //             // );
+
+    //            // Drug Name
+    //     await StepHelper.step(
+    //     this.page,
+    //     `Drug Name | Expected: ${observationData.drugName}`,
+    //     async () => {
+
+    //         const drugCell =
+    //             this.locators.newTabDrugNameCell(i);
+
+    //         await drugCell.waitFor({
+    //             state: 'visible',
+    //             timeout: timeout.elementTimeout
+    //         });
+
+    //         const actualDrugName =
+    //             await drugCell.innerText();
+
+    //         expect(
+    //             actualDrugName.trim()
+    //         ).toBe(
+    //             observationData.drugName.trim()
+    //         );
+    //     }
+    // );
+
+    //             // Form
+    //             await StepHelper.step(
+    //                 this.page,
+    //                 `Form | Expected: ${observationData.form}`,
+    //                 async () => {
+
+    //                     const locator =
+    //                         this.locators.newTabFormDropdown(i);
+
+    //                     await locator.waitFor({
+    //                         state: 'visible',
+    //                         timeout: timeout.elementTimeout
+    //                     });
+
+    //                     const actualForm =
+    //                         await locator.inputValue();
+
+    //                     expect(
+    //                         actualForm.trim()
+    //                     ).toBe(
+    //                         observationData.form.trim()
+    //                     );
+    //                 }
+    //             );
+
+    //             // Strength
+    //             await StepHelper.step(
+    //                 this.page,
+    //                 `Strength | Expected: ${observationData.strength}`,
+    //                 async () => {
+
+    //                     const locator =
+    //                         this.locators.newTabStrengthInput(i);
+
+    //                     await locator.waitFor({
+    //                         state: 'visible',
+    //                         timeout: timeout.elementTimeout
+    //                     });
+
+    //                     const actualStrength =
+    //                         await locator.inputValue();
+
+    //                     expect(
+    //                         actualStrength.trim()
+    //                     ).toBe(
+    //                         observationData.strength.trim()
+    //                     );
+    //                 }
+    //             );
+
+    //             // Strength Unit
+    //             await StepHelper.step(
+    //                 this.page,
+    //                 `Strength Unit | Expected: ${observationData.strengthUnit}`,
+    //                 async () => {
+
+    //                     const locator =
+    //                         this.locators.newTabStrengthUnitDropdown(i);
+
+    //                     await locator.waitFor({
+    //                         state: 'visible',
+    //                         timeout: timeout.elementTimeout
+    //                     });
+
+    //                     const actualStrengthUnit =
+    //                         await locator.inputValue();
+
+    //                     expect(
+    //                         actualStrengthUnit.trim()
+    //                     ).toBe(
+    //                         observationData.strengthUnit.trim()
+    //                     );
+    //                 }
+    //             );
+
+    //             // Route
+    //             await StepHelper.step(
+    //                 this.page,
+    //                 `Route | Expected: ${observationData.route}`,
+    //                 async () => {
+
+    //                     const locator =
+    //                         this.locators.newTabRouteDropdown(i);
+
+    //                     await locator.waitFor({
+    //                         state: 'visible',
+    //                         timeout: timeout.elementTimeout
+    //                     });
+
+    //                     const actualRoute =
+    //                         await locator.inputValue();
+
+    //                     expect(
+    //                         actualRoute.trim()
+    //                     ).toBe(
+    //                         observationData.route.trim()
+    //                     );
+    //                 }
+    //             );
+
+    //             // Dosage
+    //             await StepHelper.step(
+    //                 this.page,
+    //                 `Dosage | Expected: ${observationData.dosage}`,
+    //                 async () => {
+
+    //                     const locator =
+    //                         this.locators.newTabDosageInput(i);
+
+    //                     await locator.waitFor({
+    //                         state: 'visible',
+    //                         timeout: timeout.elementTimeout
+    //                     });
+
+    //                     const actualDosage =
+    //                         await locator.inputValue();
+
+    //                     expect(
+    //                         actualDosage.trim()
+    //                     ).toBe(
+    //                         observationData.dosage.trim()
+    //                     );
+    //                 }
+    //             );
+
+    //             // Dosage Unit
+    //             await StepHelper.step(
+    //                 this.page,
+    //                 `Dosage Unit | Expected: ${observationData.dosageUnit}`,
+    //                 async () => {
+
+    //                     const locator =
+    //                         this.locators.newTabDosageUnitDropdown(i);
+
+    //                     await locator.waitFor({
+    //                         state: 'visible',
+    //                         timeout: timeout.elementTimeout
+    //                     });
+
+    //                     const actualDosageUnit =
+    //                         await locator.inputValue();
+
+    //                     expect(
+    //                         actualDosageUnit.trim()
+    //                     ).toBe(
+    //                         observationData.dosageUnit.trim()
+    //                     );
+    //                 }
+    //             );
+
+    //             // Frequency
+    //             await StepHelper.step(
+    //                 this.page,
+    //                 `Frequency | Expected: ${observationData.frequency}`,
+    //                 async () => {
+
+    //                     const locator =
+    //                         this.locators.newTabFrequencyDropdown(i);
+
+    //                     await locator.waitFor({
+    //                         state: 'visible',
+    //                         timeout: timeout.elementTimeout
+    //                     });
+
+    //                     const actualFrequency =
+    //                         await locator.inputValue();
+
+    //                     expect(
+    //                         actualFrequency.trim()
+    //                     ).toBe(
+    //                         observationData.frequency.trim()
+    //                     );
+    //                 }
+    //             );
+
+    //             // Schedule
+    //             await StepHelper.step(
+    //                 this.page,
+    //                 `Schedule | Expected: ${observationData.schedule.join(', ')}`,
+    //                 async () => {
+
+    //                     const scheduleInputs =
+    //                         this.locators.newTabScheduleInputs(i);
+
+    //                     for (
+    //                         let j = 0;
+    //                         j < observationData.schedule.length;
+    //                         j++
+    //                     ) {
+
+    //                         const scheduleInput =
+    //                             scheduleInputs.nth(j);
+
+    //                         await scheduleInput.waitFor({
+    //                             state: 'visible',
+    //                             timeout: timeout.elementTimeout
+    //                         });
+
+    //                         const actualSchedule =
+    //                             await scheduleInput.inputValue();
+
+    //                         expect(
+    //                             actualSchedule.trim()
+    //                         ).toBe(
+    //                             observationData.schedule[j].trim()
+    //                         );
+    //                     }
+    //                 }
+    //             );
+
+    //             // Timing
+    //             await StepHelper.step(
+    //                 this.page,
+    //                 `Timing | Expected: ${observationData.timing}`,
+    //                 async () => {
+
+    //                     const locator =
+    //                         this.locators.newTabTimingDropdown(i);
+
+    //                     await locator.waitFor({
+    //                         state: 'visible',
+    //                         timeout: timeout.elementTimeout
+    //                     });
+
+    //                     const actualTiming =
+    //                         await locator.textContent();
+
+    //                     expect(
+    //                         actualTiming.trim()
+    //                     ).toContain(
+    //                         observationData.timing.trim()
+    //                     );
+    //                 }
+    //             );
+
+    //             // Duration
+    //             await StepHelper.step(
+    //                 this.page,
+    //                 `Duration | Expected: ${observationData.duration}`,
+    //                 async () => {
+
+    //                     const locator =
+    //                         this.locators.newTabDurationInput(i);
+
+    //                     await locator.waitFor({
+    //                         state: 'visible',
+    //                         timeout: timeout.elementTimeout
+    //                     });
+
+    //                     const actualDuration =
+    //                         await locator.inputValue();
+
+    //                     expect(
+    //                         actualDuration.trim()
+    //                     ).toBe(
+    //                         observationData.duration.trim()
+    //                     );
+    //                 }
+    //             );
+
+    //             // Duration Unit
+    //             await StepHelper.step(
+    //                 this.page,
+    //                 `Duration Unit | Expected: ${observationData.durationUnit}`,
+    //                 async () => {
+
+    //                     const locator =
+    //                         this.locators.newTabDurationUnitDropdown(i);
+
+    //                     await locator.waitFor({
+    //                         state: 'visible',
+    //                         timeout: timeout.elementTimeout
+    //                     });
+
+    //                     const actualDurationUnit =
+    //                         await locator.inputValue();
+
+    //                     expect(
+    //                         actualDurationUnit.trim()
+    //                     ).toBe(
+    //                         observationData.durationUnit.trim()
+    //                     );
+    //                 }
+    //             );
+
+    //             // Instruction
+    //             await StepHelper.step(
+    //                 this.page,
+    //                 `Instruction | Expected: ${observationData.instruction}`,
+    //                 async () => {
+
+    //                     const locator =
+    //                         this.locators.newTabInstructionInput(i);
+
+    //                     await locator.waitFor({
+    //                         state: 'visible',
+    //                         timeout: timeout.elementTimeout
+    //                     });
+
+    //                     const actualInstruction =
+    //                         await locator.inputValue();
+
+    //                     expect(
+    //                         actualInstruction.trim()
+    //                     ).toBe(
+    //                         observationData.instruction.trim()
+    //                     );
+    //                 }
+    //             );
+    //         }
+    //     }
+
+    async verifyNewTabObservationData(observationData) {
+
+        await StepHelper.step(
+            this.page,
+            'Open Prescription Document',
             async () => {
-                return (await drugName.inputValue()).trim();
-            },
-            {
-                timeout: timeout.elementTimeout,
-                message: `Drug Name value is not populated for Row ${i + 1}`
+
+                await this.keywords.waitForElement(
+                    this.locators.documentBody,
+                    timeout.elementTimeout
+                );
             }
-        ).not.toBe('');
-
-        const actualDrugName =
-            (await drugName.inputValue()).trim();
-
-        const expectedDrugName =
-            observationData.drugName.trim();
-
-        console.log(
-            `Drug Name | Expected: ${expectedDrugName} | Actual: ${actualDrugName}`
         );
 
-        expect(actualDrugName.toUpperCase()).toBe(
-            expectedDrugName.toUpperCase()
+        for (let i = 0; i < observationData.row; i++) {
+
+            // =========================
+            // DRUG NAME
+            // =========================
+
+            //     await StepHelper.step(
+            //     this.page,
+            //     `Verify Drug Name - Row ${i + 1}`,
+            //     async () => {
+
+            //         const drugName =
+            //             this.locators.newTabDrugNameInput(i);
+
+            //         await drugName.waitFor({
+            //             state: 'visible',
+            //             timeout: timeout.elementTimeout
+            //         });
+
+            //         const actualDrugName =
+            //             (await drugName.inputValue()).trim();
+
+            //         console.log(
+            //             `Drug Name | Expected: ${observationData.drugName} | Actual: ${actualDrugName}`
+            //         );
+
+            //         expect(actualDrugName).toBe(
+            //             observationData.drugName.trim()
+            //         );
+            //     }
+            // );
+
+            await StepHelper.step(
+                this.page,
+                `Verify Drug Name - Row ${i + 1}`,
+                async () => {
+
+                    const drugName =
+                        this.locators.newTabDrugNameInput(i);
+
+                    await drugName.waitFor({
+                        state: 'visible',
+                        timeout: timeout.elementTimeout
+                    });
+
+                    await expect.poll(
+                        async () => {
+                            return (await drugName.inputValue()).trim();
+                        },
+                        {
+                            timeout: timeout.elementTimeout,
+                            message: `Drug Name value is not populated for Row ${i + 1}`
+                        }
+                    ).not.toBe('');
+
+                    const actualDrugName =
+                        (await drugName.inputValue()).trim();
+
+                    const expectedDrugName =
+                        observationData.drugName.trim();
+
+                    console.log(
+                        `Drug Name | Expected: ${expectedDrugName} | Actual: ${actualDrugName}`
+                    );
+
+                    expect(actualDrugName.toUpperCase()).toBe(
+                        expectedDrugName.toUpperCase()
+                    );
+                }
+            );
+
+            // =========================
+            // FORM
+            // =========================
+
+            await StepHelper.step(
+                this.page,
+                `Verify Form - Row ${i + 1}`,
+                async () => {
+
+                    const form =
+                        this.locators.newTabFormDropdown(i);
+
+                    await form.waitFor({
+                        state: 'visible',
+                        timeout: timeout.elementTimeout
+                    });
+
+                    const actualForm =
+                        await form.inputValue();
+
+                    console.log(
+                        `Form | Expected: ${observationData.form} | Actual: ${actualForm}`
+                    );
+
+                    expect(actualForm).toBe(
+                        observationData.form
+                    );
+                }
+            );
+
+            // =========================
+            // STRENGTH
+            // =========================
+
+            await StepHelper.step(
+                this.page,
+                `Verify Strength - Row ${i + 1}`,
+                async () => {
+
+                    const strength =
+                        this.locators.newTabStrengthInput(i);
+
+                    await strength.waitFor({
+                        state: 'visible',
+                        timeout: timeout.elementTimeout
+                    });
+
+                    const actualStrength =
+                        await strength.inputValue();
+
+                    console.log(
+                        `Strength | Expected: ${observationData.strength} | Actual: ${actualStrength}`
+                    );
+
+                    expect(actualStrength).toBe(
+                        observationData.strength
+                    );
+                }
+            );
+
+            // =========================
+            // STRENGTH UNIT
+            // =========================
+
+            await StepHelper.step(
+                this.page,
+                `Verify Strength Unit - Row ${i + 1}`,
+                async () => {
+
+                    const strengthUnit =
+                        this.locators.newTabStrengthUnitDropdown(i);
+
+                    await strengthUnit.waitFor({
+                        state: 'visible',
+                        timeout: timeout.elementTimeout
+                    });
+
+                    const actualStrengthUnit =
+                        await strengthUnit.inputValue();
+
+                    console.log(
+                        `Strength Unit | Expected: ${observationData.strengthUnit} | Actual: ${actualStrengthUnit}`
+                    );
+
+                    expect(actualStrengthUnit).toBe(
+                        observationData.strengthUnit
+                    );
+                }
+            );
+
+            // // =========================
+            // // ROUTE
+            // // =========================
+
+            // await StepHelper.step(
+            //     this.page,
+            //     `Verify Route - Row ${i + 1}`,
+            //     async () => {
+
+            //         const route =
+            //             this.locators.newTabRouteDropdown(i);
+
+            //         await route.waitFor({
+            //             state: 'visible',
+            //             timeout: timeout.elementTimeout
+            //         });
+
+            //         const actualRoute =
+            //             await route.inputValue();
+
+            //         console.log(
+            //             `Route | Expected: ${observationData.route} | Actual: ${actualRoute}`
+            //         );
+
+            //         expect(actualRoute).toBe(
+            //             observationData.route
+            //         );
+            //     }
+            // );
+
+            // // =========================
+            // // DOSAGE
+            // // =========================
+
+            // await StepHelper.step(
+            //     this.page,
+            //     `Verify Dosage - Row ${i + 1}`,
+            //     async () => {
+
+            //         const dosage =
+            //             this.locators.newTabDosageInput(i);
+
+            //         await dosage.waitFor({
+            //             state: 'visible',
+            //             timeout: timeout.elementTimeout
+            //         });
+
+            //         const actualDosage =
+            //             await dosage.inputValue();
+
+            //         console.log(
+            //             `Dosage | Expected: ${observationData.dosage} | Actual: ${actualDosage}`
+            //         );
+
+            //         expect(actualDosage).toBe(
+            //             observationData.dosage
+            //         );
+            //     }
+            // );
+
+            // // =========================
+            // // DOSAGE UNIT
+            // // =========================
+
+            // await StepHelper.step(
+            //     this.page,
+            //     `Verify Dosage Unit - Row ${i + 1}`,
+            //     async () => {
+
+            //         const dosageUnit =
+            //             this.locators.newTabDosageUnitDropdown(i);
+
+            //         await dosageUnit.waitFor({
+            //             state: 'visible',
+            //             timeout: timeout.elementTimeout
+            //         });
+
+            //         const actualDosageUnit =
+            //             await dosageUnit.inputValue();
+
+            //         console.log(
+            //             `Dosage Unit | Expected: ${observationData.dosageUnit} | Actual: ${actualDosageUnit}`
+            //         );
+
+            //         expect(actualDosageUnit).toBe(
+            //             observationData.dosageUnit
+            //         );
+            //     }
+            // );
+
+            // // =========================
+            // // FREQUENCY
+            // // =========================
+
+            // await StepHelper.step(
+            //     this.page,
+            //     `Verify Frequency - Row ${i + 1}`,
+            //     async () => {
+
+            //         const frequency =
+            //             this.locators.newTabFrequencyDropdown(i);
+
+            //         await frequency.waitFor({
+            //             state: 'visible',
+            //             timeout: timeout.elementTimeout
+            //         });
+
+            //         const actualFrequency =
+            //             await frequency.inputValue();
+
+            //         console.log(
+            //             `Frequency | Expected: ${observationData.frequency} | Actual: ${actualFrequency}`
+            //         );
+
+            //         expect(actualFrequency).toBe(
+            //             observationData.frequency
+            //         );
+            //     }
+            // );
+
+            // // =========================
+            // // SCHEDULE
+            // // =========================
+
+            // await StepHelper.step(
+            //     this.page,
+            //     `Verify Schedule - Row ${i + 1}`,
+            //     async () => {
+
+            //         for (
+            //             let j = 0;
+            //             j < observationData.schedule.length;
+            //             j++
+            //         ) {
+
+            //             const scheduleIndex =
+            //                 (i * observationData.schedule.length) + j;
+
+            //             const schedule =
+            //                 this.locators.newTabScheduleInputs.nth(
+            //                     scheduleIndex
+            //                 );
+
+            //             await schedule.waitFor({
+            //                 state: 'visible',
+            //                 timeout: timeout.elementTimeout
+            //             });
+
+            //             const actualSchedule =
+            //                 await schedule.inputValue();
+
+            //             console.log(
+            //                 `Schedule ${j + 1} | Expected: ${observationData.schedule[j]} | Actual: ${actualSchedule}`
+            //             );
+
+            //             expect(actualSchedule).toBe(
+            //                 observationData.schedule[j]
+            //             );
+            //         }
+            //     }
+            // );
+
+            // // =========================
+            // // TIMING
+            // // =========================
+
+            // await StepHelper.step(
+            //     this.page,
+            //     `Verify Timing - Row ${i + 1}`,
+            //     async () => {
+
+            //         const timing =
+            //             this.locators.newTabTimingDropdown(i);
+
+            //         await timing.waitFor({
+            //             state: 'visible',
+            //             timeout: timeout.elementTimeout
+            //         });
+
+            //         const actualTiming =
+            //             await timing.inputValue();
+
+            //         console.log(
+            //             `Timing | Expected: ${observationData.timing} | Actual: ${actualTiming}`
+            //         );
+
+            //         expect(actualTiming).toBe(
+            //             observationData.timing
+            //         );
+            //     }
+            // );
+
+            // =========================
+            // DURATION
+            // =========================
+
+            await StepHelper.step(
+                this.page,
+                `Verify Duration - Row ${i + 1}`,
+                async () => {
+
+                    const duration =
+                        this.locators.newTabDurationInput(i);
+
+                    await duration.waitFor({
+                        state: 'visible',
+                        timeout: timeout.elementTimeout
+                    });
+
+                    const actualDuration =
+                        await duration.inputValue();
+
+                    console.log(
+                        `Duration | Expected: ${observationData.duration} | Actual: ${actualDuration}`
+                    );
+
+                    expect(actualDuration).toBe(
+                        observationData.duration
+                    );
+                }
+            );
+
+            // =========================
+            // DURATION UNIT
+            // =========================
+
+            await StepHelper.step(
+                this.page,
+                `Verify Duration Unit - Row ${i + 1}`,
+                async () => {
+
+                    const durationUnit =
+                        this.locators.newTabDurationUnitDropdown(i);
+
+                    await durationUnit.waitFor({
+                        state: 'visible',
+                        timeout: timeout.elementTimeout
+                    });
+
+                    const actualDurationUnit =
+                        await durationUnit.inputValue();
+
+                    console.log(
+                        `Duration Unit | Expected: ${observationData.durationUnit} | Actual: ${actualDurationUnit}`
+                    );
+
+                    expect(actualDurationUnit).toBe(
+                        observationData.durationUnit
+                    );
+                }
+            );
+
+            // =========================
+            // INSTRUCTION
+            // =========================
+
+            await StepHelper.step(
+                this.page,
+                `Verify Instruction - Row ${i + 1}`,
+                async () => {
+
+                    const instruction =
+                        this.locators.newTabInstructionInput(i);
+
+                    await instruction.waitFor({
+                        state: 'visible',
+                        timeout: timeout.elementTimeout
+                    });
+
+                    const actualInstruction =
+                        await instruction.inputValue();
+
+                    console.log(
+                        `Instruction | Expected: ${observationData.instruction} | Actual: ${actualInstruction}`
+                    );
+
+                    expect(actualInstruction).toBe(
+                        observationData.instruction
+                    );
+                }
+            );
+        }
+    }
+
+    async generateAndViewPrescription() {
+
+        // await StepHelper.step(
+        //     this.page,
+        //     'Click Save Button',
+        //     async () => {
+
+        //         await this.locators.newTabSaveButton.waitFor({
+        //             state: 'visible',
+        //             timeout: timeout.elementTimeout
+        //         });
+
+        //         await this.keywords.click(
+        //             this.locators.newTabSaveButton
+        //         );
+        //     }
+        // );//old
+
+
+        await StepHelper.step(
+            this.page,
+            'Click Print Options',
+            async () => {
+                await this.locators.printOptionsBtn.waitFor({
+                    state: 'visible',
+                    timeout: timeout.elementTimeout
+                });
+
+                await this.keywords.click(
+                    this.locators.printOptionsBtn
+                );
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            'Click Share with Patient',
+            async () => {
+                await this.locators.shareWithPatientBtn.waitFor({
+                    state: 'visible',
+                    timeout: timeout.elementTimeout
+                });
+
+                await this.keywords.click(
+                    this.locators.shareWithPatientBtn
+                );
+            }
+        );//new
+
+        await StepHelper.step(
+            this.page,
+            'Click Generate & Share Button',
+            async () => {
+
+                await this.locators.newTabGenerateShareButton.waitFor({
+                    state: 'visible',
+                    timeout: timeout.elementTimeout
+                });
+
+                await this.keywords.click(
+                    this.locators.newTabGenerateShareButton
+                );
+            }
+        );
+
+        // await this.page.waitForTimeout(1000);
+        await this.keywords.wait(
+            this.page,
+            timeout.testTimeout
+        );
+
+        // await StepHelper.step(
+        //     this.page,
+        //     'Click Exit Button',
+        //     async () => {
+
+        //         await this.locators.newTabExitButton.waitFor({
+        //             state: 'visible',
+        //             timeout: timeout.elementTimeout
+        //         });
+
+        //         await this.keywords.click(
+        //             this.locators.newTabExitButton
+        //         );
+        //     }
+        // );
+
+        // // await this.page.waitForTimeout(1000);
+        // await this.keywords.wait(
+        // this.page,
+        // timeout.testTimeout
+        // );
+
+        // await StepHelper.step(
+        //     this.page,
+        //     'Click Eye Icon',
+        //     async () => {
+
+        //         await this.locators.newTabEyeIcon.waitFor({
+        //             state: 'visible',
+        //             timeout: timeout.elementTimeout
+        //         });
+
+        //         await this.keywords.click(
+        //             this.locators.newTabEyeIcon
+        //         );
+        //     }
+        // );
+    }
+
+    //frontend
+
+    async applyTheFormat(formatValue) {
+
+        await StepHelper.step(
+            this.page,
+            'Click Format Value',
+            async () => {
+                await this.locators.formatValueButton.waitFor({
+                    state: 'visible',
+                    timeout: timeout.elementTimeout
+                });
+
+                await this.keywords.click(
+                    this.locators.formatValueButton
+                );
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            `Select Format Value - ${formatValue}`,
+            async () => {
+                const formatValueOption =
+                    this.locators.formatValueOption(formatValue);
+
+                await formatValueOption.waitFor({
+                    state: 'visible',
+                    timeout: timeout.elementTimeout
+                });
+
+                await formatValueOption.scrollIntoViewIfNeeded();
+
+                await this.keywords.click(
+                    formatValueOption
+                );
+            }
         );
     }
-);
 
-        // =========================
-        // FORM
-        // =========================
+    async applyTheTemplate(templateName) {
+
+
 
         await StepHelper.step(
             this.page,
-            `Verify Form - Row ${i + 1}`,
+            'Click Templates',
             async () => {
-
-                const form =
-                    this.locators.newTabFormDropdown(i);
-
-                await form.waitFor({
+                await this.locators.templatesButton.waitFor({
                     state: 'visible',
                     timeout: timeout.elementTimeout
                 });
 
-                const actualForm =
-                    await form.inputValue();
-
-                console.log(
-                    `Form | Expected: ${observationData.form} | Actual: ${actualForm}`
-                );
-
-                expect(actualForm).toBe(
-                    observationData.form
+                await this.keywords.click(
+                    this.locators.templatesButton
                 );
             }
-        );
-
-        // =========================
-        // STRENGTH
-        // =========================
+        );//old
 
         await StepHelper.step(
             this.page,
-            `Verify Strength - Row ${i + 1}`,
+            'Click Create New Template',
             async () => {
-
-                const strength =
-                    this.locators.newTabStrengthInput(i);
-
-                await strength.waitFor({
+                await this.locators.createNewTemplateBtn.waitFor({
                     state: 'visible',
                     timeout: timeout.elementTimeout
                 });
 
-                const actualStrength =
-                    await strength.inputValue();
-
-                console.log(
-                    `Strength | Expected: ${observationData.strength} | Actual: ${actualStrength}`
-                );
-
-                expect(actualStrength).toBe(
-                    observationData.strength
+                await this.keywords.click(
+                    this.locators.createNewTemplateBtn
                 );
             }
         );
 
-        // =========================
-        // STRENGTH UNIT
-        // =========================
-
         await StepHelper.step(
             this.page,
-            `Verify Strength Unit - Row ${i + 1}`,
+            'Enter Template Name',
             async () => {
-
-                const strengthUnit =
-                    this.locators.newTabStrengthUnitDropdown(i);
-
-                await strengthUnit.waitFor({
+                await this.locators.templateNameInput.waitFor({
                     state: 'visible',
                     timeout: timeout.elementTimeout
                 });
 
-                const actualStrengthUnit =
-                    await strengthUnit.inputValue();
-
-                console.log(
-                    `Strength Unit | Expected: ${observationData.strengthUnit} | Actual: ${actualStrengthUnit}`
-                );
-
-                expect(actualStrengthUnit).toBe(
-                    observationData.strengthUnit
+                await this.keywords.fill(
+                    this.locators.templateNameInput,
+                    template.templateName
                 );
             }
         );
 
-        // // =========================
-        // // ROUTE
-        // // =========================
-
-        // await StepHelper.step(
-        //     this.page,
-        //     `Verify Route - Row ${i + 1}`,
-        //     async () => {
-
-        //         const route =
-        //             this.locators.newTabRouteDropdown(i);
-
-        //         await route.waitFor({
-        //             state: 'visible',
-        //             timeout: timeout.elementTimeout
-        //         });
-
-        //         const actualRoute =
-        //             await route.inputValue();
-
-        //         console.log(
-        //             `Route | Expected: ${observationData.route} | Actual: ${actualRoute}`
-        //         );
-
-        //         expect(actualRoute).toBe(
-        //             observationData.route
-        //         );
-        //     }
-        // );
-
-        // // =========================
-        // // DOSAGE
-        // // =========================
-
-        // await StepHelper.step(
-        //     this.page,
-        //     `Verify Dosage - Row ${i + 1}`,
-        //     async () => {
-
-        //         const dosage =
-        //             this.locators.newTabDosageInput(i);
-
-        //         await dosage.waitFor({
-        //             state: 'visible',
-        //             timeout: timeout.elementTimeout
-        //         });
-
-        //         const actualDosage =
-        //             await dosage.inputValue();
-
-        //         console.log(
-        //             `Dosage | Expected: ${observationData.dosage} | Actual: ${actualDosage}`
-        //         );
-
-        //         expect(actualDosage).toBe(
-        //             observationData.dosage
-        //         );
-        //     }
-        // );
-
-        // // =========================
-        // // DOSAGE UNIT
-        // // =========================
-
-        // await StepHelper.step(
-        //     this.page,
-        //     `Verify Dosage Unit - Row ${i + 1}`,
-        //     async () => {
-
-        //         const dosageUnit =
-        //             this.locators.newTabDosageUnitDropdown(i);
-
-        //         await dosageUnit.waitFor({
-        //             state: 'visible',
-        //             timeout: timeout.elementTimeout
-        //         });
-
-        //         const actualDosageUnit =
-        //             await dosageUnit.inputValue();
-
-        //         console.log(
-        //             `Dosage Unit | Expected: ${observationData.dosageUnit} | Actual: ${actualDosageUnit}`
-        //         );
-
-        //         expect(actualDosageUnit).toBe(
-        //             observationData.dosageUnit
-        //         );
-        //     }
-        // );
-
-        // // =========================
-        // // FREQUENCY
-        // // =========================
-
-        // await StepHelper.step(
-        //     this.page,
-        //     `Verify Frequency - Row ${i + 1}`,
-        //     async () => {
-
-        //         const frequency =
-        //             this.locators.newTabFrequencyDropdown(i);
-
-        //         await frequency.waitFor({
-        //             state: 'visible',
-        //             timeout: timeout.elementTimeout
-        //         });
-
-        //         const actualFrequency =
-        //             await frequency.inputValue();
-
-        //         console.log(
-        //             `Frequency | Expected: ${observationData.frequency} | Actual: ${actualFrequency}`
-        //         );
-
-        //         expect(actualFrequency).toBe(
-        //             observationData.frequency
-        //         );
-        //     }
-        // );
-
-        // // =========================
-        // // SCHEDULE
-        // // =========================
-
-        // await StepHelper.step(
-        //     this.page,
-        //     `Verify Schedule - Row ${i + 1}`,
-        //     async () => {
-
-        //         for (
-        //             let j = 0;
-        //             j < observationData.schedule.length;
-        //             j++
-        //         ) {
-
-        //             const scheduleIndex =
-        //                 (i * observationData.schedule.length) + j;
-
-        //             const schedule =
-        //                 this.locators.newTabScheduleInputs.nth(
-        //                     scheduleIndex
-        //                 );
-
-        //             await schedule.waitFor({
-        //                 state: 'visible',
-        //                 timeout: timeout.elementTimeout
-        //             });
-
-        //             const actualSchedule =
-        //                 await schedule.inputValue();
-
-        //             console.log(
-        //                 `Schedule ${j + 1} | Expected: ${observationData.schedule[j]} | Actual: ${actualSchedule}`
-        //             );
-
-        //             expect(actualSchedule).toBe(
-        //                 observationData.schedule[j]
-        //             );
-        //         }
-        //     }
-        // );
-
-        // // =========================
-        // // TIMING
-        // // =========================
-
-        // await StepHelper.step(
-        //     this.page,
-        //     `Verify Timing - Row ${i + 1}`,
-        //     async () => {
-
-        //         const timing =
-        //             this.locators.newTabTimingDropdown(i);
-
-        //         await timing.waitFor({
-        //             state: 'visible',
-        //             timeout: timeout.elementTimeout
-        //         });
-
-        //         const actualTiming =
-        //             await timing.inputValue();
-
-        //         console.log(
-        //             `Timing | Expected: ${observationData.timing} | Actual: ${actualTiming}`
-        //         );
-
-        //         expect(actualTiming).toBe(
-        //             observationData.timing
-        //         );
-        //     }
-        // );
-
-        // =========================
-        // DURATION
-        // =========================
-
         await StepHelper.step(
             this.page,
-            `Verify Duration - Row ${i + 1}`,
+            'Click Save Template',
             async () => {
-
-                const duration =
-                    this.locators.newTabDurationInput(i);
-
-                await duration.waitFor({
+                await this.locators.saveTemplateBtn.waitFor({
                     state: 'visible',
                     timeout: timeout.elementTimeout
                 });
 
-                const actualDuration =
-                    await duration.inputValue();
-
-                console.log(
-                    `Duration | Expected: ${observationData.duration} | Actual: ${actualDuration}`
-                );
-
-                expect(actualDuration).toBe(
-                    observationData.duration
+                await this.keywords.click(
+                    this.locators.saveTemplateBtn
                 );
             }
         );
 
-        // =========================
-        // DURATION UNIT
-        // =========================
+        await StepHelper.step(
+            this.page,
+            'Verify Template Applied Successfully',
+            async () => {
+                await this.locators.templateSuccessMessage.waitFor({
+                    state: 'visible',
+                    timeout: timeout.elementTimeout
+                });
+            }
+        );//old
 
         await StepHelper.step(
             this.page,
-            `Verify Duration Unit - Row ${i + 1}`,
+            'Search Template',
             async () => {
-
-                const durationUnit =
-                    this.locators.newTabDurationUnitDropdown(i);
-
-                await durationUnit.waitFor({
+                await this.locators.templateSearchInput.waitFor({
                     state: 'visible',
                     timeout: timeout.elementTimeout
                 });
 
-                const actualDurationUnit =
-                    await durationUnit.inputValue();
-
-                console.log(
-                    `Duration Unit | Expected: ${observationData.durationUnit} | Actual: ${actualDurationUnit}`
+                await this.keywords.click(
+                    this.locators.templateSearchInput
                 );
 
-                expect(actualDurationUnit).toBe(
-                    observationData.durationUnit
+                await this.keywords.clear(
+                    this.locators.templateSearchInput
+                );
+
+                await this.keywords.type(
+                    this.locators.templateSearchInput,
+                    templateName
                 );
             }
-        );
-
-        // =========================
-        // INSTRUCTION
-        // =========================
+        );//old
 
         await StepHelper.step(
             this.page,
-            `Verify Instruction - Row ${i + 1}`,
+            'Click Apply',
             async () => {
-
-                const instruction =
-                    this.locators.newTabInstructionInput(i);
-
-                await instruction.waitFor({
+                await this.locators.applyButton.waitFor({
                     state: 'visible',
                     timeout: timeout.elementTimeout
                 });
 
-                const actualInstruction =
-                    await instruction.inputValue();
-
-                console.log(
-                    `Instruction | Expected: ${observationData.instruction} | Actual: ${actualInstruction}`
-                );
-
-                expect(actualInstruction).toBe(
-                    observationData.instruction
+                await this.keywords.click(
+                    this.locators.applyButton
                 );
             }
-        );
+        );//old
+
+        await StepHelper.step(
+            this.page,
+            'Click Replace',
+            async () => {
+                await this.locators.replaceButton.waitFor({
+                    state: 'visible',
+                    timeout: timeout.elementTimeout
+                });
+
+                await this.keywords.click(
+                    this.locators.replaceButton
+                );
+            }
+        );//old
+
+        await StepHelper.step(
+            this.page,
+            'Verify Template Applied Successfully',
+            async () => {
+                await this.locators.templateSuccessMessage.waitFor({
+                    state: 'visible',
+                    timeout: timeout.elementTimeout
+                });
+            }
+        );//old
     }
-}
-
-async generateAndViewPrescription() {
-
-    // await StepHelper.step(
-    //     this.page,
-    //     'Click Save Button',
-    //     async () => {
-
-    //         await this.locators.newTabSaveButton.waitFor({
-    //             state: 'visible',
-    //             timeout: timeout.elementTimeout
-    //         });
-
-    //         await this.keywords.click(
-    //             this.locators.newTabSaveButton
-    //         );
-    //     }
-    // );//old
-
-
-    await StepHelper.step(
-        this.page,
-        'Click Print Options',
-        async () => {
-            await this.locators.printOptionsBtn.waitFor({
-                state: 'visible',
-                timeout: timeout.elementTimeout
-            });
-
-            await this.keywords.click(
-                this.locators.printOptionsBtn
-            );
-        }
-    );
-
-    await StepHelper.step(
-        this.page,
-        'Click Share with Patient',
-        async () => {
-            await this.locators.shareWithPatientBtn.waitFor({
-                state: 'visible',
-                timeout: timeout.elementTimeout
-            });
-
-            await this.keywords.click(
-                this.locators.shareWithPatientBtn
-            );
-        }
-    );//new
-
-    await StepHelper.step(
-        this.page,
-        'Click Generate & Share Button',
-        async () => {
-
-            await this.locators.newTabGenerateShareButton.waitFor({
-                state: 'visible',
-                timeout: timeout.elementTimeout
-            });
-
-            await this.keywords.click(
-                this.locators.newTabGenerateShareButton
-            );
-        }
-    );
-
-    // await this.page.waitForTimeout(1000);
-    await this.keywords.wait(
-    this.page,
-    timeout.testTimeout
-    );
-
-    // await StepHelper.step(
-    //     this.page,
-    //     'Click Exit Button',
-    //     async () => {
-
-    //         await this.locators.newTabExitButton.waitFor({
-    //             state: 'visible',
-    //             timeout: timeout.elementTimeout
-    //         });
-
-    //         await this.keywords.click(
-    //             this.locators.newTabExitButton
-    //         );
-    //     }
-    // );
-
-    // // await this.page.waitForTimeout(1000);
-    // await this.keywords.wait(
-    // this.page,
-    // timeout.testTimeout
-    // );
-
-    // await StepHelper.step(
-    //     this.page,
-    //     'Click Eye Icon',
-    //     async () => {
-
-    //         await this.locators.newTabEyeIcon.waitFor({
-    //             state: 'visible',
-    //             timeout: timeout.elementTimeout
-    //         });
-
-    //         await this.keywords.click(
-    //             this.locators.newTabEyeIcon
-    //         );
-    //     }
-    // );
-}
-
-//frontend
-
-async applyTheTemplate(formatValue, templateName) {
-
-    await StepHelper.step(
-        this.page,
-        'Click Format Value',
-        async () => {
-            await this.locators.formatValueButton.waitFor({
-                state: 'visible',
-                timeout: timeout.elementTimeout
-            });
-
-            await this.keywords.click(
-                this.locators.formatValueButton
-            );
-        }
-    );
-
-    await StepHelper.step(
-        this.page,
-        `Select Format Value - ${formatValue}`,
-        async () => {
-            const formatValueOption =
-                this.locators.formatValueOption(formatValue);
-
-            await formatValueOption.waitFor({
-                state: 'visible',
-                timeout: timeout.elementTimeout
-            });
-
-            await formatValueOption.scrollIntoViewIfNeeded();
-
-            await this.keywords.click(
-                formatValueOption
-            );
-        }
-    );
-
-    await StepHelper.step(
-        this.page,
-        'Click Templates',
-        async () => {
-            await this.locators.templatesButton.waitFor({
-                state: 'visible',
-                timeout: timeout.elementTimeout
-            });
-
-            await this.keywords.click(
-                this.locators.templatesButton
-            );
-        }
-    );//old
-
-    await StepHelper.step(
-        this.page,
-        'Click Create New Template',
-        async () => {
-            await this.locators.createNewTemplateBtn.waitFor({
-                state: 'visible',
-                timeout: timeout.elementTimeout
-            });
-
-            await this.keywords.click(
-                this.locators.createNewTemplateBtn
-            );
-        }
-    );
-
-    await StepHelper.step(
-        this.page,
-        'Enter Template Name',
-        async () => {
-            await this.locators.templateNameInput.waitFor({
-                state: 'visible',
-                timeout: timeout.elementTimeout
-            });
-
-            await this.keywords.fill(
-                this.locators.templateNameInput,
-                template.templateName
-            );
-        }
-    );
-
-    await StepHelper.step(
-        this.page,
-        'Click Save Template',
-        async () => {
-            await this.locators.saveTemplateBtn.waitFor({
-                state: 'visible',
-                timeout: timeout.elementTimeout
-            });
-
-            await this.keywords.click(
-                this.locators.saveTemplateBtn
-            );
-        }
-    );
-
-    await StepHelper.step(
-        this.page,
-        'Verify Template Applied Successfully',
-        async () => {
-            await this.locators.templateSuccessMessage.waitFor({
-                state: 'visible',
-                timeout: timeout.elementTimeout
-            });
-        }
-    );//old
-
-    await StepHelper.step(
-        this.page,
-        'Search Template',
-        async () => {
-            await this.locators.templateSearchInput.waitFor({
-                state: 'visible',
-                timeout: timeout.elementTimeout
-            });
-
-            await this.keywords.click(
-                this.locators.templateSearchInput
-            );
-
-            await this.keywords.clear(
-                this.locators.templateSearchInput
-            );
-
-            await this.keywords.type(
-                this.locators.templateSearchInput,
-                templateName
-            );
-        }
-    );//old
-
-    await StepHelper.step(
-        this.page,
-        'Click Apply',
-        async () => {
-            await this.locators.applyButton.waitFor({
-                state: 'visible',
-                timeout: timeout.elementTimeout
-            });
-
-            await this.keywords.click(
-                this.locators.applyButton
-            );
-        }
-    );//old
-
-    await StepHelper.step(
-        this.page,
-        'Click Replace',
-        async () => {
-            await this.locators.replaceButton.waitFor({
-                state: 'visible',
-                timeout: timeout.elementTimeout
-            });
-
-            await this.keywords.click(
-                this.locators.replaceButton
-            );
-        }
-    );//old
-
-    await StepHelper.step(
-        this.page,
-        'Verify Template Applied Successfully',
-        async () => {
-            await this.locators.templateSuccessMessage.waitFor({
-                state: 'visible',
-                timeout: timeout.elementTimeout
-            });
-        }
-    );//old
-}
 
 }
 

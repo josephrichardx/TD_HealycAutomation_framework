@@ -231,6 +231,14 @@ this.drugCell = page.locator(
     "//td[contains(@class,'col-drug col-id')]"
 );
 
+this.scoringChartSearchInput = page.locator(
+    "//input[@placeholder='Search Scoring Chart...']"
+);
+
+this.fillScoringChartBtn = page.locator(
+    "//div[@data-section-id='observation']//button[normalize-space()='Fill Form']"
+);
+
 // this.drugSearchInput = page.locator(
 //     "//textarea[contains(@class,'drug-name-input')]"
 // );//old
