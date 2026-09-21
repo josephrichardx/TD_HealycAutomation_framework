@@ -41,10 +41,14 @@ test('EMR Prescription', async ({ page }) => {
 
     await prescriptionPage.clickWritePrescription();
 
-    await prescriptionPage.applyTheTemplate(
-    template.formatValue,
-    template.templateName
+    await prescriptionPage.applyTheFormat(
+    template.formatValue
     );
+
+    // await prescriptionPage.applyTheTemplate(
+    // template.formatValue,
+    // template.templateName
+    // );
 
     await prescriptionPage.fillObservation(
     observationData
