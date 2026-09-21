@@ -748,6 +748,78 @@ class CancellationPage {
             }
         );
     }
+
+    async PackageFullRefundcancel(){
+
+    await StepHelper.step(
+        this.page,
+        'Select Make Full Refund',
+        async () => {
+            await this.keywords.click(
+                this.locator.fullRefundCheckbox
+            );
+        }
+    );
+
+    await StepHelper.step(
+        this.page,
+        'Ensure Full Refund Amount Is Populated',
+        async () => {
+
+            const amountAlreadyPaid =
+                (
+                    await this.keywords.getText(
+                        this.locator.amountAlreadyPaidValue
+                    )
+                ).trim();
+
+            const numericAmount = amountAlreadyPaid.replace(/[^0-9.]/g, '');
+
+            await this.keywords.fill(
+                this.locator.amountTxt,
+                numericAmount
+            );
+        }
+    );
+
+    await StepHelper.step(
+        this.page,
+        'Review And Confirm Full Refund',
+        async () => {
+            await this.keywords.click(
+                this.locator.reviewConfirmBtn
+            );
+        }
+    );
+
+    await StepHelper.step(
+        this.page,
+        'Confirm Cancellation',
+        async () => {
+            await this.keywords.click(
+                this.locator.confirmCancellationBtn
+            );
+        }
+    );
+
+    await StepHelper.step(
+        this.page,
+        'Verify Package Cancelled',
+        async () => {
+            // Longer timeout here only (30s, not the global 10s) - the
+            // backend processes the cancellation+refund before this
+            // status badge updates, and that can occasionally run past
+            // 10 seconds. Nothing else about this check changed.
+            await expect(
+                this.locator.cancelledStatus
+            ).toContainText(
+                cancellationData.expectedStatus,
+                { timeout: timeout.elementTimeout }
+            );
+        }
+    );
+    }
+
 }
 
 

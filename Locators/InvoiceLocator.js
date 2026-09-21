@@ -19,7 +19,12 @@ class InvoiceLocator
                 name: 'Generate invoice',
                 exact: true
             });
-        
+
+        this.invoiceLineItemName = (invoiceLineItemRow) =>
+        invoiceLineItemRow
+        .locator('td.td-service')
+        .first();
+                
 
         // Invoice Services
         // this.serviceCheckbox1 =
@@ -249,10 +254,10 @@ class InvoiceLocator
 
    // Appointment Payment Details
 
-    this.appointmentInvoiceNumber =
-        page.locator(
-            'app-appointment-details span.invoice-id'
-        ).first();
+    // this.appointmentInvoiceNumber =
+    //     page.locator(
+    //         'app-appointment-details span.invoice-id'
+    //     ).first();
 
     this.appointmentSendInvoice =
         page.getByText(
@@ -313,13 +318,88 @@ class InvoiceLocator
 
         ).last();
 
-        // Status badge carries a status-specific class (status-checkedin) on
-        // its container, so presence of this element is proof of the actual
-        // Checked-In state - not just matching text. The class alone matches
-        // 4 elements on the page (header pill, dropdown, stale popup copies),
-        // so anchor to the one that actually follows the "Status" label.
         this.checkedInStatusBadge = page.locator("(//div[text()='Status'])[2]//ancestor::div[1]//following-sibling::div[@class='field-dropdown']");
 
+        this.invoiceLineItemRow =
+            page.locator('table.billing-table tbody tr').first();
+
+        this.invoiceLineItemNumberInputs = (invoiceLineItemRow) =>
+        invoiceLineItemRow.locator('input[type="number"]');
+
+        this.invoiceAmountTxt =
+            page.getByRole('textbox', {
+                name: 'Amount'
+            });
+
+        this.invoiceErrorToastTitle = page.locator(
+            'app-custom-toaster-message div.title'
+        ).last();
+
+        this.invoiceErrorToastSubtext = page.locator(
+            'app-custom-toaster-message div.subtext'
+        ).last();
+
+        this.itemDescriptionPdf = (itemName) =>
+            this.pdfBody.getByText(itemName).first();
+                this.balancePdf = (balance) =>
+            this.pdfBody.getByText(
+                `Balance : ${parseFloat(balance).toFixed(2)}`
+        );
+
+        this.creditAppliedPdf = (creditApplied) =>
+            this.pdfBody.getByText(
+                `Credit Applied : ${parseFloat(creditApplied).toFixed(2)}`
+        );
+
+        this.invoiceHistoryTab = page.getByText(
+            'Invoice History',
+            {
+                exact: true
+            }
+        );
+
+        this.invoiceHistoryNumberValue = page.locator(
+            "//th[contains(text(),'Invoice Number')]/ancestor::table//tbody/tr[1]/td[1]"
+        );
+
+        this.invoiceHistoryGeneratedOnValue = page.locator(
+            "//th[contains(text(),'Invoice Number')]/ancestor::table//tbody/tr[1]/td[2]"
+        );
+
+        this.invoiceHistoryTotalAmountValue = page.locator(
+            "//th[contains(text(),'Invoice Number')]/ancestor::table//tbody/tr[1]/td[3]"
+        );
+
+        this.invoiceHistoryRemainingAmountValue = page.locator(
+            "//th[contains(text(),'Invoice Number')]/ancestor::table//tbody/tr[1]/td[4]"
+        );
+
+        this.invoiceNumberPdfFromFinancials = page.locator(
+            'span.breadcrumb-current'
+        ).last();
+
+        this.patientNamePdfFromFinancials = (patientName) =>
+            this.pdfBody.getByText(`Bill To : ${patientName}`);
+                this.appointmentInvoiceNumber =
+            page.locator(
+                'app-appointment-details span.invoice-id'
+        ).last();
+
+        this.invoicePaymentDetailsReceiptNumberPdf =
+        this.pdfBody.getByText(/^\d{6}$/).last();
+
+        this.invoicePaymentDetailsAmountPdf = (amount) =>
+            this.pdfBody.getByText(
+                parseFloat(amount).toFixed(2)
+        ).last();
+
+        this.appointmentPaymentHistoryRows =
+        page.locator(
+            'div.payment-history table tbody tr'
+        );
+
+        this.paymentHistoryViewReceiptIcon = (row) =>
+        row.locator('i.fa-eye[title="View Receipt"]');
     }
 
 

@@ -193,21 +193,160 @@ class PaymentLocator {
         this.paymentHistoryRow =
         page.locator('table tbody tr').last();
 
-       // Payment History
-this.paymentHistoryTab = page.getByText(
-    'Payment History',
-    {
-        exact: true
-    }
-);
+            // Payment History
+        this.paymentHistoryTab = page.getByText(
+            'Payment History',
+            {
+                exact: true
+            }
+        );
 
-this.latestReceivedAmount = page.locator(
-    "//div[contains(@class,'financials-table-wrapper')]//table//tbody/tr[1]/td[4]"
-);
+        this.latestReceivedAmount = page.locator(
+            "//div[contains(@class,'financials-table-wrapper')]//table//tbody/tr[1]/td[4]"
+        );
 
-this.latestPaymentMode = page.locator(
-    "//div[contains(@class,'financials-table-wrapper')]//table//tbody/tr[1]/td[5]//span[not(contains(@class,'transaction-id'))]"
-);
+        this.latestPaymentMode = page.locator(
+            "//div[contains(@class,'financials-table-wrapper')]//table//tbody/tr[1]/td[5]//span[not(contains(@class,'transaction-id'))]"
+        );
+
+        this.makePaymentActionBtn = page.locator(
+            ".make-payment-btn"
+        );
+
+        this.paymentModeButton = (paymentMode) =>
+        page.getByRole('button', {
+            name: paymentMode,
+            exact: true
+        });
+
+        this.amountInput = page.getByPlaceholder(
+            "₹ Amount"
+        );
+
+        this.paymentSuccessMessage = page.locator(
+            "app-custom-toaster-message"
+        );
+
+        this.appointmentPaymentDueStatus =
+            page.locator(
+            "//app-appointment-details//*[normalize-space()='Payment Due']/parent::*//span[contains(@class,'status-chip')]"
+        ).first();
+
+        this.appointmentPaymentDue =
+            page.locator(
+                "//app-appointment-details//*[normalize-space()='Payment Due']/parent::*//div[contains(@class,'amount-wrapper')]"
+        ).first();
+
+         this.appointmentPaidAmount =
+            page.locator(
+                "//app-appointment-details//*[normalize-space()='Paid amount']/parent::*//div[contains(@class,'amount-wrapper')]"
+        ).first();
+
+        this.appointmentTotalAmount =
+            page.locator(
+            "//app-appointment-details//*[normalize-space()='Total amount']/parent::*//div[contains(@class,'amount-wrapper')]"
+        ).first();
+
+        this.appointmentPaymentHistoryRows =
+            page.locator(
+            'div.payment-history table tbody tr'
+        );
+        this.paymentHistoryViewReceiptIcon = (row) =>
+            row.locator('i.fa-eye[title="View Receipt"]');
+
+         this.pdfBody =
+                    page.locator('body');
+                this.viewInvoiceBtn = page.locator(
+                '.fa-regular.fa-eye'
+            );
+
+        this.receiptPaymentNumberPdf = this.pdfBody.getByText(
+            /^\d{6}$/
+        ).first();
+
+        this.closePdfPreviewBtn =
+            page.locator(
+                '.btn-close-preview'
+        );
+
+        this.receiptAmountReceivedPdf = (amount) =>
+            this.pdfBody.getByText(
+                parseFloat(amount).toFixed(2)
+        ).first();
+
+        this.receiptPaymentModePdf = (mode) =>
+            this.pdfBody.getByText(mode, { exact: true }).first();
+                this.receiptAmountReceivedPdf = (amount) =>
+            this.pdfBody.getByText(
+                parseFloat(amount).toFixed(2)
+        ).first();
+    
+        this.receiptInvoiceNumberPdf = (invoiceNumber) =>
+        this.pdfBody.getByText(invoiceNumber).first();
+
+        this.appointmentInvoiceNumber =
+            page.locator(
+            'app-appointment-details span.invoice-id'
+        ).last();
+
+        this.invoiceNumberPdf =
+        this.pdfBody.locator(
+            'span.invoice-id'
+        ).first();
+
+        this.creditAppliedPdf = (creditApplied) =>
+            this.pdfBody.getByText(
+                `Credit Applied : ${parseFloat(creditApplied).toFixed(2)}`
+        );
+
+        this.balancePdf = (balance) =>
+            this.pdfBody.getByText(
+                `Balance : ${parseFloat(balance).toFixed(2)}`
+        );
+
+        this.invoicePaymentDetailsReceiptNumberPdf =
+        this.pdfBody.getByText(/^\d{6}$/).last();
+
+        this.invoicePaymentDetailsModePdf = (mode) =>
+        this.pdfBody.getByText(mode, { exact: true }).last();
+
+        this.financialsPaymentHistoryTab = page
+            .locator('div.tab-item')
+            .filter({ hasText: 'Payment History' });
+
+        this.financialsPaymentHistoryRows = page.locator(
+            'div.financials-table-wrapper table tbody tr'
+        );
+
+        this.actualInvoiceNumber = (firstRow) =>
+        firstRow.locator('td').nth(1);
+
+        this.actualAmount = (firstRow) =>
+        firstRow.locator('td').nth(3);
+
+        this.actualMode = (firstRow) =>
+        firstRow.locator('div.payment-mode-wrapper span');
+
+        this.actualRefundReceiptNumber = (refundRow) =>
+        refundRow.locator('td').nth(0);
+
+        this.actualRefundInvoiceNumber = (refundRow) =>
+         refundRow.locator('td').nth(1);
+
+        this.actualRefundAmount = (refundRow) =>
+         refundRow.locator('td').nth(3);
+
+        this.actualRefundMode = (refundRow) =>
+        refundRow.locator('div.payment-mode-wrapper span');
+
+        this.actualDate = (firstRow) =>
+            firstRow.locator('td').nth(1);
+
+        this.actualMethod = (firstRow) =>
+            firstRow.locator('td').nth(2);
+
+        this.actualHistoryAmount = (firstRow) =>
+        firstRow.locator('td').nth(3);
 
         // this.paymentHistoryRow =
         //     page.locator(

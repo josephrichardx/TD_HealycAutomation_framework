@@ -112,6 +112,7 @@ class ConsultLocator {
             '.slotButton'
         );
 
+
         this.slotAppointmentCard = (slot) =>
             slot.locator(
                 'xpath=ancestor::div[contains(@class,"bookappointmentBodyCard")]'

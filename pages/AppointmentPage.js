@@ -643,6 +643,345 @@ class AppointmentPage {
             actualStatusText
         );
     }
+
+    async clickGoToAppointmentPage() {
+        await StepHelper.step(
+            this.page,
+            'Click Go To Appointment Page',
+            async () => {
+                // Bypassing the keyword wrapper to force the click instantly before the toast detaches
+                await this.locator.goToAppointmentPageLink.click({ force: true });
+            }
+        );
+    }
+
+    //   async verifyAppointmentPatientDetails(patientData, dobData,uhidField,ageField,genderField,contactField,referralSourceField) {
+
+    //     // const readField = (fieldLabel) => async () =>
+    //     //     (
+    //     //         await this.locator
+    //     //             .appointmentPatientInfoValue(fieldLabel)
+    //     //             .innerText({ timeout: timeout.networkIdleTimeoutMs })
+    //     //     ).trim();
+
+    //         const readField = (fieldLabel) => async () =>
+    //         (
+    //             await this.keywords.getText(
+    //                 this.locator.appointmentPatientInfoValue(fieldLabel)
+    //             )
+    //         ).trim();
+
+    //     const { calculateAgeFromDate } = require('../utils/RandomData');
+    //     const expectedAge = calculateAgeFromDate(dobData.dateObj);
+
+    //     await Verify.state(
+    //         this.page,
+    //         'UHID Field Present (Appointment Details)',
+    //         this.locator.appointmentPatientInfoValue(uhidField),
+    //         { visible: true }
+    //     );
+
+    //     const actualUhid = await Verify.record(
+    //         this.page,
+    //         'UHID (Appointment Details)',
+    //         readField(uhidField)
+    //     );
+
+    //     await Verify.state(
+    //         this.page,
+    //         'Age Field Present (Appointment Details)',
+    //         this.locator.appointmentPatientInfoValue(ageField),
+    //         { visible: true }
+    //     );
+
+    //     await Verify.equals(
+    //         this.page,
+    //         'Verify Age (Appointment Details)',
+    //         String(expectedAge),
+    //         readField(ageField)
+    //     );
+
+    //     await Verify.state(
+    //         this.page,
+    //         'Gender Field Present (Appointment Details)',
+    //         this.locator.appointmentPatientInfoValue(genderField),
+    //         { visible: true }
+    //     );
+
+    //     await Verify.equals(
+    //         this.page,
+    //         'Verify Gender (Appointment Details)',
+    //         patientData.gender,
+    //         readField(genderField)
+    //     );
+
+    //     await Verify.state(
+    //         this.page,
+    //         'Contact Field Present (Appointment Details)',
+    //         this.locator.appointmentPatientInfoValue(contactField),
+    //         { visible: true }
+    //     );
+
+    //     await Verify.contains(
+    //         this.page,
+    //         'Verify Contact (Appointment Details)',
+    //         patientData.mobileNumber,
+    //         readField(contactField)
+    //     );
+
+    //     await Verify.state(
+    //         this.page,
+    //         'Referral Source Field Present (Appointment Details)',
+    //         this.locator.appointmentPatientInfoValue(referralSourceField),
+    //         { visible: true }
+    //     );
+
+    //     await Verify.contains(
+    //         this.page,
+    //         'Verify Referral Source (Appointment Details)',
+    //         patientData.referralBy,
+    //         readField(referralSourceField)
+    //     );
+
+    //     return actualUhid;
+    // }
+
+    async verifyAppointmentPatientDetails(patientData, dobData) {
+
+    const readField = (fieldLabel) => async () =>
+        (
+            await this.keywords.getText(
+                this.locator.appointmentPatientInfoValue(fieldLabel)
+            )
+        ).trim();
+
+    const { calculateAgeFromDate } = require('../utils/RandomData');
+    const expectedAge = calculateAgeFromDate(dobData.dateObj);
+
+    const {
+        uhidField,
+        ageField,
+        genderField,
+        contactField,
+        referralSourceField
+    } = patientData.additionalDetails;
+
+    await Verify.state(
+        this.page,
+        'UHID Field Present (Appointment Details)',
+        this.locator.appointmentPatientInfoValue(uhidField),
+        { visible: true }
+    );
+
+    const actualUhid = await Verify.record(
+        this.page,
+        'UHID (Appointment Details)',
+        readField(uhidField)
+    );
+
+    await Verify.state(
+        this.page,
+        'Age Field Present (Appointment Details)',
+        this.locator.appointmentPatientInfoValue(ageField),
+        { visible: true }
+    );
+
+    await Verify.equals(
+        this.page,
+        'Verify Age (Appointment Details)',
+        String(expectedAge),
+        readField(ageField)
+    );
+
+    await Verify.state(
+        this.page,
+        'Gender Field Present (Appointment Details)',
+        this.locator.appointmentPatientInfoValue(genderField),
+        { visible: true }
+    );
+
+    await Verify.equals(
+        this.page,
+        'Verify Gender (Appointment Details)',
+        patientData.gender,
+        readField(genderField)
+    );
+
+    await Verify.state(
+        this.page,
+        'Contact Field Present (Appointment Details)',
+        this.locator.appointmentPatientInfoValue(contactField),
+        { visible: true }
+    );
+
+    await Verify.contains(
+        this.page,
+        'Verify Contact (Appointment Details)',
+        patientData.mobileNumber,
+        readField(contactField)
+    );
+
+    await Verify.state(
+        this.page,
+        'Referral Source Field Present (Appointment Details)',
+        this.locator.appointmentPatientInfoValue(referralSourceField),
+        { visible: true }
+    );
+
+    await Verify.contains(
+        this.page,
+        'Verify Referral Source (Appointment Details)',
+        patientData.referralBy,
+        readField(referralSourceField)
+    );
+
+    return actualUhid;
+}
+    async verifyAndClickCancelledAppointmentCard(patientName) {
+
+        const card =
+            this.locator.cancelledAppointmentCard(patientName);
+
+        await this.page.waitForLoadState('networkidle', { timeout: timeout.elementTimeout })
+
+        await StepHelper.step(
+            this.page,
+            `Verify Cancelled Appointment Now Displayed On Calendar | Expected: visible | Actual: checking`,
+            async () => {
+
+                await expect(card).toBeVisible();
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            `Click Cancelled Appointment Card - ${patientName} (Forced)`,
+            async () => {
+
+                // Because calendar events frequently overlap in time (stacking visually), 
+                // Playwright's standard click gets blocked by the card in front of it.
+                // Using evaluate() bypasses the 'obscured' check and forces the click natively.
+                await card.evaluate(node => node.click());
+            }
+        );
+    }
+
+     async verifyPostRefundAppointmentDetails(refundAmount,expectedRemaining,refundedStatus) {
+
+            const actualPaymentDue =
+                (
+                    await this.keywords.getText(
+                        this.locator.appointmentPaymentDue
+                    )
+                ).trim();
+
+            // await StepHelper.step(
+            //     this.page,
+            //     `Verify Due Amount Is Zero | Expected: 0.00 | Actual: ${actualPaymentDue}`,
+            //     async () => {
+            //         expect(actualPaymentDue).toContain(expectedRemaining);
+            //     }
+            // );
+
+            await StepHelper.step(
+            this.page,
+            `Verify Due Amount Is Zero | Expected: ${expectedRemaining} | Actual: ${actualPaymentDue}`,
+            async () => {
+                expect(actualPaymentDue).toContain(
+                   expectedRemaining
+                );
+            }
+        );
+
+            const actualStatus =
+                (
+                    await this.keywords.getText(
+                        this.locator.appointmentPaymentDueStatus
+                    )
+                ).trim();
+
+            // await StepHelper.step(
+            //     this.page,
+            //     `Verify Payment Due Status Is Refunded | Expected: Refunded | Actual: ${actualStatus}`,
+            //     async () => {
+            //         expect(actualStatus).toBe(refundedStatus);
+            //     }
+            // );
+
+            await StepHelper.step(
+                this.page,
+                `Verify Payment Due Status Is Refunded | Expected: ${refundedStatus} | Actual: ${actualStatus}`,
+                async () => {
+                    expect(actualStatus).toBe(refundedStatus);
+                }
+            );
+
+            const actualPaidAmount =
+                (
+                    await this.keywords.getText(
+                        this.locator.appointmentPaidAmount
+                    )
+                ).trim();
+
+            // await StepHelper.step(
+            //     this.page,
+            //     `Verify Paid Amount Is Zero | Expected: 0.00 | Actual: ${actualPaidAmount}`,
+            //     async () => {
+            //         expect(actualPaidAmount).toContain(expectedRemaining);
+            //     }
+            // );
+
+            await StepHelper.step(
+                this.page,
+                `Verify Paid Amount Is Zero | Expected: ${expectedRemaining} | Actual: ${actualPaidAmount}`,
+                async () => {
+                    expect(actualPaidAmount).toContain(expectedRemaining);
+                }
+            );
+
+            const negativeAmount = -Math.abs(parseFloat(refundAmount));
+
+            const refundRow =
+                this.locator.appointmentPaymentHistoryRows.nth(1); 
+
+            // const actualHistoryAmount =
+            //     (
+            //         await refundRow.locator('td').nth(3).innerText()
+            //     )
+            //         .trim()
+            //         .replace(/[₹,\s]/g, '');
+
+            const actualHistoryAmount = (
+                await this.keywords.getText(
+                    this.locator.actualHistoryAmount(refundRow)
+                )
+            )
+                .trim()
+                .replace(/[₹,\s]/g, '');
+
+            await StepHelper.step(
+                this.page,
+                `Verify Negative Payment/Refund Transaction Displayed | Expected: ${negativeAmount.toFixed(2)} | Actual: ${actualHistoryAmount}`,
+                async () => {
+                    expect(parseFloat(actualHistoryAmount)).toBe(
+                        negativeAmount
+                    );
+                }
+            );
+        }
+
+   async verifyAppointmentPatientInfo(patientData) {
+    await this.locator
+        .appointmentPatientInfoValue(
+        patientData.additionalDetails.uhidField
+        )
+        .waitFor({
+        state: 'visible'
+        });
+    }
+
+
+      
 }
 
 module.exports = { AppointmentPage };

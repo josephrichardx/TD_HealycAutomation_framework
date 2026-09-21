@@ -1,20 +1,25 @@
 import { test } from '../fixtures/baseTest.js';
 import { AdmissionPage } from '../pages/AdmissionPage.js';
  
+ 
+const { InvoicePage } = require('../pages/InvoicePage.js');
 const { PatientPage } = require('../pages/PatientPage.js');
 const { IPDPage } = require('../pages/IPDPage.js');
  
-const { patientData,IPDAdmissionDetailsSummary,admissionPatientData  } = require('../testdata/TC_47.json');
-const { generateUniquePatientFullName } = require('../utils/RandomData.js');
+
+const { patientData,admissionPatientData,administrativeForm,signatureData,consentCheckboxData} = require('../testdata/TC_IPD_036.json');
+const { generateUniquePatientFullName } = require('../utils/RandomData.js'); 
 import {generateAdmissionDate,generateAdmissionTime,getAdmissionData} from '../utils/RandomData.js';
+
+
  
-test('Consult status', async ({ page }) => {
- 
+test('IPD Admission Form', async ({ page }) => {
+
     const patientName = generateUniquePatientFullName();
     const admissionPage = new AdmissionPage(page);
+    const invoicePage = new InvoicePage(page);
     const patientPage = new PatientPage(page);
     const ipdPage = new IPDPage(page);
-
  
     // ============================================================
     // 1. Create Patient
@@ -123,12 +128,48 @@ test('Consult status', async ({ page }) => {
     patientName,
     admissionDate
     );
- 
-    await ipdPage.IPDAdmissionDetailsSummary(
-    IPDAdmissionDetailsSummary
+
+    await ipdPage.addAdministrativeForm(
+    administrativeForm.formName
     );
- 
+
+    await ipdPage.fillAdministrativeFormFields(
+    administrativeForm
+    );
+
+    await ipdPage.verifyAdministrativeFormFields(
+    administrativeForm
+    );
+
+    await ipdPage.fillAdministrativeFormDetails(
+    administrativeForm
+    );
+
+    await ipdPage.verifyAdministrativeFormDetails(
+    administrativeForm
+    );
+
+    // await ipdPage.boldPatientName();
+
+    await ipdPage.fillConsentCheckboxes(
+    consentCheckboxData
+    );//->verify
+
+
+    await ipdPage.addPatientSignature(
+    signatureData
+    );//-verify
+
+    await ipdPage.submitAndVerifyConsentForm(
+    administrativeForm
+    );
+
+    await ipdPage.verifyAdministrativeFormPDF(
+        administrativeForm,
+        consentCheckboxData
+    );
+
+
    
    
 });
- 

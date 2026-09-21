@@ -2,7 +2,6 @@ const { expect } = require('@playwright/test');
 const { StepHelper } = require('../utils/StepHelper');
 const { PaymentLocator } = require('../Locators/PaymentLocator');
 const { Keywords } = require('../utils/Keywords');
-
 import { Verify } from '../utils/verification.js';
 
 const timeoutData = require('../testdata/timeout.json');
@@ -904,6 +903,860 @@ class PaymentPage {
             }
         );
     }
+
+     async Payment(amount,paymentMode,paymentRecordedMessage) {
+
+        await StepHelper.step(
+            this.page,
+            'Click Make Payment',
+            async () => {
+                await this.keywords.click(
+                    this.locator.makePaymentActionBtn.last()
+                );
+            }
+        );
+        
+        // const modeButton =
+        //     paymentMode === 'UPI' ? this.locator.upiBtn :
+        //     paymentMode === 'Card' ? this.locator.cardBtn :
+        //     this.locator.cashBtn;
+
+        const modeButton = this.locator.paymentModeButton(
+            paymentMode
+        );
+
+        await StepHelper.step(
+            this.page,
+            `Select ${paymentMode} as Payment Mode`,
+            async () => {
+                await this.keywords.click(
+                    modeButton.last()
+                );
+            }
+        );
+
+        console.log(
+            await this.locator.amountInput.count()
+        );
+
+        await this.locator.amountInput
+            .nth(1)
+            .waitFor({
+                state: "visible"
+            });
+
+        await StepHelper.step(
+            this.page,
+            `Enter Amount - ${amount}`,
+            async () => {
+                await this.keywords.fill(
+                    this.locator.amountInput.nth(1),
+                    amount
+                );
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            'Click Record Payment',
+            async () => {
+                await this.keywords.click(
+                    this.locator.recordPaymentBtn.nth(1)
+                );
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            'Get Payment Confirmation Message',
+            async () => {
+
+                this._paymentMessage =
+                    (
+                        await this.keywords.getText(
+                            this.locator.paymentSuccessMessage
+                        )
+                    ).trim();
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            `Verify Payment Recorded Successfully | Expected: contains "${paymentRecordedMessage}" | Actual: ${this._paymentMessage}`,
+            async () => {
+
+                expect(
+                    this._paymentMessage
+                ).toContain(paymentRecordedMessage);
+
+            }
+        );
+    }
+
+     async verifyPostPaymentStatus(
+        expectedPaidAmount,
+        expectedPaymentMethod,
+        paidStatus,
+        expectedPaymentDue
+    ) {
+
+        const expectedAmount =
+            parseFloat(expectedPaidAmount).toFixed(2);
+
+        await StepHelper.step(
+            this.page,
+            'Wait for Payment Due Status to update to Paid',
+            async () => {
+
+                const deadline = Date.now() + timeout.elementTimeout;
+                let currentStatus = '';
+
+                while (Date.now() < deadline) {
+
+                    currentStatus =
+                        (
+                            await this.keywords.getText(
+                                this.locator.appointmentPaymentDueStatus
+                            )
+                        ).trim();
+
+                    if (currentStatus === paidStatus) {
+
+                        break;
+                    }
+
+                    await this.page.waitForTimeout(timeout.testTimeout);
+                }
+
+                expect(currentStatus).toBe(paidStatus);
+            }
+        );
+
+        // ==========================================
+        // Payment Due == 0.00
+        // ==========================================
+
+        const actualPaymentDue =
+            (
+                await this.keywords.getText(
+                    this.locator.appointmentPaymentDue
+                )
+            ).trim();
+
+        // await StepHelper.step(
+        //     this.page,
+        //     `Verify Payment Due | Expected: 0.00 | Actual: ${actualPaymentDue}`,
+        //     async () => {
+
+        //         const actualDueAmount =
+        //             parseFloat(
+        //                 actualPaymentDue.replace(
+        //                     /[₹,\s]/g,
+        //                     ''
+        //                 )
+        //             );
+
+        //         expect(actualDueAmount).toBe(0);
+        //     }
+        // );
+
+        await StepHelper.step(
+        this.page,
+        `Verify Payment Due | Expected: ${expectedPaymentDue} | Actual: ${actualPaymentDue}`,
+        async () => {
+
+            const actualDueAmount =
+                parseFloat(
+                    actualPaymentDue.replace(
+                        /[₹,\s]/g,
+                        ''
+                    )
+                );
+
+            expect(actualDueAmount).toBe(
+                parseFloat(expectedPaymentDue)
+            );
+        }
+    );
+        // ==========================================
+        // Payment Due Status chip == "Paid"
+        // ==========================================
+
+        const actualStatus =
+            (
+                await this.keywords.getText(
+                    this.locator.appointmentPaymentDueStatus
+                )
+            ).trim();
+
+        // await StepHelper.step(
+        //     this.page,
+        //     `Verify Payment Due Status | Expected: Paid | Actual: ${actualStatus}`,
+        //     async () => {
+
+        //         expect(actualStatus).toBe(');
+        //     }
+        // );
+
+        await StepHelper.step(
+            this.page,
+            `Verify Payment Due Status | Expected: ${paidStatus} | Actual: ${actualStatus}`,
+            async () => {
+                expect(actualStatus).toBe(paidStatus);
+            }
+        );
+
+        // ==========================================
+        // Paid Amount == expected full invoice total
+        // ==========================================
+
+        const actualPaidAmount =
+            (
+                await this.keywords.getText(
+                    this.locator.appointmentPaidAmount
+                )
+            ).trim();
+
+        await StepHelper.step(
+            this.page,
+            `Verify Paid Amount | Expected: ₹${expectedAmount} | Actual: ${actualPaidAmount}`,
+            async () => {
+
+                const actualPaid =
+                    parseFloat(
+                        actualPaidAmount.replace(
+                            /[₹,\s]/g,
+                            ''
+                        )
+                    ).toFixed(2);
+
+                expect(actualPaid).toBe(expectedAmount);
+            }
+        );
+
+        // ==========================================
+        // Total Amount == expected full invoice total
+        // ==========================================
+
+        const actualTotalAmount =
+            (
+                await this.keywords.getText(
+                    this.locator.appointmentTotalAmount
+                )
+            ).trim();
+
+        await StepHelper.step(
+            this.page,
+            `Verify Total Amount | Expected: ₹${expectedAmount} | Actual: ${actualTotalAmount}`,
+            async () => {
+
+                const actualTotal =
+                    parseFloat(
+                        actualTotalAmount.replace(
+                            /[₹,\s]/g,
+                            ''
+                        )
+                    ).toFixed(2);
+
+                expect(actualTotal).toBe(expectedAmount);
+            }
+        );
+
+        const firstRow =
+            this.locator.appointmentPaymentHistoryRows.first();
+            
+        const monthNames = [
+            'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+            'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+        ];
+
+        const formatDate = (d) =>
+            `${String(d.getDate()).padStart(2, '0')}-` +
+            `${monthNames[d.getMonth()]}-` +
+            `${d.getFullYear()}`;
+
+        const today = new Date();
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+
+        const expectedDateToday = formatDate(today);
+        const expectedDateYesterday = formatDate(yesterday);
+
+        // const actualDate =
+        //     (
+        //         await firstRow.locator('td').nth(1).innerText()
+        //     ).trim();
+
+        const actualDate = (
+            await this.keywords.getText(
+                this.locator.actualDate(firstRow)
+            )
+        ).trim();
+
+        await StepHelper.step(
+            this.page,
+            `Verify Payment History Date | Expected: ${expectedDateToday} or ${expectedDateYesterday} (timezone boundary tolerance) | Actual: ${actualDate}`,
+            async () => {
+
+                expect(
+                    [expectedDateToday, expectedDateYesterday]
+                ).toContain(actualDate);
+            }
+        );
+
+        // const actualMethod =
+        //     (
+        //         await firstRow.locator('td').nth(2).innerText()
+        //     ).trim();
+
+        const actualMethod = (
+            await this.keywords.getText(
+                this.locator.actualMethod(firstRow)
+            )
+        ).trim();
+
+        await StepHelper.step(
+            this.page,
+            `Verify Payment History Method | Expected: ${expectedPaymentMethod} | Actual: ${actualMethod}`,
+            async () => {
+
+                expect(actualMethod).toBe(
+                    expectedPaymentMethod
+                );
+            }
+        );
+
+        // const actualHistoryAmount =
+        //     (
+        //         await firstRow.locator('td').nth(3).innerText()
+        //     )
+        //         .trim()
+        //         .replace(/[₹,\s]/g, '');
+
+        const actualHistoryAmount = (
+            await this.keywords.getText(
+                this.locator.actualHistoryAmount(firstRow)
+            )
+        )
+            .trim()
+            .replace(/[₹,\s]/g, '');
+
+        await StepHelper.step(
+            this.page,
+            `Verify Payment History Amount | Expected: ₹${expectedAmount} | Actual: ₹${actualHistoryAmount}`,
+            async () => {
+
+                expect(
+                    parseFloat(actualHistoryAmount).toFixed(2)
+                ).toBe(expectedAmount);
+            }
+        );
+    }
+
+     async revalidateInvoicePDFAfterPayment(
+            expectedInvoiceNumber,
+            expectedPaymentMode,
+            CreditText,
+            BalanceText,
+            invoiceReceiptNumberPattern,
+            expectedPaidAmountNumber
+        ) {
+
+            await this.page
+                .waitForLoadState('networkidle', { timeout: timeout.elementTimeout })
+                .catch(() => {
+                    // If it never truly goes idle (e.g. background polling),
+                    // don't hard-fail here - fall through and let the click
+                    // itself do its normal actionability retries.
+                });
+    
+            await StepHelper.step(
+                this.page,
+                `Open Invoice PDF Again - ${expectedInvoiceNumber}`,
+                async () => {
+    
+                    await this.keywords.click(
+                        this.locator.appointmentInvoiceNumber
+                    );
+                }
+            );
+    
+            await StepHelper.step(
+                this.page,
+                'Wait for Invoice PDF to Load',
+                async () => {
+    
+                    await this.keywords.waitForElement(
+                        this.locator.closePdfPreviewBtn,
+                        timeout.elementTimeout
+                    );
+                }
+            );
+    
+            const actualInvoiceNumber =
+                (
+                    await this.keywords.getText(
+                        this.locator.invoiceNumberPdf
+                    )
+                ).trim();
+    
+            await StepHelper.step(
+                this.page,
+                `Verify Invoice Number (Post-Payment) | Expected: ${expectedInvoiceNumber} | Actual: ${actualInvoiceNumber}`,
+                async () => {
+    
+                    expect(actualInvoiceNumber).toBe(
+                        expectedInvoiceNumber
+                    );
+                }
+            );
+    
+            // const expectedCreditText = 'Credit Applied : 0.00';
+            const expectedCreditText = CreditText;
+    
+            const actualCreditText =
+                (
+                    await this.keywords.getText(
+                        this.locator.creditAppliedPdf(expectedPaidAmountNumber)
+                    )
+                ).trim();
+    
+            await StepHelper.step(
+                this.page,
+                `Verify Credit Applied (Post-Payment) | Expected: ${expectedCreditText} | Actual: ${actualCreditText}`,
+                async () => {
+    
+                    expect(actualCreditText).toBe(
+                        expectedCreditText
+                    );
+                }
+            );
+    
+            // const expectedBalanceText = 'Balance : 0.00';
+            const expectedBalanceText = BalanceText;
+    
+            const actualBalanceText =
+                (
+                    await this.keywords.getText(
+                        this.locator.balancePdf(expectedPaidAmountNumber)
+                    )
+                ).trim();
+    
+            await StepHelper.step(
+                this.page,
+                `Verify Balance (Post-Payment) | Expected: ${expectedBalanceText} | Actual: ${actualBalanceText}`,
+                async () => {
+    
+                    expect(actualBalanceText).toBe(
+                        expectedBalanceText
+                    );
+                }
+            );
+    
+            const actualInvoiceReceiptNumber =
+                (
+                    await this.keywords.getText(
+                        this.locator.invoicePaymentDetailsReceiptNumberPdf
+                    )
+                ).trim();
+    
+            await StepHelper.step(
+                this.page,
+                `Verify Payment Details Receipt Number Present (Invoice PDF) | Expected: 6-digit number | Actual: ${actualInvoiceReceiptNumber}`,
+                async () => {
+    
+                    expect(actualInvoiceReceiptNumber).toMatch(
+                        /^\d{6}$/
+                    );
+                }
+            );
+    
+            const actualInvoicePaymentMode =
+                (
+                    await this.keywords.getText(
+                        this.locator.invoicePaymentDetailsModePdf(
+                            expectedPaymentMode
+                        )
+                    )
+                ).trim();
+    
+            await StepHelper.step(
+                this.page,
+                `Verify Payment Details Mode (Invoice PDF) | Expected: ${expectedPaymentMode} | Actual: ${actualInvoicePaymentMode}`,
+                async () => {
+    
+                    expect(actualInvoicePaymentMode).toBe(
+                        expectedPaymentMode
+                    );
+                }
+            );
+    
+            await StepHelper.step(
+                this.page,
+                'Close Invoice PDF Preview',
+                async () => {
+    
+                    await this.keywords.click(
+                        this.locator.closePdfPreviewBtn
+                    );
+                }
+            );
+    
+            return actualInvoiceReceiptNumber;
+        }
+
+     async verifyPaymentReceipt(
+            expectedInvoiceNumber,
+            expectedAmount,
+            expectedInvoiceReceiptNumber = null,
+            expectedPaymentMode
+        ) {
+    
+            const firstRow =
+                this.locator.appointmentPaymentHistoryRows.last();
+    
+            await this.page
+                .waitForLoadState('networkidle', { timeout: timeout.elementTimeout })
+                .catch(() => {});
+    
+            await StepHelper.step(
+                this.page,
+                'Click View Receipt (Payment History)',
+                async () => {
+    
+                    await this.keywords.click(
+                        this.locator.paymentHistoryViewReceiptIcon(
+                            firstRow
+                        )
+                    );
+                }
+            );
+    
+            await StepHelper.step(
+                this.page,
+                'Wait for Payment Receipt PDF to Load',
+                async () => {
+    
+                    await this.keywords.waitForElement(
+                        this.locator.closePdfPreviewBtn,
+                        timeout.elementTimeout 
+                    );
+                }
+            );
+    
+            const actualReceiptNumber =
+                (
+                    await this.keywords.getText(
+                        this.locator.receiptPaymentNumberPdf
+                    )
+                ).trim();
+    
+            await StepHelper.step(
+                this.page,
+                `Verify Receipt Number Present | Expected: 6-digit number | Actual: ${actualReceiptNumber}`,
+                async () => {
+    
+                    expect(actualReceiptNumber).toMatch(/^\d{6}$/);
+                }
+            );
+    
+            const expectedAmountText =
+                parseFloat(expectedAmount).toFixed(2);
+    
+            const actualAmountText =
+                (
+                    await this.keywords.getText(
+                        this.locator.receiptAmountReceivedPdf(
+                            expectedAmount
+                        )
+                    )
+                )
+                    .trim()
+                    .replace(/[₹,\s]/g, '');
+    
+            await StepHelper.step(
+                this.page,
+                `Verify Receipt Amount Received | Expected: ${expectedAmountText} | Actual: ${actualAmountText}`,
+                async () => {
+    
+                    expect(actualAmountText).toBe(
+                        expectedAmountText
+                    );
+                }
+            );
+    
+            const actualPaymentMode =
+                (
+                    await this.keywords.getText(
+                        this.locator.receiptPaymentModePdf(
+                            expectedPaymentMode
+                        )
+                    )
+                ).trim();
+    
+            await StepHelper.step(
+                this.page,
+                `Verify Receipt Payment Mode | Expected: ${expectedPaymentMode} | Actual: ${actualPaymentMode}`,
+                async () => {
+    
+                    expect(actualPaymentMode).toBe(expectedPaymentMode);
+                }
+            );
+    
+            const actualReceiptInvoiceNumber =
+                (
+                    await this.keywords.getText(
+                        this.locator.receiptInvoiceNumberPdf(
+                            expectedInvoiceNumber
+                        )
+                    )
+                ).trim();
+    
+            await StepHelper.step(
+                this.page,
+                `Verify Receipt References Correct Invoice | Expected: ${expectedInvoiceNumber} | Actual: ${actualReceiptInvoiceNumber}`,
+                async () => {
+    
+                    expect(actualReceiptInvoiceNumber).toBe(
+                        expectedInvoiceNumber
+                    );
+                }
+            );
+    
+            if (expectedInvoiceReceiptNumber !== null) {
+    
+                await StepHelper.step(
+                    this.page,
+                    `Verify Receipt Number Matches Invoice PDF | Expected: ${expectedInvoiceReceiptNumber} | Actual: ${actualReceiptNumber}`,
+                    async () => {
+    
+                        expect(actualReceiptNumber).toBe(
+                            expectedInvoiceReceiptNumber
+                        );
+                    }
+                );
+            }
+    
+            await StepHelper.step(
+                this.page,
+                'Close Payment Receipt PDF',
+                async () => {
+    
+                    await this.keywords.click(
+                        this.locator.closePdfPreviewBtn
+                    );
+                }
+            );
+    
+            return actualReceiptNumber;
+        }
+
+    async verifyFinancialsPaymentHistory(
+        expectedInvoiceNumber,
+        expectedAmount,
+        expectedMode
+    ) {
+
+        await StepHelper.step(
+            this.page,
+            'Open Payment History (Financials)',
+            async () => {
+                await this.keywords.click(
+                    this.locator.financialsPaymentHistoryTab
+                );
+            }
+        );
+
+        const firstRow =
+            this.locator.financialsPaymentHistoryRows.first();
+
+        // const actualInvoiceNumber =
+        //     (
+        //         await firstRow.locator('td').nth(1).innerText()
+        //     ).trim();
+
+        const actualInvoiceNumber = (
+            await this.keywords.getText(
+                this.locator.actualInvoiceNumber(firstRow)
+            )
+        ).trim();
+
+        await StepHelper.step(
+            this.page,
+            `Verify Payment History Invoice Number | Expected: ${expectedInvoiceNumber} | Actual: ${actualInvoiceNumber}`,
+            async () => {
+
+                expect(actualInvoiceNumber).toBe(
+                    expectedInvoiceNumber
+                );
+            }
+        );
+
+        // const actualAmount =
+        //     Math.abs(
+        //         parseFloat(
+        //             (
+        //                 await firstRow.locator('td').nth(3).innerText()
+        //             )
+        //                 .trim()
+        //                 .replace(/[₹,\s]/g, '')
+        //         )
+        // ).toFixed(2);
+
+        const actualAmount = Math.abs(
+            parseFloat(
+                (
+                    await this.keywords.getText(
+                        this.locator.actualAmount(firstRow)
+                    )
+                )
+                    .trim()
+                    .replace(/[₹,\s]/g, '')
+            )
+        ).toFixed(2);
+
+        const expectedAmountText =
+            parseFloat(expectedAmount).toFixed(2);
+
+        await StepHelper.step(
+            this.page,
+            `Verify Payment History Received Amount | Expected: ₹${expectedAmountText} | Actual: ₹${actualAmount}`,
+            async () => {
+
+                expect(
+                    parseFloat(actualAmount).toFixed(2)
+                ).toBe(expectedAmountText);
+            }
+        );
+
+        // const actualMode =
+        //     (
+        //         await firstRow
+        //             .locator('div.payment-mode-wrapper span')
+        //             .innerText()
+        //     ).trim();
+
+        const actualMode = (
+            await this.keywords.getText(
+                this.locator.actualMode(firstRow)
+            )
+        ).trim();
+
+        await StepHelper.step(
+            this.page,
+            `Verify Payment History Mode | Expected: ${expectedMode} | Actual: ${actualMode}`,
+            async () => {
+
+                expect(actualMode).toBe(expectedMode);
+            }
+        );
+    }
+
+     async verifyRefundInFinancialsPaymentHistory(
+            expectedInvoiceNumber,
+            refundAmount,
+            expectedMode
+        ) {
+    
+            const negativeAmount = -Math.abs(parseFloat(refundAmount));
+    
+            const refundRow =
+                this.locator.financialsPaymentHistoryRows.first();
+    
+            // const actualRefundReceiptNumber =
+            //     (
+            //         await refundRow.locator('td').nth(0).innerText()
+            //     ).trim();
+
+            const actualRefundReceiptNumber = (
+                await this.keywords.getText(
+                    this.locator.actualRefundReceiptNumber(refundRow)
+                )
+            ).trim();
+    
+            await StepHelper.step(
+                this.page,
+                `Verify Refund Transaction/PDF Number Present | Expected: non-empty | Actual: ${actualRefundReceiptNumber}`,
+                async () => {
+    
+                    // expect(actualRefundReceiptNumber).not.toBe('');
+                    expect(actualRefundReceiptNumber).toBeTruthy();
+                }
+            );
+    
+            // const actualRefundInvoiceNumber =
+            //     (
+            //         await refundRow.locator('td').nth(1).innerText()
+            //     ).trim();
+
+            const actualRefundInvoiceNumber = (
+                await this.keywords.getText(
+                    this.locator.actualRefundInvoiceNumber(refundRow)
+                )
+            ).trim();
+    
+            await StepHelper.step(
+                this.page,
+                `Verify Refund Row Invoice Number | Expected: ${expectedInvoiceNumber} | Actual: ${actualRefundInvoiceNumber}`,
+                async () => {
+    
+                    expect(actualRefundInvoiceNumber).toBe(
+                        expectedInvoiceNumber
+                    );
+                }
+            );
+    
+            // const actualRefundAmount =
+            //     (
+            //         await refundRow.locator('td').nth(3).innerText()
+            //     )
+            //         .trim()
+            //         .replace(/[₹,\s]/g, '');
+
+            const actualRefundAmount = (
+                    await this.keywords.getText(
+                        this.locator.actualRefundAmount(refundRow)
+                    )
+                )
+                    .trim()
+                    .replace(/[₹,\s]/g, '');
+    
+            await StepHelper.step(
+                this.page,
+                `Verify Negative Payment/Refund Amount | Expected: ${negativeAmount.toFixed(2)} | Actual: ${actualRefundAmount}`,
+                async () => {
+    
+                    expect(parseFloat(actualRefundAmount)).toBe(
+                        negativeAmount
+                    );
+                }
+            );
+    
+            // const actualRefundMode =
+            //     (
+            //         await refundRow
+            //             .locator('div.payment-mode-wrapper span')
+            //             .innerText()
+            //     ).trim();
+
+            const actualRefundMode = (
+                await this.keywords.getText(
+                    this.locator.actualRefundMode(refundRow)
+                )
+            ).trim();
+    
+            await StepHelper.step(
+                this.page,
+                `Verify Refund Payment Mode | Expected: ${expectedMode} | Actual: ${actualRefundMode}`,
+                async () => {
+    
+                    expect(actualRefundMode).toBe(expectedMode);
+                }
+            );
+        }
+    
+
+
 }
 
 

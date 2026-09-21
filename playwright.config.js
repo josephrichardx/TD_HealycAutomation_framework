@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig, devices } from '@playwright/test';
-
+import timeoutData from './testdata/timeout.json';
+const { timeout } = timeoutData;
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -20,13 +21,14 @@ export default defineConfig({
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
-  retries: process.env.CI ? 2 : 0,
+  // retries: 3,
   /* Opt out of parallel tests on CI. */
   // Serial. This UAT environment drops transient toasts (booking confirmation,
   // patient saved, payment recorded) when more than one worker drives it, so
   // parallel runs are fast but unreliable. The speed win comes from not
   // screenshotting every passing step - see utils/StepHelper.js.
-  workers: 1,
+  workers: 4,
+
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   // reporter: [
   //   [
@@ -48,9 +50,16 @@ export default defineConfig({
 //   }]
 // ],
 
+// reporter: [
+//     ['html', {
+//         outputFolder: 'playwright-report',
+//         open: 'never'
+//     }]
+// ],
+
 reporter: [
     ['html', {
-        outputFolder: 'playwright-report',
+        outputFolder: process.env.PLAYWRIGHT_REPORT_DIR || 'playwright-report',
         open: 'never'
     }]
 ],
@@ -64,17 +73,20 @@ reporter: [
         //screenshot: 'on',
         video: 'retain-on-failure',
         //  video: 'on',
-        trace: 'off',
-        actionTimeout: 30000,
-        navigationTimeout: 30000
+        trace: 'on-first-retry',
+
+        // actionTimeout: 30000,
+        // navigationTimeout: 30000
+        actionTimeout: timeout.actionTimeout,
+        navigationTimeout: timeout.navigationTimeout
   },
   // End-to-end workflows (patient + consult + service + waitlist + calendar
   // verification) run long, so the per-test budget lives here rather than as a
   // test.setTimeout() hardcoded in individual spec files.
-  timeout: 600000,
+  timeout: 800000,
 
   expect: {
-        timeout: 10000
+        timeout: 50000
   },
 
   

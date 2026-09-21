@@ -85,6 +85,64 @@ class AppointmentLocator {
                 type,
                 { exact: true }
             ).first();
+        
+        this.goToAppointmentPageLink = page.getByText(
+            'Go to appointment page'
+        ).filter({ visible: true });  
+
+        this.appointmentPatientInfoValue = (fieldLabel) =>
+            page.locator(
+                `//div[contains(@class,'patient-information')]` +
+                `//div[contains(@class,'label6')]` +
+                `[div[normalize-space()='${fieldLabel}']]` +
+                `/div[contains(@class,'label7')]`
+            ).last();
+
+        this.cancelledAppointmentCard = (patientName) =>
+            page.locator('div.slot.custom-events-cards')
+            .filter({ hasText: patientName });
+
+        this.appointmentPatientInfoValue = (fieldLabel) =>
+            page.locator(
+                `//div[contains(@class,'patient-information')]` +
+                `//div[contains(@class,'label6')]` +
+                `[div[normalize-space()='${fieldLabel}']]` +
+                `/div[contains(@class,'label7')]`
+            ).last();
+
+        this.appointmentPaymentDue =
+        page.locator(
+            "//app-appointment-details//*[normalize-space()='Payment Due']/parent::*//div[contains(@class,'amount-wrapper')]"
+        ).first();
+
+        this.appointmentPaymentDueStatus =
+        page.locator(
+            "//app-appointment-details//*[normalize-space()='Payment Due']/parent::*//span[contains(@class,'status-chip')]"
+        ).first();
+
+        this.appointmentPaidAmount =
+        page.locator(
+            "//app-appointment-details//*[normalize-space()='Paid amount']/parent::*//div[contains(@class,'amount-wrapper')]"
+        ).first();
+
+        this.appointmentPaymentHistoryRows =
+        page.locator(
+            'div.payment-history table tbody tr'
+        );
+
+        this.actualHistoryAmount = (refundRow) =>
+         refundRow.locator('td').nth(3);
+
+        // this.appointmentPatientInfoValue = (fieldName) =>
+        // page.getByText(fieldName, { exact: true }).nth(1);
+
+
+        // this.appointmentPatientInfoValue = (fieldName) =>
+        //  page.getByText(fieldName, { exact: true })
+        // .locator('..')
+        // .locator('.value');
+
+            
     }
 
     getPatientNameInAppointmentPanel(patientName) {
