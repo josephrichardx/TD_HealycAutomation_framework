@@ -520,6 +520,17 @@ class Keywords {
         timeout: 30000
     });
 }
+
+async getAllText(locator) {
+ 
+    await locator.first().waitFor({
+        state: "visible",
+        timeout: 30000
+    });
+ 
+    return await locator.allInnerTexts();
+}
+
 }
  
  

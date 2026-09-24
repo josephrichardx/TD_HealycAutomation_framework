@@ -31,10 +31,10 @@ class StepHelper {
  
                 await action();
  
-                // Screenshot when step passes
-                await attachScreenshot(
-                    `${name} - PASSED`
-                );
+                // // Screenshot when step passes
+                // await attachScreenshot(
+                //     `${name} - PASSED`
+                // );
  
             } catch (error) {
  

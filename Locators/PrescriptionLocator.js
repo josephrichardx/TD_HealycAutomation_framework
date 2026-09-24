@@ -996,25 +996,25 @@ this.toxicityScheduleInputs =
 // Timing
 // -----------------------------------------------------
 
-// this.toxicityTimingDropdown =
-//     page.locator(
-//         "//h3[normalize-space()='Toxicity']" +
-//         "/following::table[contains(@class,'medications-table')][1]" +
-//         "//tbody/tr//td[contains(@class,'timing')]" +
-//         "//button[contains(@class,'dropdown-only-select')]"
-//     );
-
 this.toxicityTimingDropdown =
     page.locator(
-        "//button[@data-ms-open='1' and @title='Select options']"
+        "//h3[normalize-space()='Toxicity']" +
+        "/following::table[contains(@class,'medications-table')][1]" +
+        "//tbody/tr//td[contains(@class,'timing')]" +
+        "//button[contains(@class,'dropdown-only-select')]"
     );
 
-this.toxicityTimingOption = (rowIndex, timing) =>
-    page.locator(
-        `//button[@data-ms-open='1' and @title='Select options'][${rowIndex + 1}]`
-    )
-    .locator("..")
-    .getByText(timing, { exact: true });
+// this.toxicityTimingDropdown =
+//     page.locator(
+//         "//button[@data-ms-open='1' and @title='Select options']"
+//     );
+
+// this.toxicityTimingOption = (rowIndex, timing) =>
+//     page.locator(
+//         `//button[@data-ms-open='1' and @title='Select options'][${rowIndex + 1}]`
+//     )
+//     .locator("..")
+//     .getByText(timing, { exact: true });
 
 
 
@@ -1080,6 +1080,15 @@ this.draftDocumentBody =
         "//div[@class='document-body']"
     );
 
+this.medicationRows =
+    ".emr-table tbody tr.emr-row.medication-row";
+ 
+this.draftFieldElements =
+    "input, textarea, select, button.dropdown-only-select";
+ 
+this.draftOtherFindingElements =
+    "input, textarea, [contenteditable='true']";
+
 this.clearButton =
     page.locator("//button[text()=' Clear ']");
 
@@ -1090,6 +1099,8 @@ this.clearDropdown =
     page.locator(
         "//button[text()=' Clear ']//following::i[contains(@class,'chevron-down hdr-caret')]"
     );
+
+
 
     }
 

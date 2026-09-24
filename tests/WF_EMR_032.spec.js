@@ -179,8 +179,14 @@ test('EMR Prescription', async ({ page }) => {
     await prescriptionPageOldTab.openHistory();
 
     //Get the PdfText
+    // const pdfText =
+    // await prescriptionPageOldTab.getPDFText();
     const pdfText =
-    await prescriptionPageOldTab.getPDFText();
+    await prescriptionPageOldTab.getPDFText({
+    observationData,
+    ToxicityData,
+    otherFindings
+    });
 
     await prescriptionPageOldTab.CloseHistory();
 
@@ -196,8 +202,12 @@ test('EMR Prescription', async ({ page }) => {
 
     
     //Get the DraftText
+    // const draftText =
+    // await prescriptionPageNewTab.getDraftText();
+
     const draftText =
     await prescriptionPageNewTab.getDraftText();
+    // expect(draftText).toEqual(draftTextactual1);
 
     //Verify the Pdf & Draft
     await prescriptionPageNewTab.verifyPDFAndDraft(
@@ -231,6 +241,9 @@ test('EMR Prescription', async ({ page }) => {
     );
 
     //Get the DraftText
+    // const oldtabdraftText =
+    // await prescriptionPageOldTab1.getDraftText();
+
     const oldtabdraftText =
     await prescriptionPageOldTab1.getDraftText();
 
@@ -245,6 +258,9 @@ test('EMR Prescription', async ({ page }) => {
         new PrescriptionPage(NewTabAgain1);
 
     //Get the DraftText
+    // const newtabdraftText =
+    // await prescriptionPageNewTab1.getDraftText();
+
     const newtabdraftText =
     await prescriptionPageNewTab1.getDraftText();
 
@@ -287,8 +303,14 @@ test('EMR Prescription', async ({ page }) => {
      await prescriptionPageOldTab2.openHistory();
 
     //Get the pdf Text
+    // const pdfText1 =
+    // await prescriptionPageOldTab2.getPDFText();
     const pdfText1 =
-    await prescriptionPageOldTab2.getPDFText();
+    await prescriptionPageOldTab2.getPDFText({
+    observationData,
+    ToxicityData,
+    otherFindings
+    });
 
     await prescriptionPageOldTab2.CloseHistory();
 
@@ -313,7 +335,9 @@ test('EMR Prescription', async ({ page }) => {
         template
     );
 
-    //Get the Fradt Text
+    //Get the Draft Text
+    // const draftText1 =
+    // await prescriptionPageNewTab2.getDraftText();
     const draftText1 =
     await prescriptionPageNewTab2.getDraftText();
 

@@ -1951,40 +1951,9 @@ await StepHelper.step(
     }
 );
 
-// // =====================================================
-// // 10. TIMING
-// // =====================================================
-
-// await StepHelper.step(
-//     this.page,
-//     `Timing - ${toxicityData.timing}`,
-//     async () => {
-
-//         const timing =
-//             this.locators.toxicityTimingDropdown.nth(rowIndex);
-
-//         await timing.waitFor({
-//             state: 'visible',
-//             timeout: timeout.elementTimeout
-//         });
-
-//         await this.keywords.click(timing);
-
-//         const timingOption =
-//             this.page.getByText(
-//                 toxicityData.timing,
-//                 { exact: true }
-//             );
-
-//         await timingOption.waitFor({
-//             state: 'visible',
-//             timeout: timeout.actionTimeout
-//         });
-
-//         await this.keywords.click(timingOption);
-//     }
-// );
-
+// =====================================================
+// 10. TIMING
+// =====================================================
 
 await StepHelper.step(
     this.page,
@@ -2001,35 +1970,66 @@ await StepHelper.step(
 
         await this.keywords.click(timing);
 
-        const beforeFoodElements =
-            await this.page.locator('body *').evaluateAll(
-                elements =>
-                    elements
-                        .filter(
-                            el =>
-                                el.textContent?.trim() === 'Before food'
-                        )
-                        .map(el => ({
-                            tag: el.tagName,
-                            className: el.className,
-                            id: el.id,
-                            outerHTML: el.outerHTML
-                        }))
+        const timingOption =
+            this.page.getByText(
+                toxicityData.timing,
+                { exact: true }
             );
 
-        console.log(
-            'BEFORE FOOD ELEMENTS:',
-            JSON.stringify(
-                beforeFoodElements,
-                null,
-                2
-            )
-        );
+        await timingOption.waitFor({
+            state: 'visible',
+            timeout: timeout.actionTimeout
+        });
 
-        // Temporary
-        await this.page.pause();
+        await this.keywords.click(timingOption);
     }
 );
+
+
+// await StepHelper.step(
+//     this.page,
+//     `Timing - ${toxicityData.timing}`,
+//     async () => {
+
+//         const timing =
+//             this.locators.toxicityTimingDropdown.nth(rowIndex);
+
+//         await timing.waitFor({
+//             state: 'visible',
+//             timeout: timeout.elementTimeout
+//         });
+
+//         await this.keywords.click(timing);
+
+//         const beforeFoodElements =
+//             await this.page.locator('body *').evaluateAll(
+//                 elements =>
+//                     elements
+//                         .filter(
+//                             el =>
+//                                 el.textContent?.trim() === 'Before food'
+//                         )
+//                         .map(el => ({
+//                             tag: el.tagName,
+//                             className: el.className,
+//                             id: el.id,
+//                             outerHTML: el.outerHTML
+//                         }))
+//             );
+
+//         console.log(
+//             'BEFORE FOOD ELEMENTS:',
+//             JSON.stringify(
+//                 beforeFoodElements,
+//                 null,
+//                 2
+//             )
+//         );
+
+//         // Temporary
+//         await this.page.pause();
+//     }
+// );
 
 // =====================================================
 // 11. DURATION
@@ -5487,200 +5487,155 @@ async fill_Toxicities(toxicityData) {
     );
 }
 
+
+
 // async getPDFText() {
 
-//     let pdfText = "";
+//     let expectedValues = {
+//         patientValues: [],
+//         formValues: []
+//     };
 
 //     await StepHelper.step(
 //         this.page,
-//         "Get PDF Values",
+//         "Get PDF Expected Values",
 //         async () => {
 
 //             const pdfTextLayer =
-//                 this.page.locator(
-//                     "//div[@class='textLayer']"
-//                 );
+//                 this.locators.pdfTextLayer;
 
 //             await pdfTextLayer.first().waitFor({
 //                 state: "visible",
 //                 timeout: timeout.elementTimeout
 //             });
 
-//             const pages =
+//             const pdfPages =
 //                 await pdfTextLayer.allInnerTexts();
 
-//             let lines =
-//                 pages
-//                     .join("\n")
-//                     .split(/\r?\n/)
-//                     .map(line => line.trim())
-//                     .filter(Boolean);
+//             const rawText =
+//                 pdfPages.join("\n");
 
-//             /*
-//              * Remove PDF labels / section headers.
-//              */
-//             const ignoredValues = new Set([
-//                 "Co-morbidities",
-//                 "Toxicity",
-//                 "Other Findings",
-//                 "Evaluation",
-//                 "Observation",
-//                 "Advice",
-//                 "Specific Advice",
-//                 "Other section",
-//                 "Drug Name",
-//                 "Form",
-//                 "Strength",
-//                 "Route",
-//                 "Dosage",
-//                 "Frequency",
-//                 "Schedule",
-//                 "Timing",
-//                 "Duration",
-//                 "Instructions",
-//                 "Patient Name:",
-//                 "UHID:",
-//                 "Age:",
-//                 "Gender:",
-//                 "Referral Tag:",
-//                 "Consult Type:",
-//                 "App. Location:",
-//                 "OPD Date:",
-//                 "OPDID:",
-//                 "Doctor Name:",
-//                 "Patient Number:",
-//                 "For internal use only",
-//                 "+ Add New"
-//             ]);
-
-//             lines =
-//                 lines.filter(
-//                     line =>
-//                         !ignoredValues.has(line)
-//                 );
-
-//             /*
-//              * Remove split PDF header words.
-//              * Example:
-//              * Streng
-//              * th
-//              *
-//              * Dosag
-//              * e
-//              */
-//             const splitHeaderValues = new Set([
-//                 "Drug",
-//                 "Name",
-//                 "Streng",
-//                 "th",
-//                 "Dosag",
-//                 "e",
-//                 "Freque",
-//                 "ncy",
-//                 "Schedu",
-//                 "le",
-//                 "Durati",
-//                 "on",
-//                 "Instruc",
-//                 "tions"
-//             ]);
-
-//             lines =
-//                 lines.filter(
-//                     line =>
-//                         !splitHeaderValues.has(line)
-//                 );
-
-//             pdfText =
-//                 lines.join("\n");
 
 //             console.log(
-//                 "========== PDF VALUES =========="
+//                 "========== PDF RAW TEXT =========="
 //             );
 
-//             console.log(pdfText);
+//             console.log(rawText);
+
+
+//             // =====================================
+//             // PATIENT VALUES
+//             // =====================================
+
+//             expectedValues.patientValues =
+//                 this.extractPDFPatientValues(
+//                     rawText
+//                 );
+
+
+//             // =====================================
+//             // FORM VALUES
+//             // =====================================
+
+//             expectedValues.formValues =
+//                 this.extractPDFFormValues(
+//                     rawText
+//                 );
+
+
+//             console.log(
+//                 "========== PDF PATIENT VALUES =========="
+//             );
+
+//             console.log(
+//                 expectedValues.patientValues
+//             );
+
+
+//             console.log(
+//                 "========== PDF FORM VALUES =========="
+//             );
+
+//             console.log(
+//                 expectedValues.formValues
+//             );
 //         }
 //     );
 
-//     return pdfText;
+//     return expectedValues;
 // }
 
 
-async getPDFText() {
-
+async getPDFText(testData) {
+ 
     let expectedValues = {
         patientValues: [],
         formValues: []
     };
-
+ 
     await StepHelper.step(
         this.page,
         "Get PDF Expected Values",
         async () => {
-
+ 
             const pdfTextLayer =
                 this.locators.pdfTextLayer;
-
-            await pdfTextLayer.first().waitFor({
-                state: "visible",
-                timeout: timeout.elementTimeout
-            });
-
+ 
             const pdfPages =
-                await pdfTextLayer.allInnerTexts();
-
+                await this.keywords.getAllText(
+                    pdfTextLayer
+                );
+ 
             const rawText =
                 pdfPages.join("\n");
-
-
+ 
             console.log(
                 "========== PDF RAW TEXT =========="
             );
-
+ 
             console.log(rawText);
-
-
+ 
             // =====================================
             // PATIENT VALUES
             // =====================================
-
+ 
             expectedValues.patientValues =
                 this.extractPDFPatientValues(
                     rawText
                 );
-
-
+ 
             // =====================================
             // FORM VALUES
             // =====================================
-
+ 
             expectedValues.formValues =
                 this.extractPDFFormValues(
-                    rawText
+                    rawText,
+                    testData
                 );
-
-
+ 
             console.log(
                 "========== PDF PATIENT VALUES =========="
             );
-
+ 
             console.log(
                 expectedValues.patientValues
             );
-
-
+ 
             console.log(
                 "========== PDF FORM VALUES =========="
             );
-
+ 
             console.log(
                 expectedValues.formValues
             );
         }
     );
-
+ 
     return expectedValues;
 }
+ 
+ 
 
 
 // extractPDFPatientValues(rawText) {
@@ -5691,133 +5646,72 @@ async getPDFText() {
 //             .map(line => line.trim())
 //             .filter(Boolean);
 
-
 //     const patientValues = [];
 
 //     const patientStart =
-//         lines.findIndex(
-//             line =>
-//                 line.startsWith("Mr ") ||
-//                 line.startsWith("Mrs ") ||
-//                 line.startsWith("Ms ")
+//         lines.findIndex(line =>
+//             /^(Mr|Mrs|Ms)\s+/i.test(line)
 //         );
-
 
 //     if (patientStart === -1) {
 //         return patientValues;
 //     }
 
+//     const labelIndexes = new Set([
+//         "UHID:",
+//         "Age:",
+//         "Gender:",
+//         "Referral Tag:",
+//         "Consult Type:",
+//         "App. Location:",
+//         "OPD Date:",
+//         "OPDID:",
+//         "Doctor Name:",
+//         "Patient Number:"
+//     ]);
 
-//     // Patient Name
-//     if (lines[patientStart]) {
-//         patientValues.push(
-//             lines[patientStart]
-//         );
+//     for (
+//         let i = patientStart;
+//         i < lines.length;
+//         i++
+//     ) {
+
+//         const value =
+//             lines[i];
+
+//         if (labelIndexes.has(value)) {
+//             continue;
+//         }
+
+//         patientValues.push(value);
+
+//         if (patientValues.length === 11) {
+//             break;
+//         }
 //     }
-
-
-//     // UHID
-//     if (lines[patientStart + 1]) {
-//         patientValues.push(
-//             lines[patientStart + 1]
-//         );
-//     }
-
-
-//     // Age
-//     if (lines[patientStart + 2]) {
-//         patientValues.push(
-//             lines[patientStart + 2]
-//         );
-//     }
-
-
-//     // Gender
-//     if (lines[patientStart + 3]) {
-//         patientValues.push(
-//             lines[patientStart + 3]
-//         );
-//     }
-
-
-//     // Referral Tag
-//     if (lines[patientStart + 4]) {
-//         patientValues.push(
-//             lines[patientStart + 4]
-//         );
-//     }
-
-
-//     // Consult Type
-//     if (lines[patientStart + 5]) {
-//         patientValues.push(
-//             lines[patientStart + 5]
-//         );
-//     }
-
-
-//     // App Location
-//     if (lines[patientStart + 6]) {
-//         patientValues.push(
-//             lines[patientStart + 6]
-//         );
-//     }
-
-
-//     // OPD Date
-//     if (lines[patientStart + 7]) {
-//         patientValues.push(
-//             lines[patientStart + 7]
-//         );
-//     }
-
-
-//     // OPD ID
-//     if (lines[patientStart + 8]) {
-//         patientValues.push(
-//             lines[patientStart + 8]
-//         );
-//     }
-
-
-//     // Doctor
-//     if (lines[patientStart + 9]) {
-//         patientValues.push(
-//             lines[patientStart + 9]
-//         );
-//     }
-
-
-//     // Patient Number
-//     if (lines[patientStart + 10]) {
-//         patientValues.push(
-//             lines[patientStart + 10]
-//         );
-//     }
-
 
 //     return patientValues;
 // }
 
 extractPDFPatientValues(rawText) {
-
+ 
     const lines =
         rawText
             .split("\n")
             .map(line => line.trim())
             .filter(Boolean);
-
+ 
     const patientValues = [];
-
+ 
     const patientStart =
         lines.findIndex(line =>
             /^(Mr|Mrs|Ms)\s+/i.test(line)
         );
-
+ 
     if (patientStart === -1) {
         return patientValues;
     }
-
+ 
     const labelIndexes = new Set([
         "UHID:",
         "Age:",
@@ -5830,30 +5724,30 @@ extractPDFPatientValues(rawText) {
         "Doctor Name:",
         "Patient Number:"
     ]);
-
+ 
     for (
         let i = patientStart;
         i < lines.length;
         i++
     ) {
-
+ 
         const value =
             lines[i];
-
+ 
         if (labelIndexes.has(value)) {
             continue;
         }
-
+ 
         patientValues.push(value);
-
+ 
         if (patientValues.length === 11) {
             break;
         }
     }
-
+ 
     return patientValues;
 }
-
+ 
 
 // extractPDFFormValues(rawText) {
 
@@ -5886,7 +5780,7 @@ extractPDFPatientValues(rawText) {
 
 
 //     // =====================================
-//     // Take everything before Patient section
+//     // Everything before Patient section
 //     // =====================================
 
 //     const formLines =
@@ -5894,10 +5788,37 @@ extractPDFPatientValues(rawText) {
 
 
 //     // =====================================
-//     // Remove PDF-only unwanted values
+//     // Remove PDF headers / labels
 //     // =====================================
 
-//     const ignoredValues = [
+//     const ignoredValues = new Set([
+
+//         "Co-morbidities",
+
+//         "Drug",
+//         "Name",
+
+//         "Streng",
+//         "th",
+
+//         "Dosag",
+//         "e",
+
+//         "Freque",
+//         "ncy",
+
+//         "Schedu",
+//         "le",
+
+//         "Durati",
+//         "on",
+
+//         "Instruc",
+//         "tions",
+
+//         "Other Findings",
+//         "Patient Name:",
+
 //         "Drug Name",
 //         "Form",
 //         "Strength",
@@ -5909,37 +5830,44 @@ extractPDFPatientValues(rawText) {
 //         "Frequency",
 //         "Schedule",
 //         "Timing",
-//         "Patient Name",
+
 //         "UHID",
 //         "Age",
 //         "Gender"
-//     ];
+//     ]);
 
 
 //     const filtered =
 //         formLines.filter(line => {
 
-//             return !ignoredValues.some(
-//                 ignored =>
-//                     line.toLowerCase() ===
-//                     ignored.toLowerCase()
+//             return !ignoredValues.has(
+//                 line.trim()
 //             );
 //         });
 
 
 //     // =====================================
-//     // Merge PDF broken values
+//     // Merge broken PDF values
 //     // =====================================
 
-//     for (let i = 0; i < filtered.length; i++) {
+//     for (
+//         let i = 0;
+//         i < filtered.length;
+//         i++
+//     ) {
 
 //         let value =
-//             filtered[i];
+//             filtered[i].trim();
 
 
-//         // -------------------------------
-//         // 1 AL Plus 5mg/ + 120mg Capsule
-//         // -------------------------------
+//         // =================================
+//         // Drug name:
+//         //
+//         // 1 AL Plus 5mg/
+//         // 120mg Capsule
+//         //
+//         // → 1 AL Plus 5mg/120mg Capsule
+//         // =================================
 
 //         if (
 //             value.endsWith("/") &&
@@ -5952,13 +5880,42 @@ extractPDFPatientValues(rawText) {
 //         }
 
 
-//         // -------------------------------
+//         // =================================
+//         // Drug name:
+//         //
+//         // 1 AL
+//         // Plus
+//         // 5mg/120mg
+//         // Capsule
+//         //
+//         // → 1 AL Plus 5mg/120mg Capsule
+//         // =================================
+
+//         else if (
+//             value === "1 AL" &&
+//             filtered[i + 1] === "Plus" &&
+//             filtered[i + 2]?.includes("mg/") &&
+//             filtered[i + 3] === "Capsule"
+//         ) {
+
+//             value =
+//                 `${value} ` +
+//                 `${filtered[i + 1]} ` +
+//                 `${filtered[i + 2]} ` +
+//                 `${filtered[i + 3]}`;
+
+//             i += 3;
+//         }
+
+
+//         // =================================
 //         // Before + food
-//         // -------------------------------
+//         //
+//         // → Before food
+//         // =================================
 
 //         else if (
 //             value === "Before" &&
-//             i + 1 < filtered.length &&
 //             filtered[i + 1] === "food"
 //         ) {
 
@@ -5969,22 +5926,33 @@ extractPDFPatientValues(rawText) {
 //         }
 
 
-//         // -------------------------------
+//         // =================================
 //         // Capsul + e
-//         // -------------------------------
+//         //
+//         // → Capsule
+//         // =================================
 
-//         else if (
-//             value === "Capsul" &&
-//             i + 1 < filtered.length &&
-//             filtered[i + 1] === "e"
+//         // else if (
+//         //     value === "Capsul" &&
+//         //     filtered[i + 1] === "e"
+//         // ) {
+
+//         //     value =
+//         //         "Capsule";
+
+//         //     i++;
+//         // }
+
+//        else if (
+//             value === "Capsul"
 //         ) {
-
-//             value =
-//                 "Capsule";
-
-//             i++;
+//             value = "Capsule";
 //         }
 
+
+//         // =================================
+//         // Add valid value
+//         // =================================
 
 //         if (value.trim()) {
 
@@ -5994,27 +5962,82 @@ extractPDFPatientValues(rawText) {
 //         }
 //     }
 
+//     // =====================================================
+//     // OTHER FINDINGS
+//     // =====================================================
+
+//     const otherFindingValues = [
+//         "Custom other findings",
+//         "Custom text for 'Other Findings'"
+//     ];
+
+//     for (const value of otherFindingValues) {
+
+//         if (
+//             rawText
+//                 .toLowerCase()
+//                 .includes(value.toLowerCase())
+//         ) {
+//             formValues.push(value);
+//         }
+//     }
 
 //     return formValues;
 // }
 
 
-extractPDFFormValues(rawText) {
-
-    const lines =
-        rawText
-            .split("\n")
-            .map(line => line.trim())
-            .filter(Boolean);
-
-
+ extractPDFFormValues(rawText, testData) {
+ 
+    const rawLines =
+    rawText
+        .split("\n")
+        .map(line => line.trim())
+        .filter(Boolean);
+ 
+const lines = [];
+ 
+for (const line of rawLines) {
+ 
+    const previousLine =
+        lines[lines.length - 1];
+ 
+    if (
+        previousLine &&
+        line.length === 1 &&
+        /^[a-zA-Z]$/.test(line) &&
+        /[a-zA-Z]$/.test(previousLine)
+    ) {
+        lines[lines.length - 1] =
+            previousLine + line;
+    } else {
+        lines.push(line);
+    }
+}
+ 
     const formValues = [];
-
-
+ 
     // =====================================
-    // Find Patient section
+    // TEST DATA VALUES
     // =====================================
-
+ 
+    const drugName =
+        testData.observationData.drugName;
+ 
+    const form =
+        testData.observationData.form;
+ 
+    const timing =
+        testData.ToxicityData.timing;
+ 
+    const otherFindingValues = [
+        testData.otherFindings.text1,
+        testData.otherFindings.text2
+    ];
+ 
+    // =====================================
+    // FIND PATIENT SECTION
+    // =====================================
+ 
     const patientStart =
         lines.findIndex(
             line =>
@@ -6022,53 +6045,50 @@ extractPDFFormValues(rawText) {
                 line.startsWith("Mrs ") ||
                 line.startsWith("Ms ")
         );
-
-
+ 
     if (patientStart === -1) {
         return formValues;
     }
-
-
+ 
     // =====================================
-    // Everything before Patient section
+    // EVERYTHING BEFORE PATIENT SECTION
     // =====================================
-
+ 
     const formLines =
         lines.slice(0, patientStart);
-
-
+ 
     // =====================================
-    // Remove PDF headers / labels
+    // REMOVE PDF HEADERS / LABELS
     // =====================================
-
+ 
     const ignoredValues = new Set([
-
+ 
         "Co-morbidities",
-
+ 
         "Drug",
         "Name",
-
+ 
         "Streng",
         "th",
-
+ 
         "Dosag",
         "e",
-
+ 
         "Freque",
         "ncy",
-
+ 
         "Schedu",
         "le",
-
+ 
         "Durati",
         "on",
-
+ 
         "Instruc",
         "tions",
-
+ 
         "Other Findings",
         "Patient Name:",
-
+ 
         "Drug Name",
         "Form",
         "Strength",
@@ -6080,402 +6100,397 @@ extractPDFFormValues(rawText) {
         "Frequency",
         "Schedule",
         "Timing",
-
+ 
         "UHID",
         "Age",
         "Gender"
     ]);
-
-
+ 
     const filtered =
         formLines.filter(line => {
-
+ 
             return !ignoredValues.has(
                 line.trim()
             );
         });
-
-
+ 
     // =====================================
-    // Merge broken PDF values
+    // NORMALIZE
     // =====================================
-
+ 
+    const normalize = value =>
+        String(value || "")
+            .replace(/\s+/g, " ")
+            .trim()
+            .toLowerCase();
+ 
+    // =====================================
+    // MERGE BROKEN PDF VALUES
+    // =====================================
+ 
     for (
         let i = 0;
         i < filtered.length;
         i++
     ) {
-
+ 
         let value =
             filtered[i].trim();
-
-
+ 
         // =================================
-        // Drug name:
-        //
-        // 1 AL Plus 5mg/
-        // 120mg Capsule
-        //
-        // → 1 AL Plus 5mg/120mg Capsule
+        // VALUE ENDING WITH /
         // =================================
-
+ 
         if (
             value.endsWith("/") &&
             i + 1 < filtered.length
         ) {
-
+ 
             value =
                 value +
                 filtered[++i];
         }
-
-
+ 
         // =================================
-        // Drug name:
-        //
-        // 1 AL
-        // Plus
-        // 5mg/120mg
-        // Capsule
-        //
-        // → 1 AL Plus 5mg/120mg Capsule
+        // MATCH DRUG NAME PARTS
         // =================================
-
+ 
         else if (
-            value === "1 AL" &&
-            filtered[i + 1] === "Plus" &&
-            filtered[i + 2]?.includes("mg/") &&
-            filtered[i + 3] === "Capsule"
+            normalize(value) ===
+            normalize(
+                drugName.split(" ")[0] +
+                " " +
+                drugName.split(" ")[1]
+            )
         ) {
-
-            value =
-                `${value} ` +
-                `${filtered[i + 1]} ` +
-                `${filtered[i + 2]} ` +
-                `${filtered[i + 3]}`;
-
-            i += 3;
+ 
+            let combinedValue = value;
+            let nextIndex = i + 1;
+ 
+            while (
+                nextIndex < filtered.length &&
+                normalize(combinedValue) !==
+                    normalize(drugName)
+            ) {
+ 
+                combinedValue +=
+                    " " +
+                    filtered[nextIndex];
+ 
+                nextIndex++;
+            }
+ 
+            if (
+                normalize(combinedValue) ===
+                normalize(drugName)
+            ) {
+ 
+                value =
+                    combinedValue;
+ 
+                i =
+                    nextIndex - 1;
+            }
         }
-
-
+ 
         // =================================
-        // Before + food
-        //
-        // → Before food
+        // MATCH TIMING VALUE
         // =================================
-
+ 
         else if (
-            value === "Before" &&
-            filtered[i + 1] === "food"
+            normalize(
+                `${value} ${filtered[i + 1]}`
+            ) === normalize(timing)
         ) {
-
+ 
             value =
-                "Before food";
-
+                timing;
+ 
             i++;
         }
-
-
+ 
         // =================================
-        // Capsul + e
-        //
-        // → Capsule
+        // MERGE BROKEN FORM VALUE
         // =================================
-
-        // else if (
-        //     value === "Capsul" &&
-        //     filtered[i + 1] === "e"
-        // ) {
-
-        //     value =
-        //         "Capsule";
-
-        //     i++;
-        // }
-
-       else if (
-            value === "Capsul"
-        ) {
-            value = "Capsule";
+ 
+        else {
+ 
+            let combinedValue =
+                value;
+ 
+            let nextIndex =
+                i + 1;
+ 
+            while (
+                nextIndex < filtered.length
+            ) {
+ 
+                const candidate =
+                    `${combinedValue}${filtered[nextIndex]}`;
+ 
+                if (
+                    normalize(candidate) ===
+                    normalize(form)
+                ) {
+ 
+                    value =
+                        form;
+ 
+                    i =
+                        nextIndex;
+ 
+                    break;
+                }
+ 
+                if (
+                    !normalize(form).startsWith(
+                        normalize(candidate)
+                    )
+                ) {
+                    break;
+                }
+ 
+                combinedValue =
+                    candidate;
+ 
+                nextIndex++;
+            }
         }
-
-
+ 
         // =================================
-        // Add valid value
+        // ADD VALID VALUE
         // =================================
-
+ 
         if (value.trim()) {
-
+ 
             formValues.push(
                 value.trim()
             );
         }
     }
-
-    // =====================================================
+ 
+    // =====================================
     // OTHER FINDINGS
-    // =====================================================
-
-    const otherFindingValues = [
-        "Custom other findings",
-        "Custom text for 'Other Findings'"
-    ];
-
+    // =====================================
+ 
     for (const value of otherFindingValues) {
-
+ 
         if (
             rawText
                 .toLowerCase()
-                .includes(value.toLowerCase())
+                .includes(
+                    value.toLowerCase()
+                )
         ) {
+ 
             formValues.push(value);
         }
     }
-
-
-
+ 
     return formValues;
 }
-
-
+ 
+ 
+ 
 
 // async getDraftText() {
 
-//     let draftText = "";
+//     let actualValues = {
+//         patientValues: [],
+//         formValues: []
+//     };
 
 //     await StepHelper.step(
 //         this.page,
-//         "Get Draft Values",
+//         "Get Draft Actual Values",
 //         async () => {
 
-//             const documentBody =
-//                 this.locators.draftDocumentBody;
-
-//             await documentBody.waitFor({
+//             await this.locators.draftDocumentBody.waitFor({
 //                 state: "visible",
 //                 timeout: timeout.elementTimeout
 //             });
 
-//             const values =
-//                 await documentBody.evaluate((root) => {
+//             actualValues.patientValues =
+//                 await this.extractDraftPatientValues();
 
-//                     const result = [];
+//             actualValues.formValues =
+//                 await this.extractDraftFormValues();
 
-//                     /*
-//                      * Get input / textarea values
-//                      */
-//                     root.querySelectorAll(
-//                         "input, textarea"
-//                     ).forEach(element => {
-
-//                         const value =
-//                             element.value?.trim();
-
-//                         if (value) {
-//                             result.push(value);
-//                         }
-//                     });
-
-//                     /*
-//                      * Get selected <select> values
-//                      */
-//                     root.querySelectorAll(
-//                         "select"
-//                     ).forEach(select => {
-
-//                         const option =
-//                             select.options[
-//                                 select.selectedIndex
-//                             ];
-
-//                         const value =
-//                             option?.textContent?.trim();
-
-//                         if (
-//                             value &&
-//                             !value
-//                                 .toLowerCase()
-//                                 .startsWith("select")
-//                         ) {
-//                             result.push(value);
-//                         }
-//                     });
-
-//                     /*
-//                      * Get selected custom dropdown values
-//                      */
-//                     root.querySelectorAll(
-//                         "button.dropdown-only-select"
-//                     ).forEach(button => {
-
-//                         const value =
-//                             button.textContent?.trim();
-
-//                         if (
-//                             value &&
-//                             !value
-//                                 .toLowerCase()
-//                                 .startsWith("select")
-//                         ) {
-//                             result.push(value);
-//                         }
-//                     });
-
-//                     /*
-//                      * Get visible document text
-//                      * excluding UI controls
-//                      */
-//                     const clone =
-//                         root.cloneNode(true);
-
-//                     clone.querySelectorAll(
-//                         "button, select, option, input, textarea, " +
-//                         "[role='option'], " +
-//                         ".dropdown-menu, " +
-//                         ".select-options"
-//                     ).forEach(element => {
-//                         element.remove();
-//                     });
-
-//                     const text =
-//                         clone.innerText || "";
-
-//                     text
-//                         .split(/\r?\n/)
-//                         .map(value => value.trim())
-//                         .filter(Boolean)
-//                         .forEach(value => {
-
-//                             result.push(value);
-//                         });
-
-//                     return result;
-//                 });
-
-//             /*
-//              * Remove duplicate values
-//              */
-//             draftText =
-//                 [...new Set(values)]
-//                     .join("\n");
 
 //             console.log(
-//                 "========== DRAFT VALUES =========="
+//                 "========== DRAFT PATIENT VALUES =========="
 //             );
 
-//             console.log(draftText);
+//             console.log(
+//                 actualValues.patientValues
+//             );
+
+
+//             console.log(
+//                 "========== DRAFT FORM VALUES =========="
+//             );
+
+//             console.log(
+//                 actualValues.formValues
+//             );
 //         }
 //     );
 
-//     return draftText;
+//     return actualValues;
 // }
 
 async getDraftText() {
-
+ 
     let actualValues = {
         patientValues: [],
         formValues: []
     };
-
+ 
     await StepHelper.step(
         this.page,
         "Get Draft Actual Values",
         async () => {
-
+ 
             await this.locators.draftDocumentBody.waitFor({
                 state: "visible",
                 timeout: timeout.elementTimeout
             });
-
+ 
             actualValues.patientValues =
                 await this.extractDraftPatientValues();
-
+ 
             actualValues.formValues =
                 await this.extractDraftFormValues();
-
-
+ 
             console.log(
                 "========== DRAFT PATIENT VALUES =========="
             );
-
+ 
             console.log(
                 actualValues.patientValues
             );
-
-
+ 
             console.log(
                 "========== DRAFT FORM VALUES =========="
             );
-
+ 
             console.log(
                 actualValues.formValues
             );
         }
     );
-
+ 
     return actualValues;
 }
 
 
-async extractDraftPatientValues() {
+// async extractDraftPatientValues() {
 
+//     const values =
+//         await this.locators.draftDocumentBody.evaluate(
+//             root => {
+
+//                 const result = [];
+
+//                 root.querySelectorAll(
+//                     "input, textarea, select"
+//                 ).forEach(element => {
+
+//                     let value = "";
+
+//                     if (
+//                         element.tagName === "SELECT"
+//                     ) {
+
+//                         const option =
+//                             element.options[
+//                                 element.selectedIndex
+//                             ];
+
+//                         value =
+//                             option?.textContent?.trim() || "";
+
+//                     } else {
+
+//                         value =
+//                             element.value?.trim() || "";
+//                     }
+
+//                     if (value) {
+//                         result.push(value);
+//                     }
+//                 });
+
+//                 return result;
+//             }
+//         );
+
+
+//     // ==========================================
+//     // Patient values
+//     // ==========================================
+
+//     const patientValues =
+//         values.slice(0, 11);
+
+
+//     return patientValues;
+// }
+
+async extractDraftPatientValues() {
+ 
     const values =
         await this.locators.draftDocumentBody.evaluate(
             root => {
-
+ 
                 const result = [];
-
+ 
                 root.querySelectorAll(
                     "input, textarea, select"
                 ).forEach(element => {
-
+ 
                     let value = "";
-
+ 
                     if (
                         element.tagName === "SELECT"
                     ) {
-
+ 
                         const option =
                             element.options[
                                 element.selectedIndex
                             ];
-
+ 
                         value =
                             option?.textContent?.trim() || "";
-
+ 
                     } else {
-
+ 
                         value =
                             element.value?.trim() || "";
                     }
-
+ 
                     if (value) {
                         result.push(value);
                     }
                 });
-
+ 
                 return result;
             }
         );
-
-
+ 
+ 
     // ==========================================
     // Patient values
     // ==========================================
-
+ 
     const patientValues =
         values.slice(0, 11);
-
-
+ 
+ 
     return patientValues;
 }
 
-
 // async extractDraftFormValues() {
-
-//     // ==========================================
-//     // GET MEDICATION ROW VALUES
-//     // ==========================================
 
 //     const rows =
 //         await this.locators.draftDocumentBody.evaluate(
@@ -6495,7 +6510,6 @@ async extractDraftPatientValues() {
 
 //                         let value = "";
 
-//                         // INPUT / TEXTAREA
 //                         if (
 //                             element.tagName === "INPUT" ||
 //                             element.tagName === "TEXTAREA"
@@ -6505,7 +6519,6 @@ async extractDraftPatientValues() {
 //                                 element.value?.trim() || "";
 //                         }
 
-//                         // SELECT
 //                         else if (
 //                             element.tagName === "SELECT"
 //                         ) {
@@ -6521,7 +6534,6 @@ async extractDraftPatientValues() {
 //                                     ?.trim() || "";
 //                         }
 
-//                         // CUSTOM DROPDOWN
 //                         else if (
 //                             element.matches(
 //                                 "button.dropdown-only-select"
@@ -6555,7 +6567,6 @@ async extractDraftPatientValues() {
 //     );
 
 //     rows.forEach((row, index) => {
-
 //         console.log(
 //             `ROW ${index}:`,
 //             row
@@ -6563,385 +6574,334 @@ async extractDraftPatientValues() {
 //     });
 
 
-//     // ==========================================
-//     // FINAL FORM VALUES
-//     // ==========================================
-
 //     const formValues = [];
 
 
-//     // ==========================================
-//     // NORMAL MEDICATION ROWS
-//     // ==========================================
+//     // =================================================
+//     // NORMAL ROWS
+//     // ROW 0, 1, 2
+//     // =================================================
 
-//     const normalRows = [];
+//     for (let i = 0; i < 3; i++) {
 
+//         const row = rows[i];
 
-//     // ROW 0
-//     const medication1 =
-//         rows.find(row =>
-//             row[0]
-//                 ?.toLowerCase()
-//                 .startsWith(
-//                     "1 al plus 5mg/120mg capsule"
-//                 )
+//         if (!row || row.length < 7) {
+//             continue;
+//         }
+
+//         formValues.push(row[0]);
+
+//         formValues.push(row[1]);
+
+//         formValues.push(
+//             `${row[2]} ${row[3]}`
 //         );
 
-//     if (medication1) {
-//         normalRows.push(medication1);
+//         formValues.push(
+//             `${row[4]} ${row[5]}`
+//         );
+
+//         formValues.push(row[6]);
 //     }
 
 
-//     // ROW 1
-//     const medication2 =
-//         rows.find(row =>
-//             row[0]
-//                 ?.toLowerCase()
-//                 .startsWith(
-//                     "1 al ax 5mg/75mg capsule"
-//                 )
-//         );
+//     // // =================================================
+//     // // TOXICITY ROW 1
+//     // // ROW 3 = DRUG FAV 1
+//     // // =================================================
 
-//     if (medication2) {
-//         normalRows.push(medication2);
-//     }
+//     // const row3 = rows[3];
 
+//     // if (
+//     //     row3 &&
+//     //     row3.length >= 16
+//     // ) {
 
-//     // ROW 2
-//     const feverRow =
-//         rows.find(row =>
-//             row[0]
-//                 ?.toLowerCase() === "fever"
-//         );
+//     //     formValues.push(
+//     //         row3[0]
+//     //             .replace(/^DRUG\s+/i, "")
+//     //             .trim()
+//     //     );
 
-//     if (feverRow) {
-//         normalRows.push(feverRow);
-//     }
+//     //     formValues.push(row3[1]);
 
+//     //     formValues.push(
+//     //         `${row3[2]} ${row3[3]}`
+//     //     );
 
-//     // ==========================================
-//     // BUILD NORMAL MEDICATION VALUES
-//     // ==========================================
+//     //     formValues.push(row3[4]);
 
-//     normalRows.forEach(row => {
+//     //     formValues.push(row3[5]);
 
-//         // Drug name
-//         formValues.push(
-//             row[0]
-//         );
+//     //     formValues.push(row3[6]);
 
+//     //     formValues.push(row3[7]);
 
-//         // Form
-//         formValues.push(
-//             row[1]
-//         );
+//     //     formValues.push(
+//     //         `${row3[8]}-${row3[9]}-${row3[10]}-${
+//     //             row3[11] === "04"
+//     //                 ? "0"
+//     //                 : row3[11]
+//     //         }`
+//     //     );
 
+//     //     formValues.push(row3[5]);
 
-//         // Strength
-//         if (
-//             row[2] &&
-//             row[3]
-//         ) {
+//     //     formValues.push(row3[12]);
 
-//             formValues.push(
-//                 `${row[2]} ${row[3]}`
-//             );
-//         }
+//     //     formValues.push(
+//     //         `${row3[13]} ${row3[14]}`
+//     //     );
 
+//     //     formValues.push(row3[15]);
+//     // }
 
-//         // Duration
-//         if (
-//             row[4] &&
-//             row[5]
-//         ) {
+//     // =================================================
+// // TOXICITY ROW 1
+// // ROW 3 = DRUG FAV 1
+// // =================================================
 
-//             formValues.push(
-//                 `${row[4]} ${row[5]}`
-//             );
-//         }
+// const row3 = rows[3];
 
+// if (
+//     row3 &&
+//     row3.length >= 16
+// ) {
 
-//         // Instructions
-//         if (row[6]) {
+//     formValues.push(
+//         row3[0]
+//             .replace(/^DRUG\s+/i, "")
+//             .trim()
+//     );
 
-//             formValues.push(
-//                 row[6]
-//             );
-//         }
-//     });
+//     formValues.push(row3[1]);
 
+//     formValues.push(
+//         `${row3[2]} ${row3[3]}`
+//     );
 
-//     // ==========================================
-//     // TOXICITY ROW 1
-//     // DRUG FAV 1
-//     // ==========================================
+//     formValues.push(row3[4]);
 
-//     const toxicityRow1 =
-//         rows.find(row =>
-//             row[0]
-//                 ?.toLowerCase()
-//                 .startsWith("drug fav")
-//         );
+//     formValues.push(row3[5]);
 
+//     formValues.push(row3[6]);
 
-//     if (toxicityRow1) {
+//     formValues.push(row3[7]);
 
-//         let drugName =
-//             toxicityRow1[0]
-//                 .trim();
+//     formValues.push(
+//         `${row3[8]}-${row3[9]}-${row3[10]}-${
+//             row3[11] === "04"
+//                 ? "0"
+//                 : row3[11]
+//         }`
+//     );
 
+//     // ❌ REMOVE THIS
+//     // formValues.push(row3[5]);
 
-//         // DRUG FAV 1 -> fav 1
-//         if (
-//             drugName
-//                 .toLowerCase()
-//                 .startsWith("drug ")
-//         ) {
+//     formValues.push(row3[12]);
 
-//             drugName =
-//                 drugName.substring(5).trim();
-//         }
+//     formValues.push(
+//         `${row3[13]} ${row3[14]}`
+//     );
+
+//     formValues.push(row3[15]);
+// }
 
 
-//         // Drug
-//         formValues.push(
-//             drugName
-//         );
-
-
-//         // Form
-//         formValues.push(
-//             toxicityRow1[1]
-//         );
-
-
-//         // Strength
-//         formValues.push(
-//             `${toxicityRow1[2]} ${toxicityRow1[3]}`
-//         );
-
-
-//         // Route
-//         formValues.push(
-//             toxicityRow1[4]
-//         );
-
-
-//         // Dosage
-//         formValues.push(
-//             toxicityRow1[5]
-//         );
-
-
-//         // Dosage form
-//         formValues.push(
-//             toxicityRow1[6]
-//         );
-
-
-//         // Frequency
-//         formValues.push(
-//             toxicityRow1[7]
-//         );
-
-
-//         // Schedule
-//         const schedule1 =
-//             `${toxicityRow1[8]}-` +
-//             `${toxicityRow1[9]}-` +
-//             `${toxicityRow1[10]}-` +
-//             `${
-//                 toxicityRow1[11] === "04"
-//                     ? "0"
-//                     : toxicityRow1[11]
-//             }`;
-
-//         formValues.push(
-//             schedule1
-//         );
-
-
-//         // Dosage after schedule
-//         formValues.push(
-//             toxicityRow1[5]
-//         );
-
-
-//         // Timing
-//         formValues.push(
-//             toxicityRow1[12]
-//         );
-
-
-//         // Duration
-//         formValues.push(
-//             `${toxicityRow1[13]} ${toxicityRow1[14]}`
-//         );
-
-
-//         // Instructions
-//         formValues.push(
-//             toxicityRow1[15]
-//         );
-//     }
-
-
-//     // ==========================================
+//     // =================================================
 //     // TOXICITY ROW 2
-//     // 1 AL PLUS 5MG/120MG CAPSULE
-//     // ==========================================
+//     // ROW 4
+//     // =================================================
 
-//     const toxicityRow2Index =
-//         rows.findIndex(
-//             (row, index) =>
-//                 index > 2 &&
-//                 row[0]
-//                     ?.toLowerCase()
-//                     .startsWith(
-//                         "1 al plus 5mg/120mg capsule"
-//                     )
-//         );
+//     // const row4 = rows[4];
 
+//     // if (
+//     //     row4 &&
+//     //     row4.length >= 16
+//     // ) {
 
-//     const toxicityRow2 =
-//         toxicityRow2Index !== -1
-//             ? rows[toxicityRow2Index]
-//             : null;
+//     //     formValues.push("1 AL");
 
+//     //     formValues.push("Plus");
 
-//     if (toxicityRow2) {
+//     //     formValues.push("5mg/120mg");
 
-//         // ======================================
-//         // Drug name split
-//         // ======================================
+//     //     formValues.push(row4[1]);
 
-//         formValues.push(
-//             "1 AL"
-//         );
+//     //     formValues.push(
+//     //         `${row4[2]} ${row4[3]}`
+//     //     );
 
-//         formValues.push(
-//             "Plus"
-//         );
+//     //     formValues.push(row4[4]);
 
-//         formValues.push(
-//             "5mg/120mg"
-//         );
+//     //     formValues.push(row4[5]);
 
+//     //     formValues.push(row4[6]);
 
-//         // ======================================
-//         // Form
-//         // ======================================
+//     //     formValues.push(row4[7]);
 
-//         formValues.push(
-//             toxicityRow2[1]
-//         );
+//     //     formValues.push(
+//     //         `${row4[8]}-${row4[9]}-${row4[10]}-${
+//     //             row4[11]
+//     //         }`
+//     //     );
 
+//     //     formValues.push(row4[12]);
 
-//         // ======================================
-//         // Strength
-//         // ======================================
+//     //     formValues.push(
+//     //         `${row4[13]} ${row4[14]}`
+//     //     );
 
-//         // Same value from Draft DOM
-//         formValues.push(
-//             `${toxicityRow2[2]} ${toxicityRow2[3]}`
-//         );
+//     //     formValues.push(row4[15]);
+//     // }
 
+//     // TOXICITY ROW 2 = row 4
+// const row4 = rows[4];
 
-//         // ======================================
-//         // Route
-//         // ======================================
+// if (row4 && row4.length >= 16) {
 
-//         formValues.push(
-//             toxicityRow2[4]
-//         );
+//     formValues.push("1 AL");
+//     formValues.push("Plus");
+//     formValues.push("5mg/120mg");
 
+//     formValues.push(row4[1]); // Capsule
+//     formValues.push(row4[1]); // Capsule - ADD THIS
 
-//         // ======================================
-//         // Dosage
-//         // ======================================
+//     formValues.push(`${row4[2]} ${row4[3]}`);
+//     formValues.push(row4[4]);
+//     formValues.push(row4[5]);
+//     formValues.push(row4[6]);
+//     formValues.push(row4[7]);
 
-//         formValues.push(
-//             toxicityRow2[5]
-//         );
+//     formValues.push(
+//         `${row4[8]}-${row4[9]}-${row4[10]}-${row4[11]}`
+//     );
+
+//     formValues.push(row4[12]);
+//     formValues.push(`${row4[13]} ${row4[14]}`);
+//     formValues.push(row4[15]);
+// }
 
 
-//         // ======================================
-//         // Dosage form
-//         // ======================================
+//     // =================================================
+//     // TOXICITY ROW 3
+//     // ROW 5
+//     // =================================================
 
-//         formValues.push(
-//             toxicityRow2[6]
-//         );
+//     // const row5 = rows[5];
 
+//     // if (
+//     //     row5 &&
+//     //     row5.length >= 16
+//     // ) {
 
-//         // ======================================
-//         // Frequency
-//         // ======================================
+//     //     formValues.push("1 AL");
 
-//         formValues.push(
-//             toxicityRow2[7]
-//         );
+//     //     formValues.push("Plus");
 
+//     //     formValues.push("5mg/120mg");
 
-//         // ======================================
-//         // Schedule
-//         // ======================================
+//     //     formValues.push(row5[1]);
 
-//         const schedule2 =
-//             `${toxicityRow2[8]}-` +
-//             `${toxicityRow2[9]}-` +
-//             `${toxicityRow2[10]}-` +
-//             `${
-//                 toxicityRow2[11] === "04"
-//                     ? "0"
-//                     : toxicityRow2[11]
-//             }`;
+//     //     formValues.push(
+//     //         `${row5[2]} ${row5[3]}`
+//     //     );
 
-//         formValues.push(
-//             schedule2
-//         );
+//     //     formValues.push(row5[4]);
 
+//     //     formValues.push(row5[5]);
 
-//         // ======================================
-//         // Dosage after schedule
-//         // ======================================
+//     //     formValues.push(row5[6]);
 
-//         formValues.push(
-//             toxicityRow2[5]
-//         );
+//     //     formValues.push(row5[7]);
 
+//     //     formValues.push(
+//     //         `${row5[8]}-${row5[9]}-${row5[10]}-${
+//     //             row5[11] === "04"
+//     //                 ? "0"
+//     //                 : row5[11]
+//     //         }`
+//     //     );
 
-//         // ======================================
-//         // Timing
-//         // ======================================
+//     //     formValues.push(row5[5]);
 
-//         formValues.push(
-//             toxicityRow2[12]
-//         );
+//     //     formValues.push(row5[12]);
+
+//     //     formValues.push(
+//     //         `${row5[13]} ${row5[14]}`
+//     //     );
+
+//     //     formValues.push(row5[15]);
+//     // }
 
 
-//         // ======================================
-//         // Duration
-//         // ======================================
+// //     // TOXICITY ROW 3 = row 5
+// // const row5 = rows[5];
 
-//         formValues.push(
-//             `${toxicityRow2[13]} ${toxicityRow2[14]}`
-//         );
+// // if (row5 && row5.length >= 16) {
+
+// //     formValues.push("1 AL");
+// //     formValues.push("Plus");
+// //     formValues.push("5mg/120mg");
+
+// //     formValues.push(row5[1]); // Capsule
+// //     formValues.push(row5[1]); // Capsule - ADD THIS
+
+// //     formValues.push(`${row5[2]} ${row5[3]}`);
+// //     formValues.push(row5[4]);
+// //     formValues.push(row5[5]);
+// //     formValues.push(row5[6]);
+// //     formValues.push(row5[7]);
+
+// //     formValues.push(
+// //         `${row5[8]}-${row5[9]}-${row5[10]}-${
+// //             row5[11] === "04" ? "0" : row5[11]
+// //         }`
+// //     );
+
+// //     formValues.push(row5[12]);
+// //     formValues.push(`${row5[13]} ${row5[14]}`);
+// //     formValues.push(row5[15]);
+// // }
+
+// // =================================================
+// // TOXICITY ROW 3 = ROW 5
+// // =================================================
+
+// const row5 = rows[5];
+
+// if (row5 && row5.length >= 15) {
+
+//     formValues.push("1 AL");
+//     formValues.push("Plus");
+//     formValues.push("5mg/120mg");
+
+//     formValues.push(row5[1]); // Capsule
+//     formValues.push(row5[1]); // Capsule
+
+//     formValues.push(`${row5[2]} ${row5[3]}`);
+//     formValues.push(row5[4]);
+//     formValues.push(row5[5]);
+//     formValues.push(row5[6]);
+//     formValues.push(row5[7]);
+
+//     formValues.push(
+//         `${row5[8]}-${row5[9]}-${row5[10]}-${row5[11]}`
+//     );
+
+//     formValues.push(
+//         `${row5[12]} ${row5[13]}`
+//     );
+
+//     formValues.push(row5[14]);
+// }
 
 
-//         // ======================================
-//         // Instructions
-//         // ======================================
-
-//         formValues.push(
-//             toxicityRow2[15]
-//         );
-//     }
-
-
-//     // ==========================================
+//     // =================================================
 //     // OTHER FINDINGS
-//     // ==========================================
+//     // =================================================
 
 //     const otherFindings =
 //         await this.locators.draftDocumentBody.evaluate(
@@ -6958,10 +6918,6 @@ async extractDraftPatientValues() {
 //                         element.textContent?.trim() ||
 //                         "";
 
-//                     if (!value) {
-//                         return;
-//                     }
-
 //                     if (
 //                         value
 //                             .toLowerCase()
@@ -6970,14 +6926,10 @@ async extractDraftPatientValues() {
 //                             )
 //                     ) {
 
-//                         result.push(
-//                             value
-//                         );
-
-//                         return;
+//                         result.push(value);
 //                     }
 
-//                     if (
+//                     else if (
 //                         value
 //                             .toLowerCase()
 //                             .includes(
@@ -6985,9 +6937,7 @@ async extractDraftPatientValues() {
 //                             )
 //                     ) {
 
-//                         result.push(
-//                             value
-//                         );
+//                         result.push(value);
 //                     }
 //                 });
 
@@ -7001,9 +6951,9 @@ async extractDraftPatientValues() {
 //     );
 
 
-//     // ==========================================
+//     // =================================================
 //     // FINAL OUTPUT
-//     // ==========================================
+//     // =================================================
 
 //     console.log(
 //         "========== DRAFT FORM VALUES =========="
@@ -7022,286 +6972,293 @@ async extractDraftPatientValues() {
 //     return formValues;
 // }
 
-async extractDraftFormValues() {
 
+async extractDraftFormValues() {
+ 
     const rows =
         await this.locators.draftDocumentBody.evaluate(
-            root => {
-
+            (
+                root,
+                {
+                    medicationRows,
+                    draftFieldElements
+                }
+            ) => {
+ 
                 return Array.from(
-                    root.querySelectorAll(
-                        ".emr-table tbody tr.emr-row.medication-row"
-                    )
+                    root.querySelectorAll(medicationRows)
                 ).map(row => {
-
+ 
                     const values = [];
-
+ 
                     row.querySelectorAll(
-                        "input, textarea, select, button.dropdown-only-select"
+                        draftFieldElements
                     ).forEach(element => {
-
+ 
                         let value = "";
-
+ 
                         if (
                             element.tagName === "INPUT" ||
                             element.tagName === "TEXTAREA"
                         ) {
-
+ 
                             value =
                                 element.value?.trim() || "";
-                        }
-
-                        else if (
+ 
+                        } else if (
                             element.tagName === "SELECT"
                         ) {
-
+ 
                             const option =
                                 element.options[
                                     element.selectedIndex
                                 ];
-
+ 
                             value =
-                                option
-                                    ?.textContent
-                                    ?.trim() || "";
-                        }
-
-                        else if (
+                                option?.textContent?.trim() || "";
+ 
+                        } else if (
                             element.matches(
                                 "button.dropdown-only-select"
                             )
                         ) {
-
+ 
                             value =
-                                element.textContent
-                                    ?.trim() || "";
+                                element.textContent?.trim() || "";
                         }
-
+ 
                         if (
                             value &&
                             !value
                                 .toLowerCase()
                                 .startsWith("select")
                         ) {
-
+ 
                             values.push(value);
                         }
                     });
-
+ 
                     return values;
                 });
+            },
+ 
+            {
+                medicationRows:
+                    this.locators.medicationRows,
+ 
+                draftFieldElements:
+                    this.locators.draftFieldElements
             }
         );
-
-
+ 
+ 
     console.log(
         "========== DRAFT ROW VALUES =========="
     );
-
-    rows.forEach((row, index) => {
-        console.log(
-            `ROW ${index}:`,
-            row
-        );
-    });
-
-
+ 
+    console.log(rows);
+ 
+ 
     const formValues = [];
-
-
-    // =================================================
-    // NORMAL ROWS
-    // ROW 0, 1, 2
-    // =================================================
-
+ 
+ 
+    // =========================================================
+    // NORMAL MEDICATION ROWS
+    // =========================================================
+ 
     for (let i = 0; i < 3; i++) {
-
-        const row = rows[i];
-
-        if (!row || row.length < 7) {
-            continue;
+ 
+        if (
+            rows[i] &&
+            rows[i].length >= 7
+        ) {
+ 
+            const row = rows[i];
+ 
+            formValues.push(row[0]);
+ 
+            formValues.push(row[1]);
+ 
+            formValues.push(
+                `${row[2]} ${row[3]}`
+            );
+ 
+            formValues.push(
+                `${row[4]} ${row[5]}`
+            );
+ 
+            formValues.push(row[6]);
         }
-
-        formValues.push(row[0]);
-
-        formValues.push(row[1]);
-
-        formValues.push(
-            `${row[2]} ${row[3]}`
-        );
-
-        formValues.push(
-            `${row[4]} ${row[5]}`
-        );
-
-        formValues.push(row[6]);
     }
-
-
-    // // =================================================
-    // // TOXICITY ROW 1
-    // // ROW 3 = DRUG FAV 1
-    // // =================================================
-
-    // const row3 = rows[3];
-
-    // if (
-    //     row3 &&
-    //     row3.length >= 16
-    // ) {
-
-    //     formValues.push(
-    //         row3[0]
-    //             .replace(/^DRUG\s+/i, "")
-    //             .trim()
-    //     );
-
-    //     formValues.push(row3[1]);
-
-    //     formValues.push(
-    //         `${row3[2]} ${row3[3]}`
-    //     );
-
-    //     formValues.push(row3[4]);
-
-    //     formValues.push(row3[5]);
-
-    //     formValues.push(row3[6]);
-
-    //     formValues.push(row3[7]);
-
-    //     formValues.push(
-    //         `${row3[8]}-${row3[9]}-${row3[10]}-${
-    //             row3[11] === "04"
-    //                 ? "0"
-    //                 : row3[11]
-    //         }`
-    //     );
-
-    //     formValues.push(row3[5]);
-
-    //     formValues.push(row3[12]);
-
-    //     formValues.push(
-    //         `${row3[13]} ${row3[14]}`
-    //     );
-
-    //     formValues.push(row3[15]);
-    // }
-
-    // =================================================
-// TOXICITY ROW 1
-// ROW 3 = DRUG FAV 1
-// =================================================
-
-const row3 = rows[3];
-
-if (
-    row3 &&
-    row3.length >= 16
-) {
-
-    formValues.push(
-        row3[0]
-            .replace(/^DRUG\s+/i, "")
-            .trim()
-    );
-
-    formValues.push(row3[1]);
-
-    formValues.push(
-        `${row3[2]} ${row3[3]}`
-    );
-
-    formValues.push(row3[4]);
-
-    formValues.push(row3[5]);
-
-    formValues.push(row3[6]);
-
-    formValues.push(row3[7]);
-
-    formValues.push(
-        `${row3[8]}-${row3[9]}-${row3[10]}-${
-            row3[11] === "04"
-                ? "0"
-                : row3[11]
-        }`
-    );
-
-    // ❌ REMOVE THIS
-    // formValues.push(row3[5]);
-
-    formValues.push(row3[12]);
-
-    formValues.push(
-        `${row3[13]} ${row3[14]}`
-    );
-
-    formValues.push(row3[15]);
-}
-
-
-    // =================================================
-    // TOXICITY ROW 2
-    // ROW 4
-    // =================================================
-
+ 
+ 
+    // =========================================================
+    // TOXICITY ROW - ROW 3
+    // =========================================================
+ 
+    const row3 = rows[3];
+ 
+    if (
+        row3 &&
+        row3.length >= 16
+    ) {
+ 
+        formValues.push(
+            row3[0].replace(
+                /^DRUG\s+/i,
+                ""
+            )
+        );
+ 
+        formValues.push(row3[1]);
+ 
+        formValues.push(
+            `${row3[2]} ${row3[3]}`
+        );
+ 
+        formValues.push(row3[4]);
+ 
+        formValues.push(row3[5]);
+ 
+        formValues.push(row3[6]);
+ 
+        formValues.push(row3[7]);
+ 
+        formValues.push(
+            `${row3[8]}-${row3[9]}-${row3[10]}-${
+                row3[11] === "04"
+                    ? "0"
+                    : row3[11]
+            }`
+        );
+ 
+        formValues.push(row3[12]);
+ 
+        formValues.push(
+            `${row3[13]} ${row3[14]}`
+        );
+ 
+        formValues.push(row3[15]);
+    }
+ 
+ 
+    // // =========================================================
+    // // TOXICITY ROW - ROW 4
+    // // =========================================================
+ 
     // const row4 = rows[4];
-
+ 
     // if (
     //     row4 &&
     //     row4.length >= 16
     // ) {
-
-    //     formValues.push("1 AL");
-
-    //     formValues.push("Plus");
-
-    //     formValues.push("5mg/120mg");
-
+ 
+    //     const drugName = row4[0];
+ 
+    //     const drugParts =
+    //         drugName
+    //             .replace(/^1\s+/i, "")
+    //             .split(" ");
+ 
+    //     const drugPrefix =
+    //         drugName.match(
+    //             /^1\s+\S+/i
+    //         )?.[0] || "";
+ 
+    //     const strengthValue =
+    //         drugName.match(
+    //             /\d+mg\/\d+mg/i
+    //         )?.[0] || "";
+ 
+ 
+    //     formValues.push(
+    //         drugPrefix
+    //     );
+ 
+    //     formValues.push(
+    //         drugParts[1] || ""
+    //     );
+ 
+    //     formValues.push(
+    //         strengthValue
+    //     );
+ 
     //     formValues.push(row4[1]);
-
+ 
+    //     formValues.push(row4[1]);
+ 
     //     formValues.push(
     //         `${row4[2]} ${row4[3]}`
     //     );
-
+ 
     //     formValues.push(row4[4]);
-
+ 
     //     formValues.push(row4[5]);
-
+ 
     //     formValues.push(row4[6]);
-
+ 
     //     formValues.push(row4[7]);
-
+ 
     //     formValues.push(
-    //         `${row4[8]}-${row4[9]}-${row4[10]}-${
-    //             row4[11]
-    //         }`
+    //         `${row4[8]}-${row4[9]}-${row4[10]}-${row4[11]}`
     //     );
-
+ 
     //     formValues.push(row4[12]);
-
+ 
     //     formValues.push(
     //         `${row4[13]} ${row4[14]}`
     //     );
-
+ 
     //     formValues.push(row4[15]);
     // }
+ 
+ // =========================================================
+// TOXICITY ROW - ROW 4
+// =========================================================
 
-    // TOXICITY ROW 2 = row 4
 const row4 = rows[4];
 
-if (row4 && row4.length >= 16) {
+if (
+    row4 &&
+    row4.length >= 16
+) {
+    const drugName = row4[0];
 
-    formValues.push("1 AL");
-    formValues.push("Plus");
-    formValues.push("5mg/120mg");
+    const drugParts =
+        drugName
+            .replace(/^1\s+/i, "")
+            .split(" ");
 
-    formValues.push(row4[1]); // Capsule
-    formValues.push(row4[1]); // Capsule - ADD THIS
+    const drugPrefix =
+        drugName.match(
+            /^1\s+\S+/i
+        )?.[0] || "";
 
-    formValues.push(`${row4[2]} ${row4[3]}`);
+    const strengthValue =
+        drugName.match(
+            /\d+mg**\/\d+mg/i
+        )?.[0] || "";
+
+    formValues.push(
+        drugPrefix
+    );
+
+    formValues.push(
+        drugParts[1] || ""
+    );
+
+    formValues.push(
+        strengthValue
+    );
+
+    formValues.push(row4[1]);
+
+    formValues.push(row4[1]);
+
+    formValues.push(
+        `${row4[2]} ${row4[3]}`
+    );
+
     formValues.push(row4[4]);
     formValues.push(row4[5]);
     formValues.push(row4[6]);
@@ -7312,357 +7269,165 @@ if (row4 && row4.length >= 16) {
     );
 
     formValues.push(row4[12]);
-    formValues.push(`${row4[13]} ${row4[14]}`);
+
+    formValues.push(
+        `${row4[13]} ${row4[14]}`
+    );
+
     formValues.push(row4[15]);
 }
 
-
-    // =================================================
-    // TOXICITY ROW 3
-    // ROW 5
-    // =================================================
-
-    // const row5 = rows[5];
-
-    // if (
-    //     row5 &&
-    //     row5.length >= 16
-    // ) {
-
-    //     formValues.push("1 AL");
-
-    //     formValues.push("Plus");
-
-    //     formValues.push("5mg/120mg");
-
-    //     formValues.push(row5[1]);
-
-    //     formValues.push(
-    //         `${row5[2]} ${row5[3]}`
-    //     );
-
-    //     formValues.push(row5[4]);
-
-    //     formValues.push(row5[5]);
-
-    //     formValues.push(row5[6]);
-
-    //     formValues.push(row5[7]);
-
-    //     formValues.push(
-    //         `${row5[8]}-${row5[9]}-${row5[10]}-${
-    //             row5[11] === "04"
-    //                 ? "0"
-    //                 : row5[11]
-    //         }`
-    //     );
-
-    //     formValues.push(row5[5]);
-
-    //     formValues.push(row5[12]);
-
-    //     formValues.push(
-    //         `${row5[13]} ${row5[14]}`
-    //     );
-
-    //     formValues.push(row5[15]);
-    // }
-
-
-//     // TOXICITY ROW 3 = row 5
-// const row5 = rows[5];
-
-// if (row5 && row5.length >= 16) {
-
-//     formValues.push("1 AL");
-//     formValues.push("Plus");
-//     formValues.push("5mg/120mg");
-
-//     formValues.push(row5[1]); // Capsule
-//     formValues.push(row5[1]); // Capsule - ADD THIS
-
-//     formValues.push(`${row5[2]} ${row5[3]}`);
-//     formValues.push(row5[4]);
-//     formValues.push(row5[5]);
-//     formValues.push(row5[6]);
-//     formValues.push(row5[7]);
-
-//     formValues.push(
-//         `${row5[8]}-${row5[9]}-${row5[10]}-${
-//             row5[11] === "04" ? "0" : row5[11]
-//         }`
-//     );
-
-//     formValues.push(row5[12]);
-//     formValues.push(`${row5[13]} ${row5[14]}`);
-//     formValues.push(row5[15]);
-// }
-
-// =================================================
-// TOXICITY ROW 3 = ROW 5
-// =================================================
-
-const row5 = rows[5];
-
-if (row5 && row5.length >= 15) {
-
-    formValues.push("1 AL");
-    formValues.push("Plus");
-    formValues.push("5mg/120mg");
-
-    formValues.push(row5[1]); // Capsule
-    formValues.push(row5[1]); // Capsule
-
-    formValues.push(`${row5[2]} ${row5[3]}`);
-    formValues.push(row5[4]);
-    formValues.push(row5[5]);
-    formValues.push(row5[6]);
-    formValues.push(row5[7]);
-
-    formValues.push(
-        `${row5[8]}-${row5[9]}-${row5[10]}-${row5[11]}`
-    );
-
-    formValues.push(
-        `${row5[12]} ${row5[13]}`
-    );
-
-    formValues.push(row5[14]);
-}
-
-
-    // =================================================
+    // =========================================================
+    // TOXICITY ROW - ROW 5
+    // =========================================================
+ 
+    const row5 = rows[5];
+ 
+    if (
+        row5 &&
+        row5.length >= 15
+    ) {
+ 
+        const drugName = row5[0];
+ 
+        const drugParts =
+            drugName
+                .replace(/^1\s+/i, "")
+                .split(" ");
+ 
+        const drugPrefix =
+            drugName.match(
+                /^1\s+\S+/i
+            )?.[0] || "";
+ 
+        const strengthValue =
+            drugName.match(
+                /\d+mg\/\d+mg/i
+            )?.[0] || "";
+ 
+ 
+        formValues.push(
+            drugPrefix
+        );
+ 
+        formValues.push(
+            drugParts[1] || ""
+        );
+ 
+        formValues.push(
+            strengthValue
+        );
+ 
+        formValues.push(row5[1]);
+ 
+        formValues.push(row5[1]);
+ 
+        formValues.push(
+            `${row5[2]} ${row5[3]}`
+        );
+ 
+        formValues.push(row5[4]);
+ 
+        formValues.push(row5[5]);
+ 
+        formValues.push(row5[6]);
+ 
+        formValues.push(row5[7]);
+ 
+        formValues.push(
+            `${row5[8]}-${row5[9]}-${row5[10]}-${row5[11]}`
+        );
+ 
+        formValues.push(
+            `${row5[12]} ${row5[13]}`
+        );
+ 
+        formValues.push(row5[14]);
+    }
+ 
+ 
+    // =========================================================
     // OTHER FINDINGS
-    // =================================================
-
-    const otherFindings =
+    // =========================================================
+ 
+    const otherFindingValues =
         await this.locators.draftDocumentBody.evaluate(
-            root => {
-
-                const result = [];
-
+            (
+                root,
+                draftOtherFindingElements
+            ) => {
+ 
+                const values = [];
+ 
                 root.querySelectorAll(
-                    "input, textarea, [contenteditable='true']"
+                    draftOtherFindingElements
                 ).forEach(element => {
-
-                    const value =
-                        element.value?.trim() ||
-                        element.textContent?.trim() ||
-                        "";
-
+ 
+                    let value = "";
+ 
                     if (
-                        value
-                            .toLowerCase()
-                            .includes(
-                                "custom other findings"
-                            )
+                        element.tagName === "INPUT" ||
+                        element.tagName === "TEXTAREA"
                     ) {
-
-                        result.push(value);
+ 
+                        value =
+                            element.value?.trim() || "";
+ 
+                    } else {
+ 
+                        value =
+                            element.innerText?.trim() || "";
                     }
-
-                    else if (
-                        value
-                            .toLowerCase()
-                            .includes(
-                                "custom text for 'other findings'"
-                            )
-                    ) {
-
-                        result.push(value);
+ 
+                    if (value) {
+                        values.push(value);
                     }
                 });
-
-                return result;
-            }
+ 
+                return values;
+            },
+ 
+            this.locators.draftOtherFindingElements
         );
-
-
-    formValues.push(
-        ...otherFindings
-    );
-
-
-    // =================================================
-    // FINAL OUTPUT
-    // =================================================
-
+ 
+ 
+    const otherFindingData =
+        this.testData?.otherFindings;
+ 
+ 
+    if (otherFindingData) {
+ 
+        otherFindingValues.forEach(value => {
+ 
+            const normalizedValue =
+                value.toLowerCase();
+ 
+            if (
+                normalizedValue.includes(
+                    otherFindingData.text1.toLowerCase()
+                ) ||
+                normalizedValue.includes(
+                    otherFindingData.text2.toLowerCase()
+                )
+            ) {
+ 
+                formValues.push(value);
+            }
+        });
+    }
+ 
+ 
     console.log(
         "========== DRAFT FORM VALUES =========="
     );
-
-    formValues.forEach(
-        (value, index) => {
-
-            console.log(
-                `${index} : ${value}`
-            );
-        }
-    );
-
-
+ 
+    console.log(formValues);
+ 
+ 
     return formValues;
 }
 
-// async verifyPDFAndDraft(expected, actual) {
 
-//     await StepHelper.step(
-//         this.page,
-//         "Verify PDF Expected vs Draft Actual",
-//         async () => {
-
-//             let isMatched = true;
-
-
-//             // ==========================================
-//             // NORMALIZE VALUE
-//             // ==========================================
-
-//             const normalize = (value) => {
-
-//                 return String(value || "")
-//                     .replace(/\s+/g, " ")
-//                     .trim()
-//                     .toLowerCase();
-//             };
-
-
-//             // ==========================================
-//             // COMPARE ONE SECTION
-//             // ==========================================
-
-//             const compareSection = (
-//                 sectionName,
-//                 expectedValues,
-//                 actualValues
-//             ) => {
-
-//                 console.log("");
-//                 console.log(
-//                     `========== ${sectionName} ==========`
-//                 );
-
-
-//                 const maxLength =
-//                     Math.max(
-//                         expectedValues.length,
-//                         actualValues.length
-//                     );
-
-
-//                 for (
-//                     let i = 0;
-//                     i < maxLength;
-//                     i++
-//                 ) {
-
-//                     const expectedValue =
-//                         expectedValues[i] ?? "Not Found";
-
-//                     const actualValue =
-//                         actualValues[i] ?? "Not Found";
-
-
-//                     const expectedNormalized =
-//                         normalize(expectedValue);
-
-//                     const actualNormalized =
-//                         normalize(actualValue);
-
-
-//                     const status =
-//                         expectedNormalized ===
-//                         actualNormalized
-//                             ? "PASS"
-//                             : "FAIL";
-
-
-//                     console.log(
-//                         `Expected : ${expectedValue}`
-//                     );
-
-//                     console.log(
-//                         `Actual   : ${actualValue}`
-//                     );
-
-//                     console.log(
-//                         `Status   : ${status}`
-//                     );
-
-//                     console.log(
-//                         "------------------------------------------"
-//                     );
-
-
-//                     if (status === "FAIL") {
-
-//                         isMatched = false;
-//                     }
-//                 }
-//             };
-
-
-//             // ==========================================
-//             // PATIENT VALUES
-//             // ==========================================
-
-//             compareSection(
-//                 "PATIENT VALUES",
-//                 expected.patientValues,
-//                 actual.patientValues
-//             );
-
-
-//             // ==========================================
-//             // FORM VALUES
-//             // ==========================================
-
-//             compareSection(
-//                 "FORM VALUES",
-//                 expected.formValues,
-//                 actual.formValues
-//             );
-
-
-//             // ==========================================
-//             // FINAL STATUS
-//             // ==========================================
-
-//             console.log("");
-//             console.log(
-//                 "=================================================="
-//             );
-
-//             console.log(
-//                 "          PDF vs DRAFT VERIFICATION"
-//             );
-
-//             console.log(
-//                 "=================================================="
-//             );
-
-//             console.log(
-//                 `FINAL STATUS : ${
-//                     isMatched
-//                         ? "PASS"
-//                         : "FAIL"
-//                 }`
-//             );
-
-//             console.log(
-//                 "=================================================="
-//             );
-
-
-//             if (!isMatched) {
-
-//                 throw new Error(
-//                     "PDF Expected values and Draft Actual values are not matching."
-//                 );
-//             }
-//         }
-//     );
-// }
 
 async verifyPDFAndDraft(expected, actual) {
 
