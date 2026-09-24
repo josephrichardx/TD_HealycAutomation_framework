@@ -43,7 +43,22 @@
 },
 
 "observationData": {
+    "index": 0,
     "row": 2,
+    "Custom_drugname": "FEVER",
+    "drugName": "1 AL Plus 5mg/120mg Capsule",
+    "form": "Capsule",
+    "strength": "4",
+    "strengthUnit": "ml",
+    "duration": "4",
+    "durationUnit": "Days",
+    "instruction": "INS 1"
+},
+
+"ToxicityData": {
+    "index": 0,
+    "row": 2,
+    "Custom_drugname": "FEVER",
     "drugName": "1 AL Plus 5mg/120mg Capsule",
     "form": "Capsule",
     "strength": "4",
@@ -59,12 +74,6 @@
     "instruction": "INS 1"
 },
 
- "loginData": {
-    "url": "http://release-uat.healync.com.s3-website.ap-south-1.amazonaws.com",
-    "username": "sales@healync.com",
-    "password": "Demo2025$$"
-  },
-
   "marginData": {
     "top": "10",
     "bottom": "20",
@@ -73,8 +82,75 @@
 
     "template": {
         "formatValue": "EMR_AUTOMATION TD",
-        "templateName": "EMR_Test1"
+        "savedMessage": "Template saved successfully.",
+        "appliedMessage": "Template Applied successfully!"
+    },
+
+    "specificAdviceData": {
+        "text": "Option 5",
+        "image": "Healync_Image.jpg"
+    },
+
+    "otherFindings": {
+    "text1": "Custom other findings",
+    "text2": "Custom text for 'Other Findings'"
+    },   
+
+    
+    "sectionsToAdd": [
+    "Co-morbidities",
+    "Toxicity",
+    "Other Findings"
+    ],
+
+    "otherFindingsCrud": {
+        "text1": "Custom other findings",
+        "text2": "Custom text for 'Other Findings' test",
+        "updatedText": "Updated Other Findings"
+    },
+    
+  "coMorbidities": [
+    {
+      "source": "Favorites",
+      "drugName": "1 AL AX 5mg/75mg Capsule",
+      "form": "Capsule",
+      "strength": "1",
+      "strengthUnit": "mg",
+      "duration": "1",
+      "durationUnit": "Days",
+      "instruction": "INS1"
+    },
+    {
+      "source": "Suggestions",
+      "drugName": "1-AL M Tablet",
+      "form": "Tablet",
+      "strength": "1",
+      "strengthUnit": "mg",
+      "duration": "1",
+      "durationUnit": "Days",
+      "instruction": "INS2"
+    },
+    {
+      "source": "Drug Library",
+      "drugName": "1 Nvp Tablet",
+      "form": "Tablet",
+      "strength": "1",
+      "strengthUnit": "mg",
+      "duration": "1",
+      "durationUnit": "Days",
+      "instruction": "INS3"
+    },
+    {
+      "source": "Custom",
+      "drugName": "Custom Test Medicine",
+      "form": "Tablet",
+      "strength": "10",
+      "strengthUnit": "mg",
+      "duration": "5",
+      "durationUnit": "Days",
+      "instruction": "After Food"
     }
+  ]
 
 
 

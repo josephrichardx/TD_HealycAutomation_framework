@@ -71,9 +71,9 @@ reporter: [
         headless: true,
          screenshot: 'only-on-failure',
         //screenshot: 'on',
-        video: 'retain-on-failure',
+        video: 'on',
         //  video: 'on',
-        trace: 'on-first-retry',
+        trace: 'on',
 
         // actionTimeout: 30000,
         // navigationTimeout: 30000
