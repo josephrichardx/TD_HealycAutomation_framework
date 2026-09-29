@@ -627,6 +627,128 @@ this.graphSection2SaveValue =
         "(//button[text()=' Save value '])[2]"
     );
 
+    // =====================================================
+// TD GRAPH SECTION 3
+// =====================================================
+
+this.graphSection3Value =
+    page.locator(
+        "app-emr-graphable input.value-input[placeholder='0']"
+    ).last();
+
+this.graphSection3SaveValue =
+    page.locator(
+        "(//button[text()=' Save value '])[3]"
+    );
+
+// =====================================================
+// TD GRAPH TREND - SECTION 1
+// =====================================================
+
+this.section1ViewTrendGraph =
+    page.locator(
+        "(//button[@title='View trend graph'])[1]"
+    );
+
+this.graphOneWeek =
+    page.locator(
+        "//button[normalize-space()='1 Week']"
+    );
+
+this.graphYAxisTitle =
+    page.locator(
+        "text.apexcharts-yaxis-title-text"
+    );
+
+this.graphXAxisLabel =
+    page.locator(
+        ".apexcharts-xaxis-texts-g text.apexcharts-text"
+    );
+
+this.graphRangeNote =
+    page.locator(
+        ".graph-range-note"
+    );
+
+this.graphNote =
+    page.locator(
+        ".graph-note"
+    );
+
+this.graphTooltip =
+    page.locator(
+        ".apexcharts-tooltip"
+    );
+
+this.graphTooltipText =
+    page.locator(
+        ".apexcharts-tooltip-text"
+    );
+
+   this.section1ViewTrendGraph =
+    page.locator(
+        "(//button[@title='View trend graph'])[1]"
+    );
+
+this.graphOneMonth =
+    page.locator(
+        "//button[contains(@class,'graph-range-btn') and normalize-space()='1 Month']"
+    );
+
+this.graphYAxisTitle =
+    page.locator(
+        "text.apexcharts-yaxis-title-text"
+    );
+
+this.graphXAxisLabel =
+    page.locator(
+        "text.apexcharts-xaxis-label"
+    );
+
+this.graphRangeNote =
+    page.locator(
+        ".graph-range-note"
+    );
+
+this.graphNote =
+    page.locator(
+        ".graph-note"
+    );
+
+    this.section1ViewTrendGraph =
+    page.locator(
+        "(//button[@title='View trend graph'])[1]"
+    );
+  this.graphSection1Point =
+    page.locator(
+        "//path[contains(@class,'apexcharts-marker') and @rel='0' and @j='0' and @index='1']"
+    );
+
+    this.graphSection1Chart =
+    page.locator(
+        ".apexcharts-canvas"
+    );
+
+    this.graphOneYear =
+    page.locator(
+        "//button[contains(@class,'graph-range-btn') and normalize-space()='1 Year']"
+    );
+
+this.graphAll =
+    page.locator(
+        "//button[contains(@class,'graph-range-btn') and normalize-space()='All']"
+    );
+
+    this.graphModalClose =
+    page.locator(
+        "//button[@class='graph-modal-close']"
+    );
+
+
+
+
+
+
 // NEW TAB - SAVE
 // =======================
 

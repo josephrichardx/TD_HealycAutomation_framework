@@ -11194,31 +11194,37 @@ async fillTDGraphSection3(graphData) {
     );
 }
 
-async getSection1OneWeekGraphData(graphData) {
+async getSection1OneWeekGraphData() {
+
     await StepHelper.step(
         this.page,
         "Get TD graph section 1 one week graph data",
         async () => {
 
+            // Open trend graph
             await this.keywords.click(
                 this.locators.section1ViewTrendGraph
             );
 
+            // Select 1 Week
             await this.keywords.click(
                 this.locators.graphOneWeek
             );
 
+            // Get Y-Axis title
             const yAxisTitle =
                 await this.keywords.getTextContent(
                     this.locators.graphYAxisTitle
                 );
 
+            // Get X-Axis labels
             const xAxisCount =
                 await this.locators.graphXAxisLabel.count();
 
             const xAxisLabel = [];
 
             for (let i = 0; i < xAxisCount; i++) {
+
                 const value =
                     await this.keywords.getTextContent(
                         this.locators.graphXAxisLabel.nth(i)
@@ -11229,33 +11235,78 @@ async getSection1OneWeekGraphData(graphData) {
                 }
             }
 
+            // Get Normal Range
             const normalRange =
                 await this.keywords.getText(
                     this.locators.graphRangeNote
                 );
 
+            // Get Graph Note
             const graphNote =
                 await this.keywords.getText(
                     this.locators.graphNote
                 );
 
-            await this.keywords.hover(
-                this.locators.graphSection1Point
+            // Get plotted graph point dynamically
+            const graphPoint =
+                this.page.locator(
+                    "path.apexcharts-marker"
+                ).last();
+
+            const cx =
+                await graphPoint.getAttribute("cx");
+
+            const cy =
+                await graphPoint.getAttribute("cy");
+
+            if (!cx || !cy) {
+                throw new Error(
+                    "Graph point coordinates were not found."
+                );
+            }
+
+            // Dynamic mouse hover position
+            const hoverPosition = {
+                x: Number(cx),
+                y: Number(cy)
+            };
+
+            // Mouse hover
+            await this.keywords.hoverAtPosition(
+                this.locators.graphSection1Chart,
+                hoverPosition
             );
+
+            // Small wait for tooltip to render
+            await this.page.waitForTimeout(500);
 
             console.log("\n========================================");
             console.log("TD GRAPH SECTION 1 - 1 WEEK");
             console.log("========================================");
-            console.log("Input Value   :", graphData.value);
-            console.log("Y-Axis Title  :", yAxisTitle?.trim());
-            console.log("X-Axis Label  :", xAxisLabel);
-            console.log("Normal Range  :", normalRange);
-            console.log("Graph Note    :", graphNote);
+            console.log(
+                "Y-Axis Title :",
+                yAxisTitle?.trim()
+            );
+            console.log(
+                "X-Axis Label :",
+                xAxisLabel
+            );
+            console.log(
+                "Normal Range :",
+                normalRange
+            );
+            console.log(
+                "Graph Note   :",
+                graphNote
+            );
             console.log("========================================\n");
         }
     );
 }
-async getSection1OneMonthGraphData() {
+
+
+async getSection1OneMonthGraphData(graphData) {
+
     await StepHelper.step(
         this.page,
         "Get TD graph section 1 one month graph data",
@@ -11301,6 +11352,33 @@ async getSection1OneMonthGraphData() {
                     this.locators.graphNote
                 );
 
+            const graphPoint =
+                this.page.locator(
+                    "path.apexcharts-marker"
+                ).last();
+
+            const cx =
+                await graphPoint.getAttribute("cx");
+
+            const cy =
+                await graphPoint.getAttribute("cy");
+
+            if (!cx || !cy) {
+                throw new Error(
+                    "Graph point coordinates were not found."
+                );
+            }
+
+            const hoverPosition = {
+                x: Number(cx),
+                y: Number(cy)
+            };
+
+            await this.keywords.hoverAtPosition(
+                this.locators.graphSection1Chart,
+                hoverPosition
+            );
+
             console.log("\n========================================");
             console.log("TD GRAPH SECTION 1 - 1 MONTH");
             console.log("========================================");
@@ -11321,6 +11399,318 @@ async getSection1OneMonthGraphData() {
                 graphNote
             );
             console.log("========================================\n");
+        }
+    );
+}
+
+async getSection1SixMonthsGraphData(graphData) {
+
+    await StepHelper.step(
+        this.page,
+        "Get TD graph section 1 six months graph data",
+        async () => {
+
+            await this.keywords.click(
+                this.locators.section1ViewTrendGraph
+            );
+
+            await this.keywords.click(
+                this.locators.graphSixMonths
+            );
+
+            const yAxisTitle =
+                await this.keywords.getTextContent(
+                    this.locators.graphYAxisTitle
+                );
+
+            const xAxisCount =
+                await this.locators.graphXAxisLabel.count();
+
+            const xAxisLabel = [];
+
+            for (let i = 0; i < xAxisCount; i++) {
+
+                const value =
+                    await this.keywords.getTextContent(
+                        this.locators.graphXAxisLabel.nth(i)
+                    );
+
+                if (value?.trim()) {
+                    xAxisLabel.push(value.trim());
+                }
+            }
+
+            const normalRange =
+                await this.keywords.getText(
+                    this.locators.graphRangeNote
+                );
+
+            const graphNote =
+                await this.keywords.getText(
+                    this.locators.graphNote
+                );
+
+            const graphPoint =
+                this.page.locator(
+                    "path.apexcharts-marker"
+                ).last();
+
+            const cx =
+                await graphPoint.getAttribute("cx");
+
+            const cy =
+                await graphPoint.getAttribute("cy");
+
+            if (!cx || !cy) {
+                throw new Error(
+                    "Graph point coordinates were not found."
+                );
+            }
+
+            const hoverPosition = {
+                x: Number(cx),
+                y: Number(cy)
+            };
+
+            await this.keywords.hoverAtPosition(
+                this.locators.graphSection1Chart,
+                hoverPosition
+            );
+
+            console.log("\n========================================");
+            console.log("TD GRAPH SECTION 1 - 6 MONTHS");
+            console.log("========================================");
+            console.log(
+                "Y-Axis Title :",
+                yAxisTitle?.trim()
+            );
+            console.log(
+                "X-Axis Label :",
+                xAxisLabel
+            );
+            console.log(
+                "Normal Range :",
+                normalRange
+            );
+            console.log(
+                "Graph Note   :",
+                graphNote
+            );
+            console.log("========================================\n");
+        }
+    );
+}
+
+async getSection1OneYearGraphData(graphData) {
+
+    await StepHelper.step(
+        this.page,
+        "Get TD graph section 1 one year graph data",
+        async () => {
+
+            await this.keywords.click(
+                this.locators.section1ViewTrendGraph
+            );
+
+            await this.keywords.click(
+                this.locators.graphOneYear
+            );
+
+            const yAxisTitle =
+                await this.keywords.getTextContent(
+                    this.locators.graphYAxisTitle
+                );
+
+            const xAxisCount =
+                await this.locators.graphXAxisLabel.count();
+
+            const xAxisLabel = [];
+
+            for (let i = 0; i < xAxisCount; i++) {
+
+                const value =
+                    await this.keywords.getTextContent(
+                        this.locators.graphXAxisLabel.nth(i)
+                    );
+
+                if (value?.trim()) {
+                    xAxisLabel.push(value.trim());
+                }
+            }
+
+            const normalRange =
+                await this.keywords.getText(
+                    this.locators.graphRangeNote
+                );
+
+            const graphNote =
+                await this.keywords.getText(
+                    this.locators.graphNote
+                );
+
+            const graphPoint =
+                this.page.locator(
+                    "path.apexcharts-marker"
+                ).last();
+
+            const cx =
+                await graphPoint.getAttribute("cx");
+
+            const cy =
+                await graphPoint.getAttribute("cy");
+
+            if (!cx || !cy) {
+                throw new Error(
+                    "Graph point coordinates were not found."
+                );
+            }
+
+            const hoverPosition = {
+                x: Number(cx),
+                y: Number(cy)
+            };
+
+            await this.keywords.hoverAtPosition(
+                this.locators.graphSection1Chart,
+                hoverPosition
+            );
+
+            console.log("\n========================================");
+            console.log("TD GRAPH SECTION 1 - 1 YEAR");
+            console.log("========================================");
+            console.log(
+                "Y-Axis Title :",
+                yAxisTitle?.trim()
+            );
+            console.log(
+                "X-Axis Label :",
+                xAxisLabel
+            );
+            console.log(
+                "Normal Range :",
+                normalRange
+            );
+            console.log(
+                "Graph Note   :",
+                graphNote
+            );
+            console.log("========================================\n");
+        }
+    );
+}
+
+async getSection1AllGraphData(graphData) {
+
+    await StepHelper.step(
+        this.page,
+        "Get TD graph section 1 all graph data",
+        async () => {
+
+            await this.keywords.click(
+                this.locators.section1ViewTrendGraph
+            );
+
+            await this.keywords.click(
+                this.locators.graphAll
+            );
+
+            const yAxisTitle =
+                await this.keywords.getTextContent(
+                    this.locators.graphYAxisTitle
+                );
+
+            const xAxisCount =
+                await this.locators.graphXAxisLabel.count();
+
+            const xAxisLabel = [];
+
+            for (let i = 0; i < xAxisCount; i++) {
+
+                const value =
+                    await this.keywords.getTextContent(
+                        this.locators.graphXAxisLabel.nth(i)
+                    );
+
+                if (value?.trim()) {
+                    xAxisLabel.push(value.trim());
+                }
+            }
+
+            const normalRange =
+                await this.keywords.getText(
+                    this.locators.graphRangeNote
+                );
+
+            const graphNote =
+                await this.keywords.getText(
+                    this.locators.graphNote
+                );
+
+            const graphPoint =
+                this.page.locator(
+                    "path.apexcharts-marker"
+                ).last();
+
+            const cx =
+                await graphPoint.getAttribute("cx");
+
+            const cy =
+                await graphPoint.getAttribute("cy");
+
+            if (!cx || !cy) {
+                throw new Error(
+                    "Graph point coordinates were not found."
+                );
+            }
+
+            const hoverPosition = {
+                x: Number(cx),
+                y: Number(cy)
+            };
+
+            await this.keywords.hoverAtPosition(
+                this.locators.graphSection1Chart,
+                hoverPosition
+            );
+
+            console.log("\n========================================");
+            console.log("TD GRAPH SECTION 1 - ALL");
+            console.log("========================================");
+            console.log(
+                "Y-Axis Title :",
+                yAxisTitle?.trim()
+            );
+            console.log(
+                "X-Axis Label :",
+                xAxisLabel
+            );
+            console.log(
+                "Normal Range :",
+                normalRange
+            );
+            console.log(
+                "Graph Note   :",
+                graphNote
+            );
+            console.log("========================================\n");
+        }
+    );
+}
+
+async closeGraphAndDraft() {
+
+    await StepHelper.step(
+        this.page,
+        "Close graph and draft",
+        async () => {
+
+            await this.keywords.click(
+                this.locators.graphModalClose
+            );
+
+            await this.keywords.click(
+                this.locators.draftCloseButton
+            );
         }
     );
 }

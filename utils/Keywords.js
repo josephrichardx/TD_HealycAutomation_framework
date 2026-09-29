@@ -479,6 +479,8 @@ async getSelectedOptionText(locator) {
     return await locator.locator("option:checked").textContent();
 }
 
+
+
 async getTextOrValue(locator) {
  
     const element = locator.first();
@@ -525,6 +527,8 @@ async hoverAtPosition(locator, position) {
         );
     });
 }
+
+
     // =========================================================
     // UPLOAD FILE
     // =========================================================

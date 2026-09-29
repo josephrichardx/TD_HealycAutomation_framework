@@ -1,0 +1,44 @@
+{
+  "patientData": {
+    "title": "Mr",
+    "phoneNumber": "1234567890",
+    "notes": "Healync",
+    "email": "test@gmail.com",
+    "age": "21",
+    "gender": "Male",
+    "address": "Chennai"
+  },
+
+  "appoinmentData": {
+    "doctorName": "Dr. Orthopedic"
+  },
+
+  "consultData": {
+    "consultSlot": "First Consult"
+  },
+
+  "template": {
+    "formatValue": "EMR_GRAPHS_AUTOMATION_FORMAT TD",
+    "savedMessage": "Template saved successfully.",
+    "appliedMessage": "Template Applied successfully!"
+  },
+  
+  "graphSection1": {
+    "value": "100",
+    "graphName": "TD graph one",
+    "dateOffsetDays": -1,
+    "expectedPopup": "Patient metric recorded successfully."
+  },
+   "graphSection2": {
+    "value": "200",
+    "graphName": "Second graph",
+    "dateOffsetDays": -1,
+    "expectedPopup": "Patient metric recorded successfully."
+  },
+  "graphSection3": {
+    "value": "300",
+    "expectedPopup": "Patient metric recorded successfully."
+}
+ 
+}
+
