@@ -1,0 +1,33 @@
+{
+    "patientData": {
+        "title": "Mr",
+        "phoneNumber": "1234567890",
+        "notes": "Healync",
+        "email": "test@gmail.com",
+        "age": "21",
+        "gender": "Male",
+        "address": "Chennai"
+    },
+ 
+    "appoinmentData": {
+        "doctorName": "Dr. Orthopedic"
+    },
+ 
+    "consultData": {
+        "consultSlot": "First Consult"
+    },
+ 
+    "serviceData": {
+        "serviceName": "Clear Aligners"
+    },
+ 
+    "invoiceData": {
+        "adjustmentAmount": "100",
+        "adjustmentName": "Discount",
+        "adjustmentReason": "Test",
+        "paidAmount": "0.00",
+        "sendInvoiceLabel": "Send invoice",
+        "amountFieldEmptyValue": "",
+        "invoiceNumberPrefix": "INV-"
+    }
+}

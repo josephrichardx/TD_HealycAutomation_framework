@@ -1852,12 +1852,11 @@ class InvoicePage {
 
             const expectedForReport =
                 field.isDate
-                    ? `${constants.dateLabel} day ${
-                        (
-                            String(field.expected)
-                                .match(/\d+/) || ['']
-                        )
-                            .map(Number)[0]
+                    ? `${constants.dateLabel} day ${(
+                        String(field.expected)
+                            .match(/\d+/) || ['']
+                    )
+                        .map(Number)[0]
                     }`
                     : normalizedExpected;
 
@@ -2125,7 +2124,7 @@ class InvoicePage {
 
         await this.selectServices();
 
-        await this.verifyLineItemQtyAndRate(expectedPackageQuantity, packageName,minimumRate);
+        await this.verifyLineItemQtyAndRate(expectedPackageQuantity, packageName, minimumRate);
 
         await StepHelper.step(
             this.page,
@@ -2189,7 +2188,7 @@ class InvoicePage {
             async () => {
 
                 expect(actualErrorSubtext).toBe(
-                   discountReasonMandatoryMessage
+                    discountReasonMandatoryMessage
                 );
             }
         );
@@ -2228,7 +2227,7 @@ class InvoicePage {
         );
     }
 
-    async verifyLineItemQtyAndRate(expectedPackageQuantity, expectedPackageName,minimumRate) {
+    async verifyLineItemQtyAndRate(expectedPackageQuantity, expectedPackageName, minimumRate) {
 
         // const actualItemName =
         //     await this.locator.invoiceLineItemRow
@@ -2236,7 +2235,7 @@ class InvoicePage {
         //         .first()
         //         .innerText();
 
-       const actualItemName = await this.keywords.getText(
+        const actualItemName = await this.keywords.getText(
             this.locator.invoiceLineItemName(
                 this.locator.invoiceLineItemRow
             )
@@ -2259,7 +2258,7 @@ class InvoicePage {
         //     );
 
         const numberInputs = this.locator.invoiceLineItemNumberInputs(
-        this.locator.invoiceLineItemRow
+            this.locator.invoiceLineItemRow
         );
 
         const actualQty = await numberInputs.nth(0).inputValue();
@@ -2285,129 +2284,129 @@ class InvoicePage {
         // );
 
         await StepHelper.step(
-        this.page,
-        `Verify Line Item Rate Is Populated | Expected: greater than ${minimumRate} | Actual: ${actualRate}`,
-        async () => {
-            expect(Number(actualRate)).toBeGreaterThan(
-                minimumRate
-            );
-        }
-    );
+            this.page,
+            `Verify Line Item Rate Is Populated | Expected: greater than ${minimumRate} | Actual: ${actualRate}`,
+            async () => {
+                expect(Number(actualRate)).toBeGreaterThan(
+                    minimumRate
+                );
+            }
+        );
     }
 
-async verifyInvoiceTotalAdjustment(
-    invoiceData
+    async verifyInvoiceTotalAdjustment(
+        invoiceData
     ) {
 
-    let summaryValue;
-    let summaryAmount;
-    let expectedTotal;
-    let actualTotal;
+        let summaryValue;
+        let summaryAmount;
+        let expectedTotal;
+        let actualTotal;
 
 
-    // Get Summary Value
-    await StepHelper.step(
-        this.page,
-        'Get Summary Value',
-        async () => {
+        // Get Summary Value
+        await StepHelper.step(
+            this.page,
+            'Get Summary Value',
+            async () => {
 
-            summaryValue =
-                (
-                    await this.keywords.getText(
-                        this.locator.summaryValue
-                    )
-                ).trim();
+                summaryValue =
+                    (
+                        await this.keywords.getText(
+                            this.locator.summaryValue
+                        )
+                    ).trim();
 
-            console.log(
-                `Summary Value: ${summaryValue}`
-            );
-        }
-    );
+                console.log(
+                    `Summary Value: ${summaryValue}`
+                );
+            }
+        );
 
 
-    // Calculate Expected Invoice Total
-    await StepHelper.step(
-        this.page,
-        'Calculate Expected Invoice Total',
-        async () => {
+        // Calculate Expected Invoice Total
+        await StepHelper.step(
+            this.page,
+            'Calculate Expected Invoice Total',
+            async () => {
 
-            summaryAmount =
-                parseFloat(
-                    summaryValue.replace(
-                        /[₹,\s]/g,
-                        ''
-                    )
+                summaryAmount =
+                    parseFloat(
+                        summaryValue.replace(
+                            /[₹,\s]/g,
+                            ''
+                        )
+                    );
+
+                const adjustmentAmount =
+                    parseFloat(
+                        invoiceData.adjustmentAmount
+                    );
+
+                expectedTotal =
+                    summaryAmount + adjustmentAmount;
+
+                console.log(
+                    `Summary Amount: ${summaryAmount}`
                 );
 
-            const adjustmentAmount =
-                parseFloat(
-                    invoiceData.adjustmentAmount
+                console.log(
+                    `Adjustment Amount: ${adjustmentAmount}`
                 );
 
-            expectedTotal =
-                summaryAmount + adjustmentAmount;
-
-            console.log(
-                `Summary Amount: ${summaryAmount}`
-            );
-
-            console.log(
-                `Adjustment Amount: ${adjustmentAmount}`
-            );
-
-            console.log(
-                `Expected Total: ${expectedTotal.toFixed(2)}`
-            );
-        }
-    );
-
-
-    // Get Actual Invoice Total
-    await StepHelper.step(
-        this.page,
-        'Get Invoice Total',
-        async () => {
-
-            actualTotal =
-                (
-                    await this.keywords.getText(
-                        this.locator.invoiceTotal
-                    )
-                ).trim();
-
-            console.log(
-                `Actual Invoice Total: ${actualTotal}`
-            );
-        }
-    );
-
-
-    // Verify Invoice Total
-    await StepHelper.step(
-        this.page,
-        `Verify Invoice Total | Expected: ₹${expectedTotal.toFixed(2)} | Actual: ${actualTotal}`,
-        async () => {
-
-            const actualAmount =
-                parseFloat(
-                    actualTotal.replace(
-                        /[₹,\s]/g,
-                        ''
-                    )
+                console.log(
+                    `Expected Total: ${expectedTotal.toFixed(2)}`
                 );
-
-            expect(actualAmount).toBe(
-                expectedTotal
-            );
-        }
-    );
+            }
+        );
 
 
-    return summaryAmount;
+        // Get Actual Invoice Total
+        await StepHelper.step(
+            this.page,
+            'Get Invoice Total',
+            async () => {
+
+                actualTotal =
+                    (
+                        await this.keywords.getText(
+                            this.locator.invoiceTotal
+                        )
+                    ).trim();
+
+                console.log(
+                    `Actual Invoice Total: ${actualTotal}`
+                );
+            }
+        );
+
+
+        // Verify Invoice Total
+        await StepHelper.step(
+            this.page,
+            `Verify Invoice Total | Expected: ₹${expectedTotal.toFixed(2)} | Actual: ${actualTotal}`,
+            async () => {
+
+                const actualAmount =
+                    parseFloat(
+                        actualTotal.replace(
+                            /[₹,\s]/g,
+                            ''
+                        )
+                    );
+
+                expect(actualAmount).toBe(
+                    expectedTotal
+                );
+            }
+        );
+
+
+        return summaryAmount;
 
     }
 
-    async PaymentSection(expectedInvoiceTotal = null,sendInvoiceLabel,expectedPaidAmount,expectedPaidAmountNumber,amountFieldEmptyValue,invoiceNumberPrefix) {
+    async PaymentSection(expectedInvoiceTotal = null, sendInvoiceLabel, expectedPaidAmount, expectedPaidAmountNumber, amountFieldEmptyValue, invoiceNumberPrefix) {
 
         let invoiceNumber;
         let paymentDue;
@@ -2491,14 +2490,14 @@ async verifyInvoiceTotalAdjustment(
         // );  
 
         await StepHelper.step(
-        this.page,
-        `Verify Send Invoice Label | Expected: ${sendInvoiceLabel} | Actual: ${this._sendInvoiceText}`,
-        async () => {
-            expect(this._sendInvoiceText).toBe(
-                sendInvoiceLabel
-            );
-        }
-    );
+            this.page,
+            `Verify Send Invoice Label | Expected: ${sendInvoiceLabel} | Actual: ${this._sendInvoiceText}`,
+            async () => {
+                expect(this._sendInvoiceText).toBe(
+                    sendInvoiceLabel
+                );
+            }
+        );
 
         // Get Payment Due
 
@@ -2631,76 +2630,76 @@ async verifyInvoiceTotalAdjustment(
     }
 
     async VerifyInvoicePDF(
-    patientName,
-    patientData,
-    invoiceData,
-    summaryAmount,
-    packageName = null,
-    dobData = null,
-    CreditText
+        patientName,
+        patientData,
+        invoiceData,
+        summaryAmount,
+        packageName = null,
+        dobData = null,
+        CreditText
     ) {
 
-    let invoiceNumber;
+        let invoiceNumber;
 
-    // ==========================================
-    // 1. Get Generated Invoice Number
-    // ==========================================
+        // ==========================================
+        // 1. Get Generated Invoice Number
+        // ==========================================
 
-    await StepHelper.step(
-        this.page,
-        'Get Generated Invoice Number',
-        async () => {
+        await StepHelper.step(
+            this.page,
+            'Get Generated Invoice Number',
+            async () => {
 
-            invoiceNumber =
-                (
-                    await this.keywords.getText(
-                        this.locator.invoiceNumber
-                    )
-                ).trim();
+                invoiceNumber =
+                    (
+                        await this.keywords.getText(
+                            this.locator.invoiceNumber
+                        )
+                    ).trim();
 
-            console.log(
-                `Invoice Number: ${invoiceNumber}`
-            );
+                console.log(
+                    `Invoice Number: ${invoiceNumber}`
+                );
 
-            // expect(invoiceNumber).not.toBe('');
-            expect(invoiceNumber).toBeTruthy();
-        }
-    );
+                // expect(invoiceNumber).not.toBe('');
+                expect(invoiceNumber).toBeTruthy();
+            }
+        );
 
-    // ==========================================
-    // 2. Open Invoice PDF
-    // ==========================================
+        // ==========================================
+        // 2. Open Invoice PDF
+        // ==========================================
 
-    await StepHelper.step(
-        this.page,
-        `Open Invoice PDF - ${invoiceNumber}`,
-        async () => {
+        await StepHelper.step(
+            this.page,
+            `Open Invoice PDF - ${invoiceNumber}`,
+            async () => {
 
-            await this.keywords.click(
-                this.locator.invoiceNumber
-            );
-        }
-    );
+                await this.keywords.click(
+                    this.locator.invoiceNumber
+                );
+            }
+        );
 
-    // ==========================================
-    // 3. Wait for PDF
-    // ==========================================
+        // ==========================================
+        // 3. Wait for PDF
+        // ==========================================
 
-    await StepHelper.step(
-        this.page,
-        'Wait for Invoice PDF to Load',
-        async () => {
+        await StepHelper.step(
+            this.page,
+            'Wait for Invoice PDF to Load',
+            async () => {
 
-            await this.keywords.waitForElement(
-                this.locator.closePdfPreviewBtn,
-                timeout.elementTimeout
-            );
-        }
-    );
+                await this.keywords.waitForElement(
+                    this.locator.closePdfPreviewBtn,
+                    timeout.elementTimeout
+                );
+            }
+        );
 
-    // ==========================================
-    // 4. Verify Invoice PDF Details
-    // ==========================================
+        // ==========================================
+        // 4. Verify Invoice PDF Details
+        // ==========================================
 
         const pdf =
             this.locator.pdfBody;
@@ -2879,78 +2878,78 @@ async verifyInvoiceTotalAdjustment(
             }
         );
 
-    // ==========================================
-    // Discount / Adjustment
-    // ==========================================
+        // ==========================================
+        // Discount / Adjustment
+        // ==========================================
 
-    const expectedDiscount =
-    `Discount : ${discount.toFixed(2)}`;
+        const expectedDiscount =
+            `Discount : ${discount.toFixed(2)}`;
 
-    const expectedAdjustment =
-    `Adjustment : ${discount.toFixed(2)}`;
+        const expectedAdjustment =
+            `Adjustment : ${discount.toFixed(2)}`;
 
-    const discountLocator =
-    this.locator.discountPdf(discount);
+        const discountLocator =
+            this.locator.discountPdf(discount);
 
-    const adjustmentLocator =
-    this.locator.adjustmentPdf(discount);
+        const adjustmentLocator =
+            this.locator.adjustmentPdf(discount);
 
-    let actualDiscount = '';
-    let actualAdjustment = '';
+        let actualDiscount = '';
+        let actualAdjustment = '';
 
-    const discountCount =
-    await discountLocator.count();
+        const discountCount =
+            await discountLocator.count();
 
-    const adjustmentCount =
-    await adjustmentLocator.count();
+        const adjustmentCount =
+            await adjustmentLocator.count();
 
-    if (discountCount > 0) {
+        if (discountCount > 0) {
 
-    actualDiscount =
-    (
-        await this.keywords.getText(
-            discountLocator
-        )
-    ).trim();
+            actualDiscount =
+                (
+                    await this.keywords.getText(
+                        discountLocator
+                    )
+                ).trim();
 
-    await StepHelper.step(
-    this.page,
-    `Verify Discount | Expected: ${expectedDiscount} | Actual: ${actualDiscount}`,
-    async () => {
+            await StepHelper.step(
+                this.page,
+                `Verify Discount | Expected: ${expectedDiscount} | Actual: ${actualDiscount}`,
+                async () => {
 
-        expect(actualDiscount).toBe(
-            expectedDiscount
-        );
-    }
-    );
+                    expect(actualDiscount).toBe(
+                        expectedDiscount
+                    );
+                }
+            );
 
-    } else if (adjustmentCount > 0) {
+        } else if (adjustmentCount > 0) {
 
-    actualAdjustment =
-    (
-        await this.keywords.getText(
-            adjustmentLocator
-        )
-    ).trim();
+            actualAdjustment =
+                (
+                    await this.keywords.getText(
+                        adjustmentLocator
+                    )
+                ).trim();
 
-    await StepHelper.step(
-    this.page,
-    `Verify Adjustment | Expected: ${expectedAdjustment} | Actual: ${actualAdjustment}`,
-    async () => {
+            await StepHelper.step(
+                this.page,
+                `Verify Adjustment | Expected: ${expectedAdjustment} | Actual: ${actualAdjustment}`,
+                async () => {
 
-        expect(actualAdjustment).toBe(
-            expectedAdjustment
-        );
-    }
-    );
+                    expect(actualAdjustment).toBe(
+                        expectedAdjustment
+                    );
+                }
+            );
 
-    } else {
+        } else {
 
-    throw new Error(
-    `Neither Discount nor Adjustment was found in Invoice PDF. ` +
-    `Expected either "${expectedDiscount}" or "${expectedAdjustment}".`
-    );
-    }
+            throw new Error(
+                `Neither Discount nor Adjustment was found in Invoice PDF. ` +
+                `Expected either "${expectedDiscount}" or "${expectedAdjustment}".`
+            );
+        }
 
         // ==========================================
         // Total
@@ -2985,7 +2984,7 @@ async verifyInvoiceTotalAdjustment(
         // ==========================================
 
         const expectedCreditText =
-           CreditText
+            CreditText
 
         const actualCreditText =
             (
@@ -3033,38 +3032,38 @@ async verifyInvoiceTotalAdjustment(
             }
         );
 
-    // ==========================================
-    // 5. Close PDF
-    // ==========================================
+        // ==========================================
+        // 5. Close PDF
+        // ==========================================
 
-    await StepHelper.step(
-        this.page,
-        'Close Invoice PDF Preview',
-        async () => {
+        await StepHelper.step(
+            this.page,
+            'Close Invoice PDF Preview',
+            async () => {
 
-            await this.keywords.click(
-                this.locator.closePdfPreviewBtn
-            );
-        }
-    );
+                await this.keywords.click(
+                    this.locator.closePdfPreviewBtn
+                );
+            }
+        );
 
-    return invoiceNumber;
+        return invoiceNumber;
     }
 
     async openInvoiceHistory() {
-    
-            await StepHelper.step(
-                this.page,
-                'Open Invoice History',
-                async () => {
-                    await this.keywords.click(
-                        this.locator.invoiceHistoryTab
-                    );
-                }
-            );
-        }
 
-     async verifyInvoiceHistoryRow(
+        await StepHelper.step(
+            this.page,
+            'Open Invoice History',
+            async () => {
+                await this.keywords.click(
+                    this.locator.invoiceHistoryTab
+                );
+            }
+        );
+    }
+
+    async verifyInvoiceHistoryRow(
         expectedInvoiceNumber,
         summaryAmount,
         adjustmentAmount,
@@ -3178,125 +3177,125 @@ async verifyInvoiceTotalAdjustment(
             }
         );
     }
-    
+
     async openAndVerifyInvoicePdfFromFinancials(
-            expectedInvoiceNumber,
-            patientName,
-            packageName,
-            summaryAmount,
-            adjustmentAmount,
-            BalanceText,
-            CreditText,
-            expectedPaidAmountNumber
-            
-        ) {
-    
-            const total = summaryAmount + parseFloat(adjustmentAmount);
-    
-            await StepHelper.step(
-                this.page,
-                'Click View Invoice (Financials)',
-                async () => {
-    
-                    await this.keywords.click(
-                        this.locator.viewInvoiceBtn.last()
-                    );
-                }
-            );
-    
-            await StepHelper.step(
-                this.page,
-                'Wait for Invoice PDF to Load',
-                async () => {
-    
-                    await this.keywords.waitForElement(
-                        this.locator.closePdfPreviewBtn,
-                        timeout.elementTimeout
-                    );
-                }
-            );
-    
-            const invoiceNumberPdfHere =
-                this.locator.invoiceNumberPdfFromFinancials;
-    
-            const checks = [
-                {
-                    label: 'Invoice Number',
-                    locator: invoiceNumberPdfHere,
-                    expected: expectedInvoiceNumber
-                },
-                {
-                    label: 'Patient Name',
-                    locator: this.locator.patientNamePdfFromFinancials(
-                        patientName
-                    ),
-                    expected: patientName,
-                    contains: true
-                },
-                {
-                    label: 'Package Name (Line Item)',
-                    locator: this.locator.itemDescriptionPdf(packageName),
-                    expected: packageName,
-                    contains: true
-                },
-                {
-                    label: 'Sub Total',
-                    locator: this.locator.subTotalPdf(summaryAmount),
-                    expected: `Sub Total : ${summaryAmount.toFixed(2)}`
-                },
-                {
-                    label: 'Balance (post-payment)',
-                    locator: this.locator.balancePdf(expectedPaidAmountNumber),
-                    expected: BalanceText
-                },
-                {
-                    label: 'Credit Applied',
-                    locator: this.locator.creditAppliedPdf(expectedPaidAmountNumber),
-                    expected: CreditText
-                }
-            ];
-    
-            for (const check of checks) {
-    
-                const actualText =
-                    (
-                        await this.keywords.getText(check.locator)
-                    ).trim();
-    
-                await StepHelper.step(
-                    this.page,
-                    `Verify ${check.label} (Financials Invoice) | Expected: ${check.expected} | Actual: ${actualText}`,
-                    async () => {
-    
-                        if (check.contains) {
-    
-                            expect(actualText).toContain(
-                                check.expected
-                            );
-    
-                        } else {
-    
-                            expect(actualText).toBe(
-                                check.expected
-                            );
-                        }
-                    }
+        expectedInvoiceNumber,
+        patientName,
+        packageName,
+        summaryAmount,
+        adjustmentAmount,
+        BalanceText,
+        CreditText,
+        expectedPaidAmountNumber
+
+    ) {
+
+        const total = summaryAmount + parseFloat(adjustmentAmount);
+
+        await StepHelper.step(
+            this.page,
+            'Click View Invoice (Financials)',
+            async () => {
+
+                await this.keywords.click(
+                    this.locator.viewInvoiceBtn.last()
                 );
             }
-    
+        );
+
+        await StepHelper.step(
+            this.page,
+            'Wait for Invoice PDF to Load',
+            async () => {
+
+                await this.keywords.waitForElement(
+                    this.locator.closePdfPreviewBtn,
+                    timeout.elementTimeout
+                );
+            }
+        );
+
+        const invoiceNumberPdfHere =
+            this.locator.invoiceNumberPdfFromFinancials;
+
+        const checks = [
+            {
+                label: 'Invoice Number',
+                locator: invoiceNumberPdfHere,
+                expected: expectedInvoiceNumber
+            },
+            {
+                label: 'Patient Name',
+                locator: this.locator.patientNamePdfFromFinancials(
+                    patientName
+                ),
+                expected: patientName,
+                contains: true
+            },
+            {
+                label: 'Package Name (Line Item)',
+                locator: this.locator.itemDescriptionPdf(packageName),
+                expected: packageName,
+                contains: true
+            },
+            {
+                label: 'Sub Total',
+                locator: this.locator.subTotalPdf(summaryAmount),
+                expected: `Sub Total : ${summaryAmount.toFixed(2)}`
+            },
+            {
+                label: 'Balance (post-payment)',
+                locator: this.locator.balancePdf(expectedPaidAmountNumber),
+                expected: BalanceText
+            },
+            {
+                label: 'Credit Applied',
+                locator: this.locator.creditAppliedPdf(expectedPaidAmountNumber),
+                expected: CreditText
+            }
+        ];
+
+        for (const check of checks) {
+
+            const actualText =
+                (
+                    await this.keywords.getText(check.locator)
+                ).trim();
+
             await StepHelper.step(
                 this.page,
-                'Close Invoice PDF Preview',
+                `Verify ${check.label} (Financials Invoice) | Expected: ${check.expected} | Actual: ${actualText}`,
                 async () => {
-    
-                    await this.keywords.click(
-                        this.locator.closePdfPreviewBtn
-                    );
+
+                    if (check.contains) {
+
+                        expect(actualText).toContain(
+                            check.expected
+                        );
+
+                    } else {
+
+                        expect(actualText).toBe(
+                            check.expected
+                        );
+                    }
                 }
             );
         }
-    
-        async verifyPostRefundInvoicePdf(
+
+        await StepHelper.step(
+            this.page,
+            'Close Invoice PDF Preview',
+            async () => {
+
+                await this.keywords.click(
+                    this.locator.closePdfPreviewBtn
+                );
+            }
+        );
+    }
+
+    async verifyPostRefundInvoicePdf(
         expectedInvoiceNumber,
         refundAmount,
         BalanceText,
@@ -3423,7 +3422,7 @@ async verifyInvoiceTotalAdjustment(
         return actualRefundReceiptNumber;
     }
 
-     async reopenAndVerifyRefundedInvoicePdf(
+    async reopenAndVerifyRefundedInvoicePdf(
         expectedInvoiceNumber,
         refundAmount,
         BalanceText,
@@ -3547,113 +3546,344 @@ async verifyInvoiceTotalAdjustment(
         );
     }
 
-     async verifyRefundReceiptPdf(
-            patientName,
-            expectedAmount,
-            expectedPaymentMode,
-            refundReceiptTitle
-        ) {
-            // .nth(1) explicitly targets the second row in the Payment History table (the refund)
-            const refundRow =
-                this.locator.appointmentPaymentHistoryRows.nth(1);
+    async verifyRefundReceiptPdf(
+        patientName,
+        expectedAmount,
+        expectedPaymentMode,
+        refundReceiptTitle
+    ) {
+        // .nth(1) explicitly targets the second row in the Payment History table (the refund)
+        const refundRow =
+            this.locator.appointmentPaymentHistoryRows.nth(1);
 
-            // Wait for the panel to settle using your config-driven timeout
-            await this.page
-                .waitForLoadState('networkidle', { timeout: timeout.elementTimeout })
-                .catch(() => {});
+        // Wait for the panel to settle using your config-driven timeout
+        await this.page
+            .waitForLoadState('networkidle', { timeout: timeout.elementTimeout })
+            .catch(() => { });
+
+        await StepHelper.step(
+            this.page,
+            'Click View Receipt (Refund Transaction) (Forced)',
+            async () => {
+                // We MUST target the <i> icon to trigger the app's event listener,
+                // and we MUST use evaluate() to punch through the invisible overlapping <div>.
+                const icon = this.locator.paymentHistoryViewReceiptIcon(refundRow);
+                await icon.evaluate(node => node.click());
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            'Wait for Refund Receipt PDF to Load',
+            async () => {
+                await this.locator.closePdfPreviewBtn.waitFor({ state: 'visible' });
+            }
+        );
+
+        // Verify Title "Refund Receipt"
+        const actualTitle = (
+            await this.keywords.getText(
+                this.locator.pdfBody.getByText('Refund Receipt', { exact: true }).first()
+            )
+        ).trim();
+
+        await StepHelper.step(
+            this.page,
+            `Verify Receipt Title | Expected: ${refundReceiptTitle} | Actual: ${actualTitle}`,
+            async () => {
+                expect(actualTitle).toBe(refundReceiptTitle);
+            }
+        );
+
+        // Verify Patient Name (Refund To)
+        const actualPatientName = (
+            await this.keywords.getText(
+                this.locator.pdfBody.getByText(patientName, { exact: true }).first()
+            )
+        ).trim();
+
+        await StepHelper.step(
+            this.page,
+            `Verify Refund To | Expected: ${patientName} | Actual: ${actualPatientName}`,
+            async () => {
+                expect(actualPatientName).toBe(patientName);
+            }
+        );
+
+        // Verify Refund Mode
+        const actualMode = (
+            await this.keywords.getText(
+                this.locator.pdfBody.getByText(expectedPaymentMode, { exact: true }).first()
+            )
+        ).trim();
+
+        await StepHelper.step(
+            this.page,
+            `Verify Refund Mode | Expected: ${expectedPaymentMode} | Actual: ${actualMode}`,
+            async () => {
+                expect(actualMode).toBe(expectedPaymentMode);
+            }
+        );
+
+        // Verify Amount (Screenshot shows exactly 1 decimal place: 59400.0)
+        const expectedAmountText = parseFloat(expectedAmount).toFixed(1);
+        const actualAmount = (
+            await this.keywords.getText(
+                this.locator.pdfBody.getByText(expectedAmountText, { exact: true }).last()
+            )
+        ).trim();
+
+        await StepHelper.step(
+            this.page,
+            `Verify Amount Refunded | Expected: ${expectedAmountText} | Actual: ${actualAmount}`,
+            async () => {
+                expect(actualAmount).toBe(expectedAmountText);
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            'Close Refund Receipt PDF Preview',
+            async () => {
+                await this.keywords.click(
+                    this.locator.closePdfPreviewBtn
+                );
+            }
+        );
+    }
+
+    async clickGenerateInvoiceLink() {
+
+        await StepHelper.step(
+            this.page,
+            'Open Generate Invoice',
+            async () => {
+
+                await this.keywords.click(
+                    this.locator.generateInvoiceLink
+                );
+            }
+        );
+    }
+
+    async verifyInvoiceTemplateItems(
+        consultSummary,
+        serviceSummary
+    ) {
+
+        console.log(
+            '========== VERIFY INVOICE TEMPLATE ITEMS =========='
+        );
+
+        console.log(
+            `Expected Service Name: ${serviceSummary.serviceName}`
+        );
+
+        console.log(
+            `Expected Service Total: ${serviceSummary.fees}`
+        );
+
+        console.log(
+            `Expected Consult Name: ${consultSummary.consultType}`
+        );
+
+        console.log(
+            `Expected Consult Total: ${consultSummary.fees}`
+        );
+
+
+        const expectedItems = [
+            {
+                type: 'Service',
+                itemName: serviceSummary.serviceName,
+                expectedTotal: serviceSummary.fees
+            },
+            {
+                type: 'Consult',
+                itemName: consultSummary.consultType,
+                expectedTotal: consultSummary.fees
+            }
+        ];
+
+
+        const rows =
+            this.locator.invoiceTemplateRows;
+
+        const rowCount =
+            await rows.count();
+
+
+        for (const expectedItem of expectedItems) {
+
+            let matchedRow = null;
+
+
+            for (let i = 0; i < rowCount; i++) {
+
+                const row =
+                    rows.nth(i);
+
+                const actualItemName =
+                    (
+                        await this.keywords.getText(
+                            this.locator.invoiceTemplateItemName(
+                                row
+                            )
+                        )
+                    ).trim();
+
+
+                if (
+                    actualItemName ===
+                    expectedItem.itemName
+                ) {
+
+                    matchedRow = row;
+
+                    break;
+                }
+            }
+
+
+            if (!matchedRow) {
+
+                console.log(
+                    `Expected ${expectedItem.type} Item: ${expectedItem.itemName}`
+                );
+
+                console.log(
+                    `Actual ${expectedItem.type} Item: Not Found`
+                );
+
+                throw new Error(
+                    `${expectedItem.type} item not found: ${expectedItem.itemName}`
+                );
+            }
+
+
+            const actualItemName =
+                (
+                    await this.keywords.getText(
+                        this.locator.invoiceTemplateItemName(
+                            matchedRow
+                        )
+                    )
+                ).trim();
+
+
+            const actualTotalText =
+                (
+                    await this.keywords.getText(
+                        this.locator.invoiceTemplateItemTotal(
+                            matchedRow
+                        )
+                    )
+                ).trim();
+
+
+            const actualTotal =
+                parseFloat(
+                    actualTotalText.replace(/[₹,]/g, '')
+                );
+
+
+            const expectedTotal =
+                parseFloat(
+                    String(
+                        expectedItem.expectedTotal
+                    ).replace(/[₹,]/g, '')
+                );
+
+
+            // ==========================================
+            // PRINT COMPARISON
+            // ==========================================
+
+            console.log(
+                `Expected ${expectedItem.type} Name: ${expectedItem.itemName}`
+            );
+
+            console.log(
+                `Actual ${expectedItem.type} Name: ${actualItemName}`
+            );
+
+            console.log(
+                `Expected ${expectedItem.type} Total: ${expectedTotal.toFixed(2)}`
+            );
+
+            console.log(
+                `Actual ${expectedItem.type} Total: ${actualTotal.toFixed(2)}`
+            );
+
+
+            // ==========================================
+            // VERIFY ITEM NAME
+            // ==========================================
 
             await StepHelper.step(
                 this.page,
-                'Click View Receipt (Refund Transaction) (Forced)',
+                `Verify ${expectedItem.type} Item Name`,
                 async () => {
-                    // We MUST target the <i> icon to trigger the app's event listener,
-                    // and we MUST use evaluate() to punch through the invisible overlapping <div>.
-                    const icon = this.locator.paymentHistoryViewReceiptIcon(refundRow);
-                    await icon.evaluate(node => node.click());
+
+                    expect(actualItemName).toBe(
+                        expectedItem.itemName
+                    );
                 }
             );
 
-            await StepHelper.step(
-                this.page,
-                'Wait for Refund Receipt PDF to Load',
-                async () => {
-                    await this.locator.closePdfPreviewBtn.waitFor({ state: 'visible' });
-                }
-            );
 
-            // Verify Title "Refund Receipt"
-            const actualTitle = (
-                await this.keywords.getText(
-                    this.locator.pdfBody.getByText('Refund Receipt', { exact: true }).first()
-                )
-            ).trim();
+            // ==========================================
+            // VERIFY TOTAL
+            // ==========================================
 
             await StepHelper.step(
                 this.page,
-                `Verify Receipt Title | Expected: ${refundReceiptTitle} | Actual: ${actualTitle}`,
+                `Verify ${expectedItem.type} Total`,
                 async () => {
-                    expect(actualTitle).toBe(refundReceiptTitle);
-                }
-            );
 
-            // Verify Patient Name (Refund To)
-            const actualPatientName = (
-                await this.keywords.getText(
-                    this.locator.pdfBody.getByText(patientName, { exact: true }).first()
-                )
-            ).trim();
-
-            await StepHelper.step(
-                this.page,
-                `Verify Refund To | Expected: ${patientName} | Actual: ${actualPatientName}`,
-                async () => {
-                    expect(actualPatientName).toBe(patientName);
-                }
-            );
-
-            // Verify Refund Mode
-            const actualMode = (
-                await this.keywords.getText(
-                    this.locator.pdfBody.getByText(expectedPaymentMode, { exact: true }).first()
-                )
-            ).trim();
-
-            await StepHelper.step(
-                this.page,
-                `Verify Refund Mode | Expected: ${expectedPaymentMode} | Actual: ${actualMode}`,
-                async () => {
-                    expect(actualMode).toBe(expectedPaymentMode);
-                }
-            );
-
-            // Verify Amount (Screenshot shows exactly 1 decimal place: 59400.0)
-            const expectedAmountText = parseFloat(expectedAmount).toFixed(1);
-            const actualAmount = (
-                await this.keywords.getText(
-                    this.locator.pdfBody.getByText(expectedAmountText, { exact: true }).last()
-                )
-            ).trim();
-
-            await StepHelper.step(
-                this.page,
-                `Verify Amount Refunded | Expected: ${expectedAmountText} | Actual: ${actualAmount}`,
-                async () => {
-                    expect(actualAmount).toBe(expectedAmountText);
-                }
-            );
-
-            await StepHelper.step(
-                this.page,
-                'Close Refund Receipt PDF Preview',
-                async () => {
-                    await this.keywords.click(
-                        this.locator.closePdfPreviewBtn
+                    expect(actualTotal).toBeCloseTo(
+                        expectedTotal,
+                        2
                     );
                 }
             );
         }
-    
+    }
 
+    async selectServicesAndGenerateInvoice(invoiceData) {
+
+        await this.selectInvoiceServices();
+
+        await this.addAdjustment(
+            invoiceData.adjustmentAmount,
+            invoiceData.adjustmentName,
+            invoiceData.adjustmentReason
+        );
+
+        await StepHelper.step(
+            this.page,
+            'Wait for Generate Invoice Button to Enable',
+            async () => {
+
+                await expect(
+                    this.locator.finalGenerateInvoiceBtn
+                ).toBeEnabled({
+                    timeout: timeout.elementTimeout
+                });
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            'Generate Invoice',
+            async () => {
+
+                await this.keywords.click(
+                    this.locator.finalGenerateInvoiceBtn
+                );
+            }
+        );
+    }
 
 }
 

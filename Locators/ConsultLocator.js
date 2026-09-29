@@ -16,7 +16,7 @@ class ConsultLocator {
         );
 
         this.consultationStatusDropdown =
-        page.locator("(//div[@class='field-dropdown'])[2]");
+            page.locator("(//div[@class='field-dropdown'])[2]");
 
         this.checkedInOption =
             page.locator("(//span[text()='Checked-In'])[2]");
@@ -29,9 +29,9 @@ class ConsultLocator {
 
         this.consultationRoomSuccessToast =
             page.locator("//div[@class='toaster-wrapper success']");
-    
-// this.consultationRoomSuccessToast =
-//     page.locator("//div[@class='toaster-wrapper success']//div[@class='text-content']");
+
+        // this.consultationRoomSuccessToast =
+        //     page.locator("//div[@class='toaster-wrapper success']//div[@class='text-content']");
 
         this.patientSearchTxt = page.getByRole('textbox', {
             name: 'Search with patient name or'
@@ -61,8 +61,10 @@ class ConsultLocator {
             'Booking confirm'
         );
 
-
-        
+        this.reviewConsultType =
+            page.locator(
+                '.appointmentSummaryBody .appointmentType .normalLabel'
+            ).first();
 
         this.addCustomSlotsBtn = page.getByText(
             'Add custom slots'
@@ -221,16 +223,21 @@ class ConsultLocator {
         ).first();
 
         this.nextDateBtn = page.locator('div.NextListButton').first();
- 
+
         this.calendarDate = page
             .locator('.fc-col-header-cell-cushion')
             .first();
-        
+
         // --- NEWLY ADDED LOCATORS ---
         this.addConsultMenuBtn = page.locator('div.AddNewButtonOptions button:has-text("Add Consult")');
         this.slotTimeText = page.locator('.slotButton span.slot-time');
         this.calendarNextBtn = page.locator('.fc-next-button');
         this.waitlistBtn = page.locator('.waitingListButton');
+        this.reviewConsultLocation =
+            page.locator(
+                '.appointmentSummaryBody .appointmentLocation'
+            );
+
     }
 
     // --- NEWLY ADDED METHODS ---

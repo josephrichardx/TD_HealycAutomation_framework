@@ -67,7 +67,7 @@ class ServicePage {
         //         expect(actualPatientName).toBe(patientName);
         //     }
         // );
-    
+
         const patient =
             this.locator.getPatient(
                 patientName
@@ -252,201 +252,201 @@ class ServicePage {
     // }
 
 
-//    async selectFirstAvailableSlot() {
+    //    async selectFirstAvailableSlot() {
 
-//     await StepHelper.step(
-//         this.page,
-//         'Select First Available Slot',
-//         async () => {
+    //     await StepHelper.step(
+    //         this.page,
+    //         'Select First Available Slot',
+    //         async () => {
 
-//             while (true) {
+    //             while (true) {
 
-//                 const slotCount =
-//                     await this.locator.slotButton.count();
+    //                 const slotCount =
+    //                     await this.locator.slotButton.count();
 
-//                 console.log(
-//                     `Available Slots: ${slotCount}`
-//                 );
+    //                 console.log(
+    //                     `Available Slots: ${slotCount}`
+    //                 );
 
-//                 if (slotCount > 0) {
+    //                 if (slotCount > 0) {
 
-//                     const firstSlot =
-//                         this.locator.slotButton.first();
+    //                     const firstSlot =
+    //                         this.locator.slotButton.first();
 
-//                     const appointmentCard =
-//                         this.locator.slotAppointmentCard(
-//                             firstSlot
-//                         );
+    //                     const appointmentCard =
+    //                         this.locator.slotAppointmentCard(
+    //                             firstSlot
+    //                         );
 
-//                     const cardText =
-//                         await this.keywords.getText(
-//                             appointmentCard
-//                         );
+    //                     const cardText =
+    //                         await this.keywords.getText(
+    //                             appointmentCard
+    //                         );
 
-//                     console.log(
-//                         `Appointment Card Text: ${cardText}`
-//                     );
+    //                     console.log(
+    //                         `Appointment Card Text: ${cardText}`
+    //                     );
 
-//                     const dateMatch =
-//                         cardText.match(
-//                             /\d{1,2}\s+[A-Za-z]{3},\s+\d{4}/
-//                         );
+    //                     const dateMatch =
+    //                         cardText.match(
+    //                             /\d{1,2}\s+[A-Za-z]{3},\s+\d{4}/
+    //                         );
 
-//                     if (!dateMatch) {
-//                         throw new Error(
-//                             `Unable to read slot date from appointment card: ${cardText}`
-//                         );
-//                     }
+    //                     if (!dateMatch) {
+    //                         throw new Error(
+    //                             `Unable to read slot date from appointment card: ${cardText}`
+    //                         );
+    //                     }
 
-//                     this.selectedSlotDate =
-//                         dateMatch[0];
+    //                     this.selectedSlotDate =
+    //                         dateMatch[0];
 
-//                     console.log(
-//                         `Selected Slot Date: ${this.selectedSlotDate}`
-//                     );
+    //                     console.log(
+    //                         `Selected Slot Date: ${this.selectedSlotDate}`
+    //                     );
 
-//                     await this.keywords.click(
-//                         firstSlot
-//                     );
+    //                     await this.keywords.click(
+    //                         firstSlot
+    //                     );
 
-//                     break;
-//                 }
+    //                     break;
+    //                 }
 
-//                 await StepHelper.step(
-//                     this.page,
-//                     'Move To Next Available Date',
-//                     async () => {
-//                         await this.keywords.click(
-//                             this.locator.nextDateBtn
-//                         );
-//                     }
-//                 );
+    //                 await StepHelper.step(
+    //                     this.page,
+    //                     'Move To Next Available Date',
+    //                     async () => {
+    //                         await this.keywords.click(
+    //                             this.locator.nextDateBtn
+    //                         );
+    //                     }
+    //                 );
 
-//                 await this.locator.slotButton
-//                     .first()
-//                     .waitFor({
-//                         state: 'visible',
-//                         timeout: timeout.testTimeout
-//                     })
-//                     .catch(() => {});
-//             }
-//         }
-//     );
+    //                 await this.locator.slotButton
+    //                     .first()
+    //                     .waitFor({
+    //                         state: 'visible',
+    //                         timeout: timeout.testTimeout
+    //                     })
+    //                     .catch(() => {});
+    //             }
+    //         }
+    //     );
 
-//     return this.selectedSlotDate;
-// }
+    //     return this.selectedSlotDate;
+    // }
 
-async selectFirstAvailableSlot() {
+    async selectFirstAvailableSlot() {
 
-    await StepHelper.step(
-        this.page,
-        'Select First Available Slot',
-        async () => {
+        await StepHelper.step(
+            this.page,
+            'Select First Available Slot',
+            async () => {
 
-            while (true) {
+                while (true) {
 
-                const slotCount =
-                    await this.locator.slotButton.count();
+                    const slotCount =
+                        await this.locator.slotButton.count();
 
-                console.log(
-                    `Available Slots: ${slotCount}`
-                );
+                    console.log(
+                        `Available Slots: ${slotCount}`
+                    );
 
-                if (slotCount > 0) {
+                    if (slotCount > 0) {
 
-                    const firstSlot =
-                        this.locator.slotButton.first();
+                        const firstSlot =
+                            this.locator.slotButton.first();
 
-                    const appointmentCard =
-                        this.locator.slotAppointmentCard(
+                        const appointmentCard =
+                            this.locator.slotAppointmentCard(
+                                firstSlot
+                            );
+
+                        const cardText =
+                            await this.keywords.getText(
+                                appointmentCard
+                            );
+
+                        console.log(
+                            `Appointment Card Text: ${cardText}`
+                        );
+
+                        // Get Date
+                        const dateMatch =
+                            cardText.match(
+                                /\d{1,2}\s+[A-Za-z]{3},\s*\d{4}/
+                            );
+
+                        if (!dateMatch) {
+                            throw new Error(
+                                `Unable to read slot date: ${cardText}`
+                            );
+                        }
+
+                        this.selectedSlotDate =
+                            dateMatch[0]
+                                .replace(/,\s*/g, ', ')
+                                .trim();
+
+                        // Get Time
+                        const timeMatch =
+                            cardText.match(
+                                /\d{1,2}:\d{2}\s*-\s*\d{1,2}:\d{2}\s*(?:AM|PM)/i
+                            );
+
+                        if (!timeMatch) {
+                            throw new Error(
+                                `Unable to read slot time: ${cardText}`
+                            );
+                        }
+
+                        this.selectedSlotTime =
+                            timeMatch[0]
+                                .replace(/\s+/g, ' ')
+                                .trim();
+
+                        console.log(
+                            `Selected Slot Date: ${this.selectedSlotDate}`
+                        );
+
+                        console.log(
+                            `Selected Slot Time: ${this.selectedSlotTime}`
+                        );
+
+                        await this.keywords.click(
                             firstSlot
                         );
 
-                    const cardText =
-                        await this.keywords.getText(
-                            appointmentCard
-                        );
-
-                    console.log(
-                        `Appointment Card Text: ${cardText}`
-                    );
-
-                    // Get Date
-                    const dateMatch =
-                        cardText.match(
-                            /\d{1,2}\s+[A-Za-z]{3},\s*\d{4}/
-                        );
-
-                    if (!dateMatch) {
-                        throw new Error(
-                            `Unable to read slot date: ${cardText}`
-                        );
+                        break;
                     }
 
-                    this.selectedSlotDate =
-                        dateMatch[0]
-                            .replace(/,\s*/g, ', ')
-                            .trim();
+                    await StepHelper.step(
+                        this.page,
+                        'Move To Next Available Date',
+                        async () => {
 
-                    // Get Time
-                    const timeMatch =
-                        cardText.match(
-                            /\d{1,2}:\d{2}\s*-\s*\d{1,2}:\d{2}\s*(?:AM|PM)/i
-                        );
-
-                    if (!timeMatch) {
-                        throw new Error(
-                            `Unable to read slot time: ${cardText}`
-                        );
-                    }
-
-                    this.selectedSlotTime =
-                        timeMatch[0]
-                            .replace(/\s+/g, ' ')
-                            .trim();
-
-                    console.log(
-                        `Selected Slot Date: ${this.selectedSlotDate}`
+                            await this.keywords.click(
+                                this.locator.nextDateBtn
+                            );
+                        }
                     );
 
-                    console.log(
-                        `Selected Slot Time: ${this.selectedSlotTime}`
-                    );
-
-                    await this.keywords.click(
-                        firstSlot
-                    );
-
-                    break;
+                    await this.locator.slotButton
+                        .first()
+                        .waitFor({
+                            state: 'visible',
+                            timeout: timeout.testTimeout
+                        })
+                        .catch(() => { });
                 }
-
-                await StepHelper.step(
-                    this.page,
-                    'Move To Next Available Date',
-                    async () => {
-
-                        await this.keywords.click(
-                            this.locator.nextDateBtn
-                        );
-                    }
-                );
-
-                await this.locator.slotButton
-                    .first()
-                    .waitFor({
-                        state: 'visible',
-                        timeout: timeout.testTimeout
-                    })
-                    .catch(() => {});
             }
-        }
-    );
+        );
 
-    return {
-        date: this.selectedSlotDate,
-        time: this.selectedSlotTime
-    };
-}
+        return {
+            date: this.selectedSlotDate,
+            time: this.selectedSlotTime
+        };
+    }
 
 
     async selectMultipleServices(
@@ -601,262 +601,262 @@ async selectFirstAvailableSlot() {
         );
     }
 
-async verifyServiceBookingDropdowns(serviceBookingData) {
+    async verifyServiceBookingDropdowns(serviceBookingData) {
 
-    const dropdowns = [
-        serviceBookingData.doctorDropdown,
-        serviceBookingData.locationDropdown,
-        serviceBookingData.serviceDropdown
-    ];
+        const dropdowns = [
+            serviceBookingData.doctorDropdown,
+            serviceBookingData.locationDropdown,
+            serviceBookingData.serviceDropdown
+        ];
 
-    for (const dropdownName of dropdowns) {
+        for (const dropdownName of dropdowns) {
+
+            await StepHelper.step(
+                this.page,
+                `Verify ${dropdownName} Dropdown Is Working`,
+                async () => {
+
+                    const dropdown =
+                        this.locator.dropdown(dropdownName);
+
+                    const dropdownOptions =
+                        this.locator.dropdownOptions(dropdownName);
+
+                    // Open dropdown
+                    await this.keywords.click(dropdown);
+
+                    // Verify options are visible
+                    await Verify.state(
+                        this.page,
+                        `Verify ${dropdownName} Dropdown Options Is Visible`,
+                        dropdownOptions,
+                        { visible: true }
+                    );
+
+                    // Close dropdown
+                    await this.keywords.click(dropdown);
+
+                    // Verify options are closed
+                    await Verify.state(
+                        this.page,
+                        `Verify ${dropdownName} Dropdown Options Is Closed`,
+                        dropdownOptions,
+                        { visible: false }
+                    );
+                }
+            );
+        }
+    }
+
+    async verifyBookingFiltersAvailable() {
+
+        const filters = [
+            {
+                name: "Doctor",
+                locator: this.locator.doctorDropdown
+            },
+            {
+                name: "Locations",
+                locator: this.locator.locationsDropdown
+            },
+            {
+                name: "Service",
+                locator: this.locator.serviceDropdown
+            },
+            {
+                name: "Date",
+                locator: this.locator.dateDropdown
+            }
+        ];
+
+        for (const filter of filters) {
+
+            await StepHelper.step(
+                this.page,
+                `Verify ${filter.name} dropdown is available`,
+                async () => {
+                    await this.keywords.verifyElementVisible(
+                        filter.locator
+                    );
+                }
+            );
+        }
+    }
+
+
+    // async verifyServiceBookingDropdowns(servicedropdownData) {
+
+    //     const dropdowns = [
+    //         servicedropdownData.doctorDropdown,
+    //         servicedropdownData.locationDropdown,
+    //         servicedropdownData.serviceDropdown
+    //     ];
+
+    //     for (const dropdownName of dropdowns) {
+
+    //         await StepHelper.step(
+    //             this.page,
+    //             `Verify ${dropdownName} Dropdown Is Working`,
+    //             async () => {
+
+    //                 const dropdown =
+    //                     this.locator.dropdown(dropdownName);
+
+    //                 await this.keywords.click(dropdown);
+
+    //                 await Verify.state(
+    //                     this.page,
+    //                     `Verify ${dropdownName} Dropdown Is Visible`,
+    //                     dropdown,
+    //                     { visible: true }
+    //                 );
+    //             }
+    //         );
+    //     }
+
+    //     await StepHelper.step(
+    //         this.page,
+    //         `Verify ${servicedropdownData.dateDropdown} Dropdown Is Working`,
+    //         async () => {
+
+    //             await this.keywords.click(
+    //                 this.locator.dateDropdown
+    //             );
+
+    //             await Verify.state(
+    //                 this.page,
+    //                 `Verify ${servicedropdownData.dateDropdown} Dropdown Is Visible`,
+    //                 this.locator.dateDropdown,
+    //                 { visible: true }
+    //             );
+    //         }
+    //     );
+    // }
+
+    // async verifySelectedServiceAndFees(serviceName) {
+
+    //     // Get selected service text
+    //     const actualService =
+    //         (await this.keywords.getText(
+    //             this.locator.selectedService
+    //         )).trim();
+
+    //     await StepHelper.step(
+    //         this.page,
+    //         `Verify Selected Service | Expected: ${serviceName} | Actual: ${actualService}`,
+    //         async () => {
+
+    //             expect(actualService).toBe(serviceName);
+    //         }
+    //     );
+
+    //     // Get Fees text
+    //     const actualFees =
+    //         (await this.keywords.getText(
+    //             this.locator.fees.first()
+    //         )).trim();
+
+    //     const isFeesVisible =
+    //         await this.locator.fees.first().isVisible();
+
+    //     await StepHelper.step(
+    //         this.page,
+    //         `Verify Fees Is Displayed | Expected: visible | Actual: ${actualFees}`,
+    //         async () => {
+
+    //             expect(isFeesVisible).toBe(true);
+    //         }
+    //     );
+
+    //      await StepHelper.step(
+    //             this.page,
+    //             'Click Proceed',
+    //             async () => {
+    //                 await this.keywords.click(
+    //                     this.locator.proceedBtn
+    //                 );
+    //             }
+    //         ); 
+    // }
+
+    // async verifyReviewBookingServiceAndFees(serviceName, fees) {
+
+    //     // Get actual Review Service text
+    //     const actualService =
+    //         (await this.keywords.getText(
+    //             this.locator.reviewService
+    //         )).trim();
+
+    //     await StepHelper.step(
+    //         this.page,
+    //         `Verify Review Service | Expected: ${serviceName} | Actual: ${actualService}`,
+    //         async () => {
+
+    //             expect(actualService).toBe(serviceName);
+    //         }
+    //     );
+
+    //     // Get actual Fees text
+    //     const actualFees =
+    //         (await this.keywords.getText(
+    //             this.locator.reviewFees
+    //         )).trim();
+
+    //     await StepHelper.step(
+    //         this.page,
+    //         `Verify Review Fees | Expected: ${fees} | Actual: ${actualFees}`,
+    //         async () => {
+
+    //             expect(actualFees).toContain(fees);
+    //         }
+    //     );
+
+    //       await StepHelper.step(
+    //             this.page,
+    //             'Click Confirm Booking',
+    //             async () => {
+    //                 await this.keywords.click(
+    //                     this.locator.confirmBookingBtn
+    //                 );
+    //             }
+    //         );
+    // }
+
+    async verifySelectedServiceAndFess(serviceName) {
+
+        // Verify Selected Service
+        const actualService =
+            (await this.keywords.getText(
+                this.locator.selectedService
+            )).trim();
 
         await StepHelper.step(
             this.page,
-            `Verify ${dropdownName} Dropdown Is Working`,
+            `Verify Selected Service | Expected: ${serviceName} | Actual: ${actualService}`,
             async () => {
 
-                const dropdown =
-                    this.locator.dropdown(dropdownName);
-
-                const dropdownOptions =
-                    this.locator.dropdownOptions(dropdownName);
-
-                // Open dropdown
-                await this.keywords.click(dropdown);
-
-                // Verify options are visible
-                await Verify.state(
-                    this.page,
-                    `Verify ${dropdownName} Dropdown Options Is Visible`,
-                    dropdownOptions,
-                    { visible: true }
-                );
-
-                // Close dropdown
-                await this.keywords.click(dropdown);
-
-                // Verify options are closed
-                await Verify.state(
-                    this.page,
-                    `Verify ${dropdownName} Dropdown Options Is Closed`,
-                    dropdownOptions,
-                    { visible: false }
-                );
+                expect(actualService).toBe(serviceName);
             }
         );
-    }
-}
 
-async verifyBookingFiltersAvailable() {
-
-    const filters = [
-        {
-            name: "Doctor",
-            locator: this.locator.doctorDropdown
-        },
-        {
-            name: "Locations",
-            locator: this.locator.locationsDropdown
-        },
-        {
-            name: "Service",
-            locator: this.locator.serviceDropdown
-        },
-        {
-            name: "Date",
-            locator: this.locator.dateDropdown
-        }
-    ];
-
-    for (const filter of filters) {
+        // Get Fees from Booking UI
+        const expectedFees =
+            (await this.keywords.getText(
+                this.locator.fees.first()
+            ))
+                .replace(/\s+/g, " ")
+                .trim();
 
         await StepHelper.step(
             this.page,
-            `Verify ${filter.name} dropdown is available`,
+            `Verify Fees Is Displayed | Expected: ${expectedFees} | Actual: ${expectedFees}`,
             async () => {
-                await this.keywords.verifyElementVisible(
-                    filter.locator
-                );
+
+                expect(expectedFees).toBeTruthy();
             }
         );
-    }
-}
 
-
-// async verifyServiceBookingDropdowns(servicedropdownData) {
-
-//     const dropdowns = [
-//         servicedropdownData.doctorDropdown,
-//         servicedropdownData.locationDropdown,
-//         servicedropdownData.serviceDropdown
-//     ];
-
-//     for (const dropdownName of dropdowns) {
-
-//         await StepHelper.step(
-//             this.page,
-//             `Verify ${dropdownName} Dropdown Is Working`,
-//             async () => {
-
-//                 const dropdown =
-//                     this.locator.dropdown(dropdownName);
-
-//                 await this.keywords.click(dropdown);
-
-//                 await Verify.state(
-//                     this.page,
-//                     `Verify ${dropdownName} Dropdown Is Visible`,
-//                     dropdown,
-//                     { visible: true }
-//                 );
-//             }
-//         );
-//     }
-
-//     await StepHelper.step(
-//         this.page,
-//         `Verify ${servicedropdownData.dateDropdown} Dropdown Is Working`,
-//         async () => {
-
-//             await this.keywords.click(
-//                 this.locator.dateDropdown
-//             );
-
-//             await Verify.state(
-//                 this.page,
-//                 `Verify ${servicedropdownData.dateDropdown} Dropdown Is Visible`,
-//                 this.locator.dateDropdown,
-//                 { visible: true }
-//             );
-//         }
-//     );
-// }
-
-// async verifySelectedServiceAndFees(serviceName) {
-
-//     // Get selected service text
-//     const actualService =
-//         (await this.keywords.getText(
-//             this.locator.selectedService
-//         )).trim();
-
-//     await StepHelper.step(
-//         this.page,
-//         `Verify Selected Service | Expected: ${serviceName} | Actual: ${actualService}`,
-//         async () => {
-
-//             expect(actualService).toBe(serviceName);
-//         }
-//     );
-
-//     // Get Fees text
-//     const actualFees =
-//         (await this.keywords.getText(
-//             this.locator.fees.first()
-//         )).trim();
-
-//     const isFeesVisible =
-//         await this.locator.fees.first().isVisible();
-
-//     await StepHelper.step(
-//         this.page,
-//         `Verify Fees Is Displayed | Expected: visible | Actual: ${actualFees}`,
-//         async () => {
-
-//             expect(isFeesVisible).toBe(true);
-//         }
-//     );
-
-//      await StepHelper.step(
-//             this.page,
-//             'Click Proceed',
-//             async () => {
-//                 await this.keywords.click(
-//                     this.locator.proceedBtn
-//                 );
-//             }
-//         ); 
-// }
-
-// async verifyReviewBookingServiceAndFees(serviceName, fees) {
-
-//     // Get actual Review Service text
-//     const actualService =
-//         (await this.keywords.getText(
-//             this.locator.reviewService
-//         )).trim();
-
-//     await StepHelper.step(
-//         this.page,
-//         `Verify Review Service | Expected: ${serviceName} | Actual: ${actualService}`,
-//         async () => {
-
-//             expect(actualService).toBe(serviceName);
-//         }
-//     );
-
-//     // Get actual Fees text
-//     const actualFees =
-//         (await this.keywords.getText(
-//             this.locator.reviewFees
-//         )).trim();
-
-//     await StepHelper.step(
-//         this.page,
-//         `Verify Review Fees | Expected: ${fees} | Actual: ${actualFees}`,
-//         async () => {
-
-//             expect(actualFees).toContain(fees);
-//         }
-//     );
-
-//       await StepHelper.step(
-//             this.page,
-//             'Click Confirm Booking',
-//             async () => {
-//                 await this.keywords.click(
-//                     this.locator.confirmBookingBtn
-//                 );
-//             }
-//         );
-// }
-
-async verifySelectedServiceAndFess(serviceName) {
-
-    // Verify Selected Service
-    const actualService =
-        (await this.keywords.getText(
-            this.locator.selectedService
-        )).trim();
-
-    await StepHelper.step(
-        this.page,
-        `Verify Selected Service | Expected: ${serviceName} | Actual: ${actualService}`,
-        async () => {
-
-            expect(actualService).toBe(serviceName);
-        }
-    );
-
-    // Get Fees from Booking UI
-    const expectedFees =
-        (await this.keywords.getText(
-            this.locator.fees.first()
-        ))
-        .replace(/\s+/g, " ")
-        .trim();
-
-    await StepHelper.step(
-        this.page,
-        `Verify Fees Is Displayed | Expected: ${expectedFees} | Actual: ${expectedFees}`,
-        async () => {
-
-            expect(expectedFees).toBeTruthy();
-        }
-    );
-
-    await StepHelper.step(
+        await StepHelper.step(
             this.page,
             'Click Proceed',
             async () => {
@@ -864,147 +864,147 @@ async verifySelectedServiceAndFess(serviceName) {
                     this.locator.proceedBtn
                 );
             }
-        ); 
-
-    // Return fees for Review page verification
-    return expectedFees;
-}
-
-
-async verifyReviewBookingServiceDetils(serviceName) {
-
-    // Get actual Service text
-    const actualService =
-        (await this.keywords.getText(
-            this.locator.reviewService
-        )).trim();
-
-    await StepHelper.step(
-        this.page,
-        `Verify Service | Expected: ${serviceName} | Actual: ${actualService}`,
-        async () => {
-
-            expect(actualService).toBe(serviceName);
-        }
-    );
-
-    // Get Fees text from UI
-    const actualFees =
-        (await this.keywords.getText(
-            this.locator.reviewFees
-        ))
-        .replace(/\s+/g, " ")
-        .trim();
-
-    // Expected should be the same UI text
-    const expectedFees = actualFees;
-
-    await StepHelper.step(
-        this.page,
-        `Verify Fees | Expected: ${expectedFees} | Actual: ${actualFees}`,
-        async () => {
-
-            expect(actualFees).toBe(expectedFees);
-        }
-    );
-
-     const expectedDate =
-        this.selectedSlotDate;
-
-    const reviewDateText =
-        await this.keywords.getText(
-            this.locator.reviewAppointmentDate
         );
 
-    const actualDateMatch =
-        reviewDateText.match(
-            /\d{1,2}\s+[A-Za-z]{3},\s*\d{4}/
-        );
-
-    if (!actualDateMatch) {
-        throw new Error(
-            `Unable to read review appointment date: ${reviewDateText}`
-        );
+        // Return fees for Review page verification
+        return expectedFees;
     }
 
-    const actualDate =
-        actualDateMatch[0]
-            .replace(/\s+/g, ' ')
-            .replace(/,\s*/g, ', ')
-            .trim();
 
-    await StepHelper.step(
-        this.page,
-        `Verify Appointment Date | Expected: ${expectedDate} | Actual: ${actualDate}`,
-        async () => {
-            expect(actualDate).toBe(expectedDate);
-        }
-    );
+    async verifyReviewBookingServiceDetils(serviceName) {
 
-    const expectedTime =
-        this.selectedSlotTime;
+        // Get actual Service text
+        const actualService =
+            (await this.keywords.getText(
+                this.locator.reviewService
+            )).trim();
 
-    const reviewDateTime =
-        await this.keywords.getText(
-            this.locator.reviewAppointmentDateTime
+        await StepHelper.step(
+            this.page,
+            `Verify Service | Expected: ${serviceName} | Actual: ${actualService}`,
+            async () => {
+
+                expect(actualService).toBe(serviceName);
+            }
         );
 
-    console.log(
-        `Review Appointment Date Time: ${reviewDateTime}`
-    );
+        // Get Fees text from UI
+        const actualFees =
+            (await this.keywords.getText(
+                this.locator.reviewFees
+            ))
+                .replace(/\s+/g, " ")
+                .trim();
 
-    // Actual time from Review UI
-    const actualTimeMatch =
-        reviewDateTime.match(
-            /\d{1,2}:\d{2}\s*(?:AM|PM)\s*-\s*\d{1,2}:\d{2}\s*(?:AM|PM)/i
+        // Expected should be the same UI text
+        const expectedFees = actualFees;
+
+        await StepHelper.step(
+            this.page,
+            `Verify Fees | Expected: ${expectedFees} | Actual: ${actualFees}`,
+            async () => {
+
+                expect(actualFees).toBe(expectedFees);
+            }
         );
 
-    if (!actualTimeMatch) {
-        throw new Error(
-            `Unable to read review appointment time: ${reviewDateTime}`
-        );
-    }
+        const expectedDate =
+            this.selectedSlotDate;
 
-    const actualTime =
-        actualTimeMatch[0]
-            .replace(/\s+/g, ' ')
-            .trim();
+        const reviewDateText =
+            await this.keywords.getText(
+                this.locator.reviewAppointmentDate
+            );
 
-    // Expected:
-    // 12:30 - 01:00 PM
-    // Convert to:
-    // 12:30 PM - 01:00 PM
-    const expectedTimeMatch =
-        expectedTime.match(
-            /(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})\s*(AM|PM)/i
-        );
+        const actualDateMatch =
+            reviewDateText.match(
+                /\d{1,2}\s+[A-Za-z]{3},\s*\d{4}/
+            );
 
-    if (!expectedTimeMatch) {
-        throw new Error(
-            `Unable to read selected slot time: ${expectedTime}`
-        );
-    }
-
-    const meridiem =
-        expectedTimeMatch[3].toUpperCase();
-
-    const normalizedExpectedTime =
-        `${expectedTimeMatch[1]} ${meridiem} - ${expectedTimeMatch[2]} ${meridiem}`;
-
-    await StepHelper.step(
-        this.page,
-        `Verify Appointment Time | Expected: ${expectedTime} | Actual: ${actualTime}`,
-        async () => {
-
-            expect(
-                actualTime.toUpperCase()
-            ).toBe(
-                normalizedExpectedTime.toUpperCase()
+        if (!actualDateMatch) {
+            throw new Error(
+                `Unable to read review appointment date: ${reviewDateText}`
             );
         }
-    );
 
-     await StepHelper.step(
+        const actualDate =
+            actualDateMatch[0]
+                .replace(/\s+/g, ' ')
+                .replace(/,\s*/g, ', ')
+                .trim();
+
+        await StepHelper.step(
+            this.page,
+            `Verify Appointment Date | Expected: ${expectedDate} | Actual: ${actualDate}`,
+            async () => {
+                expect(actualDate).toBe(expectedDate);
+            }
+        );
+
+        const expectedTime =
+            this.selectedSlotTime;
+
+        const reviewDateTime =
+            await this.keywords.getText(
+                this.locator.reviewAppointmentDateTime
+            );
+
+        console.log(
+            `Review Appointment Date Time: ${reviewDateTime}`
+        );
+
+        // Actual time from Review UI
+        const actualTimeMatch =
+            reviewDateTime.match(
+                /\d{1,2}:\d{2}\s*(?:AM|PM)\s*-\s*\d{1,2}:\d{2}\s*(?:AM|PM)/i
+            );
+
+        if (!actualTimeMatch) {
+            throw new Error(
+                `Unable to read review appointment time: ${reviewDateTime}`
+            );
+        }
+
+        const actualTime =
+            actualTimeMatch[0]
+                .replace(/\s+/g, ' ')
+                .trim();
+
+        // Expected:
+        // 12:30 - 01:00 PM
+        // Convert to:
+        // 12:30 PM - 01:00 PM
+        const expectedTimeMatch =
+            expectedTime.match(
+                /(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})\s*(AM|PM)/i
+            );
+
+        if (!expectedTimeMatch) {
+            throw new Error(
+                `Unable to read selected slot time: ${expectedTime}`
+            );
+        }
+
+        const meridiem =
+            expectedTimeMatch[3].toUpperCase();
+
+        const normalizedExpectedTime =
+            `${expectedTimeMatch[1]} ${meridiem} - ${expectedTimeMatch[2]} ${meridiem}`;
+
+        await StepHelper.step(
+            this.page,
+            `Verify Appointment Time | Expected: ${expectedTime} | Actual: ${actualTime}`,
+            async () => {
+
+                expect(
+                    actualTime.toUpperCase()
+                ).toBe(
+                    normalizedExpectedTime.toUpperCase()
+                );
+            }
+        );
+
+        await StepHelper.step(
             this.page,
             'Click Confirm Booking',
             async () => {
@@ -1013,7 +1013,7 @@ async verifyReviewBookingServiceDetils(serviceName) {
                 );
             }
         );
-}
+    }
 
     async addService(
         patientName,
@@ -1098,6 +1098,144 @@ async verifyReviewBookingServiceDetils(serviceName) {
 
         await this.confirmServiceBooking();
     }
+
+    async addServiceForInvoiceTest(
+        patientName,
+        serviceName,
+        bookingDate
+    ) {
+
+        await this.clickAddService();
+
+        await this.searchPatient(
+            patientName
+        );
+
+        await this.selectProvider(
+            serviceName,
+            bookingDate
+        );
+
+        await this.selectFirstAvailableSlot();
+
+        // Proceed to Review & Confirm
+        await StepHelper.step(
+            this.page,
+            'Proceed to Review and Confirm Service',
+            async () => {
+
+                await this.keywords.click(
+                    this.locator.proceedBtn
+                );
+            }
+        );
+
+        // Wait for Review page
+        await StepHelper.step(
+            this.page,
+            'Wait for Service Review and Confirm Page',
+            async () => {
+
+                // Use the summary element itself as the
+                // indication that Review page is loaded.
+                await this.locator.reviewServiceName.waitFor({
+                    state: 'visible',
+                    timeout: timeout.elementTimeout
+                });
+            }
+        );
+
+        // Capture actual UI values
+        const serviceSummary =
+            await this.getServiceBookingSummary();
+
+        // Confirm Booking
+        await StepHelper.step(
+            this.page,
+            'Confirm Service Booking',
+            async () => {
+
+                await this.keywords.click(
+                    this.locator.confirmBookingBtn
+                );
+            }
+        );
+
+        await this.verifyBookingConfirmation();
+
+        return {
+            serviceSummary
+        };
+    }
+
+    async getServiceBookingSummary() {
+
+        let serviceName;
+        let fees;
+        let location;
+
+        await StepHelper.step(
+            this.page,
+            'Get Service Name From Booking Summary',
+            async () => {
+
+                serviceName =
+                    (
+                        await this.keywords.getText(
+                            this.locator.reviewServiceName
+                        )
+                    ).trim();
+
+                console.log(
+                    `Service Name: ${serviceName}`
+                );
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            'Get Service Fees From Booking Summary',
+            async () => {
+
+                fees =
+                    (
+                        await this.keywords.getText(
+                            this.locator.reviewServiceFee
+                        )
+                    ).trim();
+
+                console.log(
+                    `Service Fees: ${fees}`
+                );
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            'Get Service Location From Booking Summary',
+            async () => {
+
+                location =
+                    (
+                        await this.keywords.getText(
+                            this.locator.reviewServiceLocation
+                        )
+                    ).trim();
+
+                console.log(
+                    `Service Location: ${location}`
+                );
+            }
+        );
+
+        return {
+            serviceName,
+            fees,
+            location
+        };
+
+    }
+
 }
 
 module.exports = { ServicePage };

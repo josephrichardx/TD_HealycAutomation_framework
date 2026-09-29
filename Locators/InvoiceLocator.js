@@ -1,5 +1,4 @@
-class InvoiceLocator 
-{
+class InvoiceLocator {
 
     constructor(page) {
         this.page = page;
@@ -21,10 +20,10 @@ class InvoiceLocator
             });
 
         this.invoiceLineItemName = (invoiceLineItemRow) =>
-        invoiceLineItemRow
-        .locator('td.td-service')
-        .first();
-                
+            invoiceLineItemRow
+                .locator('td.td-service')
+                .first();
+
 
         // Invoice Services
         // this.serviceCheckbox1 =
@@ -92,195 +91,195 @@ class InvoiceLocator
         this.pdfBody =
             page.locator('body');
 
-       this.pdfBody1 = page.locator('//div[@class="textLayer"]//span');
+        this.pdfBody1 = page.locator('//div[@class="textLayer"]//span');
 
-            // page.locator('//div[@class="textLayer"]//span');
+        // page.locator('//div[@class="textLayer"]//span');
 
-          // Financials
+        // Financials
         this.financials = page.getByText(
             'Financials'
         );
 
         // Add Appointment Button
-    this.AppointmentButton = page.locator(
-    "//button[@class='add-appointment-btn']"
-    );
-
-    this.invoiceGenerateButton = page
-    .getByRole('button', {
-        name: 'Create Invoice'
-    })
-    .nth(1);
-
-    this.adjustmentaddadmissionBtn = page.getByRole('button', {
-    name: 'Add Adjustment'
-    });
-
-    this.adjustmentaddadmissionAmountTxt = page.getByRole('textbox', {
-        name: 'Amount'
-    });
-
-    this.adjustmentaddadmissionAddAnotherBtn = page.getByText(
-        '₹ Add Another Adjustment'
-    );
-
-    this.adjustmentaddadmissionDescriptionTxt = page.locator(
-        '.adjust-description-input'
-    );
-
-    this.adjustmentaddadmissionReasonTxt = page.getByRole('textbox', {
-        name: 'Enter reason'
-    });
-
-    this.adjustmentaddadmissionGenerateInvoiceBtn =
-        page.getByRole('button', {
-            name: 'Generate invoice'
-    });
-
-    this.invoiceNumberCell = page.getByRole('cell', {
-        name: 'INV-'
-    });
-
-    this.invoiceTotalAmountCell =
-        this.page.locator(
-            '//tr[.//td[contains(., "INV-")]]/td[3]'
+        this.AppointmentButton = page.locator(
+            "//button[@class='add-appointment-btn']"
         );
 
-    this.viewInvoiceBtn = page.locator(
-        '.fa-regular.fa-eye'
-    );
+        this.invoiceGenerateButton = page
+            .getByRole('button', {
+                name: 'Create Invoice'
+            })
+            .nth(1);
 
-    this.invoiceNumberPdf =
-        this.pdfBody.locator(
-            'span.invoice-id'
-        ).first();
+        this.adjustmentaddadmissionBtn = page.getByRole('button', {
+            name: 'Add Adjustment'
+        });
 
-    this.patientNamePdf =
-        this.pdfBody.locator(
-            'div.name-edit'
-        ).nth(1);
+        this.adjustmentaddadmissionAmountTxt = page.getByRole('textbox', {
+            name: 'Amount'
+        });
 
-    // this.agePdf = (age) =>
-    //     this.pdfBody.getByText(
-    //         `Age : ${age}`
-    //     );
-
-    this.agePdf = (age) =>
-    page.getByText(
-        `Age : ${age}`,
-        { exact: true }
-    ).first();
-
-    this.genderPdf = (gender) =>
-        this.pdfBody.getByText(
-            `Gender : ${gender}`
+        this.adjustmentaddadmissionAddAnotherBtn = page.getByText(
+            '₹ Add Another Adjustment'
         );
 
-    this.subTotalPdf = (subTotal) =>
-        this.pdfBody.getByText(
-            `Sub Total : ${parseFloat(subTotal).toFixed(2)}`
+        this.adjustmentaddadmissionDescriptionTxt = page.locator(
+            '.adjust-description-input'
         );
 
-    this.discountPdf = (discount) =>
-        this.pdfBody.getByText(
-            `Discount : ${parseFloat(discount).toFixed(2)}`
+        this.adjustmentaddadmissionReasonTxt = page.getByRole('textbox', {
+            name: 'Enter reason'
+        });
+
+        this.adjustmentaddadmissionGenerateInvoiceBtn =
+            page.getByRole('button', {
+                name: 'Generate invoice'
+            });
+
+        this.invoiceNumberCell = page.getByRole('cell', {
+            name: 'INV-'
+        });
+
+        this.invoiceTotalAmountCell =
+            this.page.locator(
+                '//tr[.//td[contains(., "INV-")]]/td[3]'
+            );
+
+        this.viewInvoiceBtn = page.locator(
+            '.fa-regular.fa-eye'
         );
 
-    this.adjustmentPdf = (adjustment) =>
-    this.pdfBody.getByText(
-        `Adjustment : ${parseFloat(adjustment).toFixed(2)}`
-    );
+        this.invoiceNumberPdf =
+            this.pdfBody.locator(
+                'span.invoice-id'
+            ).first();
 
-    // this.discountPdf = (discount) =>
-    // this.pdfBody.getByText(
-    //     new RegExp(`Discount\\s*:\\s*${parseFloat(discount).toFixed(2)}`)
-    // );
+        this.patientNamePdf =
+            this.pdfBody.locator(
+                'div.name-edit'
+            ).nth(1);
 
+        // this.agePdf = (age) =>
+        //     this.pdfBody.getByText(
+        //         `Age : ${age}`
+        //     );
 
-    this.totalPdf = (total) =>
-        this.pdfBody.getByText(
-            `Total : ${parseFloat(total).toFixed(2)}`
-        );
+        this.agePdf = (age) =>
+            page.getByText(
+                `Age : ${age}`,
+                { exact: true }
+            ).first();
 
+        this.genderPdf = (gender) =>
+            this.pdfBody.getByText(
+                `Gender : ${gender}`
+            );
 
+        this.subTotalPdf = (subTotal) =>
+            this.pdfBody.getByText(
+                `Sub Total : ${parseFloat(subTotal).toFixed(2)}`
+            );
 
-    this.pdfBody2 =
-        page.locator('body');
+        this.discountPdf = (discount) =>
+            this.pdfBody.getByText(
+                `Discount : ${parseFloat(discount).toFixed(2)}`
+            );
 
-    this.pdfBillNumber =
-        this.pdfBody.getByText(/Bill No\s*:/).first();
+        this.adjustmentPdf = (adjustment) =>
+            this.pdfBody.getByText(
+                `Adjustment : ${parseFloat(adjustment).toFixed(2)}`
+            );
 
-    this.pdfPatientName =
-        this.pdfBody.getByText(/Bill\s*To\s*:/i).first();
-
-    this.pdfAge =
-        this.pdfBody.getByText(/Age\s*:/).first();
-
-    this.pdfGender =
-        this.pdfBody.getByText(/Gender\s*:/).first();
-
-    this.pdfDiscount =
-        this.pdfBody.getByText(/Discount\s*:/).first();
-
-    this.pdfTotalAmount =
-        this.pdfBody.getByText(/^Total\s*:/).first();
-
-
-    // Appointment Details
-    this.appointmentDetails =
-        page.locator('app-appointment-details');
-    // Appointment Status
-    // this.confirmedStatus =
-        // page.locator(
-            // "(//div[@class='field-dropdown'])[2]"
+        // this.discountPdf = (discount) =>
+        // this.pdfBody.getByText(
+        //     new RegExp(`Discount\\s*:\\s*${parseFloat(discount).toFixed(2)}`)
         // );
-    // this.checkInStatus =
+
+
+        this.totalPdf = (total) =>
+            this.pdfBody.getByText(
+                `Total : ${parseFloat(total).toFixed(2)}`
+            );
+
+
+
+        this.pdfBody2 =
+            page.locator('body');
+
+        this.pdfBillNumber =
+            this.pdfBody.getByText(/Bill No\s*:/).first();
+
+        this.pdfPatientName =
+            this.pdfBody.getByText(/Bill\s*To\s*:/i).first();
+
+        this.pdfAge =
+            this.pdfBody.getByText(/Age\s*:/).first();
+
+        this.pdfGender =
+            this.pdfBody.getByText(/Gender\s*:/).first();
+
+        this.pdfDiscount =
+            this.pdfBody.getByText(/Discount\s*:/).first();
+
+        this.pdfTotalAmount =
+            this.pdfBody.getByText(/^Total\s*:/).first();
+
+
+        // Appointment Details
+        this.appointmentDetails =
+            page.locator('app-appointment-details');
+        // Appointment Status
+        // this.confirmedStatus =
         // page.locator(
-            // "(//span[text()='Checked-In'])[2]"
+        // "(//div[@class='field-dropdown'])[2]"
         // );
-    // Visiting Slip
-    this.visitingSlip =
-        page.locator(
-            "(//div[@class='visiting-slip-label'])[2]"
-    );
-    // Rendered visiting-slip PDF page
-    this.visitingSlipPdfPage =
-        page.getByLabel(/Page.*1/);
-    // Visiting Slip pdf text locator
-    this.pdfBody3 =
-        page.locator(
-            '//div[@class="textLayer"]//span'
-    );
+        // this.checkInStatus =
+        // page.locator(
+        // "(//span[text()='Checked-In'])[2]"
+        // );
+        // Visiting Slip
+        this.visitingSlip =
+            page.locator(
+                "(//div[@class='visiting-slip-label'])[2]"
+            );
+        // Rendered visiting-slip PDF page
+        this.visitingSlipPdfPage =
+            page.getByLabel(/Page.*1/);
+        // Visiting Slip pdf text locator
+        this.pdfBody3 =
+            page.locator(
+                '//div[@class="textLayer"]//span'
+            );
 
-   // Appointment Payment Details
+        // Appointment Payment Details
 
-    // this.appointmentInvoiceNumber =
-    //     page.locator(
-    //         'app-appointment-details span.invoice-id'
-    //     ).first();
+        // this.appointmentInvoiceNumber =
+        //     page.locator(
+        //         'app-appointment-details span.invoice-id'
+        //     ).first();
 
-    this.appointmentSendInvoice =
-        page.getByText(
-            'Send invoice',
-            { exact: true }
-        ).first();
+        this.appointmentSendInvoice =
+            page.getByText(
+                'Send invoice',
+                { exact: true }
+            ).first();
 
-    this.appointmentPaymentDue =
-        page.locator(
-            "//app-appointment-details//*[normalize-space()='Payment Due']/parent::*//div[contains(@class,'amount-wrapper')]"
-        ).first();
+        this.appointmentPaymentDue =
+            page.locator(
+                "//app-appointment-details//*[normalize-space()='Payment Due']/parent::*//div[contains(@class,'amount-wrapper')]"
+            ).first();
 
-    this.appointmentPaidAmount =
-        page.locator(
-            "//app-appointment-details//*[normalize-space()='Paid amount']/parent::*//div[contains(@class,'amount-wrapper')]"
-        ).first();
+        this.appointmentPaidAmount =
+            page.locator(
+                "//app-appointment-details//*[normalize-space()='Paid amount']/parent::*//div[contains(@class,'amount-wrapper')]"
+            ).first();
 
         this.appointmentTotalAmount =
-        page.locator(
-            "//app-appointment-details//*[normalize-space()='Total amount']/parent::*//div[contains(@class,'amount-wrapper')]"
-        ).first();
+            page.locator(
+                "//app-appointment-details//*[normalize-space()='Total amount']/parent::*//div[contains(@class,'amount-wrapper')]"
+            ).first();
 
-         const appointmentDetailsPanel = page.locator(
+        const appointmentDetailsPanel = page.locator(
 
             'app-appointment-details'
 
@@ -324,7 +323,7 @@ class InvoiceLocator
             page.locator('table.billing-table tbody tr').first();
 
         this.invoiceLineItemNumberInputs = (invoiceLineItemRow) =>
-        invoiceLineItemRow.locator('input[type="number"]');
+            invoiceLineItemRow.locator('input[type="number"]');
 
         this.invoiceAmountTxt =
             page.getByRole('textbox', {
@@ -341,15 +340,15 @@ class InvoiceLocator
 
         this.itemDescriptionPdf = (itemName) =>
             this.pdfBody.getByText(itemName).first();
-                this.balancePdf = (balance) =>
+        this.balancePdf = (balance) =>
             this.pdfBody.getByText(
                 `Balance : ${parseFloat(balance).toFixed(2)}`
-        );
+            );
 
         this.creditAppliedPdf = (creditApplied) =>
             this.pdfBody.getByText(
                 `Credit Applied : ${parseFloat(creditApplied).toFixed(2)}`
-        );
+            );
 
         this.invoiceHistoryTab = page.getByText(
             'Invoice History',
@@ -380,31 +379,51 @@ class InvoiceLocator
 
         this.patientNamePdfFromFinancials = (patientName) =>
             this.pdfBody.getByText(`Bill To : ${patientName}`);
-                this.appointmentInvoiceNumber =
+        this.appointmentInvoiceNumber =
             page.locator(
                 'app-appointment-details span.invoice-id'
-        ).last();
+            ).last();
 
         this.invoicePaymentDetailsReceiptNumberPdf =
-        this.pdfBody.getByText(/^\d{6}$/).last();
+            this.pdfBody.getByText(/^\d{6}$/).last();
 
         this.invoicePaymentDetailsAmountPdf = (amount) =>
             this.pdfBody.getByText(
                 parseFloat(amount).toFixed(2)
-        ).last();
+            ).last();
 
         this.appointmentPaymentHistoryRows =
-        page.locator(
-            'div.payment-history table tbody tr'
-        );
+            page.locator(
+                'div.payment-history table tbody tr'
+            );
 
         this.paymentHistoryViewReceiptIcon = (row) =>
-        row.locator('i.fa-eye[title="View Receipt"]');
+            row.locator('i.fa-eye[title="View Receipt"]');
+
+        this.invoiceTemplateRows =
+            page.locator(
+                'table.billing-table tbody tr'
+            );
+
+
+        this.invoiceTemplateItemName =
+            (row) =>
+                row
+                    .locator('td.td-service')
+                    .first();
+
+
+        this.invoiceTemplateItemTotal =
+            (row) =>
+                row
+                    .locator('td.td-small.cell-input')
+                    .first();
+
+
     }
 
 
-    getPatientName(patientName) 
-    {
+    getPatientName(patientName) {
 
         return this.page.getByText(
 
@@ -412,7 +431,7 @@ class InvoiceLocator
 
             { exact: true }
         );
-            
+
 
     }
 

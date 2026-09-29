@@ -255,14 +255,14 @@ class ConsultPage {
                      * Wait for the next date's slot state instead.
                      */
 
-                    
+
                     await this.locator.slotButton
                         .first()
                         .waitFor({
                             state: 'visible',
                             timeout: timeout.testTimeout
                         })
-                        .catch(() => {});
+                        .catch(() => { });
                 }
             }
         );
@@ -486,7 +486,7 @@ class ConsultPage {
             bookingDate
         );
 
-         await this.selectDoctor(
+        await this.selectDoctor(
             doctorName
         );
 
@@ -951,7 +951,7 @@ class ConsultPage {
                         await chip.waitFor({
                             state: 'hidden',
                             timeout: timeout.elementTimeout
-                        }).catch(() => {});
+                        }).catch(() => { });
                     }
                 }
             );
@@ -2256,6 +2256,170 @@ class ConsultPage {
             chip
         );
     }
+
+    async addConsultForInvoiceTest(
+        patientName,
+        doctorName,
+        consultSlot
+    ) {
+
+        await this.clickAddConsult();
+
+        await this.searchPatient(patientName);
+
+        await this.selectProvider();
+
+        await this.selectConsultSlot(
+            consultSlot
+        );
+
+        await this.selectDoctor(
+            doctorName
+        );
+
+        const selectedSlotDate =
+            await this.selectFirstAvailableSlot();
+
+        // Proceed to Review & Confirm
+        await StepHelper.step(
+            this.page,
+            'Proceed to Review and Confirm Appointment',
+            async () => {
+                await this.keywords.click(
+                    this.locator.proceedBtn
+                );
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            'Wait for Review and Confirm Appointment',
+            async () => {
+                await expect(
+                    this.locator.reviewPageTitle
+                ).toBeVisible({
+                    timeout: timeout.elementTimeout
+                });
+            }
+        );
+
+        // Capture dynamic values before confirmation
+        const consultSummary =
+            await this.getConsultBookingSummary();
+
+        // Confirm Booking
+        await StepHelper.step(
+            this.page,
+            'Confirm Consult Booking',
+            async () => {
+                await this.keywords.click(
+                    this.locator.confirmBookingBtn
+                );
+            }
+        );
+
+        await StepHelper.step(
+            this.page,
+            'Verify Consult Booking Confirmation',
+            async () => {
+                await expect(
+                    this.locator.bookingConfirmMsg
+                ).toBeVisible({
+                    timeout: timeout.elementTimeout
+                });
+            }
+        );
+
+        return {
+            bookingDate: selectedSlotDate,
+            consultSummary
+        };
+    }
+
+    async getConsultBookingSummary() {
+
+        let consultType;
+        let fees;
+        let location;
+
+
+        // ==========================================
+        // Get Consult Type
+        // ==========================================
+
+        await StepHelper.step(
+            this.page,
+            'Get Consult Type From Booking Summary',
+            async () => {
+
+                consultType =
+                    (
+                        await this.keywords.getText(
+                            this.locator.reviewConsultType
+                        )
+                    ).trim();
+
+                console.log(
+                    `Consult Type: ${consultType}`
+                );
+            }
+        );
+
+
+        // ==========================================
+        // Get Consult Fees
+        // ==========================================
+
+        await StepHelper.step(
+            this.page,
+            'Get Consult Fees From Booking Summary',
+            async () => {
+
+                fees =
+                    (
+                        await this.keywords.getText(
+                            this.locator.reviewAppointmentFee
+                        )
+                    ).trim();
+
+                console.log(
+                    `Consult Fees: ${fees}`
+                );
+            }
+        );
+
+
+        // ==========================================
+        // Get Consult Location
+        // ==========================================
+
+        await StepHelper.step(
+            this.page,
+            'Get Consult Location From Booking Summary',
+            async () => {
+
+                location =
+                    (
+                        await this.keywords.getText(
+                            this.locator.reviewConsultLocation
+                        )
+                    ).trim();
+
+                console.log(
+                    `Consult Location: ${location}`
+                );
+            }
+        );
+
+
+        return {
+            consultType,
+            fees,
+            location
+        };
+    }
+
+
 }
 
 
