@@ -420,6 +420,7 @@ this.instructionInput =
     page.locator('input[placeholder="Enter instructions"]');//new
 
 
+
 // this.observationRow = (drugName) =>
 //     this.page.locator(
 //         `//tr[contains(@class,'medication-row')][.//input[@value="${drugName.trim()}"]]`
@@ -685,10 +686,10 @@ this.graphTooltipText =
         ".apexcharts-tooltip-text"
     );
 
-   this.section1ViewTrendGraph =
-    page.locator(
-        "(//button[@title='View trend graph'])[1]"
-    );
+//    this.section1ViewTrendGraph =
+//     page.locator(
+//         "(//button[@title='View trend graph'])[1]"
+//     );
 
 this.graphOneMonth =
     page.locator(
@@ -715,10 +716,11 @@ this.graphNote =
         ".graph-note"
     );
 
-    this.section1ViewTrendGraph =
-    page.locator(
-        "(//button[@title='View trend graph'])[1]"
-    );
+    // this.section1ViewTrendGraph =
+    // page.locator(
+    //     "(//button[@title='View trend graph'])[1]"
+    // );
+
   this.graphSection1Point =
     page.locator(
         "//path[contains(@class,'apexcharts-marker') and @rel='0' and @j='0' and @index='1']"
@@ -898,7 +900,7 @@ this.documentsBtn =
 // this.viewButton =
 //     page.locator("//button[@title='View']").first();
 
-this.viewButton =
+this.viewButtonLast =
     page.locator("//button[@title='View']").last();
  
 this.previewActions = page.locator(
@@ -1011,9 +1013,9 @@ this.rmoSpecificAdviceFavoritesCheckbox =
 this.editDocumentButton =
     page.locator("//button[@title='Edit']").first();
 
-this.previewActions = page.locator(
-    "//div[contains(@class,'preview-actions')]"
-);
+// this.previewActions = page.locator(
+//     "//div[contains(@class,'preview-actions')]"
+// );
 
 this.closePdf =
     page.locator("//i[contains(@class,'fa-solid fa-xmark')]");
@@ -1202,9 +1204,9 @@ this.checkedAllergiesToxicityRow = page.locator(
 
 this.allergiestoxicityText =page.locator("//h3[text()='Allergies/Toxicity']");
 
-this.allergiesToxicityRows = page.locator(
-    "//h3[text()='Allergies/Toxicity']//following::tbody[1]//tr"
-);
+// this.allergiesToxicityRows = page.locator(
+//     "//h3[text()='Allergies/Toxicity']//following::tbody[1]//tr"
+// );
 
 // =====================================================
 // Allergies / Toxicity - Row 2
@@ -1381,9 +1383,9 @@ this.coMorbidityRowData = (rowIndex) => {
 };
 
 
-this.allergiesToxicityRows = page.locator(
-    "//h3[text()='Allergies/Toxicity']//following::tbody[1]//tr"
-);
+// this.allergiesToxicityRows = page.locator(
+//     "//h3[text()='Allergies/Toxicity']//following::tbody[1]//tr"
+// );
 
 this.allergiesToxicityRowData = (rowIndex) => {
 
@@ -1601,10 +1603,10 @@ this.toxicityRows =
 //         "//tbody/tr//input[contains(@class,'cell-input')]"
 //     );
 
-this.toxicityDrugSearchInput =
-    page.locator(
-        "//h3[text()='Toxicity']//following::textarea[@placeholder='Search or enter drug name']"
-    );
+// this.toxicityDrugSearchInput =
+//     page.locator(
+//         "//h3[text()='Toxicity']//following::textarea[@placeholder='Search or enter drug name']"
+//     );
 
 // -----------------------------------------------------
 // Favorite
@@ -2018,9 +2020,9 @@ this.drugCell = page.locator(
     "//td[contains(@class,'col-drug col-id')]"
 );
 
-this.drugSearchInput = page.locator(
-    "//textarea[contains(@class,'drug-name-input')]"
-);//old
+// this.drugSearchInput = page.locator(
+//     "//textarea[contains(@class,'drug-name-input')]"
+// );//old
 
 this.scheduleInput = (rowIndex) =>
     page
@@ -2082,9 +2084,9 @@ this.dosageInput = page.locator(
 //         .locator("//tr[contains(@class,'medication-row')]")
 //         .nth(rowIndex)
 //         .locator("td.col-dosage select");
-this.dosageUnitDropdown = page.locator(
-    "//tr[contains(@class,'medication-row')]//td[contains(@class,'col-dosage')]//select"
-);
+// this.dosageUnitDropdown = page.locator(
+//     "//tr[contains(@class,'medication-row')]//td[contains(@class,'col-dosage')]//select"
+// );
 
 // Frequency
 this.frequencyDropdown = page.locator(
@@ -2119,20 +2121,20 @@ this.durationInput = page.locator(
 //     "//td[contains(@class,'col-duration')]//select"
 // );
 
-this.durationUnitDropdown = (rowIndex) =>
-    page
-        .locator("//tr[contains(@class,'medication-row')]")
-        .nth(rowIndex)
-        .locator("td.col-duration select");  
+// this.durationUnitDropdown = (rowIndex) =>
+//     page
+//         .locator("//tr[contains(@class,'medication-row')]")
+//         .nth(rowIndex)
+//         .locator("td.col-duration select");  
 
 // Instruction
 // this.instructionInput = page.locator(
 //     "//td[contains(@class,'col-instructions')]//input"
 // );
 
-this.medicationRows = page.locator(
-    "//tr[contains(@class,'medication-row')]"
-);
+// this.medicationRows = page.locator(
+//     "//tr[contains(@class,'medication-row')]"
+// );
 
 // this.medicationRows = page.locator(
 //     "//tr[contains(@class,'medication-row')]"
@@ -2168,8 +2170,8 @@ this.instructionCell = (rowIndex) =>
 //     this.instructionCell(rowIndex)
 //         .locator("input[placeholder*='Type instruction']");//old
 
-this.instructionInput =
-    page.locator('input[placeholder="Enter instructions"]');//new
+// this.instructionInput =
+//     page.locator('input[placeholder="Enter instructions"]');//new
 
 
 // this.observationRow = (drugName) =>
@@ -2318,8 +2320,8 @@ this.observationSection =
 //         'app-emr-medications-table[data-section-id="co_morbidities"] button[title="Add row"]'
 //     );//old
 
-this.observationAddRowBtn =
-    page.locator('button.add-new-btn').first();//new
+// this.observationAddRowBtn =
+//     page.locator('button.add-new-btn').first();//new
 
 // NEW TAB - SAVE
 // =======================
@@ -2363,9 +2365,9 @@ this.templatesButton = page.locator(
     "//button[@aria-label='Templates']"
 );
 
-this.templateSearchInput = page.locator(
-    "//input[@placeholder='Search templates...']"
-);
+// this.templateSearchInput = page.locator(
+//     "//input[@placeholder='Search templates...']"
+// );
 
 this.templateListName = page.locator(
     "//div[contains(@class,'tpl-card-name')]"
@@ -2515,10 +2517,10 @@ this.documentsBtn =
 //     "//div[contains(@class,'mrdoc-actions')]"
 // );
 
-this.documentActions =
-    page.locator(
-        "//div[contains(@class,'mrdoc-actions')]"
-    ).first();
+// this.documentActions =
+//     page.locator(
+//         "//div[contains(@class,'mrdoc-actions')]"
+//     ).first();
 
 // this.viewButton = page.locator(
 //     "//button[@title='View']"
@@ -2534,9 +2536,9 @@ this.viewButton = page.locator(
 this.editDocumentButton =
     page.locator("//button[@title='Edit']").first();
 
-this.previewActions = page.locator(
-    "//div[contains(@class,'preview-actions')]"
-);
+// this.previewActions = page.locator(
+//     "//div[contains(@class,'preview-actions')]"
+// );
 
 this.closePdf =
     page.locator("//i[contains(@class,'fa-solid fa-xmark')]");
@@ -2544,8 +2546,8 @@ this.closePdf =
 // this.closeHistory =
 //     page.locator("//i[contains(@class,'fa-light fa-xmark')]");
 
-this.closeHistory =
-    page.locator("//button[@aria-label='Close']");
+// this.closeHistory =
+//     page.locator("//button[@aria-label='Close']");
 
 // =========================
 // DRUG OPTIONS
@@ -2556,11 +2558,11 @@ this.closeHistory =
 //         `//label[contains(@class,"fav-option")]//span[contains(@class,"fav-option-cell") and normalize-space()="${drugName}"]`
 //     );
 
-this.favoriteDrug =
-    (drugName) =>
-        page.locator(
-            `//div[text()='Favourites']//following::label[@class='fav-option'][.//span[contains(normalize-space(),'${drugName}')]]`
-        );
+// this.favoriteDrug =
+//     (drugName) =>
+//         page.locator(
+//             `//div[text()='Favourites']//following::label[@class='fav-option'][.//span[contains(normalize-space(),'${drugName}')]]`
+//         );
 
 // this.firstFavoriteOption =
 //     page.locator(
@@ -2596,10 +2598,10 @@ this.drugLibraryDrug = (drugName) =>
                 );
 
         // Favorite option
-        this.firstFavoriteOption =
-            page.locator(
-                'text=FAVOURITES'
-            ).locator('xpath=following::input[@type="checkbox"][1]');
+        // this.firstFavoriteOption =
+        //     page.locator(
+        //         'text=FAVOURITES'
+        //     ).locator('xpath=following::input[@type="checkbox"][1]');
 
 
         // Drug input inside same row
@@ -2674,10 +2676,10 @@ this.toxicitySection =
 //         "div.fav-dropdown:visible label.fav-option input[type='checkbox']"
 //     ).first();
 
-this.toxicityFavoriteOption =
-    page.locator(
-        "div.fav-dropdown:visible input[type='checkbox']"
-    ).first();
+// this.toxicityFavoriteOption =
+//     page.locator(
+//         "div.fav-dropdown:visible input[type='checkbox']"
+//     ).first();
 
 // =====================================================
 // FORM
@@ -2705,8 +2707,8 @@ this.toxicityAddNewBtn =
 // =====================================================
 
 // Toxicity Header
-this.toxicityHeader =
-    page.locator("//h3[normalize-space()='Toxicity']");
+// this.toxicityHeader =
+//     page.locator("//h3[normalize-space()='Toxicity']");
 
 
 // Toxicity Rows
@@ -2742,10 +2744,10 @@ this.specificAdviceElements = page.locator(
 //         "//tbody/tr//input[contains(@class,'cell-input')]"
 //     );
 
-this.toxicityDrugSearchInput =
-    page.locator(
-        "//h3[text()='Toxicity']//following::textarea[@placeholder='Search or enter drug name']"
-    );
+// this.toxicityDrugSearchInput =
+//     page.locator(
+//         "//h3[text()='Toxicity']//following::textarea[@placeholder='Search or enter drug name']"
+//     );
 
 // -----------------------------------------------------
 // Favorite
@@ -2764,12 +2766,12 @@ this.toxicityDrugSearchInput =
 // Form
 // -----------------------------------------------------
 
-this.toxicityFormDropdown =
-    page.locator(
-        "//h3[normalize-space()='Toxicity']" +
-        "/following::table[contains(@class,'medications-table')][1]" +
-        "//tbody/tr//select"
-    );
+// this.toxicityFormDropdown =
+//     page.locator(
+//         "//h3[normalize-space()='Toxicity']" +
+//         "/following::table[contains(@class,'medications-table')][1]" +
+//         "//tbody/tr//select"
+//     );
 
 
 // -----------------------------------------------------
@@ -3040,9 +3042,9 @@ this.checkedAllergiesToxicityRow = page.locator(
  
 this.allergiestoxicityText =page.locator("//h3[text()='Allergies/Toxicity']");
  
-this.allergiesToxicityRows = page.locator(
-    "//h3[text()='Allergies/Toxicity']//following::tbody[1]//tr"
-);
+// this.allergiesToxicityRows = page.locator(
+//     "//h3[text()='Allergies/Toxicity']//following::tbody[1]//tr"
+// );
 
 // Allergies / Toxicity - Form dropdown
 this.allergiesToxicityForm = (rowIndex) =>
