@@ -1,0 +1,31 @@
+{
+  "patientData": {
+    "title": "Mr",
+    "mobileNumber": "1234567890",
+    "referralBy": "Doctor",
+    "notes": "Healync",
+    "email": "test@gmail.com",
+    "invalidEmail": "test@",
+    "age": "21",
+    "gender": "Male",
+    "address": "Chennai",
+ 
+    "missingSalutationTitle": "Incomplete details",
+    "missingSalutationSubtext": "Salutations are important",
+ 
+    "invalidNameTitle": "Invalid value for Patient Name",
+    "invalidNameSubtext": "Invalid value for Patient Name provided for Patient's Name. Please follow any one of these formats: Sanjay Yadav, S Y, etc.",
+ 
+    "missingMandatoryTitle": "Incomplete details",
+    "missingMandatorySubtext": "Please fill all mandatory fields",
+ 
+    "invalidEmailTitle": "Invalid value for Email",
+ 
+    "missingReferralTitle": "Incomplete details",
+    "missingReferralSubtext": "Patient referral is important"
+  },
+  "toastMessages": {
+    "patientSavedSuccess": "Patient Saved successfully",
+    "patientUpdatedSuccess": "Patient details updated successfully"
+  }
+}

@@ -450,13 +450,8 @@ this.getConsentCheckbox = (question) =>
 
 this.pdfTextLayer = page.locator('div.textLayer');
 
-
 this.patientNameText = page.locator(
-    "//div[contains(text(),'Patient Name :')]"
-);
-
-this.boldButton = page.locator(
-    "//button[@title='Bold']"
+    "//*[normalize-space(text())='Patient Name :']"
 );
 
 this.italicButton = page.locator(
@@ -482,6 +477,28 @@ this.italicPatientName = page.locator(
 this.underlinePatientName = page.locator(
     "//u[contains(text(),'Patient Name :')]"
 );
+
+this.alignLeftButton = page.locator("//button[@title='Align left']");
+
+this.leftAlignedPatientName = page.locator(
+    "//div[contains(text(),'Patient Name :')]"
+);
+
+
+this.textToFormat = (text) =>
+    page.locator(`//*[normalize-space(text())='${text}']`);
+
+this.boldButton = page.locator(
+    "//button[@title='Bold']"
+);
+
+this.boldText = (text) =>
+    page.locator(`//b[normalize-space()='${text}']`);
+
+this.unBoldText = (text) =>
+    page.locator(
+        `//div[normalize-space(text())='${text}']`
+    );
 
     }
 

@@ -62,5 +62,9 @@
 
     "consentCheckboxData": {
     "The name and reason for this procedure has been explained to me.": true
+    },
+    
+    "formatData": {
+        "text": "Patient Name :"
     }
 }

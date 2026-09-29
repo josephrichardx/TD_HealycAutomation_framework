@@ -7,7 +7,7 @@ const { PatientPage } = require('../pages/PatientPage.js');
 const { IPDPage } = require('../pages/IPDPage.js');
  
 
-const { patientData,admissionPatientData,administrativeForm,signatureData,consentCheckboxData} = require('../testdata/TC_IPD_036.json');
+const { patientData,admissionPatientData,administrativeForm,signatureData,consentCheckboxData,formatData} = require('../testdata/TC_IPD_036.json');
 const { generateUniquePatientFullName } = require('../utils/RandomData.js'); 
 import {generateAdmissionDate,generateAdmissionTime,getAdmissionData} from '../utils/RandomData.js';
 
@@ -133,6 +133,21 @@ test('IPD Admission Form', async ({ page }) => {
     administrativeForm.formName
     );
 
+    await ipdPage.verifyPatientNameBold(
+        formatData
+    );
+
+    await ipdPage.UnboldPatientName(
+        formatData
+    );
+
+
+    await ipdPage.italicPatientName();
+
+    await ipdPage.underlinePatientName();
+
+     await ipdPage.alignLeftPatientName();
+
     await ipdPage.fillAdministrativeFormFields(
     administrativeForm
     );
@@ -148,14 +163,6 @@ test('IPD Admission Form', async ({ page }) => {
     await ipdPage.verifyAdministrativeFormDetails(
     administrativeForm
     );
-
-    await ipdPage.boldPatientName();
-
-    await ipdPage.UnboldPatientName();
-
-    await ipdPage.italicPatientName();
-
-    await ipdPage.underlinePatientName();
 
     await ipdPage.fillandVerifyConsentCheckboxes(
     consentCheckboxData
