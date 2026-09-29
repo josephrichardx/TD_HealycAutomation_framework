@@ -23,25 +23,6 @@
    "templateAppliedMessage": "Template Applied successfully!"
   },
 
- "prescriptionData": {
-
-    "addRows": 1,
-    "drugs": [
-          {
-            "drugName": " 1 AL Plus 5mg/120mg Capsule ",
-            "durationType1": "Days",
-            "durationType2": "Weeks",
-            "instruction": "Before Food"
-          },
-          {
-            "drugName": "1 Nvp Tablet",
-            "durationType1": "Weeks",
-            "durationType2": "Months",
-            "instruction": "After Food"
-          }
-      ]
-},
-
 "observationData": {
     "index": 0,
     "row": 2,
@@ -74,12 +55,6 @@
     "instruction": "INS 1"
 },
 
-  "marginData": {
-    "top": "10",
-    "bottom": "20",
-    "leftRight": "15"
-  },
-
     "template": {
         "formatValue": "EMR_AUTOMATION TD",
         "savedMessage": "Template saved successfully.",
@@ -96,6 +71,14 @@
     "text2": "Custom text for 'Other Findings'"
     },   
 
+    "MultiotherFindings": {
+    "text1": "Custom other findings",
+    "text2": "Custom text for 'Other Findings'",
+    "text3": "This is a text favourite for 'Other Findings'",
+    "text4": "Custom text for 'Other Findings' test",
+    "text5": "This is a another text favourite for 'Other Findings' Option 1 FIll'"
+    },   
+
     
     "sectionsToAdd": [
     "Co-morbidities",
@@ -103,56 +86,20 @@
     "Other Findings"
     ],
 
+    "sectionsToUncheck": [
+    "Advice"
+    ],
+
     "otherFindingsCrud": {
         "text1": "Custom other findings",
         "text2": "Custom text for 'Other Findings' test",
         "updatedText": "Updated Other Findings"
     },
+
     
-  "coMorbidities": [
-    {
-      "source": "Favorites",
-      "drugName": "1 AL AX 5mg/75mg Capsule",
-      "form": "Capsule",
-      "strength": "1",
-      "strengthUnit": "mg",
-      "duration": "1",
-      "durationUnit": "Days",
-      "instruction": "INS1"
-    },
-    {
-      "source": "Suggestions",
-      "drugName": "1-AL M Tablet",
-      "form": "Tablet",
-      "strength": "1",
-      "strengthUnit": "mg",
-      "duration": "1",
-      "durationUnit": "Days",
-      "instruction": "INS2"
-    },
-    {
-      "source": "Drug Library",
-      "drugName": "1 Nvp Tablet",
-      "form": "Tablet",
-      "strength": "1",
-      "strengthUnit": "mg",
-      "duration": "1",
-      "durationUnit": "Days",
-      "instruction": "INS3"
-    },
-    {
-      "source": "Custom",
-      "drugName": "Custom Test Medicine",
-      "form": "Tablet",
-      "strength": "10",
-      "strengthUnit": "mg",
-      "duration": "5",
-      "durationUnit": "Days",
-      "instruction": "After Food"
+    "signatureData": {
+        "signatureName": "Test",
+        "patientSignatureName": "Cardiologist"
     }
-  ]
-
-
-
 
 }

@@ -2318,4 +2318,81 @@ export class NewPatient {
             timeout.elementTimeout
         );
     }
+
+
+      async validatePatientCreationFlow(
+    patientName,
+    patientData,
+    errorData
+) {
+ 
+    // 1. Empty mandatory fields
+    await this.validateEmptyMandatoryFields();
+ 
+    // 2. Missing Salutation
+    await this.validateMissingSalutation(
+        patientName,
+        patientData,
+        errorData
+    );
+ 
+    // 3. Missing Name
+    await this.validateMissingName(
+        patientData,
+        errorData
+    );
+ 
+    // 4. Missing Mobile
+    await this.validateMissingMobile(
+        patientName,
+        patientData
+    );
+ 
+    // 5. Missing Referral
+    await this.validateMissingReferral(
+        patientName,
+        patientData,
+        errorData
+    );
+ 
+    // 6. Invalid Email Format
+    await this.validateInvalidEmailFormat(
+        patientName,
+        patientData,
+        patientData.invalidEmail
+    );
+}
+
+ async verifyPatientDetail(patientData) {
+ 
+    const actualUhid =
+        (
+            await this.keywords.getText(
+                this.locator.profileUhidText
+            )
+        ).trim();
+ 
+    await Verify.record(
+        this.page,
+        patientData.uhidLogText,
+        actualUhid
+    );
+ 
+    await Verify.text(
+    this.page,
+    'Patient Profile - Phone',
+    `+91 ${patientData.mobileNumber}`,
+    this.locator.profilePhoneText,
+    { exact: true }
+);
+ 
+    await Verify.text(
+        this.page,
+        'Patient Profile - Referral Source',
+        patientData.notes,
+        this.locator.profileReferralSourceValue,
+        { exact: true }
+    );
+}
+
 }

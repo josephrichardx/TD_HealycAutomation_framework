@@ -1,0 +1,17 @@
+{
+    "patientData": {
+    "title": "Mr",
+    "mobileNumber": "1234567890",
+    "referralBy": "Doctor",
+    "notes": "Healync",
+    "email": "test@gmail.com",
+    "invalidEmail": "test@",
+    "age": "21",
+    "gender": "Male",
+    "address": "Chennai"
+},
+"toastMessages": {
+    "patientSavedSuccess": "Patient Saved successfully",
+    "patientUpdatedSuccess": "Patient details updated successfully"
+  }
+}

@@ -7,6 +7,7 @@ const { IPDLocator } = require('../Locators/IPDLocator.js');
 const { Verify } = require('../utils/verification.js');
 
 const timeoutData = require('../testdata/timeout.json');
+const { time } = require('node:console');
 const { timeout } = timeoutData;
 
 class IPDPage {
@@ -815,6 +816,87 @@ class IPDPage {
     );
 }
 
+
+ async CloseandaddAdministrativeForm(formName) {
+
+    await this.ClosetheForm();
+
+    // await StepHelper.step(
+    //     this.page,
+    //     'Click Add Administrative Form',
+    //     async () => {
+    //         await this.keywords.click(
+    //             this.locator.addAdministrativeFormBtn
+    //         );
+    //     }
+    // );
+
+    await StepHelper.step(
+        this.page,
+        'Click Search Consent Form',
+        async () => {
+            await this.keywords.click(
+                this.locator.searchConsentFormInput
+            );
+        }
+    );
+
+    await StepHelper.step(
+        this.page,
+        `Fill Consent Form - ${formName}`,
+        async () => {
+            await this.locator.searchConsentFormInput.fill(formName);
+        }
+    );
+
+    await StepHelper.step(
+    this.page,
+    `Select Consent Form - ${formName}`,
+    async () => {
+        await this.keywords.click(
+            this.locator.suggestionContent
+        );
+    }
+    );
+
+    await this.locator.formHeader.waitFor({
+    state: 'visible',
+    timeout: timeout.elementTimeout
+    });
+
+    const actualText = await this.keywords.getText(
+        this.locator.formHeader
+    );
+
+    await StepHelper.step(
+        this.page,
+        `Verify Administrative Form | Expected: ${formName} | Actual: ${actualText}`,
+        async () => {
+
+            expect(actualText).toBe(formName);
+        }
+    );
+}
+
+async ClosetheForm() {
+
+    await StepHelper.step(
+        this.page,
+        'Click Close Form',
+        async () => {
+
+            await this.locator.closeFormButton.waitFor({
+                state: 'visible',
+                timeout: timeout.actionTimeout
+            });
+
+            await this.locator.closeFormButton.click();
+        }
+    );
+
+    await this.page.waitForTimeout(timeout.elementTimeout);
+}
+
 async fillAdministrativeFormFields(administrativeForm) {
 
     const fields = [
@@ -1328,7 +1410,7 @@ async verifyAdministrativeFormDetails(administrativeForm) {
 //     }
 // }
 
-async fillConsentCheckboxes(consentCheckboxData) {
+async fillandVerifyConsentCheckboxes(consentCheckboxData) {
 
     for (const [question, expectedValue] of Object.entries(consentCheckboxData)) {
 
@@ -1367,33 +1449,458 @@ async fillConsentCheckboxes(consentCheckboxData) {
 }
 
 
-async boldPatientName() {
+
+async verifyPatientNameBold(formatData) {
+
+    const text = formatData.text;
+
+    await StepHelper.step(
+        this.page,
+        `Select ${text}`,
+        async () => {
+
+            const textLocator =
+                this.locator.textToFormat(text);
+
+            await textLocator.waitFor({
+                state: 'visible',
+                timeout: timeout.actionTimeout
+            });
+
+            await textLocator.selectText();
+        }
+    );
+
+    await StepHelper.step(
+        this.page,
+        `Verify ${text} is Bold`,
+        async () => {
+
+            const boldLocator =
+                this.locator.boldText(text);
+
+            await boldLocator.waitFor({
+                state: 'visible',
+                timeout: timeout.actionTimeout
+            });
+
+            await expect(boldLocator).toBeVisible();
+        }
+    );
+}
+
+async UnboldPatientName(formatData) {
+
+    const text = formatData.text;
+
+    await StepHelper.step(
+        this.page,
+        `Select ${text}`,
+        async () => {
+
+            const textLocator =
+                this.locator.textToFormat(text);
+
+            await textLocator.waitFor({
+                state: 'visible',
+                timeout: timeout.actionTimeout
+            });
+
+            await textLocator.selectText();
+        }
+    );
+
+    await StepHelper.step(
+        this.page,
+        `Click Bold to UnBold ${text}`,
+        async () => {
+
+            await this.locator.boldButton.waitFor({
+                state: 'visible',
+                timeout: timeout.actionTimeout
+            });
+
+            await this.locator.boldButton.click();
+        }
+    );
+
+    await StepHelper.step(
+        this.page,
+        `Verify ${text} is UnBold`,
+        async () => {
+
+            const unBoldLocator =
+                this.locator.unBoldText(text);
+
+            await unBoldLocator.waitFor({
+                state: 'visible',
+                timeout: timeout.actionTimeout
+            });
+
+            await expect(unBoldLocator).toBeVisible();
+
+            const boldLocator =
+                this.locator.boldText(text);
+
+            await expect(boldLocator).toHaveCount(0);
+        }
+    );
+
+    await this.page.waitForTimeout(timeout.testTimeout);
+}
+
+// async UnboldPatientName(formatData) {
+
+//     const text = formatData.text;
+
+//     await this.selectPatientNameText();
+
+//     await StepHelper.step(
+//         this.page,
+//         `Click Bold to UnBold ${text}`,
+//         async () => {
+
+//             await this.locator.boldButton.waitFor({
+//                 state: 'visible',
+//                 timeout: timeout.actionTimeout
+//             });
+
+//             await this.locator.boldButton.click();
+//         }
+//     );
+
+//     await StepHelper.step(
+//         this.page,
+//         `Verify ${text} is UnBold`,
+//         async () => {
+
+//             await this.locator.unBoldText(text).waitFor({
+//                 state: 'visible',
+//                 timeout: timeout.actionTimeout
+//             });
+
+//             await expect(
+//                 this.locator.unBoldText(text)
+//             ).toBeVisible();
+
+//             await expect(
+//                 this.locator.boldText(text)
+//             ).toHaveCount(0);
+//         }
+//     );
+
+//     await this.page.waitForTimeout(timeout.testTimeout);
+// }
+
+async selectPatientNameText() {
 
     await StepHelper.step(
         this.page,
         'Select Patient Name :',
         async () => {
-            await this.locator.patientNameText.selectText();
-        }
-    );
 
-    // await StepHelper.step(
-    //     this.page,
-    //     'Click Bold',
-    //     async () => {
-    //         await this.locator.boldButton.click();
-    //     }
-    // );
+            const patientName =
+                this.locator.patientName_Text;
 
-    await StepHelper.step(
-        this.page,
-        'Verify Patient Name : is Bold',
-        async () => {
-            await expect(this.locator.boldPatientName).toBeVisible({
+            await patientName.waitFor({
+                state: 'visible',
                 timeout: timeout.actionTimeout
+            });
+
+            await patientName.evaluate((element) => {
+
+                const range = document.createRange();
+
+                range.selectNodeContents(element);
+
+                const selection = window.getSelection();
+
+                selection.removeAllRanges();
+                selection.addRange(range);
             });
         }
     );
+}
+
+async italicPatientName(formatData) {
+
+    const text = formatData.text;
+
+    await this.selectPatientNameText();
+
+    await StepHelper.step(
+        this.page,
+        `Click Italic for ${text}`,
+        async () => {
+
+            await this.locator.italicButton.waitFor({
+                state: 'visible',
+                timeout: timeout.actionTimeout
+            });
+
+            await this.locator.italicButton.click();
+        }
+    );
+
+    await StepHelper.step(
+        this.page,
+        `Verify ${text} is Italic`,
+        async () => {
+
+            const italicLocator =
+                this.locator.italicText(text);
+
+            await italicLocator.waitFor({
+                state: 'visible',
+                timeout: timeout.actionTimeout
+            });
+
+            await expect(italicLocator).toBeVisible();
+        }
+    );
+
+    await this.page.waitForTimeout(timeout.testTimeout);
+}
+
+async underlinePatientName(formatData) {
+
+    const text = formatData.text;
+
+    await this.selectPatientNameText();
+
+    await StepHelper.step(
+        this.page,
+        `Click Underline for ${text}`,
+        async () => {
+
+            await this.locator.underlineButton.waitFor({
+                state: 'visible',
+                timeout: timeout.actionTimeout
+            });
+
+            await this.locator.underlineButton.click();
+        }
+    );
+
+    await StepHelper.step(
+        this.page,
+        `Verify ${text} is Underline`,
+        async () => {
+
+            const underlineLocator =
+                this.locator.underlineText(text);
+
+            await underlineLocator.waitFor({
+                state: 'visible',
+                timeout: timeout.actionTimeout
+            });
+
+            await expect(underlineLocator).toBeVisible();
+        }
+    );
+
+    await this.page.waitForTimeout(timeout.testTimeout);
+}
+
+
+
+// async alignLeftPatientName(formatData) {
+
+//     const text = formatData.text;
+
+//     await this.selectPatientNameText();
+
+//     await StepHelper.step(
+//         this.page,
+//         `Click Align Left for ${text}`,
+//         async () => {
+
+//             await this.locator.alignLeftButton.waitFor({
+//                 state: 'visible',
+//                 timeout: timeout.actionTimeout
+//             });
+
+//             await this.locator.alignLeftButton.click();
+//         }
+//     );
+
+//     await StepHelper.step(
+//         this.page,
+//         `Verify ${text} is Align Left`,
+//         async () => {
+
+//             await this.locator.alignLeftPatientName.waitFor({
+//                 state: 'visible',
+//                 timeout: timeout.actionTimeout
+//             });
+
+//             await expect(
+//                 this.locator.alignLeftPatientName
+//             ).toBeVisible();
+//         }
+//     );
+// }
+
+async verifyPatientNameAlignLeft(formatData) {
+
+    const text = formatData.text;
+
+    await StepHelper.step(
+        this.page,
+        `Verify ${text} is Align Left`,
+        async () => {
+
+            const leftAlignedLocator =
+                this.locator.alignLeftPatientName;
+
+            await leftAlignedLocator.waitFor({
+                state: 'visible',
+                timeout: timeout.actionTimeout
+            });
+
+            await expect(
+                leftAlignedLocator
+            ).toBeVisible();
+        }
+    );
+
+    await this.page.waitForTimeout(timeout.testTimeout);
+}
+
+                await expect(
+                    this.locator.bedUpdatedToast
+                ).toBeVisible({
+                    timeout: timeout.expectTimeout
+                });
+            }
+        );
+
+async alignCenterPatientName(formatData) {
+
+    const text = formatData.text;
+
+    await this.selectPatientNameText();
+
+    await StepHelper.step(
+        this.page,
+        `Click Align Center for ${text}`,
+        async () => {
+            await this.keywords.click(
+                this.locator.addAdministrativeFormBtn
+            );
+        }
+    );
+
+            await this.locator.alignCenterButton.waitFor({
+                state: 'visible',
+                timeout: timeout.actionTimeout
+            });
+
+            await this.locator.alignCenterButton.click();
+        }
+    );
+
+    await StepHelper.step(
+        this.page,
+        `Verify ${text} is Align Center`,
+        async () => {
+
+            await this.locator.alignCenterPatientName.waitFor({
+                state: 'visible',
+                timeout: timeout.actionTimeout
+            });
+
+            await expect(
+                this.locator.alignCenterPatientName
+            ).toBeVisible();
+        }
+    );
+}
+
+async fillAdministrativeFormFields(administrativeForm) {
+
+    await this.page.waitForTimeout(timeout.testTimeout);
+}
+
+
+
+async alignRightPatientName(formatData) {
+
+    const text = formatData.text;
+
+    await this.selectPatientNameText();
+
+    await StepHelper.step(
+        this.page,
+        `Click Align Right for ${text}`,
+        async () => {
+
+            await this.locator.alignRightButton.waitFor({
+                state: 'visible',
+                timeout: timeout.actionTimeout
+            });
+
+            await this.locator.alignRightButton.click();
+        }
+    );
+
+    await StepHelper.step(
+        this.page,
+        `Verify ${text} is Align Right`,
+        async () => {
+
+            await this.locator.alignRightPatientName.waitFor({
+                state: 'visible',
+                timeout: timeout.actionTimeout
+            });
+
+            await expect(
+                this.locator.alignRightPatientName
+            ).toBeVisible();
+        }
+    }
+}
+
+    await this.page.waitForTimeout(timeout.testTimeout);
+}
+
+async justifyPatientName(formatData) {
+
+    const text = formatData.text;
+
+    await this.selectPatientNameText();
+
+    await StepHelper.step(
+        this.page,
+        `Click Justify for ${text}`,
+        async () => {
+
+            await this.locator.justifyButton.waitFor({
+                state: 'visible',
+                timeout: timeout.actionTimeout
+            });
+
+            await this.locator.justifyButton.click();
+        }
+    );
+
+    await StepHelper.step(
+        this.page,
+        `Verify ${text} is Justify`,
+        async () => {
+
+            await this.locator.justifyPatientName.waitFor({
+                state: 'visible',
+                timeout: timeout.actionTimeout
+            });
+
+            await expect(
+                this.locator.justifyPatientName
+            ).toBeVisible();
+        }
+    );
+
+    await this.page.waitForTimeout(timeout.testTimeout);
 }
 
 async addPatientSignature(signatureData) {

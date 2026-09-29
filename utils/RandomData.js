@@ -301,6 +301,14 @@ function generateName() {
 //     return `${firstName} ${lastName}`;
 // }
 
+
+function generateUniqueTemplateName() {
+    const randomNumber =
+        Math.floor(100000 + Math.random() * 900000);
+ 
+    return `EMR_Template_${randomNumber}`;
+}
+
 module.exports = {
     generatePatientName,
     generateAdmissionDate,
@@ -311,6 +319,7 @@ module.exports = {
     calculateAgeFromDate,
     generateUniquePatientFullName,
     generateShortPatientName,
+    generateUniqueTemplateName,
     generateName
 };
  
