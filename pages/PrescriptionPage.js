@@ -13153,10 +13153,6 @@ async verifySearchTypeRXMedicationTableInPDF(
                 );
             }
 
-                await this.locators.firstDrugSearchInput.waitFor({
-                    state: 'visible',
-                    timeout: timeout.elementTimeout
-                });
 
             // // Timing
             // verifyValue(
@@ -13700,8 +13696,6 @@ await StepHelper.step(
             await this.keywords.clear(
                 instruction
             );
-        }
-    );//new
 
             await this.keywords.type(
                 instruction,
@@ -13709,50 +13703,6 @@ await StepHelper.step(
             );
         }
     );
-
-    // await this.page.waitForTimeout(1000);
-    await this.keywords.wait(
-    this.page,
-    timeout.testTimeout
-    );
-
-    // await StepHelper.step(
-    //     this.page,
-    //     'Click Exit Button',
-    //     async () => {
-
-    //         await this.locators.newTabExitButton.waitFor({
-    //             state: 'visible',
-    //             timeout: timeout.elementTimeout
-    //         });
-
-    //         await this.keywords.click(
-    //             this.locators.newTabExitButton
-    //         );
-    //     }
-    // );
-
-    // // await this.page.waitForTimeout(1000);
-    // await this.keywords.wait(
-    // this.page,
-    // timeout.testTimeout
-    // );
-
-    // await StepHelper.step(
-    //     this.page,
-    //     'Click Eye Icon',
-    //     async () => {
-
-    //         await this.locators.newTabEyeIcon.waitFor({
-    //             state: 'visible',
-    //             timeout: timeout.elementTimeout
-    //         });
-
-    //         await this.keywords.click(
-    //             this.locators.newTabEyeIcon
-    //         );
-    //     }
-    // );
 }
 
 }

@@ -1767,13 +1767,6 @@ async verifyPatientNameAlignLeft(formatData) {
     await this.page.waitForTimeout(timeout.testTimeout);
 }
 
-                await expect(
-                    this.locator.bedUpdatedToast
-                ).toBeVisible({
-                    timeout: timeout.expectTimeout
-                });
-            }
-        );
 
 async alignCenterPatientName(formatData) {
 
@@ -1785,11 +1778,6 @@ async alignCenterPatientName(formatData) {
         this.page,
         `Click Align Center for ${text}`,
         async () => {
-            await this.keywords.click(
-                this.locator.addAdministrativeFormBtn
-            );
-        }
-    );
 
             await this.locator.alignCenterButton.waitFor({
                 state: 'visible',
@@ -1815,9 +1803,6 @@ async alignCenterPatientName(formatData) {
             ).toBeVisible();
         }
     );
-}
-
-async fillAdministrativeFormFields(administrativeForm) {
 
     await this.page.waitForTimeout(timeout.testTimeout);
 }
@@ -1858,8 +1843,7 @@ async alignRightPatientName(formatData) {
                 this.locator.alignRightPatientName
             ).toBeVisible();
         }
-    }
-}
+    );
 
     await this.page.waitForTimeout(timeout.testTimeout);
 }
