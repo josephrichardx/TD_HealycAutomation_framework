@@ -1,0 +1,68 @@
+{
+  "patientData": {
+    "title": "Mr",
+    "phoneNumber": "1234567890",
+    "notes": "Healync",
+    "email": "test@gmail.com",
+    "age": "21",
+    "gender": "Male",
+    "address": "Chennai"
+  },
+
+  "appoinmentData": {
+    "doctorName": "Dr. Orthopedic"
+  },
+
+  "consultData": {
+    "consultSlot": "First Consult"
+  },
+
+  "templateData": {
+    "templateName": "RX-Medication_Automation_Format_Test",
+    "searchKey": "Enter",
+    "templateAppliedMessage": "Template Applied successfully!"
+  },
+
+  "template": {
+    "formatValue": "RX-Medication_Automation_Format_Test",
+    "savedMessage": "Template saved successfully.",
+    "appliedMessage": "Template Applied successfully!"
+  },
+
+  "medicationData": {
+    "suggestion": "1 AL AX 5mg/75mg Capsule | Capsule | 10 mg | PO | 12 capsule | Daily | 1-0-1-1 | After food, Empty stomach, Bedtime | 10 Days | After Food"
+  },
+
+"allergiesToxicityMedication": "1 AL Plus 5mg/120mg Capsule | Capsule | 10 mg | PO | 10 capsule | Cyclical | 6 on / 8 off | After food, With food | 10 Months | After Food"
+,
+  "allergiesToxicityData": {
+    "drugName": "Fever",
+    "form": "Tablet",
+    "strength": "mg",
+    "route": "PO",
+    "dosage": "tab",
+    "frequency": "Daily",
+    "schedule1": "1",
+    "schedule2": "1",
+    "schedule3": "1",
+    "schedule4": "1",
+    "timing": "Before food",
+    "duration": "Days",
+    "instructions": "After food"
+  },
+  "allergiesToxicityRow2Data": {
+    "drugName": "Fever",
+    "form": "Tablet",
+    "strength": "mg",
+    "route": "PO",
+    "dosage": "tab",
+    "frequency": "Daily",
+    "schedule1": "1",
+    "schedule2": "1",
+    "schedule3": "1",
+    "schedule4": "1",
+    "timing": "Before food",
+    "duration": "Days",
+    "instructions": "After food"
+}
+}

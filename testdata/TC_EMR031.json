@@ -23,28 +23,52 @@
    "templateAppliedMessage": "Template Applied successfully!"
   },
 
- "prescriptionData": {
+    "template": {
+        "formatValue": "EMR_AUTOMATION TD",
+        "savedMessage": "Template saved successfully.",
+        "appliedMessage": "Template Applied successfully!"
+    },
 
-    "addRows": 1,
-    "drugs": [
-          {
-            "drugName": " 1 AL Plus 5mg/120mg Capsule ",
-            "durationType1": "Days",
-            "durationType2": "Weeks",
-            "instruction": "Before Food"
-          },
-          {
-            "drugName": "1 Nvp Tablet",
-            "durationType1": "Weeks",
-            "durationType2": "Months",
-            "instruction": "After Food"
-          }
-      ]
+   "scoringChartData": {
+    "scoringChartName": "Mini-Mental State Examination (MMSE)",
+      "initialScore": 0,
+    "selectionData": {
+        "Q1": 2,
+        "Q2": 2,
+        "Q3": 1,
+        "Q4": 2,
+        "Q5": 1,
+        "Q6": 2,
+        "Q7": 1,
+        "Q8": 1,
+        "Q9": 1,
+        "Q10": 1,
+        "Q11": 1
+    }
+  },
+    "specificAdviceData": {
+        "text": "Option 5",
+        "image": "Healync_Image.jpg"
+    },
+
+    "observationData": {
+    "index": 0,
+    "row": 2,
+    "Custom_drugname": "FEVER",
+    "drugName": "1 AL PLUS 5MG/120MG CAPSULE",
+    "form": "Capsule",
+    "strength": "4",
+    "strengthUnit": "ml",
+    "duration": "4",
+    "durationUnit": "Days",
+    "instruction": "INS 1"
 },
 
-"observationData": {
+"ToxicityData": {
+    "index": 0,
     "row": 2,
-    "drugName": "1 AL Plus 5mg/120mg Capsule",
+    "Custom_drugname": "FEVER",
+    "drugName": "1 AL PLUS 5MG/120MG CAPSULE",
     "form": "Capsule",
     "strength": "4",
     "strengthUnit": "ml",
@@ -58,29 +82,21 @@
     "durationUnit": "Days",
     "instruction": "INS 1"
 },
+"otherFindings": {
+    "text1": "Custom other findings",
+    "text2": "Custom text for 'Other Findings'"
+} 
+,
 
- "loginData": {
-    "url": "http://release-uat.healync.com.s3-website.ap-south-1.amazonaws.com",
-    "username": "sales@healync.com",
-    "password": "Demo2025$$"
-  },
-
-  "marginData": {
-    "top": "10",
-    "bottom": "20",
-    "leftRight": "15"
-  },
-
-    "template": {
-        "formatValue": "EMR_AUTOMATION TD",
-        "templateName": "EMR_Test1"
-    },
-
-    "scoringChartData": {
-        "scoringChartName": "Mini-Mental State Examination (MMSE)"
+    "otherFindingsCrud": {
+        "text1": "Custom other findings",
+        "text2": "Custom text for 'Other Findings' test",
+        "updatedText": "Updated Other Findings"
     }
-
-
-
-
 }
+
+
+
+
+
+

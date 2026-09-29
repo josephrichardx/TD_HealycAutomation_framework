@@ -210,6 +210,25 @@ class Keywords {
  
         return await locator.innerText();
     }
+    async getInputValue(locator) {
+
+    await locator.waitFor({
+        state: 'visible',
+        timeout: 30000
+    });
+
+    return await locator.inputValue();
+}
+
+async getAllText(locator) {
+
+    await locator.first().waitFor({
+        state: "visible",
+        timeout: 30000
+    });
+
+    return await locator.allInnerTexts();
+}
  
     // =========================================================
     // GET TEXT CONTENT
@@ -447,7 +466,65 @@ class Keywords {
         });
     }
  
+ async getCount(locator) {
+    return await locator.count();
+}
+
+async getSelectedOptionText(locator) {
+    await locator.waitFor({
+        state: 'visible',
+        timeout: 30000
+    });
+
+    return await locator.locator("option:checked").textContent();
+}
+
+async getTextOrValue(locator) {
  
+    const element = locator.first();
+ 
+    await element.waitFor({
+        state: "attached",
+        timeout: 30000
+    });
+ 
+    const tagName = await element.evaluate(
+        element => element.tagName.toLowerCase()
+    );
+ 
+    if (tagName === 'input' || tagName === 'textarea') {
+        return await element.inputValue();
+    }
+ 
+    if (tagName === 'option') {
+        return (await element.textContent())?.trim() || '';
+    }
+ 
+    return await element.innerText();
+}
+async hoverAtPosition(locator, position) {
+    return await boxed('Hover at position', async () => {
+
+        await locator.waitFor({
+            state: 'visible'
+        });
+
+        const box = await locator.boundingBox();
+
+        if (!box) {
+            throw new Error(
+                'Graph chart position was not found.'
+            );
+        }
+
+        const page = locator.page();
+
+        await page.mouse.move(
+            box.x + position.x,
+            box.y + position.y
+        );
+    });
+}
     // =========================================================
     // UPLOAD FILE
     // =========================================================
@@ -510,6 +587,18 @@ class Keywords {
         });
     }
 
+
+ 
+async verifyInputValueEmpty(locator) {
+
+    const value = await locator.inputValue();
+
+    if (value.trim() !== '') {
+        throw new Error(
+            `Expected input to be empty, but found: "${value}"`
+        );
+    }
+}
     // =========================================================
     // VERIFY THE ELEMENT
     // =========================================================

@@ -1,0 +1,42 @@
+{
+  "patientData": {
+    "title": "Mr",
+    "phoneNumber": "1234567890",
+    "notes": "Healync",
+    "email": "test@gmail.com",
+    "age": "21",
+    "gender": "Male",
+    "address": "Chennai"
+  },
+
+  "appoinmentData": {
+    "doctorName": "Dr. Orthopedic"
+  },
+
+  "consultData": {
+    "consultSlot": "First Consult"
+  },
+
+  "template": {
+    "formatValue": "Scoring-chart_Automation_Format_Test",
+    "savedMessage": "Template saved successfully.",
+    "appliedMessage": "Template Applied successfully!"
+  },
+  
+    "scoringChart": {
+        "formName": "BMI Calculator (Body Mass Index)",
+        "id": "529",
+        "formId": "f1851f3a1f124dc6a32f461927b8292a",
+         "weight": "10",
+    "height": "20"
+    },
+   
+    "allergiesToxicity": {
+    "formName": "BSA – Body Surface Area",
+    "id": "530",
+    "formId": "875c66dcde4241e7b04a5f0e9ae9f6ae",
+    "weight": "10",
+    "height": "20"
+}
+}
+

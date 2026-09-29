@@ -1,0 +1,65 @@
+{
+    "patientData": {
+        "title": "Mr",
+        "phoneNumber": "1234567890",
+        "notes": "Healync",
+        "email": "test@gmail.com",
+        "age": "21",
+        "gender": "Male",
+        "address": "Chennai"
+    },
+
+    "loginData": {
+        "superAdmin": {
+            "username": "AO_adminkunal",
+            "password": "Demo2025$$"
+        },
+        "rmo": {
+            "username": "RMO_mahaveer",
+            "password": "Demo2025$$"
+        }
+    },
+
+    "appoinmentData": {
+        "doctorName": "Dr. Miten Sheth"
+    },
+
+    "consultData": {
+        "consultSlot": "First Consult (20 min)"
+    },
+
+    "templateData": {
+        "templateName": "EMR_AUTOMATION TD",
+        "searchKey": "Enter",
+        "templateAppliedMessage": "Template Applied successfully!"
+    },
+
+    "template": {
+        "formatValue": "EMR_AUTOMATION TD",
+        "savedMessage": "Template saved successfully.",
+        "appliedMessage": "Template Applied successfully!"
+    },
+
+    "observationData": {
+        "index": 0,
+        "row": 2,
+        "Custom_drugname": "FEVER",
+        "drugName": "1 AL PLUS 5MG/120MG CAPSULE",
+        "form": "Capsule",
+        "strength": "4",
+        "strengthUnit": "ml",
+        "duration": "4",
+        "durationUnit": "Days",
+        "instruction": "INS 1"
+    },
+
+    "rmoToxicityData": {
+        "text": "Toxicity Test",
+        "image": "Healync_Image.jpg"
+    },
+
+    "rmoChiefComplaint": {
+        "text": "test",
+        "updatedtext" :"Demo Test"
+    }
+}
