@@ -1,51 +1,65 @@
 import { test, expect } from "../fixtures/baseTest.js";
 const { StepHelper } = require('../utils/StepHelper.js');
-
-const { PatientPage } = require('../pages/PatientPage.js');
-const { ConsultPage } = require('../pages/ConsultPage.js');
-const { ServicePage } = require('../pages/ServicePage.js');
-const { InvoicePage } = require('../pages/InvoicePage.js');
-const { CalendarPage } = require('../pages/CalendarPage.js');
-
-const { patientData,appoinmentData,consultData,bookingData,serviceData,DateData } = require('../testdata/TC_030.json');
-const { generatePatientName } = require('../utils/RandomData.js');
+                       
+const { PatientPage } = require('../pages/PatientPage');
+const { ConsultPage } = require('../pages/ConsultPage');
+const { InvoicePage } = require('../pages/InvoicePage');
+const { CalendarPage } = require('../pages/CalendarPage');
+const { PrescriptionPage } = require('../pages/PrescriptionPage');
+ 
+const { patientData,appoinmentData,consultData,prescriptionData,templateData,timeout,diagnosisData,signatureData } = require('../testdata/TC_EMR30.json');
+const { generateUniquePatientFullName } = require('../utils/RandomData');
+ 
 
 test('WF_EMR_030.spec - Validate the complete EMR business workflow from appointment creation to final prescription generation', async ({ page }) => {
 
-    const patientName = generatePatientName();
+ // const patientName = patientData.patientName;
+    const patientName = generateUniquePatientFullName();
     const patientPage = new PatientPage(page);
     const consultPage = new ConsultPage(page);
-    const servicePage = new ServicePage(page);
     const invoicePage = new InvoicePage(page);
     const calendarPage = new CalendarPage(page);
-
-
-    // Step 1 - Add New Patient
-    await patientPage.createPatient(
+    const prescriptionPage = new PrescriptionPage(page);
+ 
+     await patientPage.createPatient(
         patientName,
         patientData
     );
-
-     // Step 2 - Add Consult
+ 
+    const bookingDate =
     await consultPage.addConsult(
         patientName,
         appoinmentData.doctorName,
-        consultData.consultSlot,
-        bookingData.bookingDate
+        consultData.consultSlot
     );
-    // Step 3 - Add Service
-    await servicePage.addService(
-        patientName,
-        serviceData.serviceName,
-        DateData.bookingDate
-    );
-    // Step 4 - Select Patient From Calendar
+ 
     await calendarPage.selectPatientFromCalendar(
-        patientName,
-        bookingData.bookingDate
+    patientName,
+    bookingDate
+    );
+ 
+    await prescriptionPage.PrescriptionObservationfirst(
+    templateData.templateName,
+    templateData.searchKey,
+    timeout.time,
+    prescriptionData.drugs1.drugName,
+    prescriptionData.drugs1.durationType,
+    prescriptionData.drugs1.instruction
     );
 
-    
+    await prescriptionPage.fillDiagnosisDetails(
+        diagnosisData,
+        timeout.time
+    );
+
+    await prescriptionPage.completeSignatureSection(
+        signatureData.title,
+        signatureData.subTitle
+    );
+
+});
+ 
+ 
+ 
 
 
-});       

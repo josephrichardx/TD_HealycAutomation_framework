@@ -357,6 +357,19 @@ class ConsultPage {
 
 
     async verifyBookingConfirmation() {
+<<<<<<< HEAD
+=======
+ 
+    await StepHelper.step(
+        this.page,
+        'Verify Consult Booking Confirmation Message is Visible',
+        async () => {
+            await expect(
+                this.locator.bookingConfirmMsg
+            ).toBeVisible();
+        }
+    );
+>>>>>>> 9b7a586b0333ff696fc7ecbbe89bbd9d445c2526
 
         await StepHelper.step(
             this.page,
