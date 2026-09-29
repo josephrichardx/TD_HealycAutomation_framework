@@ -337,76 +337,100 @@ class ServicePage {
 // }
 
 async selectFirstAvailableSlot() {
- 
+
     await StepHelper.step(
         this.page,
         'Select First Available Slot',
         async () => {
- 
+
             while (true) {
- 
+
                 const slotCount =
                     await this.locator.slotButton.count();
- 
+
                 console.log(
                     `Available Slots: ${slotCount}`
                 );
- 
+
                 if (slotCount > 0) {
- 
+
                     const firstSlot =
                         this.locator.slotButton.first();
- 
+
                     const appointmentCard =
                         this.locator.slotAppointmentCard(
                             firstSlot
                         );
- 
+
                     const cardText =
                         await this.keywords.getText(
                             appointmentCard
                         );
- 
+
                     console.log(
                         `Appointment Card Text: ${cardText}`
                     );
- 
+
+                    // Get Date
                     const dateMatch =
                         cardText.match(
-                            /\d{1,2}\s+[A-Za-z]{3},\s+\d{4}/
+                            /\d{1,2}\s+[A-Za-z]{3},\s*\d{4}/
                         );
- 
+
                     if (!dateMatch) {
                         throw new Error(
-                            `Unable to read slot date from appointment card: ${cardText}`
+                            `Unable to read slot date: ${cardText}`
                         );
                     }
- 
+
                     this.selectedSlotDate =
-                        dateMatch[0];
- 
+                        dateMatch[0]
+                            .replace(/,\s*/g, ', ')
+                            .trim();
+
+                    // Get Time
+                    const timeMatch =
+                        cardText.match(
+                            /\d{1,2}:\d{2}\s*-\s*\d{1,2}:\d{2}\s*(?:AM|PM)/i
+                        );
+
+                    if (!timeMatch) {
+                        throw new Error(
+                            `Unable to read slot time: ${cardText}`
+                        );
+                    }
+
+                    this.selectedSlotTime =
+                        timeMatch[0]
+                            .replace(/\s+/g, ' ')
+                            .trim();
+
                     console.log(
                         `Selected Slot Date: ${this.selectedSlotDate}`
                     );
- 
+
+                    console.log(
+                        `Selected Slot Time: ${this.selectedSlotTime}`
+                    );
+
                     await this.keywords.click(
                         firstSlot
                     );
- 
+
                     break;
                 }
- 
+
                 await StepHelper.step(
                     this.page,
                     'Move To Next Available Date',
                     async () => {
- 
+
                         await this.keywords.click(
                             this.locator.nextDateBtn
                         );
                     }
                 );
- 
+
                 await this.locator.slotButton
                     .first()
                     .waitFor({
@@ -417,8 +441,11 @@ async selectFirstAvailableSlot() {
             }
         }
     );
- 
-    return this.selectedSlotDate;
+
+    return {
+        date: this.selectedSlotDate,
+        time: this.selectedSlotTime
+    };
 }
 
 

@@ -7,7 +7,7 @@ const { PatientPage } = require('../pages/PatientPage.js');
 const { IPDPage } = require('../pages/IPDPage.js');
  
 
-const { patientData,admissionPatientData,administrativeForm,signatureData,consentCheckboxData} = require('../testdata/TC_IPD_036.json');
+const { patientData,admissionPatientData,administrativeForm,signatureData,consentCheckboxData,formatData} = require('../testdata/TC_IPD_036.json');
 const { generateUniquePatientFullName } = require('../utils/RandomData.js'); 
 import {generateAdmissionDate,generateAdmissionTime,getAdmissionData} from '../utils/RandomData.js';
 
@@ -133,6 +133,48 @@ test('IPD Admission Form', async ({ page }) => {
     administrativeForm.formName
     );
 
+    await ipdPage.verifyPatientNameBold(
+        formatData
+    );
+
+    await ipdPage.italicPatientName(
+        formatData
+    );
+
+    await ipdPage.underlinePatientName(
+        formatData
+    );
+
+    // await ipdPage.UnboldPatientName(
+    //     formatData
+    // );
+
+    await ipdPage.verifyPatientNameAlignLeft(
+        formatData
+    );
+
+    await ipdPage.alignCenterPatientName(
+        formatData
+    );
+
+    await ipdPage.alignRightPatientName(
+        formatData
+    );
+
+    await ipdPage.CloseandaddAdministrativeForm(
+    administrativeForm.formName
+    );
+
+    await ipdPage.justifyPatientName(
+        formatData
+    );
+
+    // await ipdPage.ClosetheForm();
+
+    // await ipdPage.addAdministrativeForm(
+    // administrativeForm.formName
+    // );
+
     await ipdPage.fillAdministrativeFormFields(
     administrativeForm
     );
@@ -149,16 +191,13 @@ test('IPD Admission Form', async ({ page }) => {
     administrativeForm
     );
 
-    // await ipdPage.boldPatientName();
-
-    await ipdPage.fillConsentCheckboxes(
+    await ipdPage.fillandVerifyConsentCheckboxes(
     consentCheckboxData
-    );//->verify
-
+    );
 
     await ipdPage.addPatientSignature(
     signatureData
-    );//-verify
+    );
 
     await ipdPage.submitAndVerifyConsentForm(
     administrativeForm

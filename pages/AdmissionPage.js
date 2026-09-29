@@ -7,9 +7,6 @@ import timeoutData from '../testdata/timeout.json';
 
 const { timeout } = timeoutData;
 
-
-
-
 export class AdmissionPage {
 
     constructor(page) {

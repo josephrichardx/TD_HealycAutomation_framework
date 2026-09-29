@@ -613,6 +613,41 @@ async verifyInputValueEmpty(locator) {
         timeout: 30000
     });
 }
+
+async getAllText(locator) {
+ 
+    await locator.first().waitFor({
+        state: "visible",
+        timeout: 30000
+    });
+ 
+    return await locator.allInnerTexts();
+}
+
+async getTextOrValue(locator) {
+
+    const element = locator.first();
+
+    await element.waitFor({
+        state: "attached",
+        timeout: 30000
+    });
+
+    const tagName = await element.evaluate(
+        element => element.tagName.toLowerCase()
+    );
+
+    if (tagName === 'input' || tagName === 'textarea') {
+        return await element.inputValue();
+    }
+
+    if (tagName === 'option') {
+        return (await element.textContent())?.trim() || '';
+    }
+
+    return await element.innerText();
+}
+
 }
  
  
