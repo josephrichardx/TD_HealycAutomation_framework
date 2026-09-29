@@ -454,6 +454,10 @@ this.patientNameText = page.locator(
     "//*[normalize-space(text())='Patient Name :']"
 );
 
+this.patientName_Text = page.locator(
+    "//div[@id='consentLiveEditor']/b[normalize-space()='Patient Name :']"
+);
+
 this.italicButton = page.locator(
     "//button[@title='Italic']"
 );
@@ -484,6 +488,9 @@ this.leftAlignedPatientName = page.locator(
     "//div[contains(text(),'Patient Name :')]"
 );
 
+this.alignLeftPatientName =
+    page.locator("//b[normalize-space()='Patient Name :']");
+
 
 this.textToFormat = (text) =>
     page.locator(`//*[normalize-space(text())='${text}']`);
@@ -500,6 +507,41 @@ this.unBoldText = (text) =>
         `//div[normalize-space(text())='${text}']`
     );
 
+this.italicText = (text) =>
+    page.locator(
+        `//i[normalize-space()='${text}']`
+    );
+
+this.underlineText = (text) =>
+    page.locator(
+        `//u[normalize-space()='${text}']`
+    );
+
+this.alignCenterButton =
+    page.locator("//button[@title='Align Center']");
+
+this.alignCenterPatientName =
+    page.locator(
+        "//div[contains(@style,'text-align: center')]//b[normalize-space()='Patient Name :']"
+    );
+
+this.alignRightButton =
+    page.locator("//button[@title='Align Right']");
+
+this.alignRightPatientName =
+    page.locator(
+        "//div[contains(@style,'text-align: right')]//b[normalize-space()='Patient Name :']"
+    );
+this.justifyButton =
+    page.locator("//button[@title='Justify']");
+
+this.justifyPatientName =
+    page.locator(
+        "//div[contains(@style,'text-align: justify')]//b[normalize-space()='Patient Name :']"
+    );
+
+this.closeFormButton =
+    page.locator("//button[@aria-label='Close']");
     }
 
     

@@ -137,16 +137,43 @@ test('IPD Admission Form', async ({ page }) => {
         formatData
     );
 
-    await ipdPage.UnboldPatientName(
+    await ipdPage.italicPatientName(
         formatData
     );
 
+    await ipdPage.underlinePatientName(
+        formatData
+    );
 
-    await ipdPage.italicPatientName();
+    // await ipdPage.UnboldPatientName(
+    //     formatData
+    // );
 
-    await ipdPage.underlinePatientName();
+    await ipdPage.verifyPatientNameAlignLeft(
+        formatData
+    );
 
-     await ipdPage.alignLeftPatientName();
+    await ipdPage.alignCenterPatientName(
+        formatData
+    );
+
+    await ipdPage.alignRightPatientName(
+        formatData
+    );
+
+    await ipdPage.CloseandaddAdministrativeForm(
+    administrativeForm.formName
+    );
+
+    await ipdPage.justifyPatientName(
+        formatData
+    );
+
+    // await ipdPage.ClosetheForm();
+
+    // await ipdPage.addAdministrativeForm(
+    // administrativeForm.formName
+    // );
 
     await ipdPage.fillAdministrativeFormFields(
     administrativeForm
