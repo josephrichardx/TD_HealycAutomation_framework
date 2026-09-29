@@ -1328,7 +1328,7 @@ async verifyAdministrativeFormDetails(administrativeForm) {
 //     }
 // }
 
-async fillConsentCheckboxes(consentCheckboxData) {
+async fillandVerifyConsentCheckboxes(consentCheckboxData) {
 
     for (const [question, expectedValue] of Object.entries(consentCheckboxData)) {
 
@@ -1395,6 +1395,95 @@ async boldPatientName() {
         }
     );
 }
+
+async UnboldPatientName() {
+
+    await StepHelper.step(
+        this.page,
+        'Select Patient Name :',
+        async () => {
+            await this.locator.patientNameText.selectText();
+        }
+    );
+
+    await StepHelper.step(
+        this.page,
+        'Click Bold',
+        async () => {
+            await this.locator.boldButton.click();
+        }
+    );
+
+    await StepHelper.step(
+        this.page,
+        'Verify Patient Name : is UnBold',
+        async () => {
+            await expect(this.locator.boldPatientName).toBeVisible({
+                timeout: timeout.actionTimeout
+            });
+        }
+    );
+}
+
+async italicPatientName() {
+
+    await StepHelper.step(
+        this.page,
+        'Select Patient Name :',
+        async () => {
+            await this.locator.patientNameText.selectText();
+        }
+    );
+
+    await StepHelper.step(
+        this.page,
+        'Click Italic',
+        async () => {
+            await this.locator.italicButton.click();
+        }
+    );
+
+    await StepHelper.step(
+        this.page,
+        'Verify Patient Name : is Italic',
+        async () => {
+            await expect(this.locator.italicPatientName).toBeVisible({
+                timeout: timeout.actionTimeout
+            });
+        }
+    );
+}
+
+async underlinePatientName() {
+
+    await StepHelper.step(
+        this.page,
+        'Select Patient Name :',
+        async () => {
+            await this.locator.patientNameText.selectText();
+        }
+    );
+
+    await StepHelper.step(
+        this.page,
+        'Click Underline',
+        async () => {
+            await this.locator.underlineButton.click();
+        }
+    );
+
+    await StepHelper.step(
+        this.page,
+        'Verify Patient Name : is Underline',
+        async () => {
+            await expect(this.locator.underlinePatientName).toBeVisible({
+                timeout: timeout.actionTimeout
+            });
+        }
+    );
+}
+
+
 
 async addPatientSignature(signatureData) {
 

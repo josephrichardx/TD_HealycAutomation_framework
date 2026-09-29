@@ -14,9 +14,21 @@ class PrescriptionLocator {
         this.addSignatureBtn = page
             .locator('button.btn-add-signature');
 
-        this.signatureCanvas = page
-            .locator('canvas')
-            .first();
+        this.signatureNameInput = page.locator(
+            "//input[@placeholder='Enter your name']"
+        );
+
+        this.signatureInput = page.locator(
+            "//input[@placeholder='Enter your specialty (e.g., Cardiologist)']"
+        );
+
+        // this.signatureCanvas = page
+        //     .locator('canvas')
+        //     .first();
+        
+        this.signatureCanvas = page.locator(
+            "canvas"
+        );
 
         this.saveSignatureBtn = page
             .locator('button.btn-primary')
@@ -212,6 +224,8 @@ class PrescriptionLocator {
             )
         });
 
+    
+
     this.drugNameInput = (row) =>
         row.locator("input").filter({
             hasValue: row
@@ -234,6 +248,13 @@ this.drugCell = page.locator(
 this.drugSearchInput = page.locator(
     "//textarea[contains(@class,'drug-name-input')]"
 );//old
+
+this.scheduleInput = (rowIndex) =>
+    page
+        .locator("tr.medication-row")
+        .nth(rowIndex)
+        .locator("td")
+        .nth(6);
 
 // this.drugSearchInput =
 //     page.locator('input[placeholder="Search or enter drug name"]');//new
@@ -492,6 +513,11 @@ this.newTabInstructionInput = (rowIndex) =>
 this.observationRows =
     page.locator("//tr[contains(@class,'medication-row')]");
 
+    this.draftFieldElement = (row) =>
+    row.locator(
+        "input, textarea, select, button.dropdown-only-select, [contenteditable='true']"
+    );
+
     this.existingObservationRows =
     page.locator("//tr[contains(@class,'medication-row')]");
 
@@ -630,14 +656,52 @@ page.locator(
      "(//div[contains(@class,'checkbox-item')])[6]//input"
 );
 
+this.otherFindingsElements = page.locator(
+    "//div[@data-section-id='other_findings']//div[@class='text-editor']"
+);
+
+this.otherFindingRemoveButtons =
+    page.locator(
+        "//div[@data-section-id='other_findings']//button[contains(@class,'remove-item-btn')]"
+    );
+ 
+this.fullPrescriptionPrintBtn = page.locator(
+    "//button[text()=' Full Prescription Print ']"
+);
+
+this.printBtn =
+    page.locator("//button[text()=' Print ']");
+
+this.cancelPrintBtn = page.locator(
+    "cr-button.cancel-button"
+);
+this.customPrintBtn = page.locator(
+    "//button[text()=' Custom Print ']"
+);
+
+this.customPrintSection = page.locator(
+    "label.pdf-select-group-title"
+);
+// this.pdfViewer = page.locator(
+//     "embed[type='application/pdf']"
+// );
+this.pdfViewer =
+    page.locator('.pdfViewer .page').first();
+
 this.printOptionsBtn =
     page.locator("//button[@aria-label='Print options']").first();
+
+this.downloadPdfBtn =
+    page.locator("//button[normalize-space()='Download PDF']");
 
 this.savePrescriptionBtn =
     page.locator("//button[text()=' Save Prescription ']").first();
 
 this.historyButton =
     page.locator("//button[@class='hdr-btn']").first();
+
+this.reloadHistoryButton =
+    page.locator("//button[@title='Reload history from the server']");
 
 this.historySection = (sectionName) =>
     page.locator(
@@ -646,23 +710,30 @@ this.historySection = (sectionName) =>
         ][1]`
     );
 
-// this.historyAddButton = (sectionName) =>
-//     this.historySection(sectionName).getByRole('button', {
-//         name: 'Add',
-//         exact: true
-//     });
-
-// History Section Add Button
 this.historyAddButton = (sectionName) =>
-    this.page.locator(
-        `//*[normalize-space(text())='${sectionName}']/ancestor::*[.//button[@class='ehm-add-btn']][1]//button[@class='ehm-add-btn']`
-    );
+    this.historySection(sectionName).getByRole('button', {
+        name: 'Add',
+        exact: true
+    });
+
+// // History Section Add Button
+// this.historyAddButton = (sectionName) =>
+//     this.page.locator(
+//         `//*[normalize-space(text())='${sectionName}']/ancestor::*[.//button[@class='ehm-add-btn']][1]//button[@class='ehm-add-btn']`
+//     );
 
 this.historyAddedButton = (sectionName) =>
     this.historySection(sectionName).getByRole('button', {
         name: 'Added',
         exact: true
     });
+
+// this.historyAddedButton = (sectionName) =>
+//     this.page.locator(
+//         `//*[normalize-space(text())='${sectionName}']` +
+//         `/ancestor::*[.//button[contains(@class,'ehm-add-btn')]][1]` +
+//         `//button[normalize-space(.)='Added'][1]`
+//     );
 
 this.documentsBtn =
     page.locator("//button[text()='Documents']").first();
@@ -873,6 +944,19 @@ this.toxicityRows =
         "//tbody/tr"
     );
 
+this.otherFindingRows = page.locator(
+    "//h3[normalize-space()='Other Findings']" +
+    "/following::table[1]" +
+    "//tbody/tr"
+);
+
+this.specificAdviceElements = page.locator(
+    "//h3[normalize-space()='Specific Advice']" +
+    "/following::*[" +
+        "self::textarea or " +
+        "@contenteditable='true'" +
+    "]"
+);
 
 // -----------------------------------------------------
 // Drug Search
@@ -1004,17 +1088,15 @@ this.toxicityTimingDropdown =
         "//button[contains(@class,'dropdown-only-select')]"
     );
 
-// this.toxicityTimingDropdown =
-//     page.locator(
-//         "//button[@data-ms-open='1' and @title='Select options']"
-//     );
+this.toxicityTimingDropdown1 = page.locator(
+    "//td[contains(@class,'col-timing')]//button[@title='Select options']"
+);
 
-// this.toxicityTimingOption = (rowIndex, timing) =>
-//     page.locator(
-//         `//button[@data-ms-open='1' and @title='Select options'][${rowIndex + 1}]`
-//     )
-//     .locator("..")
-//     .getByText(timing, { exact: true });
+this.toxicityTimingOption = (timing) =>
+    page.locator(
+        `//div[contains(@class,'multi-select-option')][.//span[normalize-space()='${timing}']]`
+    );
+
 
 
 
@@ -1086,8 +1168,11 @@ this.medicationRows =
 this.draftFieldElements =
     "input, textarea, select, button.dropdown-only-select";
  
+// this.draftOtherFindingElements =
+//     "input, textarea, [contenteditable='true']";
+
 this.draftOtherFindingElements =
-    "input, textarea, [contenteditable='true']";
+    "input, textarea, [contenteditable='true'], button.dropdown-only-select";
 
 this.clearButton =
     page.locator("//button[text()=' Clear ']");
@@ -1100,9 +1185,410 @@ this.clearDropdown =
         "//button[text()=' Clear ']//following::i[contains(@class,'chevron-down hdr-caret')]"
     );
 
+//Allergies/Toxicity
+
+this.allergiesToxicityDrugSearchInput = page.locator(
+    "//h3[text()='Allergies/Toxicity']//following::td//textarea[@placeholder='Search or enter drug name']"
+).first();
+ 
+
+this.allergiesToxicityDrugNameInput = (rowIndex) =>
+    this.allergiesToxicityRows
+        .nth(rowIndex)
+        .locator('textarea[placeholder="Search or enter drug name"]');
+ 
+this.allergiesToxicityFormDropdown = page.locator(
+    "(//h3[text()='Allergies/Toxicity']//following::td//select)[1]"
+);
+ 
+// Strength
+this.allergiesToxicityStrengthDropdown = page.locator(
+    "(//h3[text()='Allergies/Toxicity']//following::td//select)[2]"
+);
+ 
+ 
+// Route
+this.allergiesToxicityRouteDropdown = page.locator(
+    "(//h3[text()='Allergies/Toxicity']//following::td//select)[3]"
+);
+ 
+// Dosage
+this.allergiesToxicityDosageDropdown = page.locator(
+    "(//h3[text()='Allergies/Toxicity']//following::td//select)[4]"
+);
+ 
+// Frequency
+this.allergiesToxicityFrequencyDropdown = page.locator(
+    "(//h3[text()='Allergies/Toxicity']//following::td//select)[5]"
+);
+
+this.allergiesToxicityScheduleInputs = page.locator(
+    "//h3[text()='Allergies/Toxicity']//following::td//div[contains(@class,'dosage-cell')]"
+);
+
+this.allergiesToxicityScheduleInput2 = page.locator(
+    "((//h3[text()='Allergies/Toxicity']//following::td//div[@class='dosage-cell'])[1]//input)[2]"
+);
+ 
+this.allergiesToxicityScheduleInput3 = page.locator(
+    "((//h3[text()='Allergies/Toxicity']//following::td//div[@class='dosage-cell'])[1]//input)[3]"
+);
+ 
+this.allergiesToxicityScheduleInput4 = page.locator(
+    "((//h3[text()='Allergies/Toxicity']//following::td//div[@class='dosage-cell'])[1]//input)[4]"
+);
+ 
+// Timing Dropdown
+this.allergiesToxicityTimingDropdown = page.locator(
+    "(//h3[text()='Allergies/Toxicity']//following::td//button[contains(@class,'dropdown-only-select')])[1]"
+);
+ 
+ 
+// Timing
+// Timing Option
+this.allergiesToxicityTimingOption = (timing) =>
+    page.getByText(timing, {
+        exact: true
+    }).last();
+ 
+// Duration
+this.allergiesToxicityDurationDropdown = page.locator(
+    "(//h3[text()='Allergies/Toxicity']//following::td//select)[6]"
+);
+ 
+// Instructions
+this.allergiesToxicityInstructionsInput = page.locator(
+    "(//h3[text()='Allergies/Toxicity']//following::td//div//input[@placeholder='Enter instructions'])[1]"
+);
+ 
+this.checkedAllergiesToxicityRow = page.locator(
+    "//h3[text()='Allergies/Toxicity']//following::tbody[1]//tr[.//input[@type='checkbox']:checked]"
+);
+ 
+this.allergiestoxicityText =page.locator("//h3[text()='Allergies/Toxicity']");
+ 
+this.allergiesToxicityRows = page.locator(
+    "//h3[text()='Allergies/Toxicity']//following::tbody[1]//tr"
+);
+
+// Allergies / Toxicity - Form dropdown
+this.allergiesToxicityForm = (rowIndex) =>
+    this.allergiesToxicityRows
+        .nth(rowIndex)
+        .locator('select')
+        .first();
 
 
+//new  allergies
+
+// Drug search result
+this.allergiesToxicityDrugSearchResult = (drugName) =>
+    page.getByText(drugName, {
+        exact: true
+    }).last();
+
+//new
+this.allergiesToxicityStrengthInput = page.locator(
+    "//h3[text()='Allergies/Toxicity']//following::td[contains(@class,'col-strength')]//input[contains(@class,'freq-count-input')]"
+);
+
+this.allergiesToxicityStrengthUnitDropdown = page.locator(
+    "//h3[text()='Allergies/Toxicity']//following::td[contains(@class,'col-strength')]//select[contains(@class,'freq-select')]"
+);
+
+// Dosage - Numeric Input
+this.allergiesToxicityDosageInput = page.locator(
+    "//h3[text()='Allergies/Toxicity']//following::td[contains(@class,'col-dosage')]//input[contains(@class,'freq-count-input')]"
+);
+
+// Dosage Unit
+this.allergiesToxicityDosageUnitDropdown = page.locator(
+    "//h3[text()='Allergies/Toxicity']//following::td[contains(@class,'col-dosage')]//select[contains(@class,'freq-select')]"
+);
+
+// Duration - Numeric Input
+this.allergiesToxicityDurationInput = page.locator(
+    "//h3[text()='Allergies/Toxicity']//following::td[contains(@class,'col-duration')]//input[contains(@class,'freq-count-input')]"
+);
+
+// Duration Unit
+this.allergiesToxicityDurationUnitDropdown = page.locator(
+    "//h3[text()='Allergies/Toxicity']//following::td[contains(@class,'col-duration')]//select[contains(@class,'freq-select')]"
+);
+
+
+// Medication Rows
+this.VerifyallergiesToxicityRows = page.locator(
+    "//h3[text()='Allergies/Toxicity']//following::tbody[1]//tr"
+);
+
+// Drug Name
+this.VerifyallergiesToxicityDrugNameInput = (rowIndex) =>
+    this.VerifyallergiesToxicityRows
+        .nth(rowIndex)
+        .locator('textarea[placeholder="Search or enter drug name"]');
+
+// Form
+this.VerifyallergiesToxicityFormDropdown = page.locator(
+    "(//h3[text()='Allergies/Toxicity']//following::td//select)[1]"
+);
+
+this.VerifyallergiesToxicitySelectedOption = (dropdown) =>
+    dropdown.locator('option:checked');
+
+// Strength
+this.VerifyallergiesToxicityStrengthInput = page.locator(
+    "//h3[text()='Allergies/Toxicity']//following::td[contains(@class,'col-strength')]//input[contains(@class,'freq-count-input')]"
+);
+
+this.VerifyallergiesToxicityStrengthUnitDropdown = page.locator(
+    "//h3[text()='Allergies/Toxicity']//following::td[contains(@class,'col-strength')]//select[contains(@class,'freq-select')]"
+);
+
+// Route
+this.VerifyallergiesToxicityRouteDropdown = page.locator(
+    "(//h3[text()='Allergies/Toxicity']//following::td//select)[3]"
+);
+
+// Dosage
+this.VerifyallergiesToxicityDosageInput = page.locator(
+    "//h3[text()='Allergies/Toxicity']//following::td[contains(@class,'col-dosage')]//input[contains(@class,'freq-count-input')]"
+);
+
+this.VerifyallergiesToxicityDosageUnitDropdown = page.locator(
+    "//h3[text()='Allergies/Toxicity']//following::td[contains(@class,'col-dosage')]//select[contains(@class,'freq-select')]"
+);
+
+// Frequency
+this.VerifyallergiesToxicityFrequencyDropdown = page.locator(
+    "(//h3[text()='Allergies/Toxicity']//following::td//select)[5]"
+);
+
+// Duration
+this.VerifyallergiesToxicityDurationInput = page.locator(
+    "//h3[text()='Allergies/Toxicity']//following::td[contains(@class,'col-duration')]//input[contains(@class,'freq-count-input')]"
+);
+
+this.VerifyallergiesToxicityDurationUnitDropdown = page.locator(
+    "//h3[text()='Allergies/Toxicity']//following::td[contains(@class,'col-duration')]//select[contains(@class,'freq-select')]"
+);
+
+// Instructions
+this.VerifyallergiesToxicityInstructionsInput = (rowIndex) =>
+    this.VerifyallergiesToxicityRows
+        .nth(rowIndex)
+        .locator('input[placeholder="Enter instructions"]');
+
+this.VerifyallergiesToxicityCheckbox = (rowIndex) =>
+    this.VerifyallergiesToxicityRows
+        .nth(rowIndex)
+        .locator('span.checkmark');
+
+this.VerifyallergiesToxicityCheckboxInput = (rowIndex) =>
+    this.VerifyallergiesToxicityRows
+        .nth(rowIndex)
+        .locator('input[type="checkbox"]');
+
+// Checked Rows
+this.VerifycheckedAllergiesToxicityRow = page.locator(
+    "//h3[text()='Allergies/Toxicity']//following::tbody[1]//tr[.//input[@type='checkbox']:checked]"
+);
+ 
+// // =====================================================
+// // Allergies / Toxicity - Row 2
+// // =====================================================
+ 
+// this.allergiesToxicityDrugSearchInputRow2 = page.locator(
+//     "(//h3[text()='Allergies/Toxicity']//following::td//textarea[@placeholder='Search or enter drug name'])[2]"
+// );
+ 
+// this.allergiesToxicityFormDropdownRow2 = page.locator(
+//     "(//h3[text()='Allergies/Toxicity']//following::td//select)[7]"
+// );
+ 
+// this.allergiesToxicityStrengthDropdownRow2 = page.locator(
+//     "(//h3[text()='Allergies/Toxicity']//following::td//select)[8]"
+// );
+ 
+// this.allergiesToxicityRouteDropdownRow2 = page.locator(
+//     "(//h3[text()='Allergies/Toxicity']//following::td//select)[9]"
+// );
+ 
+// this.allergiesToxicityDosageDropdownRow2 = page.locator(
+//     "(//h3[text()='Allergies/Toxicity']//following::td//select)[10]"
+// );
+ 
+// this.allergiesToxicityFrequencyDropdownRow2 = page.locator(
+//     "(//h3[text()='Allergies/Toxicity']//following::td//select)[11]"
+// );
+ 
+ 
+// // Schedule - Row 2
+// this.allergiesToxicityScheduleInputRow2_1 = page.locator(
+//     "((//h3[text()='Allergies/Toxicity']//following::td//div[@class='dosage-cell'])[2]//input)[1]"
+// );
+ 
+// this.allergiesToxicityScheduleInputRow2_2 = page.locator(
+//     "((//h3[text()='Allergies/Toxicity']//following::td//div[@class='dosage-cell'])[2]//input)[2]"
+// );
+ 
+// this.allergiesToxicityScheduleInputRow2_3 = page.locator(
+//     "((//h3[text()='Allergies/Toxicity']//following::td//div[@class='dosage-cell'])[2]//input)[3]"
+// );
+ 
+// this.allergiesToxicityScheduleInputRow2_4 = page.locator(
+//     "((//h3[text()='Allergies/Toxicity']//following::td//div[@class='dosage-cell'])[2]//input)[4]"
+// );
+ 
+ 
+// // Timing - Row 2
+// this.allergiesToxicityTimingDropdownRow2 = page.locator(
+//     "(//h3[text()='Allergies/Toxicity']//following::td//button[contains(@class,'dropdown-only-select')])[2]"
+// );
+ 
+ 
+// // Duration - Row 2
+// this.allergiesToxicityDurationDropdownRow2 = page.locator(
+//     "(//h3[text()='Allergies/Toxicity']//following::td//select)[12]"
+// );
+ 
+ 
+// // Instructions - Row 2
+// this.allergiesToxicityInstructionsInputRow2 = page.locator(
+//     "(//h3[text()='Allergies/Toxicity']//following::td//div//input[@placeholder='Enter instructions'])[2]"
+// );
+
+this.DrugSearchInputfirst =
+     page.locator(
+         "(//td[contains(@class,'col-drug col-id')])[1]"
+     );
+
+// this.firstMedicationSuggestion = (medicationName) =>
+//     page.locator(
+//         `//button[contains(@class,"suggestion-option")]//span[@class="fav-option-cell" and normalize-space()=${JSON.stringify(medicationName)}]`
+//     ).first();
+
+this.firstMedicationSuggestion = (medicationName) => {
+    const medicationNameOnly = medicationName.split("|")[0].trim();
+
+    return page.locator(
+        `//button[contains(@class,"suggestion-option")]//span[contains(@class,"fav-option-cell") and contains(normalize-space(), ${JSON.stringify(medicationNameOnly)})]`
+    ).first();
+};
+
+
+this.coMorbiditySection =
+            page.locator(
+                "//div[@data-section-id='co_morbidities']"
+            );
+
+
+this.coMorbidityDrugSearchInput =
+        this.coMorbiditySection.locator(
+            "textarea.drug-name-input"
+        );
+
+ this.coMorbidityRows =
+            this.coMorbiditySection.locator(
+                "tbody tr"
+            );
+
+this.coMorbidityStrengthInput =
+            this.coMorbiditySection.locator(
+                "td.col-strength input"
+            );
+
+
+this.coMorbidityStrengthUnitDropdown =
+            this.coMorbiditySection.locator(
+                "td.col-strength select"
+            );
+
+ this.coMorbidityRouteDropdown =
+            this.coMorbiditySection.locator(
+                "td.col-route select"
+            );
+
+ this.coMorbidityDosageInput =
+            this.coMorbiditySection.locator(
+                "td.col-dosage input"
+            );
+
+this.coMorbidityDosageUnitDropdown =
+            this.coMorbiditySection.locator(
+                "td.col-dosage select"
+            );
+
+this.coMorbidityFrequencyDropdown =
+            this.coMorbiditySection.locator(
+                "td.col-frequency select"
+            );
+
+this.coMorbidityScheduleInputs =
+            this.coMorbiditySection.locator(
+                "td.col-schedule"
+            );
+
+this.coMorbidityTimingDropdown =
+            this.coMorbiditySection.locator(
+                "td.col-timing"
+            );
+
+this.coMorbidityDurationUnitDropdown =
+            this.coMorbiditySection.locator(
+                "td.col-duration select"
+            );
+
+
+this.coMorbidityDurationInput =
+            this.coMorbiditySection.locator(
+                "td.col-duration input"
+            );
+
+this.coMorbidityInstructionsInput =
+            this.coMorbiditySection.locator(
+                "textarea.instruction-input"
+            );
+
+this.coMorbidityFormDropdown =
+    page.locator(
+        "//div[@data-section-id='co_morbidities']//td[contains(@class,'col-form')]//select"
+    );
+
+this.coMorbidityFormOption = (form) =>
+    page.getByText(
+        form,
+        {
+            exact: true
+        }
+    ).last();
+
+this.coMorbiditySection =
+    page.locator(
+        "//div[@data-section-id='co_morbidities']"
+    );
+
+this.coMorbidityDrugSearchResult = (drugName) =>
+    page.locator(
+        "//div[@data-section-id='co_morbidities']" +
+        "//*[contains(normalize-space(.), 'Drug Name:')]" +
+        "[contains(normalize-space(.), " +
+        JSON.stringify(drugName) +
+        ")]"
+    ).last();
     }
+
+    coMorbidityTimingOption(timing) {
+
+        return this.page.getByText(
+            timing,
+            {
+                exact: true
+            }
+        ).last();
+    }
+
+    
 
     drugLibrary(drugName) {
         return this.page.getByText(drugName);

@@ -149,16 +149,21 @@ test('IPD Admission Form', async ({ page }) => {
     administrativeForm
     );
 
-    // await ipdPage.boldPatientName();
+    await ipdPage.boldPatientName();
 
-    await ipdPage.fillConsentCheckboxes(
+    await ipdPage.UnboldPatientName();
+
+    await ipdPage.italicPatientName();
+
+    await ipdPage.underlinePatientName();
+
+    await ipdPage.fillandVerifyConsentCheckboxes(
     consentCheckboxData
-    );//->verify
-
+    );
 
     await ipdPage.addPatientSignature(
     signatureData
-    );//-verify
+    );
 
     await ipdPage.submitAndVerifyConsentForm(
     administrativeForm

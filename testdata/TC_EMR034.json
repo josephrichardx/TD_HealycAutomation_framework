@@ -1,0 +1,105 @@
+{
+  "patientData": {
+    "title": "Mr",
+    "phoneNumber": "1234567890",
+    "notes": "Healync",
+    "email": "test@gmail.com",
+    "age": "21",
+    "gender": "Male",
+    "address": "Chennai"
+  },
+
+ "appoinmentData": {
+    "doctorName": "Dr. Orthopedic"
+  },
+ 
+  "consultData": {
+    "consultSlot": "First Consult"
+  },
+
+  "templateData": {
+  "templateName": "EMR_AUTOMATION_TEMPLATE TD",
+  "searchKey": "Enter",
+   "templateAppliedMessage": "Template Applied successfully!"
+  },
+
+"observationData": {
+    "index": 0,
+    "row": 2,
+    "Custom_drugname": "FEVER",
+    "drugName": "1 AL Plus 5mg/120mg Capsule",
+    "form": "Capsule",
+    "strength": "4",
+    "strengthUnit": "ml",
+    "duration": "4",
+    "durationUnit": "Days",
+    "instruction": "INS 1"
+},
+
+"ToxicityData": {
+    "index": 0,
+    "row": 2,
+    "Custom_drugname": "FEVER",
+    "drugName": "1 AL Plus 5mg/120mg Capsule",
+    "form": "Capsule",
+    "strength": "4",
+    "strengthUnit": "ml",
+    "route": "PO",
+    "dosage": "4",
+    "dosageUnit": "capsule",
+    "frequency": "Daily",
+    "schedule": ["4", "4", "4", "4"],
+    "timing": "Before food",
+    "duration": "4",
+    "durationUnit": "Days",
+    "instruction": "INS 1"
+},
+
+    "template": {
+        "formatValue": "EMR_AUTOMATION TD",
+        "savedMessage": "Template saved successfully.",
+        "appliedMessage": "Template Applied successfully!"
+    },
+
+    "specificAdviceData": {
+        "text": "Option 5",
+        "image": "Healync_Image.jpg"
+    },
+
+    "otherFindings": {
+    "text1": "Custom other findings",
+    "text2": "Custom text for 'Other Findings'"
+    },   
+
+    "MultiotherFindings": {
+    "text1": "Custom other findings",
+    "text2": "Custom text for 'Other Findings'",
+    "text3": "This is a text favourite for 'Other Findings'",
+    "text4": "Custom text for 'Other Findings' test",
+    "text5": "This is a another text favourite for 'Other Findings' Option 1 FIll'"
+    },   
+
+    
+    "sectionsToAdd": [
+    "Co-morbidities",
+    "Toxicity",
+    "Other Findings"
+    ],
+
+    "sectionsToUncheck": [
+    "Advice"
+    ],
+
+    "otherFindingsCrud": {
+        "text1": "Custom other findings",
+        "text2": "Custom text for 'Other Findings' test",
+        "updatedText": "Updated Other Findings"
+    },
+
+    
+    "signatureData": {
+        "signatureName": "Test",
+        "patientSignatureName": "Cardiologist"
+    }
+
+}

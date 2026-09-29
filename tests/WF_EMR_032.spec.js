@@ -10,6 +10,8 @@ const { PrescriptionPage } = require('../pages/PrescriptionPage');
 
 const { patientData,appoinmentData,consultData,prescriptionData,templateData,loginData,marginData,observationData,template,otherFindings,coMorbidities,ToxicityData,specificAdviceData,sectionsToAdd,otherFindingsCrud } = require('../testdata/TC_EMR032.json');
 const { generateUniquePatientFullName,generateUniqueTemplateName } = require('../utils/RandomData');
+const timeoutData = require('../testdata/timeout.json');
+const { timeout } = timeoutData;
 
 test('EMR Prescription', async ({ page }) => {
 
@@ -21,6 +23,7 @@ test('EMR Prescription', async ({ page }) => {
     const calendarPage = new CalendarPage(page);
     const prescriptionPage = new PrescriptionPage(page);
     const templateName = generateUniqueTemplateName();
+    const templateName2 = generateUniqueTemplateName();
    
 
     //Create the patient 
@@ -124,9 +127,9 @@ test('EMR Prescription', async ({ page }) => {
     );
 
     //Fill the SpecificAdviceText
-    // await prescriptionPage1.addSpecificAdviceText(
-    //     specificAdviceData
-    // );
+    await prescriptionPage1.addSpecificAdviceText(
+        specificAdviceData
+    );
 
     //Create the template
     await prescriptionPage1.CreateTheTemplate({
@@ -180,9 +183,9 @@ test('EMR Prescription', async ({ page }) => {
 
     //Get the PdfText
     // const pdfText =
-    // await prescriptionPageOldTab.getPDFText();
+    // await prescriptionPageOldTab.getthePDFText();
     const pdfText =
-    await prescriptionPageOldTab.getPDFText({
+    await prescriptionPageOldTab.getthePDFText({
     observationData,
     ToxicityData,
     otherFindings
@@ -203,10 +206,10 @@ test('EMR Prescription', async ({ page }) => {
     
     //Get the DraftText
     // const draftText =
-    // await prescriptionPageNewTab.getDraftText();
+    // await prescriptionPageNewTab.gettheDraftText();
 
     const draftText =
-    await prescriptionPageNewTab.getDraftText();
+    await prescriptionPageNewTab.gettheDraftText();
     // expect(draftText).toEqual(draftTextactual1);
 
     //Verify the Pdf & Draft
@@ -242,10 +245,14 @@ test('EMR Prescription', async ({ page }) => {
 
     //Get the DraftText
     // const oldtabdraftText =
-    // await prescriptionPageOldTab1.getDraftText();
+    // await prescriptionPageOldTab1.gettheDraftText();
+
+    await prescriptionPageOldTab1.page.waitForLoadState("domcontentloaded");
+
+    await prescriptionPageOldTab1.page.waitForTimeout(timeout.elementTimeout);
 
     const oldtabdraftText =
-    await prescriptionPageOldTab1.getDraftText();
+    await prescriptionPageOldTab1.gettheDraftText();
 
     // =====================================================
     // SWITCH BACK TO New tab Again1
@@ -259,10 +266,10 @@ test('EMR Prescription', async ({ page }) => {
 
     //Get the DraftText
     // const newtabdraftText =
-    // await prescriptionPageNewTab1.getDraftText();
+    // await prescriptionPageNewTab1.gettheDraftText();
 
     const newtabdraftText =
-    await prescriptionPageNewTab1.getDraftText();
+    await prescriptionPageNewTab1.gettheDraftText();
 
     //Verify the Oldtab Draft to Newtab Draft
     await prescriptionPageNewTab1.verifyPDFAndDraft(
@@ -280,7 +287,7 @@ test('EMR Prescription', async ({ page }) => {
     const prescriptionPageOldTab2 =
         new PrescriptionPage(OldtabAgain2);
 
-    await prescriptionPageOldTab2.generateAndViewPrescription();
+    await prescriptionPageOldTab2.DownloadpdfPrescription();
 
     //Edit the History data
     await prescriptionPageOldTab2.EditHistory();
@@ -295,21 +302,35 @@ test('EMR Prescription', async ({ page }) => {
     //Create the Template
      await prescriptionPageOldTab2.CreateTheTemplate({
         ...template,
-        templateName
+         templateName: templateName2
     });
 
-    await prescriptionPageOldTab2.generateAndViewPrescription();
+    // await prescriptionPageOldTab2.generateAndViewPrescription();
+
+     await prescriptionPageOldTab2.DownloadpdfPrescription();
 
      await prescriptionPageOldTab2.openHistory();
 
     //Get the pdf Text
     // const pdfText1 =
-    // await prescriptionPageOldTab2.getPDFText();
+    // await prescriptionPageOldTab2.getthePDFText();
+
+//    const otherFindingsAfterCrud = {
+//     text1: otherFindings.text1,
+//     text2: otherFindings.text2,
+//     text3: otherFindingsCrud.text2
+//     };
+
+    const otherFindingsAfterCrud = {
+    text1: otherFindings.text2,
+    text2: otherFindingsCrud.text2
+    };
+
     const pdfText1 =
-    await prescriptionPageOldTab2.getPDFText({
+    await prescriptionPageOldTab2.getthePDFText({
     observationData,
     ToxicityData,
-    otherFindings
+    otherFindings: otherFindingsAfterCrud
     });
 
     await prescriptionPageOldTab2.CloseHistory();
@@ -327,7 +348,7 @@ test('EMR Prescription', async ({ page }) => {
 
     // Verify Template in List
     await prescriptionPageNewTab2.verifyTemplateDisplayedInList(
-        templateName
+         templateName2
     );
  
     // Apply Saved Template
@@ -337,9 +358,9 @@ test('EMR Prescription', async ({ page }) => {
 
     //Get the Draft Text
     // const draftText1 =
-    // await prescriptionPageNewTab2.getDraftText();
+    // await prescriptionPageNewTab2.gettheDraftText();
     const draftText1 =
-    await prescriptionPageNewTab2.getDraftText();
+    await prescriptionPageNewTab2.gettheDraftText();
 
     //Verify the Pdf & Draft
     await prescriptionPageNewTab2.verifyPDFAndDraft(
