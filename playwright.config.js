@@ -21,7 +21,7 @@ export default defineConfig({
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
-  // retries: 3,
+  retries: 3,
   /* Opt out of parallel tests on CI. */
   // Serial. This UAT environment drops transient toasts (booking confirmation,
   // patient saved, payment recorded) when more than one worker drives it, so

@@ -46,7 +46,9 @@ class NewPatientLocator {
         this.salutationDropdownBtn = page.locator('button.dropdown-button').first();
         this.salutationDropdownList = page.locator('div.dropdown-list').first();
  
- 
+        this.patientGenderAge = page.locator(
+                '//div[contains(@class,"patient-gender-age")]'
+            );
         // ---------------------------------------------------------
         // DATE OF BIRTH
         // Uses app-customcalendarinput, the same component

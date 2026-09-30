@@ -47,7 +47,7 @@ class IPDLocator {
             page.getByText('Generate invoice').nth(1);
 
 
-         // IPD Invoice Payment Section
+        // IPD Invoice Payment Section
 
         this.paymentSection =
             page.locator(
@@ -101,9 +101,9 @@ class IPDLocator {
         //     page.locator('#currentMonth');
 
 
-       
 
-// Invoice PDF
+
+        // Invoice PDF
 
         this.invoiceNumberPdf =
             page.locator(
@@ -165,7 +165,7 @@ class IPDLocator {
         ).last();
 
         this.pdfCloseButton =
-        page.locator("(//i[@class='fa-solid fa-xmark'])[2]");
+            page.locator("(//i[@class='fa-solid fa-xmark'])[2]");
 
 
         this.closePdfPreviewBtn =
@@ -191,7 +191,7 @@ class IPDLocator {
                     exact: true
                 }
             )
-             .nth(1);
+            .nth(1);
 
 
         // Calendar
@@ -222,27 +222,27 @@ class IPDLocator {
 
 
 
-    // IPD Admission Details Summary
- 
+        // IPD Admission Details Summary
+
         this.changeBedBtn = page.locator(
             "//button[@class='change-bed']"
         );
-        
+
         this.roomCategoriesDropdown = page.locator(
             "(//label[text()='Room Categories']//following::i[@class='fa-solid fa-chevron-down'])[1]"
         );
-        
+
         this.roomTypeOption = (roomType) =>
             page.locator('span.status-text:visible')
                 .filter({
                     hasText: roomType
                 })
                 .first();
-        
+
         this.roomNumberDropdown = page.locator(
             "(//label[text()='Room Categories']//following::i[@class='fa-solid fa-chevron-down'])[2]"
         );
-        
+
         this.roomNumberOption = (roomNumber) =>
             page.getByText(
                 roomNumber,
@@ -252,11 +252,11 @@ class IPDLocator {
             ).filter({
                 visible: true
             }).first();
-        
+
         this.bedDropdown = page.locator(
             "(//label[text()='Room Categories']//following::i[@class='fa-solid fa-chevron-down'])[3]"
         );
-        
+
         this.bedOption = (bed) =>
             page.locator('div.dropdown-list:visible')
                 .getByText(
@@ -265,8 +265,8 @@ class IPDLocator {
                         exact: true
                     }
                 );
-        
-        
+
+
         this.saveBtn = page.getByRole(
             'button',
             {
@@ -274,18 +274,18 @@ class IPDLocator {
                 exact: true
             }
         );
-        
+
         this.bedUpdatedToast = page.getByText(
             'Bed updated successfully',
             {
                 exact: true
             }
         );
-        
+
         this.roomTypeSummary = page.locator(
             "//div[normalize-space()='Room Type']/following-sibling::div"
         );
-        
+
         this.admittedSummary = page.locator(
             "//div[normalize-space()='Admitted']/following-sibling::div"
         );
@@ -295,15 +295,15 @@ class IPDLocator {
         this.invoicePdfPreview =
             page.locator(
                 'app-document-preview'
-            );     
-            
+            );
+
         // Administrative Form
         this.addAdministrativeFormBtn = page.locator(
             "//button[text()='Add Administrative Form ']"
         );
 
         this.suggestionContent = page.locator(
-             "//div[@class='suggestion-content']"
+            "//div[@class='suggestion-content']"
         );
 
         this.searchConsentFormInput = page.locator(
@@ -314,237 +314,299 @@ class IPDLocator {
             "//div[@class='form-header']"
         );
 
-    
-
-//    this.getConsentFormField = (fieldName) =>
-//     page.locator(
-//         `//b[contains(normalize-space(), '${fieldName}')]/following::span[contains(@class,'field-container')][1]`
-//     );
-
-   this.getConsentFormField = (fieldName) =>
-    page.locator(
-        `//b[contains(normalize-space(), '${fieldName}')]/following::input[contains(@class,'inline-blank')][1]`
-    );
-    
-//   this.getConsentFormDetailsField = (questionText) =>
-//     page.locator(
-//         `//*[contains(normalize-space(), '${questionText}')]/following::span[contains(@class,'field-container')][1]`
-//     );
 
 
-    this.getConsentFormDetailsField = (questionText) =>
-    page.locator(
-        `//*[contains(normalize-space(), '${questionText}')]/following::input[contains(@class,'inline-blank')][1]`
-    );
+        //    this.getConsentFormField = (fieldName) =>
+        //     page.locator(
+        //         `//b[contains(normalize-space(), '${fieldName}')]/following::span[contains(@class,'field-container')][1]`
+        //     );
 
-// this.getAdministrativeTimeField = (questionText) =>
-//     page.locator(
-//         `//*[contains(normalize-space(), '${questionText}')]/following::input[contains(@class,'inline-blank')][1]`
-//     );
+        this.getConsentFormField = (fieldName) =>
+            page.locator(
+                `//b[contains(normalize-space(), '${fieldName}')]/following::input[contains(@class,'inline-blank')][1]`
+            );
+
+        //   this.getConsentFormDetailsField = (questionText) =>
+        //     page.locator(
+        //         `//*[contains(normalize-space(), '${questionText}')]/following::span[contains(@class,'field-container')][1]`
+        //     );
 
 
-this.getAdministrativeTimeField = (questionText) => {
-    const fields = page.locator(
-        'input.inline-blank[placeholder="Fill this"]'
-    );
+        this.getConsentFormDetailsField = (questionText) =>
+            page.locator(
+                `//*[contains(normalize-space(), '${questionText}')]/following::input[contains(@class,'inline-blank')][1]`
+            );
 
-    if (questionText === 'Last meal/water taken — time') {
-        return fields.nth(-2);
+        // this.getAdministrativeTimeField = (questionText) =>
+        //     page.locator(
+        //         `//*[contains(normalize-space(), '${questionText}')]/following::input[contains(@class,'inline-blank')][1]`
+        //     );
+
+
+        this.getAdministrativeTimeField = (questionText) => {
+            const fields = page.locator(
+                'input.inline-blank[placeholder="Fill this"]'
+            );
+
+            if (questionText === 'Last meal/water taken — time') {
+                return fields.nth(-2);
+            }
+
+            if (questionText === 'Empty stomach (fasting) since') {
+                return fields.nth(-1);
+            }
+        };
+
+        this.getConsentFormCheckbox = (questionText, option) => {
+
+            const questionIndex = {
+                'Any known allergy': 0,
+                'Taking blood-thinning medicine': 1,
+                'Taking Metformin / diabetes medicine': 2,
+                'Kidney problem or on dialysis': 3,
+                'Pacemaker or any implant in the body': 4,
+                'Currently pregnant or breastfeeding': 5
+            };
+
+            const index = questionIndex[questionText];
+
+            if (index === undefined) {
+                throw new Error(`Checkbox question not mapped: ${questionText}`);
+            }
+
+            const optionIndex =
+                option.toLowerCase() === 'yes' ? 0 : 1;
+
+            return page.locator(
+                'input.consent-checkbox-input:visible'
+            ).nth((index * 2) + optionIndex);
+        };
+
+        this.submitButton = page.locator("//button[text()=' Submit ']");
+
+        this.scoreResultTable = page.locator(
+            "//table[@class='score-result-table']"
+        );
+
+        this.consentFormName = (formName) =>
+            page.locator(`//td[normalize-space()='${formName}']`);
+
+        this.consentFormViewIcon = (formName) =>
+            page.locator(
+                `//td[normalize-space()='${formName}']//following::i[@style='cursor: pointer;'][1]`
+            );
+
+        this.pdfFormName = (formName) =>
+            page.locator(
+                `//div[contains(@class,'textLayer')]//span[@role='presentation' and normalize-space()='${formName}']`
+            );
+
+
+        // Administrative Form - Verify displayed fields
+        this.getConsentFormDisplayedValue = (fieldName) =>
+            page.locator(
+                `//b[contains(normalize-space(), '${fieldName}')]/following::span[contains(@class,'field-container') and not(contains(@class,'field-blank'))][1]`
+            );
+
+        this.getConsentFormInput = (fieldName) =>
+            page.locator(
+                `//b[contains(normalize-space(), '${fieldName}')]/following::span[contains(@class,'field-container')][1]//input`
+            );
+
+        this.addPatientSignatureButton = page.locator(
+            "(//i[@class='fa-light fa-pen'])[1]"
+        );
+
+        this.signatureNameInput = page.locator(
+            "//input[@placeholder='Enter your name']"
+        );
+
+        this.Canvas = page.locator(
+            "canvas"
+        );
+
+        // this.signatureInput = page.locator(
+        //     "//input[contains(@class,'name-input')]"
+        // );
+
+        this.signatureInput = page.locator(
+            "//input[@placeholder='Enter your name' and @maxlength='50']"
+        );
+
+        this.signatureCanvas = page.locator(
+            "canvas.signature-canvas"
+        );
+
+        this.saveSignatureButton = page.locator(
+            "//button[normalize-space()='Save Signature']"
+        );
+
+        // this.getConsentCheckbox = (question) =>
+        //     page
+        //         .locator('span.consent-inline-checkbox')
+        //         .filter({ hasText: question })
+        //         .locator('input[type="checkbox"]');
+
+        this.getConsentCheckbox = (question) =>
+            page.locator(
+                `//div[contains(text(), '${question}')]//input[@type='checkbox']`
+            );
+
+        this.pdfText = page.locator('div.textLayer');
+
+        this.patientNameText = page.locator(
+            "//*[normalize-space(text())='Patient Name :']"
+        );
+
+        this.patientName_Text = page.locator(
+            "//div[@id='consentLiveEditor']/b[normalize-space()='Patient Name :']"
+        );
+
+        this.italicButton = page.locator(
+            "//button[@title='Italic']"
+        );
+
+        this.italic = (text) =>
+            page.locator(
+                `//div[@id='consentLiveEditor']//*[normalize-space()='${text}']`
+            );
+
+        // this.textToFormat = (text) =>
+        //     page.locator(
+        //         `//div[@id='consentLiveEditor']//*[normalize-space()='${text}']`
+        //     );
+
+        this.textToFormat = (text) =>
+            page.locator('#consentLiveEditor').getByText(
+                text,
+                { exact: true }
+            ).first();
+
+        this.underlineButton = page.locator(
+            "//button[@title='Underline']"
+        );
+
+        this.boldPatientName = page.locator(
+            "//b[text()='Patient Name :']"
+        );
+
+        this.unBoldPatientName = page.locator(
+            "//div[contains(text(),'Patient Name :')]"
+        );
+
+        this.italicPatientName = page.locator(
+            "//i[contains(text(),'Patient Name :')]"
+        );
+
+        this.underlinePatientName = page.locator(
+            "//u[contains(text(),'Patient Name :')]"
+        );
+
+        this.alignLeftButton = page.locator("//button[@title='Align left']");
+
+        this.leftAlignedPatientName = page.locator(
+            "//div[contains(text(),'Patient Name :')]"
+        );
+
+        this.alignLeftPatientName =
+            page.locator("//b[normalize-space()='Patient Name :']");
+
+
+        // this.textToFormat = (text) =>
+        //     page.locator(`//*[normalize-space(text())='${text}']`);
+
+        this.boldButton = page.locator(
+            "//button[@title='Bold']"
+        );
+
+        this.boldText = (text) =>
+            page.locator(`//b[normalize-space()='${text}']`);
+
+        this.unBoldText = (text) =>
+            page.locator(
+                `//div[normalize-space(text())='${text}']`
+            );
+
+        this.italicText = (text) =>
+            page.locator(
+                `//i[normalize-space()='${text}']`
+            );
+
+
+        this.underlineText = (text) =>
+            page.locator('#consentLiveEditor')
+                .getByText(text, { exact: true })
+                .first();
+
+        // this.alignLeft = (text) =>
+        //     page.locator(
+        //         `//div[@id='consentLiveEditor']//*[normalize-space()='${text}' and ancestor-or-self::*[contains(@style,'text-align: left')]]`
+        //     );
+
+        this.alignLeft = () =>
+            page.locator('#consentLiveEditor');
+
+        this.alignCenter = (text) =>
+            page.locator(
+                `//div[@id='consentLiveEditor']//*[normalize-space()='${text}' and ancestor-or-self::*[contains(@style,'text-align: center')]]`
+            );
+
+        this.alignRight = (text) =>
+            page.locator(
+                `//div[@id='consentLiveEditor']//*[normalize-space()='${text}' and ancestor-or-self::*[contains(@style,'text-align: right')]]`
+            );
+
+        // this.justify = (text) =>
+        //     page.locator(
+        //         `//div[@id='consentLiveEditor']//*[normalize-space()='${text}' and ancestor-or-self::*[contains(@style,'text-align:justify')]]`
+        //     );
+
+        this.justify = (text) =>
+            page
+                .locator('#consentLiveEditor')
+                .getByText(text, { exact: true })
+                .first();
+
+        this.alignCenterButton =
+            page.locator("//button[@title='Align Center']");
+
+        this.alignCenterPatientName =
+            page.locator(
+                "//div[contains(@style,'text-align: center')]//b[normalize-space()='Patient Name :']"
+            );
+
+        this.alignRightButton =
+            page.locator("//button[@title='Align Right']");
+
+        this.alignRightPatientName =
+            page.locator(
+                "//div[contains(@style,'text-align: right')]//b[normalize-space()='Patient Name :']"
+            );
+        this.justifyButton =
+            page.locator("//button[@title='Justify']");
+
+        this.justifyPatientName =
+            page.locator(
+                "//div[contains(@style,'text-align: justify')]//b[normalize-space()='Patient Name :']"
+            );
+
+        this.closeFormButton =
+            page.locator("//button[@aria-label='Close']");
+
+        this.fontSize = page.locator(
+            "//input[contains(@title,'Font size')]"
+        );
+
+        this.checkboxButton = page.locator(
+            "//button[@title='Checkbox']"
+        );
+
+        this.consentLiveEditor = page.locator(
+            "#consentLiveEditor"
+        );
+
     }
 
-    if (questionText === 'Empty stomach (fasting) since') {
-        return fields.nth(-1);
-    }
-};
-
-this.getConsentFormCheckbox = (questionText, option) => {
-
-    const questionIndex = {
-        'Any known allergy': 0,
-        'Taking blood-thinning medicine': 1,
-        'Taking Metformin / diabetes medicine': 2,
-        'Kidney problem or on dialysis': 3,
-        'Pacemaker or any implant in the body': 4,
-        'Currently pregnant or breastfeeding': 5
-    };
-
-    const index = questionIndex[questionText];
-
-    if (index === undefined) {
-        throw new Error(`Checkbox question not mapped: ${questionText}`);
-    }
-
-    const optionIndex =
-        option.toLowerCase() === 'yes' ? 0 : 1;
-
-    return page.locator(
-        'input.consent-checkbox-input:visible'
-    ).nth((index * 2) + optionIndex);
-};
-
-this.submitButton = page.locator("//button[text()=' Submit ']");
-
-this.scoreResultTable = page.locator(
-    "//table[@class='score-result-table']"
-);
-
-this.consentFormName = (formName) =>
-    page.locator(`//td[normalize-space()='${formName}']`);
-
-this.consentFormViewIcon = (formName) =>
-    page.locator(
-        `//td[normalize-space()='${formName}']//following::i[@style='cursor: pointer;'][1]`
-    );
-
-this.pdfFormName = (formName) =>
-    page.locator(
-        `//div[contains(@class,'textLayer')]//span[@role='presentation' and normalize-space()='${formName}']`
-    );
-
-
-// Administrative Form - Verify displayed fields
-this.getConsentFormDisplayedValue = (fieldName) =>
-    page.locator(
-        `//b[contains(normalize-space(), '${fieldName}')]/following::span[contains(@class,'field-container') and not(contains(@class,'field-blank'))][1]`
-    );
-
-this.getConsentFormInput = (fieldName) =>
-    page.locator(
-        `//b[contains(normalize-space(), '${fieldName}')]/following::span[contains(@class,'field-container')][1]//input`
-    );
-
-this.addPatientSignatureButton = page.locator(
-    "(//i[@class='fa-light fa-pen'])[1]"
-);
-
-this.signatureNameInput = page.locator(
-    "//input[@placeholder='Enter your name']"
-);
-
-// this.signatureInput = page.locator(
-//     "//input[contains(@class,'name-input')]"
-// );
-
-this.signatureInput = page.locator(
-    "//input[@placeholder='Enter your name' and @maxlength='50']"
-);
-
-this.signatureCanvas = page.locator(
-    "canvas.signature-canvas"
-);
-
-this.saveSignatureButton = page.locator(
-    "//button[normalize-space()='Save Signature']"
-);
-
-// this.getConsentCheckbox = (question) =>
-//     page
-//         .locator('span.consent-inline-checkbox')
-//         .filter({ hasText: question })
-//         .locator('input[type="checkbox"]');
-
-this.getConsentCheckbox = (question) =>
-    page.locator(
-        `//div[contains(text(), '${question}')]//input[@type='checkbox']`
-    );
-
-this.pdfTextLayer = page.locator('div.textLayer');
-
-this.patientNameText = page.locator(
-    "//*[normalize-space(text())='Patient Name :']"
-);
-
-this.patientName_Text = page.locator(
-    "//div[@id='consentLiveEditor']/b[normalize-space()='Patient Name :']"
-);
-
-this.italicButton = page.locator(
-    "//button[@title='Italic']"
-);
-
-this.underlineButton = page.locator(
-    "//button[@title='Underline']"
-);
-
-this.boldPatientName = page.locator(
-    "//b[text()='Patient Name :']"
-);
-
-this.unBoldPatientName = page.locator(
-    "//div[contains(text(),'Patient Name :')]"
-);
-
-this.italicPatientName = page.locator(
-    "//i[contains(text(),'Patient Name :')]"
-);
-
-this.underlinePatientName = page.locator(
-    "//u[contains(text(),'Patient Name :')]"
-);
-
-this.alignLeftButton = page.locator("//button[@title='Align left']");
-
-this.leftAlignedPatientName = page.locator(
-    "//div[contains(text(),'Patient Name :')]"
-);
-
-this.alignLeftPatientName =
-    page.locator("//b[normalize-space()='Patient Name :']");
-
-
-this.textToFormat = (text) =>
-    page.locator(`//*[normalize-space(text())='${text}']`);
-
-this.boldButton = page.locator(
-    "//button[@title='Bold']"
-);
-
-this.boldText = (text) =>
-    page.locator(`//b[normalize-space()='${text}']`);
-
-this.unBoldText = (text) =>
-    page.locator(
-        `//div[normalize-space(text())='${text}']`
-    );
-
-this.italicText = (text) =>
-    page.locator(
-        `//i[normalize-space()='${text}']`
-    );
-
-this.underlineText = (text) =>
-    page.locator(
-        `//u[normalize-space()='${text}']`
-    );
-
-this.alignCenterButton =
-    page.locator("//button[@title='Align Center']");
-
-this.alignCenterPatientName =
-    page.locator(
-        "//div[contains(@style,'text-align: center')]//b[normalize-space()='Patient Name :']"
-    );
-
-this.alignRightButton =
-    page.locator("//button[@title='Align Right']");
-
-this.alignRightPatientName =
-    page.locator(
-        "//div[contains(@style,'text-align: right')]//b[normalize-space()='Patient Name :']"
-    );
-this.justifyButton =
-    page.locator("//button[@title='Justify']");
-
-this.justifyPatientName =
-    page.locator(
-        "//div[contains(@style,'text-align: justify')]//b[normalize-space()='Patient Name :']"
-    );
-
-this.closeFormButton =
-    page.locator("//button[@aria-label='Close']");
-    }
-
-    
 }
 
 module.exports = { IPDLocator };

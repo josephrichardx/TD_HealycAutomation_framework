@@ -8,7 +8,7 @@
     "gender": "Male",
     "address": "Chennai"
   },
-
+ 
   "admissionPatientData": {
     "location": "Healync Kolkata",
     "surgeryName": "Total Knee Replacement (TKR)",
@@ -24,47 +24,60 @@
     "consumableCount": 3,"dateLabel": "Admission Date",
     "timeLabel": "Appointment Start Time"
   },
-
+ 
     "administrativeForm": {
     "formName": "CATH LAB CONSENT FORM",
     "Age": "21",
     "Gender": "Male",
     "UHID": "6765883",
     "Procedure planned (as told to me)": "Test",
-    
+   
     "Any known allergy": "yes",
     "Allergy Details": "Allergy test data",
-
+ 
     "Taking blood-thinning medicine": "Yes",
     "Blood-thinning Details": "Blood thinner test data",
-
+ 
     "Taking Metformin / diabetes medicine": "yes",
     "Metformin Details": "Metformin test data",
-
+ 
     "Kidney problem or on dialysis": "yes",
     "Kidney Details": "Kidney test data",
-
+ 
     "Pacemaker or any implant in the body": "Yes",
     "Pacemaker Details": "Pacemaker test data",
-
+ 
     "Currently pregnant or breastfeeding": "yes",
     "Pregnancy Details": "Pregnancy test data",
-
+ 
     "Last meal/water taken — time": "01:00 PM",
     "Empty stomach (fasting) since": "08:00 AM"
-
+ 
     },
-
+ 
     "signatureData": {
         "signatureName": "test",
         "patientSignatureName": "Patient Test"
     },
-
+ 
     "consentCheckboxData": {
     "The name and reason for this procedure has been explained to me.": true
     },
-    
-    "formatData": {
-        "text": "Patient Name :"
+   
+    "TextData": {
+        "text1": "Patient Name :",
+        "text2": "Age :",
+        "text3":  "Gender :",
+        "text4":  "UHID :",
+        "text5":  "Procedure planned (as told to me):",
+        "text6":  "1. Please answer honestly — this keeps you safe  "
+    },
+ 
+    "FormatData": {
+    "format1": "underline",
+    "format2": "justify",
+    "fontSize": "12"
     }
+   
+ 
 }

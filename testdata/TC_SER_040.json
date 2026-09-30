@@ -1,6 +1,7 @@
 {
   "patientData": {
     "title": "Mr",
+    "phoneNumber": "1234567890",
     "mobileNumber": "1234567890",
     "referralBy": "Doctor",
     "notes": "Healync",

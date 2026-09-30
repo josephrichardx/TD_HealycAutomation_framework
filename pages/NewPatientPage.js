@@ -2320,50 +2320,82 @@ export class NewPatient {
     }
 
 
-      async validatePatientCreationFlow(
-    patientName,
-    patientData,
-    errorData
-) {
- 
-    // 1. Empty mandatory fields
-    await this.validateEmptyMandatoryFields();
- 
-    // 2. Missing Salutation
-    await this.validateMissingSalutation(
+    async validatePatientCreationFlow(
         patientName,
         patientData,
         errorData
-    );
- 
-    // 3. Missing Name
-    await this.validateMissingName(
-        patientData,
-        errorData
-    );
- 
-    // 4. Missing Mobile
-    await this.validateMissingMobile(
-        patientName,
-        patientData
-    );
- 
-    // 5. Missing Referral
-    await this.validateMissingReferral(
-        patientName,
-        patientData,
-        errorData
-    );
- 
-    // 6. Invalid Email Format
-    await this.validateInvalidEmailFormat(
-        patientName,
-        patientData,
-        patientData.invalidEmail
-    );
-}
+    ) {
 
- async verifyPatientDetail(patientData) {
+        // 1. Empty mandatory fields
+        await this.validateEmptyMandatoryFields();
+
+        // 2. Missing Salutation
+        await this.validateMissingSalutation(
+            patientName,
+            patientData,
+            errorData
+        );
+
+        // 3. Missing Name
+        await this.validateMissingName(
+            patientData,
+            errorData
+        );
+
+        // 4. Missing Mobile
+        await this.validateMissingMobile(
+            patientName,
+            patientData
+        );
+
+        // 5. Missing Referral
+        await this.validateMissingReferral(
+            patientName,
+            patientData,
+            errorData
+        );
+
+        // 6. Invalid Email Format
+        await this.validateInvalidEmailFormat(
+            patientName,
+            patientData,
+            patientData.invalidEmail
+        );
+    }
+
+    async verifyPatientDetail(patientData) {
+
+        const actualUhid =
+            (
+                await this.keywords.getText(
+                    this.locator.profileUhidText
+                )
+            ).trim();
+
+        await Verify.record(
+            this.page,
+            patientData.uhidLogText,
+            actualUhid
+        );
+
+        await Verify.text(
+            this.page,
+            'Patient Profile - Phone',
+            `+91 ${patientData.phoneNumber}`,
+            this.locator.profilePhoneText,
+            { exact: true }
+        );
+
+        await Verify.text(
+            this.page,
+            'Patient Profile - Referral Source',
+            patientData.notes,
+            this.locator.profileReferralSourceValue,
+            { exact: true }
+        );
+    }
+
+    async patientDetailVerify(patientData) {
  
     const actualUhid =
         (
@@ -2379,12 +2411,12 @@ export class NewPatient {
     );
  
     await Verify.text(
-    this.page,
-    'Patient Profile - Phone',
-    `+91 ${patientData.mobileNumber}`,
-    this.locator.profilePhoneText,
-    { exact: true }
-);
+        this.page,
+        'Patient Profile - Phone',
+        `+91 ${patientData.phoneNumber}`,
+        this.locator.profilePhoneText,
+        { exact: true }
+    );
  
     await Verify.text(
         this.page,
@@ -2393,6 +2425,42 @@ export class NewPatient {
         this.locator.profileReferralSourceValue,
         { exact: true }
     );
+ 
+    // Gender and Age verification
+    await this.verifyGenderAndAge(
+        patientData.gender,
+        patientData.age
+    );
 }
+ 
+ 
+async verifyGenderAndAge(expectedGender, expectedAge) {
+ 
+const actualGenderAge =
+    (
+        await this.keywords.getText(
+            this.locator.profileGenderAgeText
+        )
+    ).trim();
+    const [actualGender, actualAge] = actualGenderAge
+        .trim()
+        .split('|')
+        .map(value => value.trim());
+ 
+    await Verify.record(
+        this.page,
+        'Patient Profile - Gender',
+        expectedGender,
+        actualGender
+    );
+ 
+    await Verify.record(
+        this.page,
+        'Patient Profile - Age',
+        `${expectedAge} Years`,
+        actualAge
+    );
+}
+ 
 
 }
